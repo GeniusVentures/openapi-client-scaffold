@@ -51,3 +51,68 @@ add_custom_target(frontend_all
     COMMENT "All frontend targets"
     DEPENDS frontend_generate_api frontend_build_typescript
 )
+
+# --------------------------------------------------------
+# 5. Template rendering -- dual-directory (scaffold own + parent M3)
+#    Scans both internal templates/ and parent-passed TEMPLATES_DIR for
+#    .jinja2 files. Renders scaffold's own templates to generated/scaffold/
+#    and parent M3 templates to generated/shared/.
+if(DEFINED TEMPLATES_DIR AND PYTHON3_EXECUTABLE)
+    set(_scaffold_templates_dir "${CMAKE_CURRENT_SOURCE_DIR}/templates")
+    set(_scaffold_template_stamps "")
+
+    # --- Source A: Scaffold's own templates -------------------------------
+    file(GLOB_RECURSE _own_templates "${_scaffold_templates_dir}/*.jinja2")
+    foreach(_template ${_own_templates})
+        file(RELATIVE_PATH _rel "${_scaffold_templates_dir}" "${_template}")
+        string(REGEX REPLACE "\\.jinja2$" "" _out "${_rel}")
+        set(_stamp "${CMAKE_CURRENT_BINARY_DIR}/template_gen/scaffold/${_out}.stamp")
+        set(_output "${GENERATED_DIR}/scaffold/${_out}")
+        add_custom_command(
+            OUTPUT ${_stamp}
+            COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
+                --template ${_rel}
+                --tokens ${DESIGN_TOKENS}
+                --output ${_output}
+                --template-dir ${_scaffold_templates_dir}
+                --template-dir ${TEMPLATES_DIR}
+            COMMAND ${CMAKE_COMMAND} -E touch ${_stamp}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Rendering scaffold template: ${_rel}"
+            DEPENDS ${_template} ${DESIGN_TOKENS} ${ENGINE_SCRIPT}
+        )
+        list(APPEND _scaffold_template_stamps ${_stamp})
+    endforeach()
+
+    # --- Source B: Parent M3 templates from TEMPLATES_DIR -----------------
+    file(GLOB_RECURSE _parent_templates "${TEMPLATES_DIR}/*.jinja2")
+    foreach(_template ${_parent_templates})
+        file(RELATIVE_PATH _rel "${TEMPLATES_DIR}" "${_template}")
+        string(REGEX REPLACE "\\.jinja2$" "" _out "${_rel}")
+        set(_stamp "${CMAKE_CURRENT_BINARY_DIR}/template_gen/shared/${_out}.stamp")
+        set(_output "${GENERATED_DIR}/shared/${_out}")
+        add_custom_command(
+            OUTPUT ${_stamp}
+            COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
+                --template ${_rel}
+                --tokens ${DESIGN_TOKENS}
+                --output ${_output}
+                --template-dir ${TEMPLATES_DIR}
+                --template-dir ${_scaffold_templates_dir}
+            COMMAND ${CMAKE_COMMAND} -E touch ${_stamp}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Rendering M3 template: ${_rel}"
+            DEPENDS ${_template} ${DESIGN_TOKENS} ${ENGINE_SCRIPT}
+        )
+        list(APPEND _scaffold_template_stamps ${_stamp})
+    endforeach()
+
+    add_custom_target(scaffold_generate_templates
+        COMMENT "Rendering scaffold identity templates with M3 design tokens"
+        DEPENDS ${_scaffold_template_stamps}
+    )
+
+    if(TARGET frontend_all)
+        add_dependencies(frontend_all scaffold_generate_templates)
+    endif()
+endif()
