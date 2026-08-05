@@ -85,7 +85,16 @@ if(DEFINED TEMPLATES_DIR AND PYTHON3_EXECUTABLE)
     endforeach()
 
     # --- Source B: Parent M3 templates from TEMPLATES_DIR -----------------
-    file(GLOB_RECURSE _parent_templates "${TEMPLATES_DIR}/*.jinja2")
+    # This blanket target renders ONLY standalone templates — those that take
+    # design tokens alone and no per-template context. In practice that is the
+    # base layout (base/). Every other template under TEMPLATES_DIR is
+    # parameterized and rendered by a driver that injects context:
+    #   * module/**            — generate_domain_modules.py (per-domain vars)
+    #   * components/*.dart    — generate_all_components (per-component vars)
+    #   * components/*.html/.css — generate_all_components_html (per-component vars)
+    # Rendering parameterized templates context-free fails with
+    # undefined-variable errors, so Source B is restricted to base/.
+    file(GLOB_RECURSE _parent_templates "${TEMPLATES_DIR}/base/*.jinja2")
     foreach(_template ${_parent_templates})
         file(RELATIVE_PATH _rel "${TEMPLATES_DIR}" "${_template}")
         string(REGEX REPLACE "\\.jinja2$" "" _out "${_rel}")
