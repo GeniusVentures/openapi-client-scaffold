@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/genius_wallet_colors.g.dart';
+import 'package:genius_scaffold/theme/scaffold_colors.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Loading extends StatelessWidget {
@@ -14,8 +14,8 @@ class Loading extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           LoadingAnimationWidget.flickr(
-            leftDotColor: GeniusWalletColors.lightGreenPrimary,
-            rightDotColor: GeniusWalletColors.blue500,
+            leftDotColor: ScaffoldColors.lightGreenPrimary,
+            rightDotColor: ScaffoldColors.blue500,
             size: 50,
           ),
           AutoSizeText(

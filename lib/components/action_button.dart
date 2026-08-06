@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/genius_wallet_colors.g.dart';
-import 'package:genius_scaffold/theme/genius_wallet_consts.dart';
+import 'package:genius_scaffold/theme/scaffold_colors.dart';
+import 'package:genius_scaffold/theme/scaffold_dimens.dart';
 
 enum ActionButtonAnimation { none, rotate }
 
@@ -19,9 +19,9 @@ class ActionButton extends StatefulWidget {
     required this.icon,
     required this.text,
     this.onPressed,
-    this.backgroundColor = GeniusWalletColors.deepBlueCardColor,
-    this.iconColor = GeniusWalletColors.lightGreenSecondary,
-    this.textColor = GeniusWalletColors.gray500,
+    this.backgroundColor = ScaffoldColors.deepBlueCardColor,
+    this.iconColor = ScaffoldColors.lightGreenSecondary,
+    this.textColor = ScaffoldColors.gray500,
     this.animation = ActionButtonAnimation.none,
   }) : super(key: key);
 
@@ -65,9 +65,8 @@ class _ActionButtonState extends State<ActionButton>
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
           final iconWidget = Icon(
             widget.icon,
             size: constraints.maxWidth * 0.38,
@@ -89,10 +88,10 @@ class _ActionButtonState extends State<ActionButton>
                   Size(constraints.maxWidth * 0.25, constraints.maxWidth),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
-                  GeniusWalletConsts.borderRadiusCard,
+                  ScaffoldDimens.borderRadiusCard,
                 ),
               ),
-              disabledBackgroundColor: GeniusWalletColors.deepBlueCardColor,
+              disabledBackgroundColor: ScaffoldColors.deepBlueCardColor,
               backgroundColor: widget.backgroundColor,
             ),
             child: Column(
@@ -115,7 +114,6 @@ class _ActionButtonState extends State<ActionButton>
             ),
           );
         },
-      ),
     );
   }
 }

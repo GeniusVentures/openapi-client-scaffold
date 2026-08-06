@@ -1,6 +1,4 @@
-class GeniusWalletConsts {
-  static const int pinCount = 4;
-
+class ScaffoldDimens {
   static const double horizontalPadding = 20.0;
   static const double horizontalDesktopPadding = 40.0;
 
