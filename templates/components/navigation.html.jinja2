@@ -1,0 +1,75 @@
+<!-- Auto-generated from navigation.html.jinja2 -- do not edit by hand. -->
+
+<link rel="stylesheet" href="../styles/m3_tokens.css">
+<link rel="stylesheet" href="navigation.css">
+
+<nav class="m3-navigation" role="navigation" aria-label="Main navigation">
+
+  <!-- ================================================================== -->
+  <!-- DESKTOP: Persistent navigation drawer (>=1024px)                    -->
+  <!-- ================================================================== -->
+  <aside class="m3-navigation-drawer" aria-label="Desktop navigation">
+    <div class="m3-navigation-drawer__header">
+      <span class="m3-navigation-drawer__brand">{{ widget_class_name }}</span>
+    </div>
+    <div class="m3-navigation-drawer__divider"></div>
+    <ul class="m3-navigation-drawer__items">
+{% for item in nav_items %}
+      <li class="m3-navigation-drawer__item">
+        <a href="{{ item.route | default('#') }}" class="m3-navigation-drawer__link">
+          <span class="m3-navigation-drawer__icon">{{ item.icon }}</span>
+          <span class="m3-navigation-drawer__label">{{ item.label }}</span>
+          {% if 'badge' in item %}<span class="m3-navigation-drawer__badge">{{ item.badge }}</span>{% endif %}
+        </a>
+{% if item.children is defined and item.children %}
+        <ul class="m3-navigation-drawer__subitems">
+{% for child in item.children %}
+          <li class="m3-navigation-drawer__subitem">
+            <a href="{{ child.route | default('#') }}" class="m3-navigation-drawer__sublink">
+              <span class="m3-navigation-drawer__subicon">{{ child.icon }}</span>
+              <span class="m3-navigation-drawer__sublabel">{{ child.label }}</span>
+            </a>
+          </li>
+{% endfor %}
+        </ul>
+{% endif %}
+      </li>
+{% endfor %}
+    </ul>
+  </aside>
+
+  <!-- ================================================================== -->
+  <!-- TABLET: Compact navigation rail (600-1023px)                        -->
+  <!-- ================================================================== -->
+  <nav class="m3-navigation-rail" aria-label="Tablet navigation">
+    <ul class="m3-navigation-rail__items">
+{% for item in nav_items %}
+      <li class="m3-navigation-rail__item">
+        <a href="{{ item.route | default('#') }}" class="m3-navigation-rail__link"
+           title="{{ item.label }}">
+          <span class="m3-navigation-rail__icon">{{ item.icon }}</span>
+          {% if 'badge' in item %}<span class="m3-navigation-rail__badge">{{ item.badge }}</span>{% endif %}
+        </a>
+      </li>
+{% endfor %}
+    </ul>
+  </nav>
+
+  <!-- ================================================================== -->
+  <!-- MOBILE: Bottom navigation bar (<600px)                              -->
+  <!-- ================================================================== -->
+  <nav class="m3-navigation-bar" aria-label="Mobile navigation">
+    <ul class="m3-navigation-bar__items">
+{% for item in nav_items[:4] %}
+      <li class="m3-navigation-bar__item">
+        <a href="{{ item.route | default('#') }}" class="m3-navigation-bar__link">
+          <span class="m3-navigation-bar__icon">{{ item.icon }}</span>
+          <span class="m3-navigation-bar__label">{{ item.label }}</span>
+          {% if 'badge' in item %}<span class="m3-navigation-bar__badge">{{ item.badge }}</span>{% endif %}
+        </a>
+      </li>
+{% endfor %}
+    </ul>
+  </nav>
+
+</nav>

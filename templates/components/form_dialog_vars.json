@@ -1,0 +1,11 @@
+{
+  "widget_class_name": "ItemFormDialog",
+  "data_type_name": "SampleItem",
+  "fields": [
+    {"label": "Name", "name": "name", "required": true, "type": "text"},
+    {"label": "Description", "name": "description", "required": false, "type": "text"},
+    {"label": "Status", "name": "status", "required": true, "type": "enum", "enum_values": ["active", "inactive", "pending"]},
+    {"label": "Price", "name": "price", "required": false, "type": "number"}
+  ],
+  "form_factor": "desktop"
+}

@@ -1,0 +1,204 @@
+{#
+  navigation.dart.jinja2 — M3 navigation structure generator.
+
+  Template variables (injected via --vars component_vars.json):
+    widget_class_name — PascalCase class name (e.g., "AppNavigation")
+    nav_items — list of {label, icon, route, children, badge}
+    selected_index — int, default 0
+    form_factor — string, accepted but not rendered until Phase 4
+
+  Phase 3 default: NavigationDrawer (desktop).
+  Phase 4 adds {% if form_factor == "tablet" %} (NavigationRail) and
+  {% if form_factor == "mobile" %} (NavigationBar) blocks.
+
+  Generated widget is standalone M3 — consumes Theme.of(context) directly.
+  No dependency on Riverpod, GeniusTheme, or api_client.
+#}
+// Auto-generated from navigation.dart.jinja2 — do not edit by hand.
+
+import 'package:flutter/material.dart';
+
+/// A single navigation destination with optional children and badge.
+///
+/// Used by [{{ widget_class_name }}] to describe the navigation tree
+/// structure.  [icon] is a Material Icons name string resolved to an
+/// [IconData] at render time via [_iconFromString].
+class NavDestination {
+  /// Creates a [NavDestination].
+  const NavDestination({
+    required this.label,
+    required this.icon,
+    this.route,
+    this.children = const <NavDestination>[],
+    this.badge,
+  });
+
+  /// Display label for this navigation item.
+  final String label;
+
+  /// Material Icons name string (e.g. "home", "settings").
+  final String icon;
+
+  /// Optional route path associated with this destination.
+  final String? route;
+
+  /// Nested child destinations (rendered as indented sub-items).
+  final List<NavDestination> children;
+
+  /// Optional badge count to display next to the label.
+  final int? badge;
+}
+
+/// M3 navigation drawer widget generated from structured [NavDestination] data.
+///
+/// Phase 3 default: renders a [NavigationDrawer] for desktop layouts.
+/// Phase 4 will add [NavigationRail] (tablet) and [NavigationBar] (mobile)
+/// variants selected by the `form_factor` template variable.
+///
+/// Consumes [Theme.of] directly — no dependency on Riverpod or GeniusTheme.
+class {{ widget_class_name }} extends StatefulWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }}({
+    required this.items,
+    this.selectedIndex = 0,
+    this.onDestinationSelected,
+    super.key,
+  });
+
+  /// Navigation destinations to render.
+  final List<NavDestination> items;
+
+  /// Index of the currently selected destination.
+  final int selectedIndex;
+
+  /// Called when the user selects a navigation destination.
+  final void Function(int index)? onDestinationSelected;
+
+  @override
+  State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
+}
+
+class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
+  // ---------------------------------------------------------------------------
+  // Icon resolution
+  // ---------------------------------------------------------------------------
+
+  /// Resolves a Material Icons name string to its [IconData].
+  ///
+  /// Common icons are mapped explicitly.  Unknown names fall back to
+  /// [Icons.circle].  This avoids reliance on Dart reflection or dynamic
+  /// icon resolution.
+  static IconData _iconFromString(String iconName) {
+    switch (iconName) {
+{% set icon_names = nav_items | map(attribute='icon') | unique | list %}
+{% for name in icon_names %}
+      case '{{ name }}':
+        return Icons.{{ name }};
+{% endfor %}
+      default:
+        return Icons.circle;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
+
+  @override
+  Widget build(BuildContext context) {
+    return NavigationDrawer(
+      selectedIndex: widget.selectedIndex,
+      onDestinationSelected: widget.onDestinationSelected,
+      children: <Widget>[
+        // Header / brand area
+        Padding(
+          padding: const EdgeInsets.fromLTRB(28.0, 16.0, 16.0, 10.0),
+          child: Text(
+            'Navigation',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ),
+        const Divider(),
+{% for item in nav_items %}
+        // {{ item.label }}
+{% set _has_children = item.children is defined and item.children %}{% if _has_children %}
+        ExpansionTile(
+          leading: Icon(_iconFromString('{{ item.icon }}')),
+          title: Text('{{ item.label }}'),
+{% if item.badge is defined and item.badge is not none %}
+          trailing: _buildBadge({{ item.badge }}),
+{% endif %}
+          children: <Widget>[
+{% for child in item.children %}
+            NavigationDrawerDestination(
+              icon: Icon(_iconFromString('{{ child.icon }}')),
+              label: Text('{{ child.label }}'),
+            ),
+{% if not loop.last %}
+            const Divider(indent: 72.0),
+{% endif %}
+{% endfor %}
+          ],
+        ),
+{% else %}
+        NavigationDrawerDestination(
+          icon: Icon(_iconFromString('{{ item.icon }}')),
+{% if item.badge is defined and item.badge is not none %}
+          label: Row(
+            children: <Widget>[
+              Expanded(child: Text('{{ item.label }}')),
+              _buildBadge({{ item.badge }}),
+            ],
+          ),
+{% else %}
+          label: Text('{{ item.label }}'),
+{% endif %}
+        ),
+{% endif %}
+{% endfor %}
+      ],
+    );
+  }
+
+  /// Builds a small badge widget displaying a count.
+  Widget _buildBadge(int count) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(
+          {{ tokens.shape.corner.extraSmall }}.0,
+        ),
+      ),
+      child: Text(
+        count.toString(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
+      ),
+    );
+  }
+}
+
+{#
+  Phase 4 preparation — variant selection blocks (inactive in Phase 3)
+  ---------------------------------------------------------------------------
+
+  When Phase 4 enables form_factor rendering, the following blocks will be
+  inserted into the build() method to select the appropriate M3 navigation
+  variant.
+#}
+{% raw %}
+// == Phase 4 preparation (inactive) ===========================================
+// Tablet (NavigationRail) — insert after NavigationDrawer build():
+//   {% if form_factor == "tablet" %}
+//     return NavigationRail(...);
+//   {% endif %}
+//
+// Mobile (NavigationBar) — insert after NavigationDrawer build():
+//   {% if form_factor == "mobile" %}
+//     return NavigationBar(...);
+//   {% endif %}
+{% endraw %}

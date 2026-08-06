@@ -1,0 +1,55 @@
+{#
+  search_bar.html.jinja2 — M3 Search Bar HTML fragment generator.
+
+  Template variables (injected via --vars component_vars.json):
+    widget_class_name — PascalCase class name (e.g., "GeniusSearchBar")
+    hint_text — placeholder text shown in the search input
+    result_groups — list of {group_label, items[{id, title, subtitle?, icon?}]}
+    form_factor — string, accepted but not rendered (form factor handled by CSS media queries)
+
+  Generates an <input type="search"> with grouped results <ul> panel.
+  Fragment only per D-01.
+
+  IMPORTANT: All dict key access uses bracket notation (e.g. group['group_label'],
+  item['id']) — NOT dot notation.  Per the StrictUndefined pattern from Phase 3,
+  dot notation on dicts can collide with Python dict methods (e.g. group.items
+  resolves to dict.items()).  Always use bracket notation for safety.
+#}
+<!-- Auto-generated from search_bar.html.jinja2 — do not edit by hand. -->
+<link rel="stylesheet" href="../styles/m3_tokens.css">
+<link rel="stylesheet" href="search_bar.css">
+
+<div class="m3-search">
+  <div class="m3-search__input-wrapper">
+    <span class="m3-search__icon" aria-hidden="true">search</span>
+    <input type="search"
+           class="m3-search__input"
+           placeholder="{{ hint_text }}"
+           aria-label="Search"
+    />
+    <button class="m3-search__clear" aria-label="Clear search" hidden>&times;</button>
+  </div>
+
+  <div class="m3-search__results" hidden>
+{% for group in result_groups %}
+    <div class="m3-search__group">
+      <h3 class="m3-search__group-label">{{ group['group_label'] }}</h3>
+      <ul class="m3-search__group-list">
+{% for item in group['items'] %}
+        <li class="m3-search__result-item" data-result-id="{{ item['id'] }}">
+{% if 'icon' in item %}
+          <span class="m3-search__result-icon">{{ item['icon'] }}</span>
+{% endif %}
+          <div class="m3-search__result-content">
+            <span class="m3-search__result-title">{{ item['title'] }}</span>
+{% if 'subtitle' in item %}
+            <span class="m3-search__result-subtitle">{{ item['subtitle'] }}</span>
+{% endif %}
+          </div>
+        </li>
+{% endfor %}
+      </ul>
+    </div>
+{% endfor %}
+  </div>
+</div>

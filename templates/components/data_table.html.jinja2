@@ -1,0 +1,48 @@
+{#
+  data_table.html.jinja2 — M3 Data Table HTML fragment generator.
+
+  Template variables (injected via --vars component_vars.json):
+    widget_class_name — PascalCase class name (e.g., "GeniusDataTable")
+    columns — list of {label, accessor, sortable}
+    data_type_name — the generic type for data items (e.g., "SampleItem")
+    form_factor — string, accepted but not rendered (form factor handled by CSS media queries)
+
+  Generates a semantic <table> with sortable headers, checkbox selection column,
+  and pagination <nav>.  Fragment only — no <html>, <head>, or <body> tags per D-01.
+#}
+<!-- Auto-generated from data_table.html.jinja2 — do not edit by hand. -->
+<link rel="stylesheet" href="../styles/m3_tokens.css">
+<link rel="stylesheet" href="data_table.css">
+
+<div class="m3-table-container">
+  <table class="m3-table">
+    <thead class="m3-table__head">
+      <tr>
+        <th class="m3-table__cell m3-table__cell--checkbox">
+          <input type="checkbox" class="m3-table__select-all" aria-label="Select all rows" />
+        </th>
+{% for col in columns %}
+        <th class="m3-table__cell m3-table__cell--header{% if col.sortable %} m3-table__cell--sortable{% endif %}"
+            {% if col.sortable %}data-sort="{{ col.accessor }}" aria-sort="none"{% endif %}>
+          {{ col.label }}
+{% if col.sortable %}
+          <span class="m3-table__sort-icon" aria-hidden="true"></span>
+{% endif %}
+        </th>
+{% endfor %}
+      </tr>
+    </thead>
+    <tbody class="m3-table__body">
+      <!-- Rows are populated by the consuming application at runtime -->
+      <!-- Template generates the structural shell; data binding is consumer's responsibility -->
+    </tbody>
+  </table>
+
+  <nav class="m3-table__pagination" aria-label="Table pagination">
+    <span class="m3-table__pagination-info">Page 1 of N</span>
+    <div class="m3-table__pagination-controls">
+      <button class="m3-table__pagination-btn" disabled aria-label="Previous page">&laquo;</button>
+      <button class="m3-table__pagination-btn" aria-label="Next page">&raquo;</button>
+    </div>
+  </nav>
+</div>

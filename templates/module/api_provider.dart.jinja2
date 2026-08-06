@@ -1,0 +1,19 @@
+/// Shared {{ api_class }} provider for the {{ display_name }} module.
+///
+/// Provides a single [{{ api_class }}] instance backed by the configured
+/// [GeniusApiClient] Dio from the auth package. Auto-generated from
+/// the {{ domain }} OpenAPI spec.
+library;
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auth/auth.dart';
+import 'package:{{ api_package }}/src/api/{{ domain }}_api.dart';
+
+/// Provider for the [{{ api_class }}] instance.
+///
+/// Watches [apiClientProvider] to share the configured Dio instance
+/// with auth and tenant interceptors already attached.
+final {{ api_provider_name }} = Provider<{{ api_class }}>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return {{ api_class }}(apiClient.dio);
+});

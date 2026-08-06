@@ -1,0 +1,239 @@
+/// {{ widget_class_name }} -- M3 state widget for empty, loading, and error states.
+///
+/// Generated from state.dart.jinja2 -- do not edit by hand.
+/// Renders a single Material 3 state variant (empty with illustration + CTA,
+/// loading skeleton with shimmer layout, or error panel with inline retry).
+/// The variant is fixed at template render time via ``state_type``.
+/// Standalone Material 3 widget consuming Theme.of(context) directly;
+/// no Riverpod or GeniusTheme dependency.
+library;
+
+import 'package:flutter/material.dart';
+
+// ---------------------------------------------------------------------------
+// Public widget
+// ---------------------------------------------------------------------------
+
+/// A Material 3 state widget for a specific state variant.
+///
+/// The rendered state variant (empty, loading, error) is determined at
+/// template render time by the ``state_type`` variable.  Only the code
+/// for the selected variant is included in the generated output.
+{#
+  M3 color role reference for error state:
+    tokens.color.roles.error.light -> {{ tokens.color.roles.error.light }}
+  The generated code uses Theme.of(context).colorScheme.errorContainer and
+  onErrorContainer — NOT hardcoded hex values.
+#}
+class {{ widget_class_name }} extends StatelessWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }}({
+    this.onAction,
+    super.key,
+  });
+
+  /// Callback for the action button (CTA for empty state, retry for error).
+  ///
+  /// In the loading skeleton variant this callback is unused but accepted
+  /// for a consistent constructor signature across all variants.
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+{% if state_type == "empty" %}
+    // =====================================================================
+    // Empty state: large faded icon + headline + subtitle + CTA button
+    // =====================================================================
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              Icons.{{ empty_icon }},
+              size: 64.0,
+              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              '{{ empty_title }}',
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              '{{ empty_subtitle }}',
+              textAlign: TextAlign.center,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            {% if empty_cta_label %}
+            const SizedBox(height: 24.0),
+            ElevatedButton.icon(
+              onPressed: onAction,
+              icon: const Icon(Icons.{{ empty_cta_icon }}),
+              label: const Text('{{ empty_cta_label }}'),
+            ),
+            {% endif %}
+          ],
+        ),
+      ),
+    );
+
+{% elif state_type == "loading" %}
+    // =====================================================================
+    // Loading skeleton: shimmer-style placeholder rows
+    // =====================================================================
+    // TODO: Add shimmer animation with AnimationController for production use.
+    //       The static skeleton below provides the layout structure;
+    //       animation is a polish step (Phase 5 / post-MVP).
+    {% if skeleton_item_count > 0 %}
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: <Widget>[
+          {% for i in range(skeleton_item_count) %}
+          Container(
+            height: {{ skeleton_item_height }},
+            margin: const EdgeInsets.only(bottom: 8.0),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(
+                {{ tokens.shape.corner.small }},
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
+                    width: 40.0,
+                    height: 40.0,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest
+                          .withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12.0),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        height: 12.0,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest
+                              .withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(
+                            {{ tokens.shape.corner.extraSmall }},
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Container(
+                        height: 12.0,
+                        // ~60 % width for a realistic text-line silhouette.
+                        width: 150.0,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest
+                              .withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(
+                            {{ tokens.shape.corner.extraSmall }},
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          {% endfor %}
+        ],
+      ),
+    );
+    {% else %}
+    // Fallback: zero skeleton items — show a simple progress indicator.
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+    {% endif %}
+
+{% elif state_type == "error" %}
+    // =====================================================================
+    // Error panel: inline card with icon, message, and retry button
+    // =====================================================================
+    return Card(
+      color: colorScheme.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Icon(
+                  Icons.{{ error_icon }},
+                  color: colorScheme.onErrorContainer,
+                ),
+                const SizedBox(width: 12.0),
+                Expanded(
+                  child: Text(
+                    '{{ error_title }}',
+                    style: textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onErrorContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              '{{ error_message }}',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onErrorContainer.withOpacity(0.8),
+              ),
+            ),
+            {% if error_retry_label %}
+            const SizedBox(height: 16.0),
+            OutlinedButton.icon(
+              onPressed: onAction,
+              icon: const Icon(Icons.{{ error_retry_icon }}),
+              label: const Text('{{ error_retry_label }}'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: colorScheme.onErrorContainer,
+              ),
+            ),
+            {% endif %}
+          ],
+        ),
+      ),
+    );
+
+{% else %}
+    // =====================================================================
+    // Unknown state type — template debugging fallback
+    // =====================================================================
+    return Center(
+      child: Text(
+        'Unknown state type: {{ state_type }}',
+        style: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.error,
+        ),
+      ),
+    );
+
+{% endif %}
+  }
+}

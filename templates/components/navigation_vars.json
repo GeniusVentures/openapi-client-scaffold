@@ -1,0 +1,14 @@
+{
+  "widget_class_name": "AppNavigation",
+  "nav_items": [
+    {"label": "Dashboard", "icon": "dashboard", "route": "/dashboard"},
+    {"label": "Orders", "icon": "receipt_long", "route": "/orders", "badge": 12},
+    {"label": "Menu", "icon": "restaurant_menu", "route": "/menu", "children": [
+      {"label": "Items", "icon": "fastfood", "route": "/menu/items"},
+      {"label": "Categories", "icon": "category", "route": "/menu/categories"}
+    ]},
+    {"label": "Settings", "icon": "settings", "route": "/settings"}
+  ],
+  "selected_index": 0,
+  "form_factor": "desktop"
+}

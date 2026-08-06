@@ -1,0 +1,156 @@
+/* Auto-generated from card.css.jinja2 -- do not edit by hand. */
+
+/* ==========================================================================
+   Base card styles
+   ========================================================================== */
+
+.m3-card {
+  /* Default border-radius: var(--md-sys-shape-medium) = {{ tokens.shape.corner.medium }}px */
+  border-radius: var(--md-sys-shape-medium);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.m3-card__header {
+  padding: 0;
+}
+
+.m3-card__title {
+  margin: 0;
+  font-family: var(--md-sys-typography-title-font, inherit);
+  font-size: var(--md-sys-typography-title-size);
+  font-weight: var(--md-sys-typography-title-weight);
+  line-height: var(--md-sys-typography-title-line-height);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-card__body {
+  padding: 0;
+}
+
+.m3-card__text {
+  margin: 0;
+  font-family: var(--md-sys-typography-body-font, inherit);
+  font-size: var(--md-sys-typography-body-size);
+  font-weight: var(--md-sys-typography-body-weight);
+  line-height: var(--md-sys-typography-body-line-height);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0;
+}
+
+.m3-card__action-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--md-sys-shape-extra-small);
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  font-family: var(--md-sys-typography-label-font, inherit);
+  font-size: var(--md-sys-typography-label-size);
+  font-weight: var(--md-sys-typography-label-weight);
+  letter-spacing: var(--md-sys-typography-label-letter-spacing);
+  cursor: pointer;
+}
+
+.m3-card__action-btn:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+/* ==========================================================================
+   Card variants
+   ========================================================================== */
+
+/* Elevated: box-shadow + surface background */
+/* elevation.level2 shadow: {{ tokens.elevation.level2.shadow }} */
+.m3-card--elevated {
+  box-shadow: var(--md-sys-elevation-level2);
+  background-color: var(--md-sys-color-surface);
+}
+
+/* Outlined: border + surface background */
+.m3-card--outlined {
+  border: 1px solid var(--md-sys-color-outline);
+  background-color: var(--md-sys-color-surface);
+}
+
+/* Filled: surface-variant background */
+.m3-card--filled {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+{% if card_variant == "elevated" %}
+.m3-card--elevated .m3-card__title {
+  /* No additional overrides needed — base styles use on-surface */
+}
+{% elif card_variant == "outlined" %}
+.m3-card--outlined .m3-card__title {
+  /* No additional overrides needed — base styles use on-surface */
+}
+{% elif card_variant == "filled" %}
+.m3-card--filled .m3-card__title {
+  /* Filled card title uses on-surface-variant for lower contrast on surface-variant bg */
+  color: var(--md-sys-color-on-surface);
+}
+{% endif %}
+
+/* ==========================================================================
+   Content slot spacing
+   ========================================================================== */
+
+.m3-card__header + .m3-card__body {
+  margin-top: 16px;
+}
+
+.m3-card__body + .m3-card__actions {
+  margin-top: 16px;
+}
+
+.m3-card__header + .m3-card__actions {
+  margin-top: 16px;
+}
+
+/* ==========================================================================
+   RESPONSIVE: Form factor rules per D-08
+   ========================================================================== */
+
+/* Desktop: max-width 480px, padding 24px */
+@media (min-width: 1024px) {
+  .m3-card {
+    max-width: 480px;
+  }
+  .m3-card--elevated,
+  .m3-card--outlined,
+  .m3-card--filled {
+    padding: 24px;
+  }
+}
+
+/* Tablet: max-width 100%, padding 20px */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .m3-card {
+    max-width: 100%;
+  }
+  .m3-card--elevated,
+  .m3-card--outlined,
+  .m3-card--filled {
+    padding: 20px;
+  }
+}
+
+/* Mobile: max-width 100%, padding 16px, reduced border-radius */
+@media (max-width: 599px) {
+  .m3-card {
+    max-width: 100%;
+  }
+  .m3-card--elevated,
+  .m3-card--outlined,
+  .m3-card--filled {
+    padding: 16px;
+    border-radius: var(--md-sys-shape-small);
+  }
+}

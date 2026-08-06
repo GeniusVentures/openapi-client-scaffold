@@ -1,0 +1,63 @@
+<!-- Auto-generated from state.html.jinja2 -- do not edit by hand. -->
+
+<link rel="stylesheet" href="../styles/m3_tokens.css">
+<link rel="stylesheet" href="state.css">
+
+{% if state_type == "empty" %}
+<!-- ===================================================================== -->
+<!-- EMPTY STATE: illustration icon + headline + subtitle + CTA button      -->
+<!-- ===================================================================== -->
+<section class="m3-state m3-state--empty" aria-label="Empty state">
+  <div class="m3-state__content">
+    <span class="m3-state__icon" aria-hidden="true">{{ empty_icon }}</span>
+    <h2 class="m3-state__headline">{{ empty_title }}</h2>
+    <p class="m3-state__supporting-text">{{ empty_subtitle }}</p>
+{% if empty_cta_label %}
+    <button class="m3-state__action">{{ empty_cta_label }}</button>
+{% endif %}
+  </div>
+</section>
+
+{% elif state_type == "loading" %}
+<!-- ===================================================================== -->
+<!-- LOADING SKELETON: shimmer-animated placeholder rows                    -->
+<!-- ===================================================================== -->
+<section class="m3-state m3-state--loading" aria-label="Loading" aria-busy="true">
+  <div class="m3-state__skeleton">
+{% if skeleton_item_count > 0 %}
+{% for i in range(skeleton_item_count) %}
+    <div class="m3-state__skeleton-row" style="height: {{ skeleton_item_height }};"></div>
+{% endfor %}
+{% else %}
+    <!-- Fallback: zero skeleton items -- show a minimal placeholder -->
+    <div class="m3-state__skeleton-row" style="height: 48px;"></div>
+{% endif %}
+  </div>
+</section>
+
+{% elif state_type == "error" %}
+<!-- ===================================================================== -->
+<!-- ERROR PANEL: inline card with icon, title, message, and retry button   -->
+<!-- ===================================================================== -->
+<section class="m3-state m3-state--error" aria-label="Error" role="alert">
+  <div class="m3-state__error-card">
+    <div class="m3-state__error-header">
+      <span class="m3-state__icon" aria-hidden="true">{{ error_icon }}</span>
+      <h2 class="m3-state__headline">{{ error_title }}</h2>
+    </div>
+    <p class="m3-state__message">{{ error_message }}</p>
+{% if error_retry_label %}
+    <button class="m3-state__action m3-state__action--outlined">{{ error_retry_label }}</button>
+{% endif %}
+  </div>
+</section>
+
+{% else %}
+<!-- ===================================================================== -->
+<!-- UNKNOWN STATE TYPE — template debugging fallback                       -->
+<!-- ===================================================================== -->
+<section class="m3-state m3-state--unknown" aria-label="Unknown state">
+  <p class="m3-state__debug">Unknown state type: {{ state_type }}</p>
+</section>
+
+{% endif %}

@@ -1,0 +1,64 @@
+{
+  "_comment": "Fixture variables for standalone rendering of search_bar.dart.jinja2",
+  "widget_class_name": "GeniusSearchBar",
+  "hint_text": "Search...",
+  "on_search": "onSearch",
+  "on_result_tap": "onResultTap",
+  "form_factor": "desktop",
+  "result_groups": [
+    {
+      "group_label": "Users",
+      "items": [
+        {
+          "id": "user-001",
+          "title": "Alice Johnson",
+          "subtitle": "alice@example.com",
+          "icon": "person"
+        },
+        {
+          "id": "user-002",
+          "title": "Bob Smith",
+          "subtitle": "bob@example.com",
+          "icon": "person"
+        }
+      ]
+    },
+    {
+      "group_label": "Orders",
+      "items": [
+        {
+          "id": "order-101",
+          "title": "Order #101",
+          "subtitle": "Status: Preparing",
+          "icon": "receipt"
+        },
+        {
+          "id": "order-102",
+          "title": "Order #102",
+          "subtitle": "Status: Delivered",
+          "icon": "receipt"
+        }
+      ]
+    },
+    {
+      "group_label": "Menu Items",
+      "items": [
+        {
+          "id": "menu-001",
+          "title": "Margherita Pizza",
+          "icon": "restaurant_menu"
+        },
+        {
+          "id": "menu-002",
+          "title": "Caesar Salad",
+          "icon": "restaurant_menu"
+        },
+        {
+          "id": "menu-003",
+          "title": "Chocolate Cake",
+          "icon": "restaurant_menu"
+        }
+      ]
+    }
+  ]
+}

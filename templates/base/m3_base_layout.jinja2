@@ -1,0 +1,36 @@
+{#
+  m3_base_layout.jinja2 — Base Material 3 layout template.
+
+  Defines the inheritance contract for all component and form factor
+  templates.  Child templates use Jinja2's {% extends %} mechanism to
+  override the named blocks below.  This file is a structural skeleton
+  only — no CSS, design tokens, or target-specific code.
+
+  Block contract:
+    title         — Page / app title, overridden per component
+    head_imports  — Dart / HTML imports, overridden per target (Flutter vs HTML)
+    navigation    — Navigation structure, overridden per form factor
+                     (drawer / rail / bar)
+    content       — Main body content, overridden per component
+    footer        — Footer area, overridden per form factor
+#}
+<!DOCTYPE html>
+<html lang="en" class="m3-layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Material 3 App{% endblock %}</title>
+  {% block head_imports %}{% endblock %}
+</head>
+<body class="m3-layout__body">
+  <nav class="m3-navigation" role="navigation">
+    {% block navigation %}{% endblock %}
+  </nav>
+  <main class="m3-content">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="m3-footer">
+    {% block footer %}{% endblock %}
+  </footer>
+</body>
+</html>

@@ -1,0 +1,272 @@
+{#
+  form_dialog.dart.jinja2 — M3 AlertDialog form generator for create/edit.
+
+  Template variables (injected via --vars component_vars.json):
+    widget_class_name — PascalCase class name (e.g., "ItemFormDialog")
+    data_type_name — the data item type (e.g., "MenuItem")
+    fields — list of {label, name, required, type, enum_values}
+    form_factor — string, accepted but not rendered until Phase 4
+
+  Generated widget is standalone M3 — consumes Theme.of(context) directly.
+  No dependency on Riverpod, GeniusTheme, or api_client.
+#}
+// Auto-generated from form_dialog.dart.jinja2 — do not edit by hand.
+
+import 'package:flutter/material.dart';
+
+/// M3 dialog form for creating or editing a {{ data_type_name }}.
+///
+/// When [item] is null the dialog operates in **create** mode.
+/// When [item] is provided the dialog operates in **edit** mode with
+/// pre-populated fields.
+///
+/// The [onSave] callback receives a `Map<String, dynamic>` of field values.
+/// The [onCancel] callback is invoked when the user dismisses the dialog.
+class {{ widget_class_name }} extends StatefulWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }}({
+    super.key,
+    this.item,
+    this.onSave,
+    this.onCancel,
+  });
+
+  /// The existing item to edit, or `null` for create mode.
+  final {{ data_type_name }}? item;
+
+  /// Called when the user submits the form with validated field data.
+  final void Function(Map<String, dynamic> data)? onSave;
+
+  /// Called when the user cancels the dialog.
+  final VoidCallback? onCancel;
+
+  @override
+  State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
+}
+
+class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isSubmitting = false;
+  String? _errorMessage;
+
+{% for field in fields %}
+{% if field.type == "text" or field.type == "number" %}
+  late final TextEditingController _{{ field.name }}Controller;
+{% elif field.type == "enum" %}
+  String? _selected{{ field.name | capitalize }};
+{% endif %}
+{% endfor %}
+
+  // ---------------------------------------------------------------------------
+  // Lifecycle
+  // ---------------------------------------------------------------------------
+
+  @override
+  void initState() {
+    super.initState();
+    final {{ data_type_name }}? item = widget.item;
+
+{% for field in fields %}
+{% if field.type == "text" or field.type == "number" %}
+    _{{ field.name }}Controller = TextEditingController(
+      text: item?.{{ field.name }}?.toString() ?? '',
+    );
+{% elif field.type == "enum" %}
+    if (item != null) {
+      _selected{{ field.name | capitalize }} = item.{{ field.name }}?.toString();
+    }
+{% endif %}
+{% endfor %}
+  }
+
+  @override
+  void dispose() {
+{% for field in fields %}
+{% if field.type == "text" or field.type == "number" %}
+    _{{ field.name }}Controller.dispose();
+{% endif %}
+{% endfor %}
+    super.dispose();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final bool isEdit = widget.item != null;
+
+    return AlertDialog(
+      title: Text(
+        isEdit
+            ? 'Edit {{ widget_class_name | replace("Dialog", "") | replace("Form", "") | trim }}'
+            : 'Create {{ widget_class_name | replace("Dialog", "") | replace("Form", "") | trim }}',
+      ),
+      content: SizedBox(
+        width: 480.0,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+{% for field in fields %}
+{% if field.type == "text" %}
+              TextFormField(
+                controller: _{{ field.name }}Controller,
+                decoration: InputDecoration(
+                  labelText: '{{ field.label }}',
+                  border: const OutlineInputBorder(),
+                ),
+{% if field.required %}
+                validator: (String? value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return '{{ field.label }} is required';
+                  }
+                  return null;
+                },
+{% endif %}
+                enabled: !_isSubmitting,
+                textInputAction: TextInputAction.next,
+              ),
+{% elif field.type == "number" %}
+              TextFormField(
+                controller: _{{ field.name }}Controller,
+                decoration: InputDecoration(
+                  labelText: '{{ field.label }}',
+                  border: const OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+{% if field.required %}
+                validator: (String? value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return '{{ field.label }} is required';
+                  }
+                  return null;
+                },
+{% endif %}
+                enabled: !_isSubmitting,
+                textInputAction: TextInputAction.next,
+              ),
+{% elif field.type == "enum" %}
+              DropdownButtonFormField<String>(
+                value: _selected{{ field.name | capitalize }},
+                decoration: InputDecoration(
+                  labelText: '{{ field.label }}',
+                  border: const OutlineInputBorder(),
+                ),
+                items: <String>[
+{% for v in field.enum_values %}
+                  '{{ v }}',
+{% endfor %}
+                ].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value[0].toUpperCase() + value.substring(1),
+                    ),
+                  );
+                }).toList(),
+{% if field.required %}
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return '{{ field.label }} is required';
+                  }
+                  return null;
+                },
+{% endif %}
+                onChanged: _isSubmitting
+                    ? null
+                    : (String? value) {
+                        if (value != null) {
+                          setState(() {
+                            _selected{{ field.name | capitalize }} = value;
+                          });
+                        }
+                      },
+              ),
+{% endif %}
+{% if not loop.last %}
+              const SizedBox(height: 16.0),
+{% endif %}
+{% endfor %}
+              // Inline error display
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: _isSubmitting
+              ? null
+              : () {
+                  widget.onCancel?.call();
+                  Navigator.of(context).pop();
+                },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _isSubmitting ? null : _submit,
+          child: _isSubmitting
+              ? const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(strokeWidth: 2.0),
+                )
+              : Text(isEdit ? 'Save Changes' : 'Create'),
+        ),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Submit
+  // ---------------------------------------------------------------------------
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+      _errorMessage = null;
+    });
+
+    final Map<String, dynamic> data = <String, dynamic>{
+{% for field in fields %}
+{% if field.type == "text" or field.type == "number" %}
+      '{{ field.name }}': _{{ field.name }}Controller.text.trim(),
+{% elif field.type == "enum" %}
+      '{{ field.name }}': _selected{{ field.name | capitalize }},
+{% endif %}
+{% endfor %}
+    };
+
+    try {
+      widget.onSave?.call(data);
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+          _errorMessage = e.toString();
+        });
+      }
+    }
+  }
+}
