@@ -1,0 +1,24 @@
+name: genius_scaffold
+description: "Shared scaffolding library — GeniusWallet-derived bloc widgets, M3 templates, OpenAPI client generator."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.1
+  equatable: ^2.0.5
+  bloc_concurrency: ^0.2.0
+  auto_size_text: ^3.0.0
+  loading_animation_widget: ^1.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
