@@ -3,6 +3,11 @@
 /// Barrel export for generic bloc widgets,
 /// theme primitives, and breakpoint utilities. Consumed by Flutter
 /// apps via path/git dependency.
+///
+/// Theme tokens are exposed as Material 3 [ThemeExtension]s
+/// ([ScaffoldPalette] and [ScaffoldDimens]). Host apps override them via
+/// `ThemeData.extensions` (see [scaffoldThemeExtensions]); widgets fall back
+/// to the default palette/dimens when no extension is registered.
 library genius_scaffold;
 
 export 'components/action_button.dart';
@@ -24,4 +29,6 @@ export 'components/toast/toast_navigator_observer.dart';
 export 'components/toast/toast_widget.dart';
 export 'theme/scaffold_colors.dart';
 export 'theme/scaffold_dimens.dart';
+export 'theme/scaffold_palette.dart';
+export 'theme/scaffold_theme.dart';
 export 'utils/breakpoints.dart';

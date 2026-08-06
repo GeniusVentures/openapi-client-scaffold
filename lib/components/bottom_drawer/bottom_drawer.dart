@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/scaffold_colors.dart';
+import 'package:genius_scaffold/theme/scaffold_theme.dart';
 
 class BottomDrawer extends StatelessWidget {
   final List<Widget> children;
@@ -16,7 +16,7 @@ class BottomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ScaffoldColors.deepBlueTertiary,
+      color: context.palette.deepBlueTertiary,
       child: SafeArea(
         child: Column(
           children: [
