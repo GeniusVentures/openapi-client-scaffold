@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/scaffold_dimens.dart';
-import 'package:genius_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
+import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 
-/// Lookup helpers for the genius_scaffold Material 3 theme extensions.
+/// Lookup helpers for the frontend_scaffold Material 3 theme extensions.
 extension ScaffoldThemeX on BuildContext {
   /// Resolves the registered [ScaffoldPalette], falling back to
   /// [ScaffoldPalette.defaultPalette] when the host app did not register one.
@@ -16,7 +16,7 @@ extension ScaffoldThemeX on BuildContext {
       Theme.of(this).extension<ScaffoldDimens>() ?? ScaffoldDimens.defaultDimens;
 }
 
-/// Convenience list of the genius_scaffold theme extensions to spread into
+/// Convenience list of the frontend_scaffold theme extensions to spread into
 /// `ThemeData.extensions` (e.g. `ThemeData(extensions: [...scaffoldThemeExtensions])`).
 const List<ThemeExtension<dynamic>> scaffoldThemeExtensions = [
   ScaffoldPalette.defaultPalette,

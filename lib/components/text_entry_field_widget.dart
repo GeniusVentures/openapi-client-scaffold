@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/scaffold_theme.dart';
-import 'package:genius_scaffold/components/text_form_field_logic.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+import 'package:frontend_scaffold/components/text_form_field_logic.dart';
 
 class TextEntryFieldWidget extends StatelessWidget {
   final TextFormFieldLogic logic;

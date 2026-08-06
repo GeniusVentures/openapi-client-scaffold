@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/scaffold_colors.dart';
+import 'package:frontend_scaffold/theme/scaffold_colors.dart';
 
 /// Material 3 theme extension holding the semantic colors consumed by
-/// genius_scaffold widgets. Register on [ThemeData.extensions] to allow
+/// frontend_scaffold widgets. Register on [ThemeData.extensions] to allow
 /// host apps to override the defaults without forking the package.
 class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   /// Card / raised-surface deep blue used by [ActionButton] backgrounds.

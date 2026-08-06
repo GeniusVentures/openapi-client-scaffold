@@ -1,4 +1,4 @@
-/// Genius Scaffold — Shared scaffolding library.
+/// Frontend Scaffold — Shared scaffolding library.
 ///
 /// Barrel export for generic bloc widgets,
 /// theme primitives, and breakpoint utilities. Consumed by Flutter
@@ -8,7 +8,7 @@
 /// ([ScaffoldPalette] and [ScaffoldDimens]). Host apps override them via
 /// `ThemeData.extensions` (see [scaffoldThemeExtensions]); widgets fall back
 /// to the default palette/dimens when no extension is registered.
-library genius_scaffold;
+library frontend_scaffold;
 
 export 'components/action_button.dart';
 export 'components/app_screen_view.dart';

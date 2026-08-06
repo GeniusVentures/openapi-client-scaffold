@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/components/toast/ticker_provider.dart';
-import 'package:genius_scaffold/components/toast/toast_widget.dart';
+import 'package:frontend_scaffold/components/toast/ticker_provider.dart';
+import 'package:frontend_scaffold/components/toast/toast_widget.dart';
 
 class ToastManager {
   static final ToastManager _instance = ToastManager._internal();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/utils/breakpoints.dart';
+import 'package:frontend_scaffold/utils/breakpoints.dart';
 
 class ResponsiveGrid extends StatelessWidget {
   final List<Widget> children;
