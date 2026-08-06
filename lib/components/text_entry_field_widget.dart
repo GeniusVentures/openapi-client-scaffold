@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/scaffold_colors.dart';
-import 'package:genius_scaffold/theme/scaffold_dimens.dart';
+import 'package:genius_scaffold/theme/scaffold_theme.dart';
 import 'package:genius_scaffold/components/text_form_field_logic.dart';
 
 class TextEntryFieldWidget extends StatelessWidget {
@@ -13,6 +12,9 @@ class TextEntryFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final dimens = context.dimens;
+
     return TextFormField(
       style: const TextStyle(
         fontFamily: 'Roboto',
@@ -23,32 +25,32 @@ class TextEntryFieldWidget extends StatelessWidget {
       ),
       decoration: InputDecoration(
           hintText: logic.hintText,
-          hintStyle: const TextStyle(
+          hintStyle: TextStyle(
             fontFamily: 'Roboto',
             fontSize: 14.0,
             fontWeight: FontWeight.w400,
             letterSpacing: 0.0,
-            color: ScaffoldColors.gray500,
+            color: palette.gray500,
           ),
           prefixIcon: null,
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: ScaffoldColors.lightGreenPrimary,
+            borderSide: BorderSide(
+              color: palette.lightGreenPrimary,
               width: 1.0,
             ),
             borderRadius:
-                BorderRadius.circular(ScaffoldDimens.borderRadiusCard),
+                BorderRadius.circular(dimens.borderRadiusCard),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: ScaffoldColors.borderGrey,
+            borderSide: BorderSide(
+              color: palette.borderGrey,
               width: 1.0,
             ),
             borderRadius:
-                BorderRadius.circular(ScaffoldDimens.borderRadiusCard),
+                BorderRadius.circular(dimens.borderRadiusCard),
           ),
           filled: true,
-          fillColor: ScaffoldColors.grayPrimary,
+          fillColor: palette.grayPrimary,
           suffixIcon: null,
           contentPadding: const EdgeInsets.all(16)),
       controller: logic.controller,

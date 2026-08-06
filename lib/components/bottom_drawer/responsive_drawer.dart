@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/scaffold_colors.dart';
+import 'package:genius_scaffold/theme/scaffold_theme.dart';
 import 'package:genius_scaffold/components/bottom_drawer/bottom_drawer.dart';
 
 class ResponsiveDrawer {
@@ -22,7 +22,7 @@ class ResponsiveDrawer {
               return Align(
                 alignment: Alignment.centerRight,
                 child: Material(
-                  color: ScaffoldColors.deepBlueTertiary,
+                  color: context.palette.deepBlueTertiary,
                   child: SizedBox(
                     width: 400,
                     height: double.infinity,
@@ -37,7 +37,7 @@ class ResponsiveDrawer {
             },
           )
         : showModalBottomSheet<T>(
-            backgroundColor: ScaffoldColors.deepBlueTertiary,
+            backgroundColor: context.palette.deepBlueTertiary,
             enableDrag: false,
             context: context,
             isScrollControlled: true,
