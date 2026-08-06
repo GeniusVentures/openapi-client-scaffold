@@ -1,0 +1,10 @@
+{
+  "widget_class_name": "GeniusDataTable",
+  "data_type_name": "SampleItem",
+  "columns": [
+    {"label": "Name", "accessor": "name", "sortable": true},
+    {"label": "Status", "accessor": "status", "sortable": true},
+    {"label": "Created", "accessor": "createdAt", "sortable": false}
+  ],
+  "form_factor": "desktop"
+}

@@ -1,0 +1,84 @@
+/// {{ display_name }} module implementation of the [GeniusModule] interface.
+///
+/// Registers {{ display_name_lower }}-related routes and sidebar menu
+/// items under the {{ parent_group }} group. Auto-generated from the
+/// {{ domain }} OpenAPI spec — do not edit by hand; re-run
+/// generate_domain_modules.py to regenerate.
+library {{ domain }}_module;
+
+import 'package:api_client/api_client.dart';
+import 'package:auth/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:navigation/navigation.dart';
+
+import 'screens/{{ list_screen_file }}';
+
+/// Domain module for {{ display_name_lower }} management.
+///
+/// Implements [GeniusModule] to declare routes, menu items, and
+/// lifecycle hooks. Registered with [ModuleRegistry] at app startup.
+class {{ module_class_name }} implements GeniusModule {
+  /// Creates a [{{ module_class_name }}].
+  const {{ module_class_name }}();
+
+  @override
+  String get id => '{{ api_module_id }}';
+
+  @override
+  String get displayName => '{{ display_name }}';
+
+  @override
+  IconData get icon => Icons.{{ icon_name }};
+
+  @override
+  int get priority => {{ priority }};
+
+  @override
+  List<String> get requiredPermissions => const [];
+
+  /// Module routes for {{ display_name_lower }} list and form.
+  @override
+  List<GeniusRoute> get routes => const [
+        GeniusRoute(
+          path: '{{ route_prefix }}',
+          builder: _build{{ list_screen_class }},
+          title: '{{ display_name }}',
+        ),
+      ];
+
+  /// Sidebar menu items under {{ parent_group }} group.
+  @override
+  List<MenuItem> get menuItems => const [
+        MenuItem(
+          label: '{{ parent_group }}',
+          route: '/{{ route_prefix }}',
+          icon: Icons.{{ parent_group_icon }},
+          children: [
+            MenuItem(
+              label: '{{ display_name }}',
+              route: '/{{ route_prefix }}',
+              icon: Icons.{{ icon_name }},
+            ),
+          ],
+        ),
+      ];
+
+  @override
+  Future<void> initialize(
+    AuthProvider authProvider,
+    GeniusApiClient apiClient,
+  ) async {
+    // No explicit initialization needed -- providers are managed by Riverpod.
+  }
+
+  @override
+  Future<void> dispose() async {
+    // No subscriptions to clean up.
+  }
+}
+
+/// Route builder function (must be top-level or static for const GeniusRoute).
+Widget _build{{ list_screen_class }}(BuildContext context, GoRouterState state) {
+  return const {{ list_screen_class }}();
+}

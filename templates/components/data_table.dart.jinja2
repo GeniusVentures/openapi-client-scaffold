@@ -1,0 +1,316 @@
+{#
+  data_table.dart.jinja2 — M3 DataTable Flutter widget generator.
+
+  Template variables (injected via --vars component_vars.json):
+    widget_class_name — PascalCase class name (e.g., "GeniusDataTable")
+    columns — list of {label, accessor, sortable}
+    data_type_name — the generic type for data items (e.g., "MenuItem")
+    form_factor — string, accepted but not rendered until Phase 4
+
+  Generated widget is standalone M3 — consumes Theme.of(context) directly.
+  No dependency on Riverpod, GeniusTheme, or api_client.
+#}
+// Auto-generated from data_table.dart.jinja2 — do not edit by hand.
+
+import 'package:flutter/material.dart';
+
+/// Immutable column configuration for [{{ widget_class_name }}].
+///
+/// Describes a single data column: its display label, the property accessor
+/// path used to retrieve the value from a data item, and whether the column
+/// supports sorting.
+class DataColumnConfig {
+  /// Creates a [DataColumnConfig].
+  const DataColumnConfig({
+    required this.label,
+    required this.accessor,
+    this.sortable = true,
+  });
+
+  /// Display label shown in the column header.
+  final String label;
+
+  /// Property-accessor path on the data item (e.g. "name", "status").
+  final String accessor;
+
+  /// Whether this column supports sort-by-click.
+  final bool sortable;
+}
+
+/// Standalone M3 data table widget with sort, row selection, and pagination.
+///
+/// Consumes [Theme.of] directly — no dependency on Riverpod or GeniusTheme.
+/// Works in any Flutter app that provides a Material 3 [ThemeData].
+class {{ widget_class_name }} extends StatefulWidget {
+  /// Creates a [{{ widget_class_name }}].
+  ///
+  /// [columns] defines the table structure.  [items] supplies the data rows.
+  /// [onSort] and [onSelect] are optional callbacks for sort and selection
+  /// events respectively.
+  const {{ widget_class_name }}({
+    required this.columns,
+    required this.items,
+    this.onSort,
+    this.onSelect,
+    this.selectedIds = const {},
+    super.key,
+  });
+
+  /// Column definitions for this table instance.
+  final List<DataColumnConfig> columns;
+
+  /// Data items to display in the table.
+  final List<{{ data_type_name }}> items;
+
+  /// Called when the user clicks a sortable column header.
+  ///
+  /// Receives the zero-based column index and the new sort direction
+  /// (`true` = ascending).
+  final void Function(int columnIndex, bool ascending)? onSort;
+
+  /// Called when selected rows change.
+  ///
+  /// Receives the full set of currently-selected item ids.
+  final void Function(Set<String> selectedIds)? onSelect;
+
+  /// The set of item ids currently selected (for checkbox state).
+  final Set<String> selectedIds;
+
+  @override
+  State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
+}
+
+class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
+  int? _sortColumnIndex;
+  bool _sortAscending = true;
+  int _currentPage = 0;
+  static const int _rowsPerPage = 10;
+  late final Set<String> _selectedIds;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIds = Set<String>.from(widget.selectedIds);
+  }
+
+  @override
+  void didUpdateWidget(covariant {{ widget_class_name }} oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedIds != widget.selectedIds) {
+      _selectedIds = Set<String>.from(widget.selectedIds);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  /// Extracts a stable string id from a data item via its `id` property.
+  ///
+  /// Domain templates that use a different id field should override this
+  /// helper with a type-safe property access.
+  String _getItemId({{ data_type_name }} item) {
+    return item.id.toString();
+  }
+
+  /// Handles a sort-column click, toggling direction on re-click.
+  void _handleSort(int columnIndex) {
+    setState(() {
+      if (_sortColumnIndex == columnIndex) {
+        _sortAscending = !_sortAscending;
+      } else {
+        _sortColumnIndex = columnIndex;
+        _sortAscending = true;
+      }
+    });
+    widget.onSort?.call(columnIndex, _sortAscending);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    if (widget.items.isEmpty) {
+      return Center(
+        child: Text(
+          'No items to display',
+          style: textTheme.bodyLarge?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
+    final int totalPages =
+        (widget.items.length / _rowsPerPage).ceil().clamp(1, 999999);
+    final int start = _currentPage * _rowsPerPage;
+    final int end = start + _rowsPerPage > widget.items.length
+        ? widget.items.length
+        : start + _rowsPerPage;
+    final List<{{ data_type_name }}> pageItems =
+        widget.items.sublist(start, end);
+
+    return Column(
+      children: <Widget>[
+        // ---- Header row with M3 surface tint ----------------------------
+        Container(
+          color: colors.surfaceContainerHighest,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 8.0,
+          ),
+          child: Row(
+            children: <Widget>[
+              // Select-all checkbox in header.
+              Checkbox(
+                value: pageItems.isNotEmpty &&
+                    pageItems.every(({{ data_type_name }} i) =>
+                        _selectedIds.contains(_getItemId(i))),
+                tristate: pageItems.isNotEmpty &&
+                    pageItems.any(({{ data_type_name }} i) =>
+                        _selectedIds.contains(_getItemId(i))) &&
+                    !pageItems.every(({{ data_type_name }} i) =>
+                        _selectedIds.contains(_getItemId(i))),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      for (final {{ data_type_name }} item in pageItems) {
+                        _selectedIds.add(_getItemId(item));
+                      }
+                    } else {
+                      for (final {{ data_type_name }} item in pageItems) {
+                        _selectedIds.remove(_getItemId(item));
+                      }
+                    }
+                  });
+                  widget.onSelect?.call(Set<String>.from(_selectedIds));
+                },
+              ),
+{% for col in columns %}
+              Expanded(
+                child: Text(
+                  '{{ col.label }}',
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+{% endfor %}
+            ],
+          ),
+        ),
+
+        // ---- Data rows ---------------------------------------------------
+        Expanded(
+          child: SingleChildScrollView(
+            child: DataTable(
+              sortColumnIndex: _sortColumnIndex,
+              sortAscending: _sortAscending,
+              columns: <DataColumn>[
+                const DataColumn(label: SizedBox.shrink()),
+{% for col in columns %}
+                DataColumn(
+                  label: Text('{{ col.label }}'),
+{% if col.sortable %}
+                  onSort: _handleSort,
+{% endif %}
+                ),
+{% endfor %}
+              ],
+              rows: pageItems.map(({{ data_type_name }} item) {
+                final String id = _getItemId(item);
+                final bool isSelected = _selectedIds.contains(id);
+
+                return DataRow(
+                  selected: isSelected,
+                  onSelectChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedIds.add(id);
+                      } else {
+                        _selectedIds.remove(id);
+                      }
+                    });
+                    widget.onSelect?.call(Set<String>.from(_selectedIds));
+                  },
+                  cells: <DataCell>[
+                    DataCell(
+                      Checkbox(
+                        value: isSelected,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              _selectedIds.add(id);
+                            } else {
+                              _selectedIds.remove(id);
+                            }
+                          });
+                          widget.onSelect?.call(Set<String>.from(_selectedIds));
+                        },
+                      ),
+                    ),
+{% for col in columns %}
+                    DataCell(
+                      Text(item.{{ col.accessor }}?.toString() ?? ''),
+                    ),
+{% endfor %}
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+
+        // ---- Pagination footer -------------------------------------------
+        Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: colors.outline.withOpacity(
+                  0.12,
+                ),
+              ),
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 8.0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: _currentPage > 0
+                    ? () => setState(() => _currentPage--)
+                    : null,
+                tooltip: 'Previous page',
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'Page ${_currentPage + 1} of $totalPages',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.outline,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: _currentPage < totalPages - 1
+                    ? () => setState(() => _currentPage++)
+                    : null,
+                tooltip: 'Next page',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

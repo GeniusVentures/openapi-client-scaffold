@@ -1,0 +1,19 @@
+{
+  "_comment": "Fixture variables for standalone rendering of state.dart.jinja2. Set 'state_type' to 'empty', 'loading', or 'error' to render the corresponding variant.",
+  "widget_class_name": "StateWidget",
+  "state_type": "empty",
+  "empty_icon": "inbox",
+  "empty_title": "No Items Yet",
+  "empty_subtitle": "Create your first item to get started.",
+  "empty_cta_label": "Create First Item",
+  "empty_cta_icon": "add",
+  "skeleton_item_count": 5,
+  "skeleton_item_height": 72.0,
+  "error_icon": "error_outline",
+  "error_title": "Something Went Wrong",
+  "error_message": "An unexpected error occurred while loading data. Please check your connection and try again.",
+  "error_retry_label": "Try Again",
+  "error_retry_icon": "refresh",
+  "on_cta_tap": "onAction",
+  "form_factor": "desktop"
+}

@@ -1,0 +1,142 @@
+/// {{ widget_class_name }} -- M3 card with configurable variant and content slots.
+///
+/// Generated from card.dart.jinja2 -- do not edit by hand.
+/// Provides elevated, outlined, or filled Material 3 cards with optional
+/// header, body, and actions slots.  Standalone Material 3 widget consuming
+/// Theme.of(context) directly; no Riverpod or GeniusTheme dependency.
+library;
+
+import 'package:flutter/material.dart';
+
+// ---------------------------------------------------------------------------
+// Public widget
+// ---------------------------------------------------------------------------
+
+/// A Material 3 card with configurable variant and content slots.
+///
+/// The [cardVariant] selects the constructor: [Card.elevated],
+/// [Card.outlined], or [Card.filled].  Each variant applies the
+/// corresponding M3 surface treatment automatically.
+///
+/// [header], [body], and [actions] are optional [Widget] slots passed
+/// by the caller.  When a slot is null, it is omitted from the layout.
+class {{ widget_class_name }} extends StatelessWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }}({
+    this.cardVariant = 'elevated',
+    this.header,
+    this.body,
+    this.actions,
+    super.key,
+  });
+
+  /// The M3 card variant: ``'elevated'``, ``'outlined'``, or ``'filled'``.
+  ///
+  /// Defaults to ``'elevated'``.
+  final String cardVariant;
+
+  /// Optional header widget (e.g. title row, subtitle, leading icon).
+  final Widget? header;
+
+  /// Optional body widget (e.g. text content, image, form fields).
+  final Widget? body;
+
+  /// Optional actions widget (e.g. [Row] of [TextButton]s).
+  final Widget? actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    final RoundedRectangleBorder shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(
+        {{ tokens.shape.corner.medium }},
+      ),
+    );
+
+    // Build the card interior — header / body / actions slots.
+    final List<Widget> slotChildren = <Widget>[];
+
+    {% if has_header %}
+    // --- Header slot ---
+    if (header != null) {
+      slotChildren.add(header!);
+      if (body != null || actions != null) {
+        slotChildren.add(const SizedBox(height: 16.0));
+      }
+    }
+    {% endif %}
+
+    {% if has_body %}
+    // --- Body slot ---
+    if (body != null) {
+      slotChildren.add(body!);
+      if (actions != null) {
+        slotChildren.add(const SizedBox(height: 16.0));
+      }
+    }
+    {% endif %}
+
+    {% if has_actions %}
+    // --- Actions slot ---
+    if (actions != null) {
+      slotChildren.add(
+        Align(
+          alignment: Alignment.centerRight,
+          child: actions!,
+        ),
+      );
+    }
+    {% endif %}
+
+    // Fallback: empty card renders a minimum-height placeholder.
+    if (slotChildren.isEmpty) {
+      slotChildren.add(
+        SizedBox(
+          height: 48.0,
+          child: Center(
+            child: Text(
+              'No content',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final Widget cardChild = Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: slotChildren,
+      ),
+    );
+
+    // --- Select variant ---
+    {% if card_variant == "outlined" %}
+    // surfaceTint opacity guidance (M3 level 1): {{ tokens.elevation.level1.surfaceTint }}
+    return Card.outlined(
+      shape: shape,
+      child: cardChild,
+    );
+    {% elif card_variant == "filled" %}
+    // surfaceTint opacity guidance (M3 level 1): {{ tokens.elevation.level1.surfaceTint }}
+    return Card.filled(
+      shape: shape,
+      child: cardChild,
+    );
+    {% else %}
+    // surfaceTint opacity guidance (M3 level 1): {{ tokens.elevation.level1.surfaceTint }}
+    return Card.elevated(
+      // Elevated cards use a subtle elevation of 1.0 dp.
+      elevation: 1.0,
+      shape: shape,
+      child: cardChild,
+    );
+    {% endif %}
+  }
+}

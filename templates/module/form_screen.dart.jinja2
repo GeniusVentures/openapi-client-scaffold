@@ -1,0 +1,186 @@
+/// {{ display_name }} create/edit form dialog.
+///
+/// Displays a form in a dialog for creating or editing {{ display_name_lower }}.
+/// Fields are derived from the {{ model_create_name }} model. Auto-generated
+/// from the {{ domain }} OpenAPI spec.
+library;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ui_core/ui_core.dart';
+import 'package:{{ api_package }}/src/model/{{ model_file }}.dart'{{ model_import_prefix }};
+
+import '../providers/{{ provider_file }}';
+
+/// Dialog form for creating or editing a {{ display_name }}.
+///
+/// When [item] is null, the form operates in create mode.
+/// When [item] is provided, the form operates in edit mode with
+/// pre-populated fields.
+class {{ form_screen_class }} extends ConsumerStatefulWidget {
+  /// Creates a [{{ form_screen_class }}].
+  const {{ form_screen_class }}({
+    super.key,
+    this.item,
+  });
+
+  /// The {{ display_name_lower }} to edit, or null for create mode.
+  final {{ model_type }}? item;
+
+  @override
+  ConsumerState<{{ form_screen_class }}> createState() => _{{ form_screen_class }}State();
+}
+
+class _{{ form_screen_class }}State extends ConsumerState<{{ form_screen_class }}> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isSubmitting = false;
+{% for field in form_fields %}
+{% if field.is_text_controller %}
+  late final TextEditingController _{{ field.accessor }}Controller;
+{% endif %}
+{% if field.is_dropdown %}
+  String? _selected{{ field.accessor | capitalize }} = '{{ field.default_value }}';
+{% endif %}
+{% endfor %}
+
+  @override
+  void initState() {
+    super.initState();
+{% for field in form_fields %}{% if field.is_text_controller %}
+    _{{ field.accessor }}Controller = TextEditingController(
+      text: widget.item?.{{ field.accessor }}{% if field.is_enum %}?.value{% else %}?.toString(){% endif %} ?? '',
+    );
+{% endif %}{% if field.is_dropdown %}
+    if (widget.item != null) {
+      _selected{{ field.accessor | capitalize }} = widget.item!.{{ field.accessor }}{% if field.is_enum %}?.value{% endif %};
+    }
+{% endif %}{% endfor %}  }
+
+  @override
+  void dispose() {
+{% for field in form_fields %}{% if field.is_text_controller %}
+    _{{ field.accessor }}Controller.dispose();
+{% endif %}{% endfor %}    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isEdit = widget.item != null;
+
+    return AlertDialog(
+      title: Text(isEdit ? 'Edit {{ display_name }}' : 'Create {{ display_name }}'),
+      content: SizedBox(
+        width: 480.0,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+{% for field in form_fields %}{% if field.is_complex %}
+              // Complex field: {{ field.name }} ({{ field.type }}) — skipped.
+{% elif field.is_dropdown %}
+              DropdownButtonFormField<String>(
+                value: _selected{{ field.accessor | capitalize }},
+                decoration: const InputDecoration(
+                  labelText: '{{ field.label }}',
+                ),
+                items: const <String>[{% for v in field.enum_values %}
+                  '{{ v }}',
+{% endfor %}                ].map((String value) => DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                          value[0].toUpperCase() + value.substring(1)),
+                    )).toList(),
+                onChanged: _isSubmitting
+                    ? null
+                    : (String? value) {
+                        if (value != null) {
+                          setState(() => _selected{{ field.accessor | capitalize }} = value);
+                        }
+                      },
+              ),
+              const SizedBox(height: 16.0),
+{% elif field.is_text_controller %}
+              TextFormField(
+                controller: _{{ field.accessor }}Controller,
+                decoration: InputDecoration(
+                  labelText: '{{ field.label }}',
+                  hintText: 'Enter {{ field.label | lower }}',
+                ),
+{% if field.required %}                validator: GeniusValidators.required(),
+{% endif %}                enabled: !_isSubmitting,
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 16.0),
+{% else %}
+              // Field {{ field.name }} ({{ field.type }}) — skipped (unsupported type).
+{% endif %}{% endfor %}
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _isSubmitting ? null : _submit,
+          child: _isSubmitting
+              ? const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(strokeWidth: 2.0),
+                )
+              : Text(isEdit ? 'Save Changes' : 'Create {{ display_name }}'),
+        ),
+      ],
+    );
+  }
+
+  /// Validates and submits the form.
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    final Map<String, dynamic> data = <String, dynamic>{
+{% for field in form_fields %}{% if field.is_text_controller %}
+      '{{ field.name }}': _{{ field.accessor }}Controller.text.trim(),
+{% endif %}{% if field.is_dropdown %}
+      '{{ field.name }}': _selected{{ field.accessor | capitalize }},
+{% endif %}{% endfor %}    };
+
+    final {{ notifier_class }} notifier = ref.read({{ provider_name }}.notifier);
+    bool success;
+
+    if (widget.item != null) {
+      success = await notifier.update{{ model_name }}(widget.item!.id, data);
+    } else {
+      success = await notifier.create{{ model_name }}(data);
+    }
+
+    if (mounted) {
+      setState(() => _isSubmitting = false);
+
+      if (success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('{{ display_name }} ' +
+                  (widget.item != null ? 'updated' : 'created') +
+                  ' successfully.'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    }
+  }
+}

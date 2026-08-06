@@ -1,0 +1,120 @@
+{
+  "_comment": "Material 3 design tokens -- single source of truth. Edit values here; all templates consume this file.",
+  "color": {
+    "roles": {
+      "primary": {
+        "light": "#6750A4",
+        "dark": "#D0BCFF"
+      },
+      "secondary": {
+        "light": "#625B71",
+        "dark": "#CCC2DC"
+      },
+      "tertiary": {
+        "light": "#7D5260",
+        "dark": "#EFB8C8"
+      },
+      "error": {
+        "light": "#B3261E",
+        "dark": "#F2B8B5"
+      },
+      "surface": {
+        "light": "#FFFBFE",
+        "dark": "#1C1B1F"
+      },
+      "surfaceVariant": {
+        "light": "#E7E0EC",
+        "dark": "#49454F"
+      },
+      "outline": {
+        "light": "#79747E",
+        "dark": "#938F99"
+      },
+      "onPrimary": {
+        "light": "#FFFFFF",
+        "dark": "#381E72"
+      },
+      "onSecondary": {
+        "light": "#FFFFFF",
+        "dark": "#332D41"
+      },
+      "onSurface": {
+        "light": "#1C1B1F",
+        "dark": "#E6E1E5"
+      },
+      "onError": {
+        "light": "#FFFFFF",
+        "dark": "#601410"
+      }
+    }
+  },
+  "typography": {
+    "scale": {
+      "display": {
+        "size": 57,
+        "weight": 400,
+        "letterSpacing": -0.25,
+        "lineHeight": 64
+      },
+      "headline": {
+        "size": 32,
+        "weight": 400,
+        "letterSpacing": 0,
+        "lineHeight": 40
+      },
+      "title": {
+        "size": 22,
+        "weight": 500,
+        "letterSpacing": 0,
+        "lineHeight": 28
+      },
+      "body": {
+        "size": 14,
+        "weight": 400,
+        "letterSpacing": 0.25,
+        "lineHeight": 20
+      },
+      "label": {
+        "size": 11,
+        "weight": 500,
+        "letterSpacing": 0.5,
+        "lineHeight": 16
+      }
+    }
+  },
+  "shape": {
+    "corner": {
+      "extraSmall": 4,
+      "small": 8,
+      "medium": 12,
+      "large": 16,
+      "extraLarge": 28
+    }
+  },
+  "elevation": {
+    "level0": {
+      "shadow": "",
+      "surfaceTint": 0.0
+    },
+    "level1": {
+      "shadow": "0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15)",
+      "surfaceTint": 0.05
+    },
+    "level2": {
+      "shadow": "0 1px 2px 0 rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15)",
+      "surfaceTint": 0.08
+    },
+    "level3": {
+      "shadow": "0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15)",
+      "surfaceTint": 0.11
+    },
+    "level4": {
+      "shadow": "0 2px 3px 0 rgba(0,0,0,0.3), 0 6px 10px 4px rgba(0,0,0,0.15)",
+      "surfaceTint": 0.12
+    },
+    "level5": {
+      "shadow": "0 4px 4px 0 rgba(0,0,0,0.3), 0 8px 12px 6px rgba(0,0,0,0.15)",
+      "surfaceTint": 0.14
+    }
+  }
+}

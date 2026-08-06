@@ -1,0 +1,280 @@
+{#
+  data_table.css.jinja2 — M3 Data Table CSS generator.
+
+  Template variables (injected via --vars component_vars.json):
+    columns — list of {label, accessor, sortable}  (used for column count)
+
+  Generates CSS with M3 custom property references for colors, typography,
+  shape, and elevation.  Includes responsive form factor media queries per D-08.
+  All color references use var(--md-sys-color-*) — zero hardcoded hex values.
+#}
+/* Auto-generated from data_table.css.jinja2 — do not edit by hand. */
+
+/* ---------------------------------------------------------------------------
+   Data Table — Base (Desktop >=1024px)
+   --------------------------------------------------------------------------- */
+
+.m3-table-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--md-sys-color-surface);
+  border-radius: var(--md-sys-shape-medium);
+  box-shadow: var(--md-sys-elevation-level1);
+  box-shadow-tint: var(--md-sys-elevation-level1-tint);
+}
+
+.m3-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--md-sys-typography-body-weight);
+  font-size: var(--md-sys-typography-body-size);
+  line-height: var(--md-sys-typography-body-line-height);
+  letter-spacing: var(--md-sys-typography-body-letter-spacing);
+  color: var(--md-sys-color-on-surface);
+}
+
+/* --- Table head ---------------------------------------------------------- */
+
+.m3-table__head {
+  display: contents;
+}
+
+.m3-table__head tr {
+  display: grid;
+  grid-template-columns: 48px repeat({{ columns | length }}, 1fr);
+  background-color: var(--md-sys-color-surface-variant);
+  border-bottom: 1px solid var(--md-sys-color-outline);
+}
+
+.m3-table__cell {
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--md-sys-typography-label-font);
+  font-size: var(--md-sys-typography-label-size);
+  font-weight: var(--md-sys-typography-label-weight);
+  letter-spacing: var(--md-sys-typography-label-letter-spacing);
+  line-height: var(--md-sys-typography-label-line-height);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-table__cell--checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.m3-table__select-all {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--md-sys-color-primary);
+}
+
+/* --- Sortable column headers --------------------------------------------- */
+
+.m3-table__cell--sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.m3-table__cell--sortable:hover {
+  background-color: var(--md-sys-color-on-surface);
+  opacity: 0.08;
+}
+
+.m3-table__sort-icon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 4px;
+  vertical-align: middle;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 5px solid var(--md-sys-color-on-surface-variant);
+  opacity: 0.4;
+}
+
+[aria-sort="ascending"] .m3-table__sort-icon {
+  border-bottom-color: var(--md-sys-color-primary);
+  opacity: 1;
+}
+
+[aria-sort="descending"] .m3-table__sort-icon {
+  border-top: 5px solid var(--md-sys-color-primary);
+  border-bottom: none;
+  opacity: 1;
+}
+
+/* --- Table body rows ----------------------------------------------------- */
+
+.m3-table__body {
+  display: contents;
+}
+
+.m3-table__body tr {
+  display: grid;
+  grid-template-columns: 48px repeat({{ columns | length }}, 1fr);
+  border-bottom: 1px solid var(--md-sys-color-outline);
+}
+
+.m3-table__body tr:nth-child(even) {
+  background-color: var(--md-sys-color-surface-variant);
+  opacity: 0.5;
+}
+
+.m3-table__body tr:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+.m3-table__body td {
+  padding: 12px 16px;
+  font-size: var(--md-sys-typography-body-size);
+  line-height: var(--md-sys-typography-body-line-height);
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m3-table__body .m3-table__cell--checkbox {
+  padding: 8px;
+}
+
+/* --- Pagination ---------------------------------------------------------- */
+
+.m3-table__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--md-sys-color-outline);
+  background-color: var(--md-sys-color-surface);
+}
+
+.m3-table__pagination-info {
+  font-size: var(--md-sys-typography-body-size);
+  line-height: var(--md-sys-typography-body-line-height);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-table__pagination-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.m3-table__pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-small);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-size: var(--md-sys-typography-body-size);
+  cursor: pointer;
+}
+
+.m3-table__pagination-btn:hover:not(:disabled) {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+.m3-table__pagination-btn:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Tablet (600px – 1023px) — Horizontal scroll, condensed padding
+   --------------------------------------------------------------------------- */
+
+@media (min-width: 600px) and (max-width: 1023px) {
+
+  .m3-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .m3-table {
+    min-width: 600px;
+  }
+
+  .m3-table__cell {
+    padding: 8px 12px;
+  }
+
+  .m3-table__body td {
+    padding: 8px 12px;
+  }
+
+  .m3-table__pagination {
+    padding: 8px 12px;
+  }
+
+}
+
+
+/* ---------------------------------------------------------------------------
+   Mobile (<600px) — Stacked card layout
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 599px) {
+
+  .m3-table-container {
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .m3-table__head {
+    display: none;
+  }
+
+  .m3-table__body tr {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    margin: 8px 0;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-medium);
+    background-color: var(--md-sys-color-surface);
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+
+{% for col in columns %}
+  .m3-table__body td:nth-child({{ loop.index + 1 }})::before {
+    content: "{{ col.label }}";
+    display: block;
+    font-size: var(--md-sys-typography-label-size);
+    font-weight: var(--md-sys-typography-label-weight);
+    letter-spacing: var(--md-sys-typography-label-letter-spacing);
+    line-height: var(--md-sys-typography-label-line-height);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 2px;
+  }
+{% endfor %}
+
+  .m3-table__body td {
+    padding: 4px 0;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .m3-table__body .m3-table__cell--checkbox {
+    display: none;
+  }
+
+  .m3-table__pagination {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .m3-table__pagination-controls {
+    justify-content: center;
+  }
+
+}

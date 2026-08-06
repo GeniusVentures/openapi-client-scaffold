@@ -1,0 +1,82 @@
+{#
+  form_dialog.html.jinja2 — M3 Form Dialog HTML fragment generator.
+
+  Template variables (injected via --vars component_vars.json):
+    widget_class_name — PascalCase class name (e.g., "ItemFormDialog")
+    data_type_name — the data item type (e.g., "SampleItem")
+    fields — list of {label, name, required, type, enum_values}
+    form_factor — string, accepted but not rendered (form factor handled by CSS media queries)
+
+  Generates a <dialog> element with labeled form fields, validation data attributes,
+  loading spinner, and global error display.  Fragment only per D-01.
+#}
+<!-- Auto-generated from form_dialog.html.jinja2 — do not edit by hand. -->
+<link rel="stylesheet" href="../styles/m3_tokens.css">
+<link rel="stylesheet" href="form_dialog.css">
+
+<dialog class="m3-form-dialog" id="m3-form-dialog-{{ widget_class_name | lower | replace(' ', '-') }}">
+  <div class="m3-form-dialog__content">
+    <header class="m3-form-dialog__header">
+      <h2 class="m3-form-dialog__title">
+        {{ widget_class_name | replace("Dialog", "") | replace("Form", "") | trim }}
+      </h2>
+      <button class="m3-form-dialog__close" aria-label="Close dialog" autofocus>&times;</button>
+    </header>
+
+    <form class="m3-form-dialog__form" method="dialog" novalidate>
+{% for field in fields %}
+      <div class="m3-form-dialog__field">
+        <label class="m3-form-dialog__label" for="field-{{ field.name }}">
+          {{ field.label }}
+{% if field.required %}
+          <span class="m3-form-dialog__required" aria-hidden="true">*</span>
+{% endif %}
+        </label>
+{% if field.type == "text" %}
+        <input type="text"
+               id="field-{{ field.name }}"
+               name="{{ field.name }}"
+               class="m3-form-dialog__input"
+{% if field.required %}               required{% endif %}
+               data-valid="false"
+               data-error=""
+        />
+{% elif field.type == "number" %}
+        <input type="number"
+               id="field-{{ field.name }}"
+               name="{{ field.name }}"
+               class="m3-form-dialog__input"
+{% if field.required %}               required{% endif %}
+               data-valid="false"
+               data-error=""
+        />
+{% elif field.type == "enum" %}
+        <select id="field-{{ field.name }}"
+                name="{{ field.name }}"
+                class="m3-form-dialog__select"
+{% if field.required %}                required{% endif %}
+                data-valid="false"
+                data-error="">
+          <option value="">-- Select --</option>
+{% for v in field.enum_values %}
+          <option value="{{ v }}">{{ v }}</option>
+{% endfor %}
+        </select>
+{% endif %}
+        <span class="m3-form-dialog__error" role="alert"></span>
+      </div>
+{% endfor %}
+
+      <div class="m3-form-dialog__global-error" role="alert" hidden></div>
+
+      <div class="m3-form-dialog__actions">
+        <button type="button" class="m3-form-dialog__btn m3-form-dialog__btn--cancel"
+                value="cancel">Cancel</button>
+        <button type="submit" class="m3-form-dialog__btn m3-form-dialog__btn--submit">
+          <span class="m3-form-dialog__submit-label">Save</span>
+          <span class="m3-form-dialog__spinner" hidden aria-label="Submitting..."></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</dialog>

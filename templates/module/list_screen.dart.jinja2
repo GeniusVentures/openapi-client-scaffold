@@ -1,0 +1,204 @@
+/// {{ display_name }} management screen with paginated table, search, and CRUD actions.
+///
+/// Displays {{ model_lower }} records in a [GeniusDataTable] with columns
+/// derived from the {{ model_name }} model. Provides create, edit, and
+/// delete operations via dialogs and confirmation prompts.
+/// Auto-generated from the {{ domain }} OpenAPI spec.
+library;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ui_core/ui_core.dart';
+import 'package:{{ api_package }}/src/model/{{ model_file }}.dart'{{ model_import_prefix }};
+
+import '../providers/{{ provider_file }}';
+import '{{ form_screen_file }}';
+
+/// Screen for managing {{ display_name_lower }} with a searchable data table.
+///
+/// Follows the layout: AppBar with title, search bar above the table,
+/// floating action button for creating new {{ model_plural | lower }}, and
+/// edit/delete actions per row.
+class {{ list_screen_class }} extends ConsumerWidget {
+  /// Creates a [{{ list_screen_class }}].
+  const {{ list_screen_class }}({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final {{ state_class }} {{ state_var }} = ref.watch({{ provider_name }});
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('{{ display_name }}'),
+      ),
+      body: Column(
+        children: <Widget>[
+          // Search bar with debounce.
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GeniusSearchBar(
+              onSearch: (String query) {
+                ref.read({{ provider_name }}.notifier).search{{ model_plural }}(query);
+              },
+              hintText: 'Search {{ display_name_lower }}...',
+            ),
+          ),
+
+          // Error banner.
+          if ({{ state_var }}.error != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Card(
+                color: Theme.of(context).colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.error_outline,
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                      ),
+                      const SizedBox(width: 12.0),
+                      Expanded(
+                        child: Text(
+                          {{ state_var }}.error!,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // Data table.
+          Expanded(
+            child: {{ state_var }}.isLoading && {{ state_var }}.{{ model_plural | lower }}.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : {{ state_var }}.filtered{{ model_plural }}.isEmpty
+                    ? _buildEmptyState(context, ref)
+                    : _build{{ model_plural }}Table(context, ref, {{ state_var }}),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openForm(context, ref, null),
+        icon: const Icon(Icons.add),
+        label: const Text('Add {{ display_name }}'),
+      ),
+    );
+  }
+
+  /// Builds the empty state with icon, heading, and create button.
+  Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme scheme = theme.colorScheme;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              Icons.{{ icon_name }},
+              size: 64.0,
+              color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              'No {{ display_name }} Yet',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              'Create your first {{ display_name_lower | replace('_', ' ') }} to get started.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24.0),
+            ElevatedButton.icon(
+              onPressed: () => _openForm(context, ref, null),
+              icon: const Icon(Icons.add),
+              label: const Text('Create First {{ display_name }}'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds the {{ display_name_lower }} data table with columns and actions.
+  Widget _build{{ model_plural }}Table(
+    BuildContext context,
+    WidgetRef ref,
+    {{ state_class }} {{ state_var }},
+  ) {
+    return GeniusDataTable<{{ model_type }}>(
+      columns: <GeniusColumn<{{ model_type }}>>[
+        {% for column in table_columns %}GeniusColumn<{{ model_type }}>(
+          label: '{{ column.label }}',
+          {% if column.is_enum %}valueBuilder: ({{ model_type }} item) => item.{{ column.accessor }}?.value ?? '',
+          {% else %}valueBuilder: ({{ model_type }} item) => item.{{ column.accessor }}?.toString() ?? '',
+          {% endif %}),
+        {% endfor %}],
+      data: {{ state_var }}.filtered{{ model_plural }},
+      isLoading: {{ state_var }}.isLoading,
+      emptyMessage: 'No {{ display_name_lower }} found.',
+      onEdit: ({{ model_type }} item) => _openForm(context, ref, item),
+      onDelete: ({{ model_type }} item) => _confirmDelete(context, ref, item),
+    );
+  }
+
+  /// Opens the {{ display_name_lower }} form dialog for create or edit.
+  void _openForm(
+    BuildContext context,
+    WidgetRef ref,
+    {{ model_type }}? item,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return {{ form_screen_class }}(item: item);
+      },
+    ).then((_) {
+      // Refresh the list after dialog closes.
+      ref.read({{ provider_name }}.notifier).fetch{{ model_plural }}();
+    });
+  }
+
+  /// Shows a confirmation dialog and deletes the {{ display_name_lower }} if confirmed.
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    {{ model_type }} item,
+  ) async {
+    final bool confirmed = await GeniusDialog.confirm(
+      context,
+      title: 'Delete {{ display_name }}',
+      message: 'Are you sure you want to delete this {{ display_name_lower | replace('_', ' ') }}? '
+          'This action cannot be undone.',
+    );
+
+    if (confirmed) {
+      final bool success =
+          await ref.read({{ provider_name }}.notifier).delete{{ model_name }}(item.id);
+
+      if (context.mounted && success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('{{ display_name }} deleted successfully.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+    }
+  }
+}

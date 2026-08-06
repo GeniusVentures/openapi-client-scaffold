@@ -1,0 +1,28 @@
+<!-- Auto-generated from card.html.jinja2 -- do not edit by hand. -->
+
+<link rel="stylesheet" href="../styles/m3_tokens.css">
+<link rel="stylesheet" href="card.css">
+
+<article class="m3-card m3-card--{{ card_variant }}">
+{% if has_header %}
+  <div class="m3-card__header">
+    <h3 class="m3-card__title">{{ header_title }}</h3>
+  </div>
+{% endif %}
+{% if has_body %}
+  <div class="m3-card__body">
+    <p class="m3-card__text">{{ body_content }}</p>
+  </div>
+{% endif %}
+{% if has_actions %}
+  <div class="m3-card__actions">
+{% if action_labels is defined and action_labels %}
+{% for label in action_labels %}
+    <button class="m3-card__action-btn">{{ label }}</button>
+{% endfor %}
+{% else %}
+    <button class="m3-card__action-btn">{{ action_label }}</button>
+{% endif %}
+  </div>
+{% endif %}
+</article>

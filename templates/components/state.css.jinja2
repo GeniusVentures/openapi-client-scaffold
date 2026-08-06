@@ -1,0 +1,251 @@
+/* Auto-generated from state.css.jinja2 -- do not edit by hand. */
+
+/* ==========================================================================
+   Shared state styles
+   ========================================================================== */
+
+.m3-state {
+  box-sizing: border-box;
+}
+
+.m3-state__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.m3-state__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m3-state__headline {
+  margin: 0;
+  font-family: var(--md-sys-typography-headline-font, inherit);
+  font-size: var(--md-sys-typography-headline-size);
+  font-weight: var(--md-sys-typography-headline-weight);
+  line-height: var(--md-sys-typography-headline-line-height);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-state__supporting-text {
+  margin: 0;
+  font-family: var(--md-sys-typography-body-font, inherit);
+  font-size: var(--md-sys-typography-body-size);
+  font-weight: var(--md-sys-typography-body-weight);
+  line-height: var(--md-sys-typography-body-line-height);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-state__action {
+  border: none;
+  border-radius: var(--md-sys-shape-extra-small);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  font-family: var(--md-sys-typography-label-font, inherit);
+  font-size: var(--md-sys-typography-label-size);
+  font-weight: var(--md-sys-typography-label-weight);
+  letter-spacing: var(--md-sys-typography-label-letter-spacing);
+  cursor: pointer;
+}
+
+.m3-state__action:hover {
+  opacity: 0.88;
+}
+
+.m3-state__action--outlined {
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface);
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.m3-state__action--outlined:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+/* ==========================================================================
+   EMPTY STATE
+   ========================================================================== */
+
+{% if state_type == "empty" %}
+/* Error feedback color role for empty state icon opacity:
+   error.light: {{ tokens.color.roles.error.light }} -- used only as accessibility context, not hardcoded */
+.m3-state--empty {
+  padding: 48px 16px;
+}
+
+.m3-state--empty .m3-state__icon {
+  width: 64px;
+  height: 64px;
+  font-size: 64px;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.5;
+}
+
+.m3-state--empty .m3-state__headline {
+  margin-top: 16px;
+}
+
+.m3-state--empty .m3-state__supporting-text {
+  margin-top: 8px;
+  max-width: 400px;
+}
+
+.m3-state--empty .m3-state__action {
+  margin-top: 24px;
+  padding: 10px 24px;
+}
+{% endif %}
+
+/* ==========================================================================
+   LOADING SKELETON
+   ========================================================================== */
+
+{% if state_type == "loading" %}
+/* skeleton_item_count: {{ skeleton_item_count }}, skeleton_item_height: {{ skeleton_item_height }} */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.m3-state--loading {
+  padding: 16px;
+}
+
+.m3-state__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m3-state__skeleton-row {
+  width: 100%;
+  border-radius: var(--md-sys-shape-small);
+  background: linear-gradient(90deg,
+    var(--md-sys-color-surface-variant) 25%,
+    var(--md-sys-color-surface) 50%,
+    var(--md-sys-color-surface-variant) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+{% endif %}
+
+/* ==========================================================================
+   ERROR PANEL
+   ========================================================================== */
+
+{% if state_type == "error" %}
+/* Error container role color:
+   error.light: {{ tokens.color.roles.error.light }} -- used as CSS custom property (no hardcoding) */
+.m3-state--error {
+  padding: 24px;
+}
+
+.m3-state__error-card {
+  border-radius: var(--md-sys-shape-medium);
+  background-color: var(--md-sys-color-error-container);
+  padding: 24px 24px 20px;
+}
+
+.m3-state__error-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.m3-state--error .m3-state__icon {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  color: var(--md-sys-color-on-error-container);
+}
+
+.m3-state--error .m3-state__headline {
+  flex: 1;
+  font-family: var(--md-sys-typography-title-font, inherit);
+  font-size: var(--md-sys-typography-title-size);
+  font-weight: var(--md-sys-typography-title-weight);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.m3-state__message {
+  margin: 8px 0 0;
+  font-family: var(--md-sys-typography-body-font, inherit);
+  font-size: var(--md-sys-typography-body-size);
+  font-weight: var(--md-sys-typography-body-weight);
+  line-height: var(--md-sys-typography-body-line-height);
+  color: var(--md-sys-color-on-error-container);
+  opacity: 0.8;
+}
+
+.m3-state--error .m3-state__action {
+  margin-top: 16px;
+  padding: 10px 24px;
+}
+{% endif %}
+
+/* ==========================================================================
+   UNKNOWN STATE — template debugging fallback
+   ========================================================================== */
+
+{% if state_type != "empty" and state_type != "loading" and state_type != "error" %}
+.m3-state--unknown {
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.m3-state__debug {
+  font-family: var(--md-sys-typography-body-font, inherit);
+  font-size: var(--md-sys-typography-body-size);
+  color: var(--md-sys-color-error);
+}
+{% endif %}
+
+/* ==========================================================================
+   RESPONSIVE: Form factor rules per D-08
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  .m3-state--empty .m3-state__icon {
+    width: 80px;
+    height: 80px;
+    font-size: 80px;
+  }
+  .m3-state--error {
+    max-width: 480px;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .m3-state--empty .m3-state__icon {
+    width: 72px;
+    height: 72px;
+    font-size: 72px;
+  }
+  .m3-state--error {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 599px) {
+  .m3-state--empty {
+    padding: 32px 16px;
+  }
+  .m3-state--empty .m3-state__icon {
+    width: 56px;
+    height: 56px;
+    font-size: 56px;
+  }
+  .m3-state--empty .m3-state__supporting-text {
+    max-width: 300px;
+  }
+  .m3-state--error {
+    max-width: 100%;
+  }
+  .m3-state__error-card {
+    border-radius: var(--md-sys-shape-small);
+  }
+}

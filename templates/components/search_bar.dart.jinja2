@@ -1,0 +1,397 @@
+/// {{ widget_class_name }} -- M3 global search bar with grouped results panel.
+///
+/// Generated from search_bar.dart.jinja2 -- do not edit by hand.
+/// Provides a full-width pill-shaped search input that expands to show
+/// grouped search results below.  Standalone Material 3 widget consuming
+/// Theme.of(context) directly; no Riverpod or GeniusTheme dependency.
+library;
+
+import 'package:flutter/material.dart';
+
+// ---------------------------------------------------------------------------
+// Helper data classes — immutable result models
+// ---------------------------------------------------------------------------
+
+/// A single search result item.
+class SearchResult {
+  /// Creates a [SearchResult].
+  const SearchResult({
+    required this.id,
+    required this.title,
+    this.subtitle,
+    this.icon,
+  });
+
+  /// Unique identifier for the result, passed to [onResultTap].
+  final String id;
+
+  /// Primary display text.
+  final String title;
+
+  /// Optional secondary text displayed below [title].
+  final String? subtitle;
+
+  /// Optional Material icon name (e.g. "person", "restaurant").
+  /// Rendered via [Icons] lookup at runtime.
+  final String? icon;
+}
+
+/// A labelled group of [SearchResult] items.
+class SearchResultGroup {
+  /// Creates a [SearchResultGroup].
+  const SearchResultGroup({
+    required this.label,
+    required this.items,
+  });
+
+  /// Group header text (e.g. "Users", "Orders").
+  final String label;
+
+  /// The results belonging to this group.
+  final List<SearchResult> items;
+}
+
+// ---------------------------------------------------------------------------
+// Public widget
+// ---------------------------------------------------------------------------
+
+/// A Material 3 search bar with grouped results dropdown.
+///
+/// Renders a pill-shaped [TextField] with search and clear icons.
+/// When the user types, an [AnimatedSize] panel drops below showing
+/// results grouped under labelled headers.
+class {{ widget_class_name }} extends StatefulWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }} ({
+    this.hintText = '{{ hint_text }}',
+    this.resultGroups = const <SearchResultGroup>[],
+    this.onSearch,
+    this.onResultTap,
+    super.key,
+  });
+
+  /// Placeholder text displayed in the search field.
+  final String hintText;
+
+  /// The grouped results to display when the user has typed a query.
+  final List<SearchResultGroup> resultGroups;
+
+  /// Called when the search query text changes.
+  ///
+  /// The caller should filter or fetch results based on [query] and update
+  /// [resultGroups] accordingly.
+  final void Function(String query)? onSearch;
+
+  /// Called when the user taps a search result.
+  ///
+  /// Receives the [SearchResult.id] of the tapped item.
+  final void Function(String resultId)? onResultTap;
+
+  @override
+  State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
+}
+
+// ---------------------------------------------------------------------------
+// Private state
+// ---------------------------------------------------------------------------
+
+class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  bool _showResults = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_showResults && !_focusNode.hasFocus) {
+      setState(() => _showResults = false);
+    }
+  }
+
+  void _clearSearch() {
+    _controller.clear();
+    widget.onSearch?.call('');
+    setState(() => _showResults = false);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  // -------------------------------------------------------------------------
+  // Build
+  // -------------------------------------------------------------------------
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        // -- Search input ----------------------------------------------------
+        TextField(
+          controller: _controller,
+          focusNode: _focusNode,
+          onChanged: (String value) {
+            widget.onSearch?.call(value);
+            setState(() => _showResults = value.isNotEmpty);
+          },
+          decoration: InputDecoration(
+            hintText: widget.hintText,
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _controller.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: _clearSearch,
+                  )
+                : null,
+            filled: true,
+            fillColor: colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(
+                {{ tokens.shape.corner.extraLarge }},
+              ),
+            ),
+          ),
+        ),
+
+        // -- Results panel ---------------------------------------------------
+        AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          child: _showResults && widget.resultGroups.isNotEmpty
+              ? Card(
+                  // surfaceTint opacity guidance (M3 level 3): {{ tokens.elevation.level3.surfaceTint }}
+                  elevation: 3.0,
+                  margin: const EdgeInsets.only(top: 4.0),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        {% for group in result_groups %}
+                        // -- Group: {{ group['group_label'] }} ---------------
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 4.0,
+                          ),
+                          child: Text(
+                            '{{ group['group_label'] }}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(color: colorScheme.primary),
+                          ),
+                        ),
+                        {% for item in group['items'] %}
+                        ListTile(
+                          dense: true,
+                          {% if 'icon' in item %}leading: Icon(_resolveIcon('{{ item['icon'] }}')),
+                          {% endif %}
+                          title: Text('{{ item['title'] }}'),
+                          {% if 'subtitle' in item %}subtitle: Text('{{ item['subtitle'] }}'),
+                          {% endif %}
+                          onTap: () => widget.onResultTap?.call('{{ item['id'] }}'),
+                        ),
+                        {% endfor %}
+                        {% if not loop.last %}
+                        const Divider(height: 1.0),
+                        {% endif %}
+                        {% endfor %}
+                      ],
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Helper: resolve icon string to IconData
+  // -------------------------------------------------------------------------
+
+  /// Resolves a Material icon name string to an [IconData].
+  ///
+  /// Only icons present in the [Icons] class are supported.  Unknown
+  /// names fall back to [Icons.help_outline].
+  IconData _resolveIcon(String name) {
+    switch (name) {
+      case 'search':
+        return Icons.search;
+      case 'person':
+        return Icons.person;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'restaurant_menu':
+        return Icons.restaurant_menu;
+      case 'settings':
+        return Icons.settings;
+      case 'inventory':
+        return Icons.inventory;
+      case 'home':
+        return Icons.home;
+      case 'shopping_cart':
+        return Icons.shopping_cart;
+      case 'receipt':
+        return Icons.receipt;
+      case 'dashboard':
+        return Icons.dashboard;
+      case 'category':
+        return Icons.category;
+      case 'description':
+        return Icons.description;
+      case 'delete':
+        return Icons.delete;
+      case 'edit':
+        return Icons.edit;
+      case 'add':
+        return Icons.add;
+      case 'check':
+        return Icons.check;
+      case 'close':
+        return Icons.close;
+      case 'refresh':
+        return Icons.refresh;
+      case 'error_outline':
+        return Icons.error_outline;
+      case 'inbox':
+        return Icons.inbox;
+      case 'info':
+        return Icons.info;
+      case 'warning':
+        return Icons.warning;
+      case 'star':
+        return Icons.star;
+      case 'favorite':
+        return Icons.favorite;
+      case 'notifications':
+        return Icons.notifications;
+      case 'filter_list':
+        return Icons.filter_list;
+      case 'sort':
+        return Icons.sort;
+      case 'more_vert':
+        return Icons.more_vert;
+      case 'arrow_forward':
+        return Icons.arrow_forward;
+      case 'arrow_back':
+        return Icons.arrow_back;
+      case 'menu':
+        return Icons.menu;
+      case 'list':
+        return Icons.list;
+      case 'table_chart':
+        return Icons.table_chart;
+      case 'table_rows':
+        return Icons.table_rows;
+      case 'content_paste':
+        return Icons.content_paste;
+      case 'note_add':
+        return Icons.note_add;
+      case 'label':
+        return Icons.label;
+      case 'tag':
+        return Icons.tag;
+      case 'build':
+        return Icons.build;
+      case 'groups':
+        return Icons.groups;
+      case 'group':
+        return Icons.group;
+      case 'people':
+        return Icons.people;
+      case 'badge':
+        return Icons.badge;
+      case 'shield':
+        return Icons.shield;
+      case 'lock':
+        return Icons.lock;
+      case 'vpn_key':
+        return Icons.vpn_key;
+      case 'currency_exchange':
+        return Icons.currency_exchange;
+      case 'money':
+        return Icons.money;
+      case 'payment':
+        return Icons.payment;
+      case 'account_balance':
+        return Icons.account_balance;
+      case 'book':
+        return Icons.book;
+      case 'book_online':
+        return Icons.book_online;
+      case 'calendar_month':
+        return Icons.calendar_month;
+      case 'schedule':
+        return Icons.schedule;
+      case 'event':
+        return Icons.event;
+      case 'local_shipping':
+        return Icons.local_shipping;
+      case 'delivery_dining':
+        return Icons.delivery_dining;
+      case 'directions_bike':
+        return Icons.directions_bike;
+      case 'location_on':
+        return Icons.location_on;
+      case 'mail':
+        return Icons.mail;
+      case 'chat':
+        return Icons.chat;
+      case 'phone':
+        return Icons.phone;
+      case 'image':
+        return Icons.image;
+      case 'photo':
+        return Icons.photo;
+      case 'attach_file':
+        return Icons.attach_file;
+      case 'link':
+        return Icons.link;
+      case 'language':
+        return Icons.language;
+      case 'translate':
+        return Icons.translate;
+      case 'palette':
+        return Icons.palette;
+      case 'style':
+        return Icons.style;
+      case 'extension':
+        return Icons.extension;
+      case 'widgets':
+        return Icons.widgets;
+      case 'smart_button':
+        return Icons.smart_button;
+      case 'toggle_on':
+        return Icons.toggle_on;
+      case 'toggle_off':
+        return Icons.toggle_off;
+      case 'radio_button_checked':
+        return Icons.radio_button_checked;
+      case 'radio_button_unchecked':
+        return Icons.radio_button_unchecked;
+      case 'check_box':
+        return Icons.check_box;
+      case 'check_box_outline_blank':
+        return Icons.check_box_outline_blank;
+      case 'settings_suggest':
+        return Icons.settings_suggest;
+      case 'tune':
+        return Icons.tune;
+      default:
+        return Icons.help_outline;
+    }
+  }
+}

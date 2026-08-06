@@ -1,0 +1,279 @@
+{#
+  search_bar.css.jinja2 — M3 Search Bar CSS generator.
+
+  Template variables: none used (pure CSS output — no Jinja2 expressions).
+
+  Generates CSS for pill-shaped search input, elevated dropdown results panel,
+  grouped results with hover states, and responsive form factor adaptations.
+  All colors use var(--md-sys-color-*) — zero hardcoded hex values.
+#}
+/* Auto-generated from search_bar.css.jinja2 — do not edit by hand. */
+
+/* ---------------------------------------------------------------------------
+   Search Bar — Base (Desktop >=1024px)
+   --------------------------------------------------------------------------- */
+
+/* --- Search container ---------------------------------------------------- */
+
+.m3-search {
+  position: relative;
+  max-width: 640px;
+  width: 100%;
+  font-family: var(--md-sys-typography-body-font);
+  font-size: var(--md-sys-typography-body-size);
+  line-height: var(--md-sys-typography-body-line-height);
+}
+
+/* --- Input wrapper (pill shape) ------------------------------------------ */
+
+.m3-search__input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: var(--md-sys-shape-extra-large);
+  background-color: var(--md-sys-color-surface-variant);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.m3-search__input-wrapper:focus-within {
+  box-shadow: inset 0 0 0 2px var(--md-sys-color-primary);
+}
+
+/* --- Search icon --------------------------------------------------------- */
+
+.m3-search__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typography-title-size);
+}
+
+/* --- Search input -------------------------------------------------------- */
+
+.m3-search__input {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typography-body-font);
+  font-size: var(--md-sys-typography-body-size);
+  line-height: var(--md-sys-typography-body-line-height);
+  outline: none;
+}
+
+.m3-search__input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.7;
+}
+
+/* Hide native search input clear button (we provide our own) */
+.m3-search__input::-webkit-search-decoration,
+.m3-search__input::-webkit-search-cancel-button,
+.m3-search__input::-webkit-search-results-button,
+.m3-search__input::-webkit-search-results-decoration {
+  appearance: none;
+}
+
+/* --- Clear button -------------------------------------------------------- */
+
+.m3-search__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.m3-search__clear:hover {
+  background-color: var(--md-sys-color-on-surface);
+  opacity: 0.08;
+}
+
+.m3-search__clear[hidden] {
+  display: none;
+}
+
+/* --- Results dropdown panel ---------------------------------------------- */
+
+.m3-search__results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: var(--md-sys-shape-medium);
+  background-color: var(--md-sys-color-surface);
+  box-shadow: var(--md-sys-elevation-level3);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+
+.m3-search__results:not([hidden]) {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.m3-search__results[hidden] {
+  display: block;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+}
+
+/* --- Result groups ------------------------------------------------------- */
+
+.m3-search__group {
+  padding: 8px 0;
+}
+
+.m3-search__group + .m3-search__group {
+  border-top: 1px solid var(--md-sys-color-outline);
+  opacity: 0.4;
+}
+
+.m3-search__group-label {
+  margin: 0;
+  padding: 6px 16px 4px;
+  font-family: var(--md-sys-typography-label-font);
+  font-size: var(--md-sys-typography-label-size);
+  font-weight: var(--md-sys-typography-label-weight);
+  letter-spacing: var(--md-sys-typography-label-letter-spacing);
+  line-height: var(--md-sys-typography-label-line-height);
+  color: var(--md-sys-color-primary);
+  text-transform: uppercase;
+}
+
+.m3-search__group-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* --- Result items -------------------------------------------------------- */
+
+.m3-search__result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.m3-search__result-item:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+.m3-search__result-item:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+.m3-search__result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 18px;
+}
+
+.m3-search__result-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.m3-search__result-title {
+  font-family: var(--md-sys-typography-body-font);
+  font-size: var(--md-sys-typography-body-size);
+  font-weight: var(--md-sys-typography-body-weight);
+  line-height: var(--md-sys-typography-body-line-height);
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m3-search__result-subtitle {
+  font-family: var(--md-sys-typography-body-font);
+  font-size: calc(var(--md-sys-typography-body-size) - 1px);
+  line-height: var(--md-sys-typography-body-line-height);
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Mobile (<600px) — Full-width search, wider results panel
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 599px) {
+
+  .m3-search {
+    max-width: 100%;
+  }
+
+  .m3-search__input-wrapper {
+    padding: 2px 4px;
+    border-radius: var(--md-sys-shape-large);
+  }
+
+  .m3-search__icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .m3-search__input {
+    font-size: calc(var(--md-sys-typography-body-size) + 2px);
+  }
+
+  .m3-search__results {
+    border-radius: 0 0 var(--md-sys-shape-medium) var(--md-sys-shape-medium);
+    max-height: 50vh;
+    box-shadow: var(--md-sys-elevation-level5);
+  }
+
+  .m3-search__group-label {
+    padding: 4px 12px 2px;
+  }
+
+  .m3-search__result-item {
+    padding: 8px 12px;
+  }
+
+  .m3-search__result-title {
+    font-size: calc(var(--md-sys-typography-body-size) + 1px);
+  }
+
+  .m3-search__result-subtitle {
+    font-size: var(--md-sys-typography-body-size);
+  }
+
+}
