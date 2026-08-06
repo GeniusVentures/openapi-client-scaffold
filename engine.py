@@ -17,12 +17,11 @@ Public API
 
 CLI
 ---
-    python3 frontend/templates/engine.py \\
+    python3 frontend/scaffold/engine.py \\
         --template base/m3_base_layout.jinja2 \\
         --output path/to/output.html \\
-        --template-dir frontend/templates/ \\
         --template-dir frontend/scaffold/templates/ \\
-        --tokens design_tokens.json \\
+        --tokens frontend/scaffold/design_tokens.json \\
         --vars vars.json
 """
 
