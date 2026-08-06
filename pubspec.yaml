@@ -1,10 +1,11 @@
 name: genius_scaffold
-description: "Shared scaffolding library — GeniusWallet-derived bloc widgets, M3 templates, OpenAPI client generator."
+description: "Shared Flutter scaffolding widgets — generic blocs, theme primitives, breakpoints, drawers, toasts, and animations."
 publish_to: 'none'
-version: 0.1.0
+version: 0.2.0
 
 environment:
   sdk: ^3.5.0
+  flutter: ">=3.27.0"
 
 dependencies:
   flutter:

@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-abstract class GeniusBreakpoints {
+abstract class ScaffoldBreakpoints {
   /// Max width for a small layout.
   static const double small = 760;
 
@@ -24,10 +22,10 @@ abstract class GeniusBreakpoints {
   }
 
   static bool isNativeApp(BuildContext context) {
-    return getPlaform(context) == Platforms.mobile;
+    return getPlatform(context) == Platforms.mobile;
   }
 
-  static Platforms getPlaform(BuildContext context) {
+  static Platforms getPlatform(BuildContext context) {
     if (kIsWeb) {
       return MediaQuery.of(context).size.width >= small
           ? Platforms.desktop
@@ -37,7 +35,10 @@ abstract class GeniusBreakpoints {
     }
   }
 
-  static bool isMobileApp() => Platform.isAndroid || Platform.isIOS;
+  static bool isMobileApp() =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
 }
 
 enum Platforms {

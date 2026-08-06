@@ -1,13 +1,7 @@
-// *********************************************************************************
-// PARABEAC-GENERATED CODE. DO NOT MODIFY.
-//
-// FOR MORE INFORMATION ON HOW TO USE PARABEAC, PLEASE VISIT docs.parabeac.com
-// *********************************************************************************
-
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/genius_wallet_colors.g.dart';
-import 'package:genius_scaffold/theme/genius_wallet_consts.dart';
-import 'package:genius_scaffold/components/text_form_field_logic.g.dart';
+import 'package:genius_scaffold/theme/scaffold_colors.dart';
+import 'package:genius_scaffold/theme/scaffold_dimens.dart';
+import 'package:genius_scaffold/components/text_form_field_logic.dart';
 
 class TextEntryFieldWidget extends StatelessWidget {
   final TextFormFieldLogic logic;
@@ -34,27 +28,27 @@ class TextEntryFieldWidget extends StatelessWidget {
             fontSize: 14.0,
             fontWeight: FontWeight.w400,
             letterSpacing: 0.0,
-            color: GeniusWalletColors.gray500,
+            color: ScaffoldColors.gray500,
           ),
           prefixIcon: null,
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-              color: GeniusWalletColors.lightGreenPrimary,
+              color: ScaffoldColors.lightGreenPrimary,
               width: 1.0,
             ),
             borderRadius:
-                BorderRadius.circular(GeniusWalletConsts.borderRadiusCard),
+                BorderRadius.circular(ScaffoldDimens.borderRadiusCard),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-              color: GeniusWalletColors.borderGrey,
+              color: ScaffoldColors.borderGrey,
               width: 1.0,
             ),
             borderRadius:
-                BorderRadius.circular(GeniusWalletConsts.borderRadiusCard),
+                BorderRadius.circular(ScaffoldDimens.borderRadiusCard),
           ),
           filled: true,
-          fillColor: GeniusWalletColors.grayPrimary,
+          fillColor: ScaffoldColors.grayPrimary,
           suffixIcon: null,
           contentPadding: const EdgeInsets.all(16)),
       controller: logic.controller,
