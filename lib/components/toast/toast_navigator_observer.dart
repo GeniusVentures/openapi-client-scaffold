@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/components/toast/toast_manager.dart';
+import 'package:frontend_scaffold/components/toast/toast_manager.dart';
 
 class ToastNavigatorObserver extends NavigatorObserver {
   final ToastManager toastManager;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Material 3 theme extension holding the layout dimension tokens consumed
-/// by genius_scaffold widgets. Register on [ThemeData.extensions] to allow
+/// by frontend_scaffold widgets. Register on [ThemeData.extensions] to allow
 /// host apps to override the defaults without forking the package.
 class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
   /// Horizontal page padding for phone layouts.

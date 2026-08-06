@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/components/toast/toast_manager.dart';
+import 'package:frontend_scaffold/components/toast/toast_manager.dart';
 
 class ToastWidget extends StatelessWidget {
   final String title;

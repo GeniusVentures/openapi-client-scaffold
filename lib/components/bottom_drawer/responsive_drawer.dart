@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:genius_scaffold/theme/scaffold_theme.dart';
-import 'package:genius_scaffold/components/bottom_drawer/bottom_drawer.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+import 'package:frontend_scaffold/components/bottom_drawer/bottom_drawer.dart';
 
 class ResponsiveDrawer {
   static const double _desktopBreakpoint = 800;

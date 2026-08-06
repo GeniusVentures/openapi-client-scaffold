@@ -1,4 +1,4 @@
-name: genius_scaffold
+name: frontend_scaffold
 description: "Shared Flutter scaffolding widgets — generic blocs, theme primitives, breakpoints, drawers, toasts, and animations."
 publish_to: 'none'
 version: 0.2.0
