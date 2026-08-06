@@ -62,7 +62,14 @@ if(DEFINED TEMPLATES_DIR AND PYTHON3_EXECUTABLE)
     set(_scaffold_template_stamps "")
 
     # --- Source A: Scaffold's own templates -------------------------------
-    file(GLOB_RECURSE _own_templates "${_scaffold_templates_dir}/*.jinja2")
+    # This blanket target renders ONLY standalone templates — those that take
+    # design tokens alone and no per-template context. In practice that is the
+    # base layout (base/). Parameterized templates (components/**, module/**)
+    # require driver-injected vars and are owned by their driver targets:
+    #   * module/**            — generate_domain_modules.py (per-domain vars)
+    #   * components/*.dart    — generate_all_components (per-component vars)
+    #   * components/*.html/.css — generate_all_components_html (per-component vars)
+    file(GLOB_RECURSE _own_templates "${_scaffold_templates_dir}/base/*.jinja2")
     foreach(_template ${_own_templates})
         file(RELATIVE_PATH _rel "${_scaffold_templates_dir}" "${_template}")
         string(REGEX REPLACE "\\.jinja2$" "" _out "${_rel}")
@@ -94,6 +101,9 @@ if(DEFINED TEMPLATES_DIR AND PYTHON3_EXECUTABLE)
     #   * components/*.html/.css — generate_all_components_html (per-component vars)
     # Rendering parameterized templates context-free fails with
     # undefined-variable errors, so Source B is restricted to base/.
+    # Skip when TEMPLATES_DIR points back at our own templates/ — that
+    # would produce duplicate add_custom_command OUTPUT stamps.
+    if(NOT TEMPLATES_DIR STREQUAL _scaffold_templates_dir)
     file(GLOB_RECURSE _parent_templates "${TEMPLATES_DIR}/base/*.jinja2")
     foreach(_template ${_parent_templates})
         file(RELATIVE_PATH _rel "${TEMPLATES_DIR}" "${_template}")
@@ -115,6 +125,7 @@ if(DEFINED TEMPLATES_DIR AND PYTHON3_EXECUTABLE)
         )
         list(APPEND _scaffold_template_stamps ${_stamp})
     endforeach()
+    endif()
 
     add_custom_target(scaffold_generate_templates
         COMMENT "Rendering scaffold identity templates with M3 design tokens"
