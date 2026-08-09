@@ -41,8 +41,26 @@ Last activity: 2026-08-09 -- scaffold workstream created inside the submodule (e
 
 ### Pending Todos
 
-- Ship Phase 5: push scaffold `develop` (commits through cc22a49) to origin; parent bumps submodule pointer + opens draft PR → develop
+- ~~Ship Phase 5~~ DONE 2026-08-09 — scaffold `develop` pushed to `9f18194`; parent PR #8 merged (rebase) to `develop`, branch deleted
 - (Follow-up, out of v1.0 scope) light default palette to complement the dark-seeded ScaffoldPalette defaults
+
+### Widget backlog (from genius-tube exploration 2026-08-09; see CONSUMERS.md)
+
+Consumer-driven next widgets/templates, in priority order:
+1. Write `lib/components/scaffold_card.dart` from `templates/components/card.dart.jinja2`
+2. Write `lib/components/scaffold_state_view.dart` from `templates/components/state.dart.jinja2`
+3. Design `MediaCard` template + widget (media-card.dart.jinja2 + lib/components/media_card.dart) — Critical for genius-tube Phase 2
+4. Design `MediaControls` template + widget — Critical for genius-tube Phase 2
+5. Write `lib/components/scaffold_search_bar.dart` from `templates/components/search_bar.dart.jinja2`
+6. Design `WalletConnectSheet` widget (shared Reown session UI per genius-tube ADR-002; coordinate with GeniusWallet)
+
+### Boundary decisions (locked, from genius-tube exploration)
+
+- Font choice lives in theme (`scaffold_theme.dart`), not in primitive widget wrappers
+- Image caching and localization are infrastructure, not widgets
+- Media cards are generic (configurable aspect ratio + badge slots + metadata builder) — not app-specific
+- WalletConnectSheet is workspace-shared (GeniusWallet also uses Reown)
+- App-specific widgets (genius-tube's TokenGateBadge, EntitlementStatusBar, CreatorUploadPipeline) are composites built from scaffold atoms — they live in the consuming app, not here
 
 ### Blockers/Concerns
 
