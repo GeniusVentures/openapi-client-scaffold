@@ -25,6 +25,32 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
   /// Height of the scaffold app bar.
   final double appBarHeight;
 
+  /// 4pt spacing scale step (GeniusWalletConsts.space2).
+  final double space2;
+
+  /// 6pt spacing scale step (GeniusWalletConsts.space3).
+  final double space3;
+
+  /// 8pt spacing scale step (GeniusWalletConsts.space4).
+  final double space4;
+
+  /// 12pt spacing scale step (GeniusWalletConsts.space6).
+  final double space6;
+
+  /// 16pt spacing scale step (GeniusWalletConsts.space8).
+  final double space8;
+
+  /// 24pt spacing scale step (GeniusWalletConsts.space12).
+  final double space12;
+
+  /// Corner radius for alert cards (GeniusWalletConsts.radiusMd). Kept
+  /// separate from [borderRadiusCard] (15.0) so existing card consumers
+  /// are unaffected.
+  final double radiusMd;
+
+  /// Corner radius for pill shapes (GeniusWalletConsts.radiusPill).
+  final double radiusPill;
+
   /// Creates a dimension set with the given values.
   const ScaffoldDimens({
     required this.horizontalPadding,
@@ -34,6 +60,14 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     required this.borderRadiusCard,
     required this.borderRadiusButton,
     required this.appBarHeight,
+    required this.space2,
+    required this.space3,
+    required this.space4,
+    required this.space6,
+    required this.space8,
+    required this.space12,
+    required this.radiusMd,
+    required this.radiusPill,
   });
 
   /// Default dimensions matching the previous static token values.
@@ -45,6 +79,14 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     borderRadiusCard: 15.0,
     borderRadiusButton: 48.0,
     appBarHeight: 65.0,
+    space2: 4.0,
+    space3: 6.0,
+    space4: 8.0,
+    space6: 12.0,
+    space8: 16.0,
+    space12: 24.0,
+    radiusMd: 12.0,
+    radiusPill: 48.0,
   );
 
   /// Returns a copy of this dimension set with the given fields replaced.
@@ -57,6 +99,14 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     double? borderRadiusCard,
     double? borderRadiusButton,
     double? appBarHeight,
+    double? space2,
+    double? space3,
+    double? space4,
+    double? space6,
+    double? space8,
+    double? space12,
+    double? radiusMd,
+    double? radiusPill,
   }) {
     return ScaffoldDimens(
       horizontalPadding: horizontalPadding ?? this.horizontalPadding,
@@ -68,6 +118,14 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
       borderRadiusCard: borderRadiusCard ?? this.borderRadiusCard,
       borderRadiusButton: borderRadiusButton ?? this.borderRadiusButton,
       appBarHeight: appBarHeight ?? this.appBarHeight,
+      space2: space2 ?? this.space2,
+      space3: space3 ?? this.space3,
+      space4: space4 ?? this.space4,
+      space6: space6 ?? this.space6,
+      space8: space8 ?? this.space8,
+      space12: space12 ?? this.space12,
+      radiusMd: radiusMd ?? this.radiusMd,
+      radiusPill: radiusPill ?? this.radiusPill,
     );
   }
 
@@ -90,6 +148,14 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
       borderRadiusButton:
           lerpDouble(borderRadiusButton, other.borderRadiusButton),
       appBarHeight: lerpDouble(appBarHeight, other.appBarHeight),
+      space2: lerpDouble(space2, other.space2),
+      space3: lerpDouble(space3, other.space3),
+      space4: lerpDouble(space4, other.space4),
+      space6: lerpDouble(space6, other.space6),
+      space8: lerpDouble(space8, other.space8),
+      space12: lerpDouble(space12, other.space12),
+      radiusMd: lerpDouble(radiusMd, other.radiusMd),
+      radiusPill: lerpDouble(radiusPill, other.radiusPill),
     );
   }
 }

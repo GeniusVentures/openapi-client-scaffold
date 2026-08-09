@@ -214,6 +214,11 @@ void main() {
       );
       await tester.pump();
 
+      // Let the 300ms slide-in settle so the dismiss button is on-screen
+      // and hit-testable — after a single pump the toast is still at its
+      // off-screen Offset(0, -1) start and the tap would miss.
+      await tester.pump(const Duration(milliseconds: 300));
+
       // Tap the Dismiss button — first fire.
       await tester.tap(find.byTooltip('Dismiss'));
       await tester.pump();
@@ -236,7 +241,15 @@ void main() {
     // "A dismissed AnimationController was used".
     final context = await _pumpHost(tester);
     showToast(context, 'Link copied');
-    // Deliberately do NOT pump — the toast's controller has not forwarded yet.
+    // One pump so the entry builds and its AnimationController is mid
+    // forward-sweep when the tree goes away. (Without a pump the entry is
+    // inserted but never built — no State, no controller, nothing in-flight
+    // to exercise CR-02/CR-04 — and the toast record sits in the manager's
+    // list until the next show() against a new overlay prunes it, because
+    // Flutter reports a removed-before-built entry as still mounted, so the
+    // manager has no signal that its overlay went away.)
+    await tester.pump();
+    expect(ToastManager.instance.visibleCount, 1);
 
     // Tearing down the tree synchronously must not throw.
     await tester.pumpWidget(const SizedBox.shrink());
@@ -261,6 +274,9 @@ void main() {
     await tester.pump();
     expect(ToastManager.instance.visibleCount, 1);
     expect(find.byType(ToastWidget), findsOneWidget);
+
+    // Let the 300ms slide-in settle so the dismiss button is hit-testable.
+    await tester.pump(const Duration(milliseconds: 300));
 
     // Manual dismiss — list mutation is synchronous.
     await tester.tap(find.byTooltip('Dismiss'));
