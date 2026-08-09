@@ -48,7 +48,19 @@
 
 ## Traceability
 
-*Filled by roadmap step.*
+| Requirement | Phase | Description |
+|-------------|-------|-------------|
+| WIDG-01 | Phase 6 | ScaffoldCard |
+| WIDG-02 | Phase 6 | ScaffoldStateView |
+| WIDG-03 | Phase 6 | ScaffoldSearchBar |
+| WIDG-06 | Phase 7 | WalletConnectSheet |
+| WIDG-07 | Phase 7 | ScaffoldBadge |
+| WIDG-04 | Phase 8 | MediaCard |
+| WIDG-05 | Phase 8 | MediaControls |
+
+**Coverage: 7/7 v1.1 requirements mapped. No orphans.**
+
+*Phase ordering is dependency-driven, not WIDG-number-driven: Phase 7 ships ScaffoldBadge (WIDG-07) before Phase 8's MediaCard (WIDG-04) consumes it. See `.planning/workstreams/scaffold/ROADMAP.md` "Phase ordering rationale" section.*
 
 ---
-*Last updated: 2026-08-09*
+*Last updated: 2026-08-09 — v1.1 traceability populated by roadmap step*
