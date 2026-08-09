@@ -29,6 +29,28 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   /// Deepest surface blue used by drawers and bottom sheets.
   final Color deepBlueTertiary;
 
+  /// Elevated surface fill used by toasts painted into the root Overlay.
+  /// GW dark: #0C0E14 (sketch-079).
+  final Color surfaceElevated;
+
+  /// Subtle hairline border for elevated surfaces. GW dark: white 12%.
+  final Color borderSubtle;
+
+  /// Primary text color on dark surfaces. GW dark: white.
+  final Color textPrimary;
+
+  /// Secondary text color. GW: #8A8F9D (sketch-079).
+  final Color textSecondary;
+
+  /// Success status accent. GW: #0AD89C (sketch-079).
+  final Color statusSuccess;
+
+  /// Error status accent. GW: #FF4D4D (sketch-079).
+  final Color statusError;
+
+  /// Warning status accent (foreground-purposed). GW dark: #FFC42E.
+  final Color statusWarningText;
+
   /// Creates a palette with the given semantic colors.
   const ScaffoldPalette({
     required this.deepBlueCardColor,
@@ -39,9 +61,17 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     required this.borderGrey,
     required this.grayPrimary,
     required this.deepBlueTertiary,
+    required this.surfaceElevated,
+    required this.borderSubtle,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.statusSuccess,
+    required this.statusError,
+    required this.statusWarningText,
   });
 
-  /// Default palette seeded from the raw [ScaffoldColors] constants.
+  /// Default palette seeded from the raw [ScaffoldColors] constants, plus
+  /// the toast-needed tokens seeded with GeniusWallet's dark-mode values.
   static const ScaffoldPalette defaultPalette = ScaffoldPalette(
     deepBlueCardColor: ScaffoldColors.deepBlueCardColor,
     lightGreenPrimary: ScaffoldColors.lightGreenPrimary,
@@ -51,6 +81,13 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     borderGrey: ScaffoldColors.borderGrey,
     grayPrimary: ScaffoldColors.grayPrimary,
     deepBlueTertiary: ScaffoldColors.deepBlueTertiary,
+    surfaceElevated: Color(0xFF0C0E14),
+    borderSubtle: Color(0x1FFFFFFF),
+    textPrimary: Color(0xFFFFFFFF),
+    textSecondary: Color(0xFF8A8F9D),
+    statusSuccess: Color(0xFF0AD89C),
+    statusError: Color(0xFFFF4D4D),
+    statusWarningText: Color(0xFFFFC42E),
   );
 
   /// Returns a copy of this palette with the given fields replaced.
@@ -64,6 +101,13 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     Color? borderGrey,
     Color? grayPrimary,
     Color? deepBlueTertiary,
+    Color? surfaceElevated,
+    Color? borderSubtle,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? statusSuccess,
+    Color? statusError,
+    Color? statusWarningText,
   }) {
     return ScaffoldPalette(
       deepBlueCardColor: deepBlueCardColor ?? this.deepBlueCardColor,
@@ -74,6 +118,13 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
       borderGrey: borderGrey ?? this.borderGrey,
       grayPrimary: grayPrimary ?? this.grayPrimary,
       deepBlueTertiary: deepBlueTertiary ?? this.deepBlueTertiary,
+      surfaceElevated: surfaceElevated ?? this.surfaceElevated,
+      borderSubtle: borderSubtle ?? this.borderSubtle,
+      textPrimary: textPrimary ?? this.textPrimary,
+      textSecondary: textSecondary ?? this.textSecondary,
+      statusSuccess: statusSuccess ?? this.statusSuccess,
+      statusError: statusError ?? this.statusError,
+      statusWarningText: statusWarningText ?? this.statusWarningText,
     );
   }
 
@@ -96,6 +147,14 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
       grayPrimary: Color.lerp(grayPrimary, other.grayPrimary, t)!,
       deepBlueTertiary:
           Color.lerp(deepBlueTertiary, other.deepBlueTertiary, t)!,
+      surfaceElevated: Color.lerp(surfaceElevated, other.surfaceElevated, t)!,
+      borderSubtle: Color.lerp(borderSubtle, other.borderSubtle, t)!,
+      textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
+      textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
+      statusSuccess: Color.lerp(statusSuccess, other.statusSuccess, t)!,
+      statusError: Color.lerp(statusError, other.statusError, t)!,
+      statusWarningText:
+          Color.lerp(statusWarningText, other.statusWarningText, t)!,
     );
   }
 }
