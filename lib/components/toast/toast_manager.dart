@@ -2,19 +2,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/toast/toast_widget.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+import 'package:frontend_scaffold/utils/breakpoints.dart';
 
 enum ToastType { success, error, warning }
 
 /// Height each toast reserves for the one below it. Density-aware rather than
 /// one flat stride, because a compact pill is roughly half a card.
 ///
-/// ponytail: these are measured constants, not laid-out heights — a card
-/// whose message wraps to three lines at 2.0x text scale will overlap the
-/// toast under it. The upgrade is to hoist all live toasts into a single
-/// `OverlayEntry` holding a `Column`, at which point the stack lays itself
-/// out and these disappear. Not done here because it rewrites the entry
-/// lifecycle for a case only large text scale reaches.
-const double _kCardStride = 84.0;
+/// The card stride covers the worst realistic card at default text scale:
+/// `space6` padding 12x2 + title line ~28 + `space2` 4 + two-line body ~40
+/// + border ~2 = ~110px. A card whose message wraps past two lines at larger
+/// text scale can still overlap the toast under it. The upgrade is to hoist
+/// all live toasts into a single `OverlayEntry` holding a `Column`, at which
+/// point the stack lays itself out and these disappear. Not done here because
+/// it rewrites the entry lifecycle for a case only large text scale reaches.
+const double _kCardStride = 112.0;
 const double _kCompactStride = 44.0;
 
 /// Beyond this the oldest is evicted. Was uncapped: at the old flat 85px
@@ -57,6 +59,11 @@ class ToastManager {
 
   final List<_ActiveToast> _toasts = [];
 
+  /// Monotonic id source for stable [Dismissible] keys — each toast gets a
+  /// key that survives [OverlayEntry.markNeedsBuild] rebuilds so an
+  /// in-progress swipe is not reset when a sibling is dismissed.
+  int _nextId = 0;
+
   /// The overlay the current toasts were inserted into. This manager is a
   /// singleton and can outlive the overlay itself (widget-test teardown,
   /// full-app restart). When `show` resolves a DIFFERENT overlay, every
@@ -96,7 +103,10 @@ class ToastManager {
     }
 
     while (_toasts.length >= _kMaxVisible) {
-      _dismiss(_toasts.first, null);
+      // Eviction IS a close: `_dismiss` reads, nulls, and fires the stored
+      // onClose so the 3-visible cap honors the consumer's callback instead
+      // of silently dropping it.
+      _dismiss(_toasts.first);
     }
 
     late final _ActiveToast toast;
@@ -104,6 +114,8 @@ class ToastManager {
 
     entry = OverlayEntry(
       builder: (_) => _AnimatedToast(
+        key: ValueKey(toast.id),
+        toastId: toast.id,
         offsetAbove: _offsetAbove(toast),
         title: title,
         message: message,
@@ -121,12 +133,17 @@ class ToastManager {
         // CR-03 hybrid: the `dismissed` flag guards re-entry, and the
         // stored callback is nulled after firing so a second `_dismiss`
         // (swipe racing the auto-dismiss timer) cannot fire it twice.
-        onDismiss: () => _dismiss(toast, onClose),
+        onDismiss: () => _dismiss(toast),
         onDisposed: () => _forget(toast),
       ),
     );
 
-    toast = _ActiveToast(entry: entry, isCard: isCard, onClose: onClose);
+    toast = _ActiveToast(
+      id: _nextId++,
+      entry: entry,
+      isCard: isCard,
+      onClose: onClose,
+    );
     _toasts.add(toast);
     overlay.insert(entry);
     _restack();
@@ -186,12 +203,19 @@ class ToastManager {
     }
   }
 
-  void _dismiss(_ActiveToast toast, VoidCallback? onClose) {
+  void _dismiss(_ActiveToast toast) {
     if (toast.dismissed) {
       return;
     }
     toast.dismissed = true;
     _toasts.remove(toast);
+
+    // Read, null, and fire the stored callback. Nulling before firing makes
+    // the CR-03 "fire exactly once" guarantee structural: a re-entrant
+    // `_dismiss` (swipe racing the auto-dismiss timer) finds the field
+    // already cleared.
+    final onClose = toast.onClose;
+    toast.onClose = null;
 
     final controller = toast.controller;
     if (controller != null &&
@@ -223,20 +247,35 @@ class ToastManager {
 }
 
 class _ActiveToast {
+  /// Stable identity used as the [Dismissible] key. Survives
+  /// [OverlayEntry.markNeedsBuild] rebuilds so an in-progress swipe on one
+  /// toast is not reset when a sibling is dismissed and the stack restacks.
+  final int id;
   final OverlayEntry entry;
   final bool isCard;
   AnimationController? controller; // set once the widget initializes
   bool dismissed = false;
 
   /// Consumer-supplied close callback. Fires at most once, then nulled —
-  /// the CR-03 "fire exactly once" guarantee. A second `_dismiss` (e.g.
-  /// swipe racing the auto-dismiss timer) finds the callback already gone.
+  /// the CR-03 "fire exactly once" guarantee. `_dismiss` reads, nulls, then
+  /// fires; a second `_dismiss` (e.g. swipe racing the auto-dismiss timer)
+  /// finds the callback already gone. `_forget` / `_drop` / the cross-overlay
+  /// prune null it without firing (route-pop teardown is not a close).
   VoidCallback? onClose;
 
-  _ActiveToast({required this.entry, required this.isCard, this.onClose});
+  _ActiveToast({
+    required this.id,
+    required this.entry,
+    required this.isCard,
+    this.onClose,
+  });
 }
 
 class _AnimatedToast extends StatefulWidget {
+  /// Stable identity used as the inner [Dismissible]'s key. Sourced from
+  /// [_ActiveToast.id] so a `_restack` rebuild does not change it and reset
+  /// an in-progress swipe.
+  final int toastId;
   final double offsetAbove;
   final String? title;
   final String message;
@@ -247,6 +286,8 @@ class _AnimatedToast extends StatefulWidget {
   final VoidCallback onDisposed;
 
   const _AnimatedToast({
+    super.key,
+    required this.toastId,
     required this.offsetAbove,
     required this.title,
     required this.message,
@@ -293,7 +334,9 @@ class _AnimatedToastState extends State<_AnimatedToast>
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final dimens = context.dimens;
-    final isMobile = media.size.width < 600;
+    // Same threshold the rest of the package uses for "is this a phone?"
+    // so the toast and the scaffold layout agree across the 600-760px range.
+    final isMobile = media.size.width <= ScaffoldBreakpoints.small;
 
     // Derived, never guessed. The old `top: 100` was a literal with no
     // reference to the inset anywhere in this file, so it landed differently
@@ -343,11 +386,25 @@ class _AnimatedToastState extends State<_AnimatedToast>
           // "Link copied" is what the desktop branch used to allow at
           // maxWidth 600.
           constraints: BoxConstraints(maxWidth: isMobile ? 560 : 420),
-          child: Dismissible(
-            key: ValueKey(widget.hashCode),
-            direction: dismissDirection,
-            onDismissed: (_) => widget.onDismiss(),
-            child: animated,
+          // The desktop toast is physically right-anchored, but
+          // `DismissDirection.startToEnd` is text-direction-aware: in an RTL
+          // host it would fling the toast *leftward*, across the screen,
+          // instead of back off the right edge it slid in from. Pinning the
+          // Dismissible to LTR makes the swipe gesture physical rather than
+          // textual — startToEnd then always means "off the right edge" on
+          // desktop, matching the physical anchor. Mobile uses `up`, which
+          // is direction-agnostic.
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Dismissible(
+              // Stable across `_restack` rebuilds: sourced from the toast's
+              // own id rather than the widget instance's hashCode, so a
+              // sibling's dismissal does not reset an in-progress swipe.
+              key: ValueKey(widget.toastId),
+              direction: dismissDirection,
+              onDismissed: (_) => widget.onDismiss(),
+              child: animated,
+            ),
           ),
         ),
       ),

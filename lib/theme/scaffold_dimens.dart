@@ -25,30 +25,29 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
   /// Height of the scaffold app bar.
   final double appBarHeight;
 
-  /// 4pt spacing scale step (GeniusWalletConsts.space2).
+  /// 4pt spacing scale step.
   final double space2;
 
-  /// 6pt spacing scale step (GeniusWalletConsts.space3).
+  /// 6pt spacing scale step.
   final double space3;
 
-  /// 8pt spacing scale step (GeniusWalletConsts.space4).
+  /// 8pt spacing scale step.
   final double space4;
 
-  /// 12pt spacing scale step (GeniusWalletConsts.space6).
+  /// 12pt spacing scale step.
   final double space6;
 
-  /// 16pt spacing scale step (GeniusWalletConsts.space8).
+  /// 16pt spacing scale step.
   final double space8;
 
-  /// 24pt spacing scale step (GeniusWalletConsts.space12).
+  /// 24pt spacing scale step.
   final double space12;
 
-  /// Corner radius for alert cards (GeniusWalletConsts.radiusMd). Kept
-  /// separate from [borderRadiusCard] (15.0) so existing card consumers
-  /// are unaffected.
+  /// Corner radius for alert cards. Kept separate from
+  /// [borderRadiusCard] (15.0) so existing card consumers are unaffected.
   final double radiusMd;
 
-  /// Corner radius for pill shapes (GeniusWalletConsts.radiusPill).
+  /// Corner radius for pill shapes.
   final double radiusPill;
 
   /// Creates a dimension set with the given values.
