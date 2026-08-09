@@ -30,25 +30,24 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   final Color deepBlueTertiary;
 
   /// Elevated surface fill used by toasts painted into the root Overlay.
-  /// GW dark: #0C0E14 (sketch-079).
   final Color surfaceElevated;
 
-  /// Subtle hairline border for elevated surfaces. GW dark: white 12%.
+  /// Subtle hairline border for elevated surfaces.
   final Color borderSubtle;
 
-  /// Primary text color on dark surfaces. GW dark: white.
+  /// Primary text color on dark surfaces.
   final Color textPrimary;
 
-  /// Secondary text color. GW: #8A8F9D (sketch-079).
+  /// Secondary text color on dark surfaces.
   final Color textSecondary;
 
-  /// Success status accent. GW: #0AD89C (sketch-079).
+  /// Success status accent.
   final Color statusSuccess;
 
-  /// Error status accent. GW: #FF4D4D (sketch-079).
+  /// Error status accent.
   final Color statusError;
 
-  /// Warning status accent (foreground-purposed). GW dark: #FFC42E.
+  /// Warning status accent (foreground-purposed).
   final Color statusWarningText;
 
   /// Creates a palette with the given semantic colors.
@@ -71,7 +70,7 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   });
 
   /// Default palette seeded from the raw [ScaffoldColors] constants, plus
-  /// the toast-needed tokens seeded with GeniusWallet's dark-mode values.
+  /// the toast-needed tokens with dark-mode defaults.
   static const ScaffoldPalette defaultPalette = ScaffoldPalette(
     deepBlueCardColor: ScaffoldColors.deepBlueCardColor,
     lightGreenPrimary: ScaffoldColors.lightGreenPrimary,
