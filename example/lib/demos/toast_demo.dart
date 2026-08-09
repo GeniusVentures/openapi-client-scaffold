@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 
-/// Demonstrates the ToastManager + the CR-02..04 lifecycle fixes.
+/// Demonstrates the two toast densities and the CR-02..04 lifecycle fixes.
+///
+/// Density is chosen by whether a title is supplied:
+///  - compact (no title): a receipt — "Link copied". Auto-dismiss only.
+///  - card (title): an alert — titled, 44pt dismiss button, longer read.
 ///
 /// Two counters track onClose invocations:
-///  - manual: increments when the user taps the toast's close icon
+///  - manual: increments when the user taps the card's close button
 ///  - auto: increments when the auto-dismiss timer fires
 ///
 /// Each counter is wired to its own showToast call so a mismatch between
@@ -23,13 +27,15 @@ class _ToastDemoState extends State<ToastDemo> {
   int _manualShowCount = 0;
   int _autoShowCount = 0;
 
-  void _showManual(ToastType type) {
+  /// Card density, long duration so the user dismisses it by hand — the
+  /// onClose counter must increment by exactly 1 (CR-03: no double-fire
+  /// from a stale auto-dismiss timer).
+  void _showManualCard(ToastType type) {
     setState(() => _manualShowCount++);
-    ToastManager().showToast(
-      context: context,
+    showToast(
+      context,
+      'Tap the X to dismiss. onClose counter should increment by exactly 1.',
       title: '${type.name} (manual)',
-      message:
-          'Tap the X to dismiss. onClose counter should increment by exactly 1.',
       type: type,
       // Long enough that the user can manually dismiss before auto fires.
       duration: const Duration(minutes: 5),
@@ -37,12 +43,25 @@ class _ToastDemoState extends State<ToastDemo> {
     );
   }
 
-  void _showAuto(ToastType type) {
+  /// Compact density, short duration — the timer fires onClose exactly once
+  /// (CR-02: timer is bound to the toast's element, cancelled on teardown).
+  void _showAutoCompact(String message) {
     setState(() => _autoShowCount++);
-    ToastManager().showToast(
-      context: context,
+    showToast(
+      context,
+      message,
+      duration: const Duration(seconds: 2),
+      onClose: () => setState(() => _autoCloseCount++),
+    );
+  }
+
+  /// Card density, short duration.
+  void _showAutoCard(ToastType type) {
+    setState(() => _autoShowCount++);
+    showToast(
+      context,
+      'Auto-dismiss in 2s. onClose counter should increment by 1.',
       title: '${type.name} (auto)',
-      message: 'Auto-dismiss in 2s. onClose counter should increment by 1.',
       type: type,
       duration: const Duration(seconds: 2),
       onClose: () => setState(() => _autoCloseCount++),
@@ -55,52 +74,70 @@ class _ToastDemoState extends State<ToastDemo> {
       appBar: AppBar(title: const Text('Toast')),
       body: Padding(
         padding: EdgeInsets.all(context.dimens.itemSpacing),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             Text('Manual: shown=$_manualShowCount closed=$_manualCloseCount'),
             Text('Auto:   shown=$_autoShowCount closed=$_autoCloseCount'),
             SizedBox(height: context.dimens.itemSpacing),
-            const Text('Manual-dismiss toasts (5min duration; tap X):'),
+            const Text('Compact receipts (no title; auto-dismiss only):'),
             Wrap(
               spacing: 8,
               children: [
                 ElevatedButton(
-                  onPressed: () => _showManual(ToastType.success),
+                  onPressed: () => _showAutoCompact('Link copied'),
+                  child: const Text('Link copied'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _showAutoCompact('Address saved'),
+                  child: const Text('Address saved'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _showAutoCompact('Transaction submitted'),
+                  child: const Text('Transaction submitted'),
+                ),
+              ],
+            ),
+            SizedBox(height: context.dimens.itemSpacing),
+            const Text('Card alerts, manual-dismiss (5min duration; tap X):'),
+            Wrap(
+              spacing: 8,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _showManualCard(ToastType.success),
                   child: const Text('success'),
                 ),
                 ElevatedButton(
-                  onPressed: () => _showManual(ToastType.error),
+                  onPressed: () => _showManualCard(ToastType.error),
                   child: const Text('error'),
                 ),
                 ElevatedButton(
-                  onPressed: () => _showManual(ToastType.warning),
+                  onPressed: () => _showManualCard(ToastType.warning),
                   child: const Text('warning'),
                 ),
               ],
             ),
             SizedBox(height: context.dimens.itemSpacing),
-            const Text('Auto-dismiss toasts (2s duration):'),
+            const Text('Card alerts, auto-dismiss (2s duration):'),
             Wrap(
               spacing: 8,
               children: [
                 ElevatedButton(
-                  onPressed: () => _showAuto(ToastType.success),
+                  onPressed: () => _showAutoCard(ToastType.success),
                   child: const Text('success'),
                 ),
                 ElevatedButton(
-                  onPressed: () => _showAuto(ToastType.error),
+                  onPressed: () => _showAutoCard(ToastType.error),
                   child: const Text('error'),
                 ),
                 ElevatedButton(
-                  onPressed: () => _showAuto(ToastType.warning),
+                  onPressed: () => _showAutoCard(ToastType.warning),
                   child: const Text('warning'),
                 ),
               ],
             ),
             SizedBox(height: context.dimens.itemSpacing),
             ElevatedButton(
-              onPressed: () => ToastManager().dispose(),
+              onPressed: () => ToastManager.instance.disposeAll(),
               child: const Text('dispose all (CR-04 path)'),
             ),
           ],
