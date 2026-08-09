@@ -14,6 +14,7 @@ source of truth for what the scaffold is and what changed.
         ├── REQUIREMENTS.md      # SUB-01..03 — the submodule's contract with consumers
         ├── ROADMAP.md           # Phase 5 (consolidation) anchor + scope boundary
         ├── STATE.md             # current position / session continuity
+        ├── CONSUMERS.md         # cross-app widget demand (who needs what)
         └── phases/
             └── 05-scaffold-submodule-consolidation/   # Phase 5 artifacts
 ```
