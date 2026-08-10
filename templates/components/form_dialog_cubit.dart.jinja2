@@ -1,0 +1,112 @@
+/// {{ widget_class_name }}Cubit -- Cubit for {{ widget_class_name }} state management.
+///
+/// Generated from form_dialog_cubit.dart.jinja2 -- do not edit by hand.
+/// Persists state across reloads via hydrated_bloc; uses a stable
+/// literal [storagePrefix] so minified builds retain hydrated state.
+/// Requires HydratedBloc.storage initialized in the consuming app's
+/// main(); see frontend/generated/widgets/README.md for the bootstrap
+/// snippet.
+library;
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+
+import 'form_dialog_state.dart';
+
+// ---------------------------------------------------------------------------
+// Cubit
+// ---------------------------------------------------------------------------
+
+/// Cubit for [{{ widget_class_name }}].
+///
+/// Owns the dialog's mode, field values, and transient submission
+/// status. Field values are restored from hydrated storage on
+/// construction; [hydrate] is the LAST constructor statement so the
+/// initial emit always reflects the restored value.
+///
+/// The cubit never performs async work and never takes a build context --
+/// the widget owns the async save and calls [failSave] or
+/// [completeSave] when it completes; the widget's BlocConsumer listener
+/// fires the toast on the ``errorMessage`` transition.
+class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
+    with HydratedMixin {
+  /// Creates a [{{ widget_class_name }}Cubit].
+  ///
+  /// [instanceId] discriminates multi-instance persistence -- pass a
+  /// unique value when two dialogs share a screen.
+  {{ widget_class_name }}Cubit({this.instanceId = ''})
+      : super(const {{ widget_class_name }}State()) {
+    hydrate(
+      onError: (error, stackTrace) => HydrationErrorBehavior.retain,
+    );
+  }
+
+  /// Optional discriminator for multi-instance persistence. Empty by default.
+  final String instanceId;
+
+  @override
+  String get id => instanceId;
+
+  @override
+  String get storagePrefix => '{{ widget_class_name }}Cubit';
+
+  /// Updates a single form field value.
+  void updateField(String name, dynamic value) {
+    final Map<String, dynamic> next =
+        Map<String, dynamic>.from(state.fieldValues);
+    next[name] = value;
+    emit(state.copyWith(fieldValues: next));
+  }
+
+  /// Marks the form as submitting. The widget performs the async save
+  /// and then calls [failSave] or [completeSave].
+  void submit() {
+    emit(state.copyWith(isSubmitting: true));
+  }
+
+  /// Records a failed save with the given [message]. This is the ONLY
+  /// transition that sets ``errorMessage`` non-null -- the widget's
+  /// BlocConsumer listener fires the save-failed toast here.
+  void failSave(String message) {
+    emit(
+      state.copyWith(
+        isSubmitting: false,
+        errorMessage: message,
+      ),
+    );
+  }
+
+  /// Records a successful save, clearing any previous error.
+  void completeSave() {
+    emit(
+      state.copyWith(
+        isSubmitting: false,
+        errorMessage: null,
+      ),
+    );
+  }
+
+  /// Cancels the dialog, clearing the submission status and any error.
+  void cancel() {
+    emit(
+      state.copyWith(
+        isSubmitting: false,
+        errorMessage: null,
+      ),
+    );
+  }
+
+  /// Wipes hydrated storage and emits the default state (logout/reset flow).
+  Future<void> reset() async {
+    await clear();
+    emit(const {{ widget_class_name }}State());
+  }
+
+  @override
+  {{ widget_class_name }}State? fromJson(Map<String, dynamic> json) =>
+      {{ widget_class_name }}State.fromJson(json);
+
+  @override
+  Map<String, dynamic>? toJson({{ widget_class_name }}State state) =>
+      state.toJson();
+}
