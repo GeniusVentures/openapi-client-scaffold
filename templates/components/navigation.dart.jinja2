@@ -15,8 +15,15 @@
   No dependency on Riverpod, GeniusTheme, or api_client.
 #}
 // Auto-generated from navigation.dart.jinja2 — do not edit by hand.
+// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+{# Consumer note: generated code also reads [{{ widget_class_name }}Cubit]'s
+   literal ``storagePrefix`` at hydration time (see navigation_cubit.dart). #}
+import 'navigation_cubit.dart';
+import 'navigation_state.dart';
 
 /// A single navigation destination with optional children and badge.
 ///
@@ -56,11 +63,13 @@ class NavDestination {
 /// variants selected by the `form_factor` template variable.
 ///
 /// Consumes [Theme.of] directly — no dependency on Riverpod or GeniusTheme.
-class {{ widget_class_name }} extends StatefulWidget {
+/// The selected destination and expanded groups are owned by
+/// [{{ widget_class_name }}Cubit] (hydrated) so they survive reloads.
+class {{ widget_class_name }} extends StatelessWidget {
   /// Creates a [{{ widget_class_name }}].
   const {{ widget_class_name }}({
     required this.items,
-    this.selectedIndex = 0,
+    this.instanceId = '',
     this.onDestinationSelected,
     super.key,
   });
@@ -68,17 +77,15 @@ class {{ widget_class_name }} extends StatefulWidget {
   /// Navigation destinations to render.
   final List<NavDestination> items;
 
-  /// Index of the currently selected destination.
-  final int selectedIndex;
+  /// Multi-instance hydration discriminator forwarded to the Cubit.
+  ///
+  /// Hydrated cubits sharing a [storagePrefix] disambiguate by this id;
+  /// leave empty for a single (default) instance.
+  final String instanceId;
 
   /// Called when the user selects a navigation destination.
   final void Function(int index)? onDestinationSelected;
 
-  @override
-  State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
-}
-
-class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   // ---------------------------------------------------------------------------
   // Icon resolution
   // ---------------------------------------------------------------------------
@@ -106,64 +113,81 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationDrawer(
-      selectedIndex: widget.selectedIndex,
-      onDestinationSelected: widget.onDestinationSelected,
-      children: <Widget>[
-        // Header / brand area
-        Padding(
-          padding: const EdgeInsets.fromLTRB(28.0, 16.0, 16.0, 10.0),
-          child: Text(
-            'Navigation',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-          ),
-        ),
-        const Divider(),
-{% for item in nav_items %}
-        // {{ item.label }}
-{% set _has_children = item.children is defined and item.children %}{% if _has_children %}
-        ExpansionTile(
-          leading: Icon(_iconFromString('{{ item.icon }}')),
-          title: Text('{{ item.label }}'),
-{% if item.badge is defined and item.badge is not none %}
-          trailing: _buildBadge({{ item.badge }}),
-{% endif %}
-          children: <Widget>[
-{% for child in item.children %}
-            NavigationDrawerDestination(
-              icon: Icon(_iconFromString('{{ child.icon }}')),
-              label: Text('{{ child.label }}'),
-            ),
-{% if not loop.last %}
-            const Divider(indent: 72.0),
-{% endif %}
-{% endfor %}
-          ],
-        ),
-{% else %}
-        NavigationDrawerDestination(
-          icon: Icon(_iconFromString('{{ item.icon }}')),
-{% if item.badge is defined and item.badge is not none %}
-          label: Row(
+    return BlocProvider<{{ widget_class_name }}Cubit>(
+      create: (_) => {{ widget_class_name }}Cubit(instanceId: instanceId),
+      child: BlocBuilder<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
+        builder: (context, state) {
+          final {{ widget_class_name }}Cubit cubit =
+              context.read<{{ widget_class_name }}Cubit>();
+
+          return NavigationDrawer(
+            selectedIndex: state.selectedIndex,
+            onDestinationSelected: (int index) {
+              cubit.selectDestination(index);
+              onDestinationSelected?.call(index);
+            },
             children: <Widget>[
-              Expanded(child: Text('{{ item.label }}')),
-              _buildBadge({{ item.badge }}),
-            ],
-          ),
-{% else %}
-          label: Text('{{ item.label }}'),
+              // Header / brand area
+              Padding(
+                padding: const EdgeInsets.fromLTRB(28.0, 16.0, 16.0, 10.0),
+                child: Text(
+                  'Navigation',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+              const Divider(),
+{% for item in nav_items %}
+              // {{ item.label }}
+{% set _has_children = item.children is defined and item.children %}{% if _has_children %}
+              ExpansionTile(
+                leading: Icon(_iconFromString('{{ item.icon }}')),
+                title: Text('{{ item.label }}'),
+                initiallyExpanded:
+                    state.expandedGroups.contains('{{ item.label }}'),
+                onExpansionChanged: (bool expanded) =>
+                    cubit.toggleGroup('{{ item.label }}'),
+{% if item.badge is defined and item.badge is not none %}
+                trailing: _buildBadge(context, {{ item.badge }}),
 {% endif %}
-        ),
+                children: <Widget>[
+{% for child in item.children %}
+                  NavigationDrawerDestination(
+                    icon: Icon(_iconFromString('{{ child.icon }}')),
+                    label: Text('{{ child.label }}'),
+                  ),
+{% if not loop.last %}
+                  const Divider(indent: 72.0),
 {% endif %}
 {% endfor %}
-      ],
+                ],
+              ),
+{% else %}
+              NavigationDrawerDestination(
+                icon: Icon(_iconFromString('{{ item.icon }}')),
+{% if item.badge is defined and item.badge is not none %}
+                label: Row(
+                  children: <Widget>[
+                    Expanded(child: Text('{{ item.label }}')),
+                    _buildBadge(context, {{ item.badge }}),
+                  ],
+                ),
+{% else %}
+                label: Text('{{ item.label }}'),
+{% endif %}
+              ),
+{% endif %}
+{% endfor %}
+            ],
+          );
+        },
+      ),
     );
   }
 
   /// Builds a small badge widget displaying a count.
-  Widget _buildBadge(int count) {
+  Widget _buildBadge(BuildContext context, int count) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
       decoration: BoxDecoration(
