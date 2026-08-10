@@ -76,6 +76,12 @@ class DataColumnConfig {
 /// Works in any Flutter app that provides a Material 3 [ThemeData].
 /// Sort, selection, and page state are owned by [{{ widget_class_name }}Cubit]
 /// (hydrated) so they survive reloads.
+///
+/// Data is supplied pre-loaded via [items]. If the caller loads [items]
+/// asynchronously and that load fails, it should report the failure via
+/// `context.read<{{ widget_class_name }}Cubit>().failLoad(message)` (and
+/// `clearError()` after a successful retry) so the widget's BlocConsumer
+/// listener fires the load-failed toast — see data_table_cubit.dart.
 class {{ widget_class_name }} extends StatefulWidget {
   /// Creates a [{{ widget_class_name }}].
   ///
@@ -214,17 +220,22 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
                           !pageItems.every(({{ data_type_name }} i) =>
                               state.selectedIds.contains(_getItemId(i))),
                       onChanged: (bool? value) {
+                        // Compute the post-toggle set FIRST, emit once via
+                        // setSelection, and report the NEW set — `state` is
+                        // the builder-closure snapshot and does not update
+                        // between cubit calls within this frame.
+                        final Set<String> next =
+                            Set<String>.from(state.selectedIds);
                         for (final {{ data_type_name }} item in pageItems) {
                           final String id = _getItemId(item);
-                          final bool selected =
-                              state.selectedIds.contains(id);
-                          if (value == true && !selected) {
-                            cubit.toggleSelection(id);
-                          } else if (value != true && selected) {
-                            cubit.toggleSelection(id);
+                          if (value == true) {
+                            next.add(id);
+                          } else {
+                            next.remove(id);
                           }
                         }
-                        widget.onSelect?.call(state.selectedIds);
+                        cubit.setSelection(next);
+                        widget.onSelect?.call(next);
                       },
                     ),
 {% for col in columns %}
@@ -266,16 +277,30 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
                       return DataRow(
                         selected: isSelected,
                         onSelectChanged: (bool? value) {
-                          cubit.toggleSelection(id);
-                          widget.onSelect?.call(state.selectedIds);
+                          final Set<String> next =
+                              Set<String>.from(state.selectedIds);
+                          if (value == true) {
+                            next.add(id);
+                          } else {
+                            next.remove(id);
+                          }
+                          cubit.setSelection(next);
+                          widget.onSelect?.call(next);
                         },
                         cells: <DataCell>[
                           DataCell(
                             Checkbox(
                               value: isSelected,
                               onChanged: (bool? value) {
-                                cubit.toggleSelection(id);
-                                widget.onSelect?.call(state.selectedIds);
+                                final Set<String> next =
+                                    Set<String>.from(state.selectedIds);
+                                if (value == true) {
+                                  next.add(id);
+                                } else {
+                                  next.remove(id);
+                                }
+                                cubit.setSelection(next);
+                                widget.onSelect?.call(next);
                               },
                             ),
                           ),
