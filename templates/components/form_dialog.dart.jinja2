@@ -111,19 +111,11 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
     _{{ field.name }}Controller = TextEditingController(
       text: item?.{{ field.name }}?.toString() ?? '',
     );
-{% elif field.type == "enum" %}
-    if (item != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          context.read<{{ widget_class_name }}Cubit>().updateField(
-                '{{ field.name }}',
-                item.{{ field.name }}?.toString(),
-              );
-        }
-      });
-    }
 {% endif %}
 {% endfor %}
+    // Enum-typed field seeds are passed to the cubit's constructor at
+    // BlocProvider creation time (see build) -- no post-frame
+    // context.read from above the provider.
   }
 
   @override
@@ -143,7 +135,16 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<{{ widget_class_name }}Cubit>(
-      create: (_) => {{ widget_class_name }}Cubit(instanceId: widget.instanceId),
+      // Enum-typed field seeds are forwarded to the cubit constructor so
+      // the initial fieldValues are set BELOW the provider -- no
+      // post-frame context.read from the State's element (which sits
+      // above the BlocProvider and would throw ProviderNotFoundException).
+      create: (_) => {{ widget_class_name }}Cubit(
+        instanceId: widget.instanceId,
+{% for field in fields %}{% if field.type == "enum" %}
+        initial{{ field.name | capitalize }}: widget.item?.{{ field.name }}?.toString(),
+{% endif %}{% endfor %}
+      ),
       child: BlocConsumer<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
         listenWhen: (prev, curr) =>
             prev.errorMessage != curr.errorMessage && curr.errorMessage != null,
@@ -286,7 +287,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
               ),
               ElevatedButton(
                 onPressed:
-                    state.isSubmitting ? null : () => _submit(cubit),
+                    state.isSubmitting ? null : () => _submit(cubit, state),
                 child: state.isSubmitting
                     ? const SizedBox(
                         height: 20.0,
@@ -306,19 +307,26 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   // Submit
   // ---------------------------------------------------------------------------
 
-  Future<void> _submit({{ widget_class_name }}Cubit cubit) async {
+  Future<void> _submit(
+    {{ widget_class_name }}Cubit cubit,
+    {{ widget_class_name }}State state,
+  ) async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     cubit.submit();
 
+    // Read fieldValues from the builder-closure `state` captured at
+    // submit-tap time -- NOT from cubit.state after the submit() emit,
+    // so a future submit() that mutates fieldValues cannot silently
+    // change the submitted data.
     final Map<String, dynamic> data = <String, dynamic>{
 {% for field in fields %}
 {% if field.type == "text" or field.type == "number" %}
       '{{ field.name }}': _{{ field.name }}Controller.text.trim(),
 {% elif field.type == "enum" %}
-      '{{ field.name }}': cubit.state.fieldValues['{{ field.name }}'],
+      '{{ field.name }}': state.fieldValues['{{ field.name }}'],
 {% endif %}
 {% endfor %}
     };

@@ -2,13 +2,14 @@
 ///
 /// Generated from form_dialog_state.dart.jinja2 -- do not edit by hand.
 /// Plain Dart state class consumed by {{ widget_class_name }}Cubit.
-/// ``mode`` and ``fieldValues`` are persisted via hydrated_bloc so
-/// partially-filled forms survive reload. ``isSubmitting`` and
-/// ``errorMessage`` are TRANSIENT: they exist on the class (the widget's
-/// BlocConsumer listener reads ``errorMessage`` to fire the save-failed
-/// toast) but are excluded from ``toJson``/``fromJson``. The cubit's
-/// literal ``storagePrefix`` keeps the hydration key stable across
-/// minified builds.
+/// ``fieldValues`` are persisted via hydrated_bloc so partially-filled
+/// forms survive reload. ``isSubmitting`` and ``errorMessage`` are
+/// TRANSIENT: they exist on the class (the widget's BlocConsumer listener
+/// reads ``errorMessage`` to fire the save-failed toast) but are excluded
+/// from ``toJson``/``fromJson``. The dialog mode (create vs edit) is NOT
+/// persisted — the widget derives it from ``widget.item != null``. The
+/// cubit's literal ``storagePrefix`` keeps the hydration key stable
+/// across minified builds.
 library;
 
 // ---------------------------------------------------------------------------
@@ -17,22 +18,16 @@ library;
 
 /// Immutable state for [{{ widget_class_name }}].
 ///
-/// Holds the dialog mode, the current field values, and the transient
-/// submission status. New instances are produced exclusively via
-/// [copyWith]; the cubit emits them to drive widget rebuilds.
+/// Holds the current field values and the transient submission status.
+/// New instances are produced exclusively via [copyWith]; the cubit emits
+/// them to drive widget rebuilds.
 class {{ widget_class_name }}State {
   /// Creates a [{{ widget_class_name }}State] with the given values.
   const {{ widget_class_name }}State({
-    this.mode = 'create',
     this.fieldValues = const <String, dynamic>{},
     this.isSubmitting = false,
     this.errorMessage,
   });
-
-  /// The dialog mode: ``'create'`` or ``'edit'``.
-  ///
-  /// Defaults to ``'create'``.
-  final String mode;
 
   /// Current values of the form fields, keyed by field name.
   ///
@@ -53,13 +48,11 @@ class {{ widget_class_name }}State {
 
   /// Returns a copy of this state with the given fields replaced.
   {{ widget_class_name }}State copyWith({
-    String? mode,
     Map<String, dynamic>? fieldValues,
     bool? isSubmitting,
     String? errorMessage,
   }) {
     return {{ widget_class_name }}State(
-      mode: mode ?? this.mode,
       fieldValues: fieldValues ?? this.fieldValues,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -70,7 +63,6 @@ class {{ widget_class_name }}State {
   ///
   /// Transient fields (``isSubmitting``, ``errorMessage``) are excluded.
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'mode': mode,
         'fieldValues': fieldValues,
       };
 
@@ -82,7 +74,6 @@ class {{ widget_class_name }}State {
   /// to their defaults.
   factory {{ widget_class_name }}State.fromJson(Map<String, dynamic> json) {
     return {{ widget_class_name }}State(
-      mode: json['mode'] as String? ?? 'create',
       fieldValues: (json['fieldValues'] as Map<String, dynamic>?) ??
           const <String, dynamic>{},
     );
