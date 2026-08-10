@@ -8,7 +8,6 @@
 /// snippet.
 library;
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import 'search_bar_state.dart';
@@ -61,7 +60,11 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
   }
 
   /// Clears the query and any active error.
-  void clear() {
+  ///
+  /// Named `clearQuery` (not `clear`) so it does not collide with
+  /// [HydratedMixin.clear], which returns `Future<void>` and wipes
+  /// hydrated storage.
+  void clearQuery() {
     emit(const {{ widget_class_name }}State());
   }
 
