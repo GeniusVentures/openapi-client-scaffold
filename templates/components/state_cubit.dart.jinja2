@@ -29,8 +29,13 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
   ///
   /// [instanceId] discriminates multi-instance persistence -- pass a
   /// unique value when two state widgets share a screen.
+  ///
+  /// The initial variant is ``'{{ state_type }}'`` (the template-render-time
+  /// ``state_type``); the widget renders whichever variant
+  /// ``state.stateType`` holds at runtime, so [showLoading], [showEmpty],
+  /// and [showError] flip the UI live.
   {{ widget_class_name }}Cubit({this.instanceId = ''})
-      : super(const {{ widget_class_name }}State()) {
+      : super(const {{ widget_class_name }}State(stateType: '{{ state_type }}')) {
     hydrate(
       onError: (error, stackTrace) => HydrationErrorBehavior.retain,
     );
