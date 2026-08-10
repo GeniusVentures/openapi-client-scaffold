@@ -7,6 +7,8 @@
 /// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
 library;
 
+import 'dart:async' show FutureOr;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
@@ -97,7 +99,7 @@ class {{ widget_class_name }} extends StatefulWidget {
   /// [resultGroups] accordingly.  May be synchronous or return a [Future];
   /// asynchronous failures are routed to the cubit's ``failSearch`` so the
   /// BlocConsumer listener can fire the search-failed toast.
-  final void Function(String query)? onSearch;
+  final FutureOr<void> Function(String query)? onSearch;
 
   /// Called when the user taps a search result.
   ///
@@ -148,7 +150,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
 
   void _clearSearch({{ widget_class_name }}Cubit cubit) {
     _controller.clear();
-    cubit.clear();
+    cubit.clearQuery();
     setState(() => _showResults = false);
   }
 

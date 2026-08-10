@@ -13,6 +13,8 @@
 // Auto-generated from form_dialog.dart.jinja2 — do not edit by hand.
 // Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
 
+import 'dart:async' show FutureOr;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
@@ -21,6 +23,26 @@ import 'package:frontend_scaffold/components/toast/toast_manager.dart' show Toas
    literal ``storagePrefix`` at hydration time (see form_dialog_cubit.dart). #}
 import 'form_dialog_cubit.dart';
 import 'form_dialog_state.dart';
+
+/// Placeholder item type for the standalone render.
+///
+/// The template emits a concrete `{{ data_type_name }}` reference so the
+/// generated dialog analyzes clean out-of-the-box. Consuming apps replace
+/// this stub with their real domain model (matching the field accessors
+/// below) by editing the `_vars.json` `data_type_name` and supplying their
+/// own type via the `item` parameter.
+class {{ data_type_name }} {
+  /// Creates a [{{ data_type_name }}] placeholder.
+  const {{ data_type_name }}({
+{% for field in fields %}
+    this.{{ field.name }},
+{% endfor %}
+  });
+{% for field in fields %}
+  /// Field accessor `{{ field.name }}`.
+  final Object? {{ field.name }};
+{% endfor %}
+}
 
 /// M3 dialog form for creating or editing a {{ data_type_name }}.
 ///
@@ -57,7 +79,7 @@ class {{ widget_class_name }} extends StatefulWidget {
   /// May be synchronous or return a [Future]; the dialog awaits it so
   /// asynchronous saves drive the cubit's ``completeSave``/``failSave``
   /// transitions.
-  final void Function(Map<String, dynamic> data)? onSave;
+  final FutureOr<void> Function(Map<String, dynamic> data)? onSave;
 
   /// Called when the user cancels the dialog.
   final VoidCallback? onCancel;

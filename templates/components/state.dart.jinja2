@@ -111,7 +111,7 @@ class {{ widget_class_name }} extends StatelessWidget {
                   Text(
                     state.lastError ?? '{{ error_message }}',
                     style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onErrorContainer.withOpacity(0.8),
+                      color: colorScheme.onErrorContainer.withValues(alpha: 0.8),
                     ),
                   ),
                   {% if error_retry_label %}
@@ -153,7 +153,7 @@ class {{ widget_class_name }} extends StatelessWidget {
                   Icon(
                     Icons.{{ empty_icon }},
                     size: 64.0,
-                    color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16.0),
                   Text(

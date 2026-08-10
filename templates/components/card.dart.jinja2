@@ -21,7 +21,7 @@ import 'card_state.dart';
 
 /// A Material 3 card with configurable variant and content slots.
 ///
-/// The variant selects the constructor: [Card.elevated], [Card.outlined],
+/// The variant selects the constructor: [Card.new] (elevated), [Card.outlined],
 /// or [Card.filled].  It is owned by the cubit state
 /// ([{{ widget_class_name }}State.cardVariant]) so a hydrated selection
 /// survives reloads; the template-rendered ``card_variant`` is the default.
@@ -141,7 +141,7 @@ class {{ widget_class_name }} extends StatelessWidget {
           // --- Select variant (state-driven; hydrated selection wins) ---
           {% if card_variant == "outlined" %}
           if (state.cardVariant == 'elevated') {
-            return Card.elevated(
+            return Card(
               elevation: 1.0,
               shape: shape,
               child: cardChild,
@@ -160,7 +160,7 @@ class {{ widget_class_name }} extends StatelessWidget {
           );
           {% elif card_variant == "filled" %}
           if (state.cardVariant == 'elevated') {
-            return Card.elevated(
+            return Card(
               elevation: 1.0,
               shape: shape,
               child: cardChild,
@@ -191,7 +191,7 @@ class {{ widget_class_name }} extends StatelessWidget {
             );
           }
           // surfaceTint opacity guidance (M3 level 1): {{ tokens.elevation.level1.surfaceTint }}
-          return Card.elevated(
+          return Card(
             // Elevated cards use a subtle elevation of 1.0 dp.
             elevation: 1.0,
             shape: shape,
