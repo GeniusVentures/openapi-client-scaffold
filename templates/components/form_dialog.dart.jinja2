@@ -11,8 +11,16 @@
   No dependency on Riverpod, GeniusTheme, or api_client.
 #}
 // Auto-generated from form_dialog.dart.jinja2 — do not edit by hand.
+// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
+
+{# Consumer note: generated code also reads [{{ widget_class_name }}Cubit]'s
+   literal ``storagePrefix`` at hydration time (see form_dialog_cubit.dart). #}
+import 'form_dialog_cubit.dart';
+import 'form_dialog_state.dart';
 
 /// M3 dialog form for creating or editing a {{ data_type_name }}.
 ///
@@ -22,19 +30,33 @@ import 'package:flutter/material.dart';
 ///
 /// The [onSave] callback receives a `Map<String, dynamic>` of field values.
 /// The [onCancel] callback is invoked when the user dismisses the dialog.
+/// Field values, submission, and save-failure state are owned by
+/// [{{ widget_class_name }}Cubit] (hydrated); the save-failed toast fires
+/// from the cubit's ``errorMessage`` transition.
 class {{ widget_class_name }} extends StatefulWidget {
   /// Creates a [{{ widget_class_name }}].
   const {{ widget_class_name }}({
     super.key,
+    this.instanceId = '',
     this.item,
     this.onSave,
     this.onCancel,
   });
 
+  /// Multi-instance hydration discriminator forwarded to the Cubit.
+  ///
+  /// Hydrated cubits sharing a [storagePrefix] disambiguate by this id;
+  /// leave empty for a single (default) instance.
+  final String instanceId;
+
   /// The existing item to edit, or `null` for create mode.
   final {{ data_type_name }}? item;
 
   /// Called when the user submits the form with validated field data.
+  ///
+  /// May be synchronous or return a [Future]; the dialog awaits it so
+  /// asynchronous saves drive the cubit's ``completeSave``/``failSave``
+  /// transitions.
   final void Function(Map<String, dynamic> data)? onSave;
 
   /// Called when the user cancels the dialog.
@@ -46,14 +68,10 @@ class {{ widget_class_name }} extends StatefulWidget {
 
 class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isSubmitting = false;
-  String? _errorMessage;
 
 {% for field in fields %}
 {% if field.type == "text" or field.type == "number" %}
   late final TextEditingController _{{ field.name }}Controller;
-{% elif field.type == "enum" %}
-  String? _selected{{ field.name | capitalize }};
 {% endif %}
 {% endfor %}
 
@@ -73,7 +91,14 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
     );
 {% elif field.type == "enum" %}
     if (item != null) {
-      _selected{{ field.name | capitalize }} = item.{{ field.name }}?.toString();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<{{ widget_class_name }}Cubit>().updateField(
+                '{{ field.name }}',
+                item.{{ field.name }}?.toString(),
+              );
+        }
+      });
     }
 {% endif %}
 {% endfor %}
@@ -95,139 +120,163 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final bool isEdit = widget.item != null;
+    return BlocProvider<{{ widget_class_name }}Cubit>(
+      create: (_) => {{ widget_class_name }}Cubit(instanceId: widget.instanceId),
+      child: BlocConsumer<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
+        listenWhen: (prev, curr) =>
+            prev.errorMessage != curr.errorMessage && curr.errorMessage != null,
+        listener: (context, state) {
+          showToast(
+            context,
+            state.errorMessage!,
+            title: 'Save failed',
+            type: ToastType.error,
+          );
+        },
+        builder: (context, state) {
+          final {{ widget_class_name }}Cubit cubit =
+              context.read<{{ widget_class_name }}Cubit>();
+          final ThemeData theme = Theme.of(context);
+          final bool isEdit = widget.item != null;
 
-    return AlertDialog(
-      title: Text(
-        isEdit
-            ? 'Edit {{ widget_class_name | replace("Dialog", "") | replace("Form", "") | trim }}'
-            : 'Create {{ widget_class_name | replace("Dialog", "") | replace("Form", "") | trim }}',
-      ),
-      content: SizedBox(
-        width: 480.0,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
+          return AlertDialog(
+            title: Text(
+              isEdit
+                  ? 'Edit {{ widget_class_name | replace("Dialog", "") | replace("Form", "") | trim }}'
+                  : 'Create {{ widget_class_name | replace("Dialog", "") | replace("Form", "") | trim }}',
+            ),
+            content: SizedBox(
+              width: 480.0,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
 {% for field in fields %}
 {% if field.type == "text" %}
-              TextFormField(
-                controller: _{{ field.name }}Controller,
-                decoration: InputDecoration(
-                  labelText: '{{ field.label }}',
-                  border: const OutlineInputBorder(),
-                ),
+                    TextFormField(
+                      controller: _{{ field.name }}Controller,
+                      decoration: InputDecoration(
+                        labelText: '{{ field.label }}',
+                        border: const OutlineInputBorder(),
+                      ),
 {% if field.required %}
-                validator: (String? value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return '{{ field.label }} is required';
-                  }
-                  return null;
-                },
-{% endif %}
-                enabled: !_isSubmitting,
-                textInputAction: TextInputAction.next,
-              ),
-{% elif field.type == "number" %}
-              TextFormField(
-                controller: _{{ field.name }}Controller,
-                decoration: InputDecoration(
-                  labelText: '{{ field.label }}',
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-{% if field.required %}
-                validator: (String? value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return '{{ field.label }} is required';
-                  }
-                  return null;
-                },
-{% endif %}
-                enabled: !_isSubmitting,
-                textInputAction: TextInputAction.next,
-              ),
-{% elif field.type == "enum" %}
-              DropdownButtonFormField<String>(
-                value: _selected{{ field.name | capitalize }},
-                decoration: InputDecoration(
-                  labelText: '{{ field.label }}',
-                  border: const OutlineInputBorder(),
-                ),
-                items: <String>[
-{% for v in field.enum_values %}
-                  '{{ v }}',
-{% endfor %}
-                ].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value[0].toUpperCase() + value.substring(1),
-                    ),
-                  );
-                }).toList(),
-{% if field.required %}
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return '{{ field.label }} is required';
-                  }
-                  return null;
-                },
-{% endif %}
-                onChanged: _isSubmitting
-                    ? null
-                    : (String? value) {
-                        if (value != null) {
-                          setState(() {
-                            _selected{{ field.name | capitalize }} = value;
-                          });
+                      validator: (String? value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return '{{ field.label }} is required';
                         }
+                        return null;
                       },
-              ),
+{% endif %}
+                      enabled: !state.isSubmitting,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (String value) =>
+                          cubit.updateField('{{ field.name }}', value),
+                    ),
+{% elif field.type == "number" %}
+                    TextFormField(
+                      controller: _{{ field.name }}Controller,
+                      decoration: InputDecoration(
+                        labelText: '{{ field.label }}',
+                        border: const OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+{% if field.required %}
+                      validator: (String? value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return '{{ field.label }} is required';
+                        }
+                        return null;
+                      },
+{% endif %}
+                      enabled: !state.isSubmitting,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (String value) =>
+                          cubit.updateField('{{ field.name }}', value),
+                    ),
+{% elif field.type == "enum" %}
+                    DropdownButtonFormField<String>(
+                      value: state.fieldValues['{{ field.name }}'] as String?,
+                      decoration: InputDecoration(
+                        labelText: '{{ field.label }}',
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: <String>[
+{% for v in field.enum_values %}
+                        '{{ v }}',
+{% endfor %}
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value[0].toUpperCase() + value.substring(1),
+                          ),
+                        );
+                      }).toList(),
+{% if field.required %}
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return '{{ field.label }} is required';
+                        }
+                        return null;
+                      },
+{% endif %}
+                      onChanged: state.isSubmitting
+                          ? null
+                          : (String? value) {
+                              if (value != null) {
+                                cubit.updateField('{{ field.name }}', value);
+                              }
+                            },
+                    ),
 {% endif %}
 {% if not loop.last %}
-              const SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
 {% endif %}
 {% endfor %}
-              // Inline error display
-              if (_errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Text(
-                    _errorMessage!,
-                    style: TextStyle(
-                      color: theme.colorScheme.error,
-                    ),
-                  ),
+                    // Inline error display
+                    if (state.errorMessage != null &&
+                        state.errorMessage!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          state.errorMessage!,
+                          style: TextStyle(
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: state.isSubmitting
+                    ? null
+                    : () {
+                        cubit.cancel();
+                        widget.onCancel?.call();
+                        Navigator.of(context).pop();
+                      },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed:
+                    state.isSubmitting ? null : () => _submit(cubit),
+                child: state.isSubmitting
+                    ? const SizedBox(
+                        height: 20.0,
+                        width: 20.0,
+                        child: CircularProgressIndicator(strokeWidth: 2.0),
+                      )
+                    : Text(isEdit ? 'Save Changes' : 'Create'),
+              ),
             ],
-          ),
-        ),
+          );
+        },
       ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: _isSubmitting
-              ? null
-              : () {
-                  widget.onCancel?.call();
-                  Navigator.of(context).pop();
-                },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _isSubmitting ? null : _submit,
-          child: _isSubmitting
-              ? const SizedBox(
-                  height: 20.0,
-                  width: 20.0,
-                  child: CircularProgressIndicator(strokeWidth: 2.0),
-                )
-              : Text(isEdit ? 'Save Changes' : 'Create'),
-        ),
-      ],
     );
   }
 
@@ -235,38 +284,33 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   // Submit
   // ---------------------------------------------------------------------------
 
-  Future<void> _submit() async {
+  Future<void> _submit({{ widget_class_name }}Cubit cubit) async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    setState(() {
-      _isSubmitting = true;
-      _errorMessage = null;
-    });
+    cubit.submit();
 
     final Map<String, dynamic> data = <String, dynamic>{
 {% for field in fields %}
 {% if field.type == "text" or field.type == "number" %}
       '{{ field.name }}': _{{ field.name }}Controller.text.trim(),
 {% elif field.type == "enum" %}
-      '{{ field.name }}': _selected{{ field.name | capitalize }},
+      '{{ field.name }}': cubit.state.fieldValues['{{ field.name }}'],
 {% endif %}
 {% endfor %}
     };
 
     try {
-      widget.onSave?.call(data);
+      await widget.onSave?.call(data);
+      cubit.completeSave();
       if (mounted) {
         Navigator.of(context).pop();
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-          _errorMessage = e.toString();
-        });
-      }
+      // failSave is the ONLY transition that sets errorMessage -- the
+      // BlocConsumer listener above fires the save-failed toast from it.
+      cubit.failSave(e.toString());
     }
   }
 }

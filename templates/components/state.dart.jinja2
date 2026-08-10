@@ -6,9 +6,21 @@
 /// The variant is fixed at template render time via ``state_type``.
 /// Standalone Material 3 widget consuming Theme.of(context) directly;
 /// no Riverpod or GeniusTheme dependency.
+/// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+{% if state_type == "loading" %}
+import 'package:frontend_scaffold/components/loading/loading.dart';
+{% elif state_type == "error" %}
+import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
+{% endif %}
+
+{# Consumer note: generated code also reads [{{ widget_class_name }}Cubit]'s
+   literal ``storagePrefix`` at hydration time (see state_cubit.dart). #}
+import 'state_cubit.dart';
+import 'state_view_state.dart';
 
 // ---------------------------------------------------------------------------
 // Public widget
@@ -28,9 +40,16 @@ import 'package:flutter/material.dart';
 class {{ widget_class_name }} extends StatelessWidget {
   /// Creates a [{{ widget_class_name }}].
   const {{ widget_class_name }}({
+    this.instanceId = '',
     this.onAction,
     super.key,
   });
+
+  /// Multi-instance hydration discriminator forwarded to the Cubit.
+  ///
+  /// Hydrated cubits sharing a [storagePrefix] disambiguate by this id;
+  /// leave empty for a single (default) instance.
+  final String instanceId;
 
   /// Callback for the action button (CTA for empty state, retry for error).
   ///
@@ -40,200 +59,157 @@ class {{ widget_class_name }} extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final TextTheme textTheme = Theme.of(context).textTheme;
+    return BlocProvider<{{ widget_class_name }}Cubit>(
+      create: (_) => {{ widget_class_name }}Cubit(instanceId: instanceId),
+{% if state_type == "error" %}
+      child: BlocConsumer<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
+        listenWhen: (prev, curr) =>
+            prev.lastError != curr.lastError && curr.lastError != null,
+        listener: (context, state) {
+          showToast(
+            context,
+            state.lastError!,
+            title: 'Load failed',
+            type: ToastType.error,
+          );
+        },
+        builder: (context, state) {
+          final ColorScheme colorScheme = Theme.of(context).colorScheme;
+          final TextTheme textTheme = Theme.of(context).textTheme;
+          final {{ widget_class_name }}Cubit cubit =
+              context.read<{{ widget_class_name }}Cubit>();
 
-{% if state_type == "empty" %}
-    // =====================================================================
-    // Empty state: large faded icon + headline + subtitle + CTA button
-    // =====================================================================
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(
-              Icons.{{ empty_icon }},
-              size: 64.0,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16.0),
-            Text(
-              '{{ empty_title }}',
-              style: textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              '{{ empty_subtitle }}',
-              textAlign: TextAlign.center,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            {% if empty_cta_label %}
-            const SizedBox(height: 24.0),
-            ElevatedButton.icon(
-              onPressed: onAction,
-              icon: const Icon(Icons.{{ empty_cta_icon }}),
-              label: const Text('{{ empty_cta_label }}'),
-            ),
-            {% endif %}
-          ],
-        ),
-      ),
-    );
-
-{% elif state_type == "loading" %}
-    // =====================================================================
-    // Loading skeleton: shimmer-style placeholder rows
-    // =====================================================================
-    // TODO: Add shimmer animation with AnimationController for production use.
-    //       The static skeleton below provides the layout structure;
-    //       animation is a polish step (Phase 5 / post-MVP).
-    {% if skeleton_item_count > 0 %}
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: <Widget>[
-          {% for i in range(skeleton_item_count) %}
-          Container(
-            height: {{ skeleton_item_height }},
-            margin: const EdgeInsets.only(bottom: 8.0),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(
-                {{ tokens.shape.corner.small }},
-              ),
-            ),
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Container(
-                    width: 40.0,
-                    height: 40.0,
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest
-                          .withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12.0),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          // ============================================================
+          // Error panel: inline card with icon, message, and retry button
+          // ============================================================
+          return Card(
+            color: colorScheme.errorContainer,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
                     children: <Widget>[
-                      Container(
-                        height: 12.0,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest
-                              .withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(
-                            {{ tokens.shape.corner.extraSmall }},
-                          ),
-                        ),
+                      Icon(
+                        Icons.{{ error_icon }},
+                        color: colorScheme.onErrorContainer,
                       ),
-                      const SizedBox(height: 8.0),
-                      Container(
-                        height: 12.0,
-                        // ~60 % width for a realistic text-line silhouette.
-                        width: 150.0,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest
-                              .withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(
-                            {{ tokens.shape.corner.extraSmall }},
+                      const SizedBox(width: 12.0),
+                      Expanded(
+                        child: Text(
+                          '{{ error_title }}',
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onErrorContainer,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8.0),
+                  Text(
+                    state.lastError ?? '{{ error_message }}',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onErrorContainer.withOpacity(0.8),
+                    ),
+                  ),
+                  {% if error_retry_label %}
+                  const SizedBox(height: 16.0),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      cubit.retry();
+                      onAction?.call();
+                    },
+                    icon: const Icon(Icons.{{ error_retry_icon }}),
+                    label: const Text('{{ error_retry_label }}'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.onErrorContainer,
+                    ),
+                  ),
+                  {% endif %}
+                ],
+              ),
             ),
-          ),
-          {% endfor %}
-        ],
+          );
+        },
       ),
-    );
-    {% else %}
-    // Fallback: zero skeleton items — show a simple progress indicator.
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-    {% endif %}
+{% else %}
+      child: BlocBuilder<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
+        builder: (context, state) {
+          final ColorScheme colorScheme = Theme.of(context).colorScheme;
+          final TextTheme textTheme = Theme.of(context).textTheme;
 
-{% elif state_type == "error" %}
-    // =====================================================================
-    // Error panel: inline card with icon, message, and retry button
-    // =====================================================================
-    return Card(
-      color: colorScheme.errorContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(
-                  Icons.{{ error_icon }},
-                  color: colorScheme.onErrorContainer,
-                ),
-                const SizedBox(width: 12.0),
-                Expanded(
-                  child: Text(
-                    '{{ error_title }}',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onErrorContainer,
+{% if state_type == "empty" %}
+          // ============================================================
+          // Empty state: large faded icon + headline + subtitle + CTA
+          // ============================================================
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(
+                    Icons.{{ empty_icon }},
+                    size: 64.0,
+                    color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 16.0),
+                  Text(
+                    '{{ empty_title }}',
+                    style: textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              '{{ error_message }}',
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onErrorContainer.withOpacity(0.8),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    '{{ empty_subtitle }}',
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  {% if empty_cta_label %}
+                  const SizedBox(height: 24.0),
+                  ElevatedButton.icon(
+                    onPressed: onAction,
+                    icon: const Icon(Icons.{{ empty_cta_icon }}),
+                    label: const Text('{{ empty_cta_label }}'),
+                  ),
+                  {% endif %}
+                ],
               ),
             ),
-            {% if error_retry_label %}
-            const SizedBox(height: 16.0),
-            OutlinedButton.icon(
-              onPressed: onAction,
-              icon: const Icon(Icons.{{ error_retry_icon }}),
-              label: const Text('{{ error_retry_label }}'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.onErrorContainer,
-              ),
-            ),
-            {% endif %}
-          ],
-        ),
-      ),
-    );
+          );
+
+{% elif state_type == "loading" %}
+          // ============================================================
+          // Loading: scaffold Loading widget (BLOC-03 anchor) — the one
+          // direct scaffold widget consumption match; replaces the v1.0
+          // inline shimmer skeleton for this variant.
+          // ============================================================
+          return const Center(
+            child: Loading(text: 'Loading…'),
+          );
 
 {% else %}
-    // =====================================================================
-    // Unknown state type — template debugging fallback
-    // =====================================================================
-    return Center(
-      child: Text(
-        'Unknown state type: {{ state_type }}',
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.error,
-        ),
-      ),
-    );
+          // ============================================================
+          // Unknown state type — template debugging fallback
+          // ============================================================
+          return Center(
+            child: Text(
+              'Unknown state type: {{ state_type }}',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.error,
+              ),
+            ),
+          );
 
 {% endif %}
+        },
+      ),
+{% endif %}
+    );
   }
 }

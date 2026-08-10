@@ -2,10 +2,13 @@
 ///
 /// Generated from data_table_state.dart.jinja2 -- do not edit by hand.
 /// Plain Dart state class consumed by {{ widget_class_name }}Cubit.
-/// All fields are persisted via hydrated_bloc -- this component has no
-/// transient fields, so the user's sort order, selection, and page all
-/// survive reload. The cubit's literal ``storagePrefix`` keeps the
-/// hydration key stable across minified builds.
+/// ``errorMessage`` is TRANSIENT: it exists on the class (the widget's
+/// BlocConsumer listener reads it to fire the load-failed toast) but is
+/// excluded from toJson/fromJson so a stale error never survives reload.
+/// The remaining fields are persisted via hydrated_bloc, so the user's
+/// sort order, selection, and page all survive reload. The cubit's
+/// literal ``storagePrefix`` keeps the hydration key stable across
+/// minified builds.
 library;
 
 // ---------------------------------------------------------------------------
@@ -15,9 +18,9 @@ library;
 /// Immutable state for [{{ widget_class_name }}].
 ///
 /// Holds the current sort column and direction, the set of selected row
-/// ids, and the current page index. New instances are produced
-/// exclusively via [copyWith]; the cubit emits them to drive widget
-/// rebuilds.
+/// ids, the current page index, and the transient load-error message.
+/// New instances are produced exclusively via [copyWith]; the cubit
+/// emits them to drive widget rebuilds.
 class {{ widget_class_name }}State {
   /// Creates a [{{ widget_class_name }}State] with the given values.
   const {{ widget_class_name }}State({
@@ -25,6 +28,7 @@ class {{ widget_class_name }}State {
     this.sortAscending = true,
     this.selectedIds = const <String>{},
     this.currentPage = 0,
+    this.errorMessage,
   });
 
   /// Index of the column the table is sorted by, or ``null`` when the
@@ -46,22 +50,32 @@ class {{ widget_class_name }}State {
   /// Defaults to ``0``.
   final int currentPage;
 
+  /// Transient error message from the last failed data load.
+  ///
+  /// Read by the widget's BlocConsumer listener to fire the failure
+  /// toast; excluded from hydrated persistence.
+  final String? errorMessage;
+
   /// Returns a copy of this state with the given fields replaced.
   {{ widget_class_name }}State copyWith({
     int? sortColumnIndex,
     bool? sortAscending,
     Set<String>? selectedIds,
     int? currentPage,
+    String? errorMessage,
   }) {
     return {{ widget_class_name }}State(
       sortColumnIndex: sortColumnIndex ?? this.sortColumnIndex,
       sortAscending: sortAscending ?? this.sortAscending,
       selectedIds: selectedIds ?? this.selectedIds,
       currentPage: currentPage ?? this.currentPage,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   /// Serializes this state to a JSON map for hydrated_bloc persistence.
+  ///
+  /// The transient ``errorMessage`` field is excluded.
   Map<String, dynamic> toJson() => <String, dynamic>{
         if (sortColumnIndex != null) 'sortColumnIndex': sortColumnIndex,
         'sortAscending': sortAscending,

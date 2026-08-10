@@ -69,6 +69,19 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
     emit(state.copyWith(currentPage: page));
   }
 
+  /// Records a failed data load.
+  ///
+  /// This is the only transition that sets ``errorMessage`` -- the
+  /// widget's BlocConsumer listener fires the load-failed toast on it.
+  void failLoad(String message) {
+    emit(state.copyWith(errorMessage: message));
+  }
+
+  /// Clears the transient load-error message after a successful load.
+  void clearError() {
+    emit(state.copyWith(errorMessage: ''));
+  }
+
   /// Wipes hydrated storage and emits the default state (logout/reset flow).
   Future<void> reset() async {
     await clear();
