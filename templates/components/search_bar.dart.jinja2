@@ -123,6 +123,21 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   void initState() {
     super.initState();
     _focusNode.addListener(_onFocusChange);
+    // Seed the controller from the hydrated cubit so a restored query is
+    // visible after hot-restart (Pitfall 7: controller objects live in
+    // State, values live in the Cubit — sync them here, below the
+    // BlocProvider, after the first frame).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final String restoredQuery =
+          context.read<{{ widget_class_name }}Cubit>().state.query;
+      if (restoredQuery.isNotEmpty && _controller.text != restoredQuery) {
+        _controller.text = restoredQuery;
+        setState(() => _showResults = true);
+      }
+    });
   }
 
   void _onFocusChange() {
@@ -228,39 +243,39 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              {% for group in result_groups %}
-                              // -- Group: {{ group['group_label'] }} -----------
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                  vertical: 4.0,
+                              for (final SearchResultGroup group
+                                  in widget.resultGroups) ...<Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                    vertical: 4.0,
+                                  ),
+                                  child: Text(
+                                    group.label,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge
+                                        ?.copyWith(color: colorScheme.primary),
+                                  ),
                                 ),
-                                child: Text(
-                                  '{{ group['group_label'] }}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(color: colorScheme.primary),
-                                ),
-                              ),
-                              {% for item in group['items'] %}
-                              ListTile(
-                                dense: true,
-                                {% if 'icon' in item %}leading: Icon(_resolveIcon('{{ item['icon'] }}')),
-                                {% endif %}
-                                title: Text('{{ item['title'] }}'),
-                                {% if 'subtitle' in item %}subtitle: Text('{{ item['subtitle'] }}'),
-                                {% endif %}
-                                onTap: () {
-                                  cubit.selectResult('{{ item['id'] }}');
-                                  widget.onResultTap?.call('{{ item['id'] }}');
-                                },
-                              ),
-                              {% endfor %}
-                              {% if not loop.last %}
-                              const Divider(height: 1.0),
-                              {% endif %}
-                              {% endfor %}
+                                for (final SearchResult item in group.items)
+                                  ListTile(
+                                    dense: true,
+                                    leading: item.icon != null
+                                        ? Icon(_resolveIcon(item.icon!))
+                                        : null,
+                                    title: Text(item.title),
+                                    subtitle: item.subtitle != null
+                                        ? Text(item.subtitle!)
+                                        : null,
+                                    onTap: () {
+                                      cubit.selectResult(item.id);
+                                      widget.onResultTap?.call(item.id);
+                                    },
+                                  ),
+                                if (group != widget.resultGroups.last)
+                                  const Divider(height: 1.0),
+                              ],
                             ],
                           ),
                         ),
