@@ -1,0 +1,90 @@
+/// {{ widget_class_name }}State -- Immutable state for the {{ widget_class_name }} form dialog.
+///
+/// Generated from form_dialog_state.dart.jinja2 -- do not edit by hand.
+/// Plain Dart state class consumed by {{ widget_class_name }}Cubit.
+/// ``mode`` and ``fieldValues`` are persisted via hydrated_bloc so
+/// partially-filled forms survive reload. ``isSubmitting`` and
+/// ``errorMessage`` are TRANSIENT: they exist on the class (the widget's
+/// BlocConsumer listener reads ``errorMessage`` to fire the save-failed
+/// toast) but are excluded from ``toJson``/``fromJson``. The cubit's
+/// literal ``storagePrefix`` keeps the hydration key stable across
+/// minified builds.
+library;
+
+// ---------------------------------------------------------------------------
+// State class
+// ---------------------------------------------------------------------------
+
+/// Immutable state for [{{ widget_class_name }}].
+///
+/// Holds the dialog mode, the current field values, and the transient
+/// submission status. New instances are produced exclusively via
+/// [copyWith]; the cubit emits them to drive widget rebuilds.
+class {{ widget_class_name }}State {
+  /// Creates a [{{ widget_class_name }}State] with the given values.
+  const {{ widget_class_name }}State({
+    this.mode = 'create',
+    this.fieldValues = const <String, dynamic>{},
+    this.isSubmitting = false,
+    this.errorMessage,
+  });
+
+  /// The dialog mode: ``'create'`` or ``'edit'``.
+  ///
+  /// Defaults to ``'create'``.
+  final String mode;
+
+  /// Current values of the form fields, keyed by field name.
+  ///
+  /// Defaults to the empty map.
+  final Map<String, dynamic> fieldValues;
+
+  /// Whether a save submission is currently in flight.
+  ///
+  /// TRANSIENT -- never persisted.
+  final bool isSubmitting;
+
+  /// Message describing the most recent save failure, or ``null`` when
+  /// there is no active error. The widget's BlocConsumer listener fires
+  /// the save-failed toast on the transition to a non-null value.
+  ///
+  /// TRANSIENT -- never persisted.
+  final String? errorMessage;
+
+  /// Returns a copy of this state with the given fields replaced.
+  {{ widget_class_name }}State copyWith({
+    String? mode,
+    Map<String, dynamic>? fieldValues,
+    bool? isSubmitting,
+    String? errorMessage,
+  }) {
+    return {{ widget_class_name }}State(
+      mode: mode ?? this.mode,
+      fieldValues: fieldValues ?? this.fieldValues,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+
+  /// Serializes this state to a JSON map for hydrated_bloc persistence.
+  ///
+  /// Transient fields (``isSubmitting``, ``errorMessage``) are excluded.
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'mode': mode,
+        'fieldValues': fieldValues,
+      };
+
+  /// Deserializes a [{{ widget_class_name }}State] from hydrated JSON.
+  ///
+  /// Uses defensive casts throughout -- hydrated JSON can be hand-edited
+  /// on native targets, so every field falls back to its default when
+  /// missing or of the wrong type. Transient fields always deserialize
+  /// to their defaults.
+  factory {{ widget_class_name }}State.fromJson(Map<String, dynamic> json) {
+    return {{ widget_class_name }}State(
+      mode: json['mode'] as String? ?? 'create',
+      fieldValues: (json['fieldValues'] as Map<String, dynamic>?) ??
+          const <String, dynamic>{},
+    );
+  }
+}

@@ -1,0 +1,63 @@
+/// {{ widget_class_name }}State -- Immutable state for the {{ widget_class_name }} card.
+///
+/// Generated from card_state.dart.jinja2 -- do not edit by hand.
+/// Plain Dart state class consumed by {{ widget_class_name }}Cubit.
+/// All fields are persisted via hydrated_bloc -- this component has no
+/// transient fields. The cubit's literal ``storagePrefix`` keeps the
+/// hydration key stable across minified builds.
+library;
+
+// ---------------------------------------------------------------------------
+// State class
+// ---------------------------------------------------------------------------
+
+/// Immutable state for [{{ widget_class_name }}].
+///
+/// Holds the selected card variant and the label of the most recent
+/// action. New instances are produced exclusively via [copyWith]; the
+/// cubit emits them to drive widget rebuilds.
+class {{ widget_class_name }}State {
+  /// Creates a [{{ widget_class_name }}State] with the given values.
+  const {{ widget_class_name }}State({
+    this.cardVariant = 'elevated',
+    this.lastAction,
+  });
+
+  /// The M3 card variant: ``'elevated'``, ``'outlined'``, or ``'filled'``.
+  ///
+  /// Defaults to ``'elevated'``.
+  final String cardVariant;
+
+  /// Label of the most recent action recorded on the card, or ``null``
+  /// if no action has been recorded yet.
+  final String? lastAction;
+
+  /// Returns a copy of this state with the given fields replaced.
+  {{ widget_class_name }}State copyWith({
+    String? cardVariant,
+    String? lastAction,
+  }) {
+    return {{ widget_class_name }}State(
+      cardVariant: cardVariant ?? this.cardVariant,
+      lastAction: lastAction ?? this.lastAction,
+    );
+  }
+
+  /// Serializes this state to a JSON map for hydrated_bloc persistence.
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'cardVariant': cardVariant,
+        if (lastAction != null) 'lastAction': lastAction,
+      };
+
+  /// Deserializes a [{{ widget_class_name }}State] from hydrated JSON.
+  ///
+  /// Uses defensive casts throughout -- hydrated JSON can be hand-edited
+  /// on native targets, so every field falls back to its default when
+  /// missing or of the wrong type.
+  factory {{ widget_class_name }}State.fromJson(Map<String, dynamic> json) {
+    return {{ widget_class_name }}State(
+      cardVariant: json['cardVariant'] as String? ?? 'elevated',
+      lastAction: json['lastAction'] as String?,
+    );
+  }
+}

@@ -1,0 +1,88 @@
+/// {{ widget_class_name }}State -- Immutable state for the {{ widget_class_name }} data table.
+///
+/// Generated from data_table_state.dart.jinja2 -- do not edit by hand.
+/// Plain Dart state class consumed by {{ widget_class_name }}Cubit.
+/// All fields are persisted via hydrated_bloc -- this component has no
+/// transient fields, so the user's sort order, selection, and page all
+/// survive reload. The cubit's literal ``storagePrefix`` keeps the
+/// hydration key stable across minified builds.
+library;
+
+// ---------------------------------------------------------------------------
+// State class
+// ---------------------------------------------------------------------------
+
+/// Immutable state for [{{ widget_class_name }}].
+///
+/// Holds the current sort column and direction, the set of selected row
+/// ids, and the current page index. New instances are produced
+/// exclusively via [copyWith]; the cubit emits them to drive widget
+/// rebuilds.
+class {{ widget_class_name }}State {
+  /// Creates a [{{ widget_class_name }}State] with the given values.
+  const {{ widget_class_name }}State({
+    this.sortColumnIndex,
+    this.sortAscending = true,
+    this.selectedIds = const <String>{},
+    this.currentPage = 0,
+  });
+
+  /// Index of the column the table is sorted by, or ``null`` when the
+  /// table is unsorted.
+  final int? sortColumnIndex;
+
+  /// Whether the sort direction is ascending.
+  ///
+  /// Defaults to ``true``.
+  final bool sortAscending;
+
+  /// Ids of the currently selected rows.
+  ///
+  /// Defaults to the empty set.
+  final Set<String> selectedIds;
+
+  /// Zero-based index of the currently displayed page.
+  ///
+  /// Defaults to ``0``.
+  final int currentPage;
+
+  /// Returns a copy of this state with the given fields replaced.
+  {{ widget_class_name }}State copyWith({
+    int? sortColumnIndex,
+    bool? sortAscending,
+    Set<String>? selectedIds,
+    int? currentPage,
+  }) {
+    return {{ widget_class_name }}State(
+      sortColumnIndex: sortColumnIndex ?? this.sortColumnIndex,
+      sortAscending: sortAscending ?? this.sortAscending,
+      selectedIds: selectedIds ?? this.selectedIds,
+      currentPage: currentPage ?? this.currentPage,
+    );
+  }
+
+  /// Serializes this state to a JSON map for hydrated_bloc persistence.
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        if (sortColumnIndex != null) 'sortColumnIndex': sortColumnIndex,
+        'sortAscending': sortAscending,
+        'selectedIds': selectedIds.toList(),
+        'currentPage': currentPage,
+      };
+
+  /// Deserializes a [{{ widget_class_name }}State] from hydrated JSON.
+  ///
+  /// Uses defensive casts throughout -- hydrated JSON can be hand-edited
+  /// on native targets, so every field falls back to its default when
+  /// missing or of the wrong type.
+  factory {{ widget_class_name }}State.fromJson(Map<String, dynamic> json) {
+    return {{ widget_class_name }}State(
+      sortColumnIndex: json['sortColumnIndex'] as int?,
+      sortAscending: json['sortAscending'] as bool? ?? true,
+      selectedIds: (json['selectedIds'] as List<dynamic>?)
+              ?.cast<String>()
+              .toSet() ??
+          const <String>{},
+      currentPage: json['currentPage'] as int? ?? 0,
+    );
+  }
+}
