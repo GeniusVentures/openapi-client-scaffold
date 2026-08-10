@@ -63,6 +63,16 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
     emit(state.copyWith(selectedIds: next));
   }
 
+  /// Replaces the selection with [ids] in a single emit.
+  ///
+  /// Used by the select-all header and per-row handlers so the widget can
+  /// compute the post-toggle set first and pass the SAME new set to its
+  /// ``onSelect`` callback — avoids the stale pre-toggle ``selectedIds``
+  /// that per-item [toggleSelection] loops would report.
+  void setSelection(Set<String> ids) {
+    emit(state.copyWith(selectedIds: Set<String>.from(ids)));
+  }
+
   /// Sets the currently displayed page.
   void setPage(int page) {
     emit(state.copyWith(currentPage: page));
