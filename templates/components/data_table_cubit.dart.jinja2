@@ -1,0 +1,85 @@
+/// {{ widget_class_name }}Cubit -- Cubit for {{ widget_class_name }} state management.
+///
+/// Generated from data_table_cubit.dart.jinja2 -- do not edit by hand.
+/// Persists state across reloads via hydrated_bloc; uses a stable
+/// literal [storagePrefix] so minified builds retain hydrated state.
+/// Requires HydratedBloc.storage initialized in the consuming app's
+/// main(); see frontend/generated/widgets/README.md for the bootstrap
+/// snippet.
+library;
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+
+import 'data_table_state.dart';
+
+// ---------------------------------------------------------------------------
+// Cubit
+// ---------------------------------------------------------------------------
+
+/// Cubit for [{{ widget_class_name }}].
+///
+/// Owns the table's sort column/direction, row selection, and current
+/// page. State is restored from hydrated storage on construction;
+/// [hydrate] is the LAST constructor statement so the initial emit
+/// always reflects the restored value.
+class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
+    with HydratedMixin {
+  /// Creates a [{{ widget_class_name }}Cubit].
+  ///
+  /// [instanceId] discriminates multi-instance persistence -- pass a
+  /// unique value when two tables share a screen.
+  {{ widget_class_name }}Cubit({this.instanceId = ''})
+      : super(const {{ widget_class_name }}State()) {
+    hydrate(
+      onError: (error, stackTrace) => HydrationErrorBehavior.retain,
+    );
+  }
+
+  /// Optional discriminator for multi-instance persistence. Empty by default.
+  final String instanceId;
+
+  @override
+  String get id => instanceId;
+
+  @override
+  String get storagePrefix => '{{ widget_class_name }}Cubit';
+
+  /// Sorts the table by [columnIndex] in the given [ascending] direction.
+  void sort(int columnIndex, bool ascending) {
+    emit(
+      state.copyWith(
+        sortColumnIndex: columnIndex,
+        sortAscending: ascending,
+      ),
+    );
+  }
+
+  /// Toggles the selection of the row with the given [id].
+  void toggleSelection(String id) {
+    final Set<String> next = Set<String>.from(state.selectedIds);
+    if (!next.remove(id)) {
+      next.add(id);
+    }
+    emit(state.copyWith(selectedIds: next));
+  }
+
+  /// Sets the currently displayed page.
+  void setPage(int page) {
+    emit(state.copyWith(currentPage: page));
+  }
+
+  /// Wipes hydrated storage and emits the default state (logout/reset flow).
+  Future<void> reset() async {
+    await clear();
+    emit(const {{ widget_class_name }}State());
+  }
+
+  @override
+  {{ widget_class_name }}State? fromJson(Map<String, dynamic> json) =>
+      {{ widget_class_name }}State.fromJson(json);
+
+  @override
+  Map<String, dynamic>? toJson({{ widget_class_name }}State state) =>
+      state.toJson();
+}
