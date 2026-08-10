@@ -18,10 +18,11 @@ import 'form_dialog_state.dart';
 
 /// Cubit for [{{ widget_class_name }}].
 ///
-/// Owns the dialog's mode, field values, and transient submission
-/// status. Field values are restored from hydrated storage on
-/// construction; [hydrate] is the LAST constructor statement so the
-/// initial emit always reflects the restored value.
+/// Owns the dialog's field values and transient submission status. Field
+/// values are restored from hydrated storage on construction; [hydrate]
+/// is the LAST constructor statement so the initial emit always reflects
+/// the restored value. The dialog mode (create vs edit) is derived by the
+/// widget from ``item != null`` and is not part of this state.
 ///
 /// The cubit never performs async work and never takes a build context --
 /// the widget owns the async save and calls [failSave] or
@@ -33,8 +34,25 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
   ///
   /// [instanceId] discriminates multi-instance persistence -- pass a
   /// unique value when two dialogs share a screen.
-  {{ widget_class_name }}Cubit({this.instanceId = ''})
-      : super(const {{ widget_class_name }}State()) {
+  ///
+  /// The ``initial*`` parameters seed enum-typed field values (edit mode)
+  /// directly into the initial state so no post-frame ``context.read`` is
+  /// needed above the BlocProvider. [hydrate] runs after ``super(...)``
+  /// and overwrites these seeds from storage when a prior session exists
+  /// -- hydrated state wins over the widget's initial values.
+  {{ widget_class_name }}Cubit({
+    this.instanceId = '',
+{% for field in fields %}{% if field.type == "enum" %}
+    String? initial{{ field.name | capitalize }},
+{% endif %}{% endfor %}
+  }) : super({{ widget_class_name }}State(
+          fieldValues: <String, dynamic>{
+{% for field in fields %}{% if field.type == "enum" %}
+            if (initial{{ field.name | capitalize }} != null)
+              '{{ field.name }}': initial{{ field.name | capitalize }},
+{% endif %}{% endfor %}
+          },
+        )) {
     hydrate(
       onError: (error, stackTrace) => HydrationErrorBehavior.retain,
     );
