@@ -1,7 +1,7 @@
 name: frontend_scaffold
 description: "Shared Flutter scaffolding widgets — generic blocs, theme primitives, breakpoints, drawers, toasts, and animations."
 publish_to: 'none'
-version: 0.3.0
+version: 0.4.0
 
 environment:
   sdk: ^3.5.0
@@ -10,9 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.1
+  flutter_bloc: ^9.0.0
+  hydrated_bloc: ^11.0.0
   equatable: ^2.0.5
-  bloc_concurrency: ^0.2.0
+  bloc_concurrency: ^0.3.0
   auto_size_text: ^3.0.0
   loading_animation_widget: ^1.3.0
 

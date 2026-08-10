@@ -2,3 +2,5 @@ generated/
 __pycache__/
 .dart_tool/
 pubspec.lock
+
+build/
