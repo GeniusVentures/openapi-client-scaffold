@@ -4,8 +4,8 @@ workstream: scaffold
 milestone: v1.1
 milestone_name: Widget Library
 status: planning
-last_updated: "2026-08-10T00:00:00.000Z"
-last_activity: 2026-08-10 — Phase 6 re-scoped to Core UI Foundation (28 widget atoms + ScaffoldMotion across 4 dependency-layered waves); WIDG-29..31 deferred to Phase 7
+last_updated: "2026-08-11T00:00:00.000Z"
+last_activity: 2026-08-11 — Phase 6 context gathered (4 decisions locked: ScaffoldMotion dual-mode, full a11y, proactive theme tokens, pure composability)
 progress:
   total_phases: 2
   completed_phases: 1
@@ -25,10 +25,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: 06 (core-ui-foundation) — re-scoped, not started
+Phase: 06 (core-ui-foundation) — context gathered, ready for planning
 Plan: 0 of 0 — no plans written yet for v1.1
-Status: Phase 6 re-scoped 2026-08-10 from 3-template-widgets to Core UI Foundation (28 atoms + ScaffoldMotion across 4 waves, plus 3 template-generated composites); Phase 7 scoped to Media & Integration (3 widgets)
-Last activity: 2026-08-10 — explore session re-scoped Phase 6; REQUIREMENTS.md, ROADMAP.md, STATE.md updated
+Status: Phase 6 context gathered 2026-08-11: 4 implementation decisions locked (ScaffoldMotion dual-mode utility+InheritedWidget, full a11y on all 28 atoms, proactive theme token expansion in Wave 0, pure composability API philosophy). Ready for /gsd:plan-phase 6 --ws scaffold.
+Last activity: 2026-08-11 — discuss-phase captured context; 06-CONTEXT.md and 06-DISCUSSION-LOG.md committed
 
 ## v1.1 Milestone
 
@@ -75,7 +75,7 @@ Last activity: 2026-08-10 — explore session re-scoped Phase 6; REQUIREMENTS.md
 
 ## Session Continuity
 
-**Last session:** 2026-08-10
-**Stopped at:** Phase 6 re-scoped to Core UI Foundation (28 atoms + ScaffoldMotion); REQUIREMENTS.md, ROADMAP.md, STATE.md updated
-**Resume file:** .planning/workstreams/scaffold/ROADMAP.md
-**Next action:** `/gsd:discuss-phase 6 --ws scaffold` then `/gsd:plan-phase 6 --ws scaffold` to decompose Core UI Foundation into executable plans
+**Last session:** 2026-08-11
+**Stopped at:** Phase 6 context gathered — 4 decisions locked (ScaffoldMotion, a11y, theme tokens, API philosophy)
+**Resume file:** .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-CONTEXT.md
+**Next action:** `/gsd:plan-phase 6 --ws scaffold` to decompose Core UI Foundation into executable plans across 4 waves
