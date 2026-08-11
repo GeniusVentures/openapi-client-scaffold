@@ -25,10 +25,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: 06 (core-ui-foundation) — context gathered, ready for planning
+Phase: 06 (core-ui-foundation) — context gathered, UI-SPEC approved, ready for planning
 Plan: 0 of 0 — no plans written yet for v1.1
-Status: Phase 6 context gathered 2026-08-11: 4 implementation decisions locked (ScaffoldMotion dual-mode utility+InheritedWidget, full a11y on all 28 atoms, proactive theme token expansion in Wave 0, pure composability API philosophy). Ready for /gsd:plan-phase 6 --ws scaffold.
-Last activity: 2026-08-11 — discuss-phase captured context; 06-CONTEXT.md and 06-DISCUSSION-LOG.md committed
+Status: UI design contract approved 2026-08-11 (5/6 dimensions PASS, 1 non-blocking flag on legacy spacing tokens). Inherits M3 design language from Touch POS (01-UI-SPEC) and Admin (09-UI-SPEC) upstream contracts. Ready for /gsd:plan-phase 6 --ws scaffold.
+Last activity: 2026-08-11 — ui-phase produced 06-UI-SPEC.md (approved by checker)
 
 ## v1.1 Milestone
 
@@ -76,6 +76,6 @@ Last activity: 2026-08-11 — discuss-phase captured context; 06-CONTEXT.md and 
 ## Session Continuity
 
 **Last session:** 2026-08-11
-**Stopped at:** Phase 6 context gathered — 4 decisions locked (ScaffoldMotion, a11y, theme tokens, API philosophy)
-**Resume file:** .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-CONTEXT.md
-**Next action:** `/gsd:plan-phase 6 --ws scaffold` to decompose Core UI Foundation into executable plans across 4 waves
+**Stopped at:** Phase 6 UI-SPEC approved — design contract inherited from Touch POS + Admin upstream contracts, 5/6 dimensions PASS
+**Resume file:** .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-UI-SPEC.md
+**Next action:** `/gsd:plan-phase 6 --ws scaffold` (use `--skip-ui` since UI-SPEC already exists) to decompose Core UI Foundation into executable plans across 4 waves
