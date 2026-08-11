@@ -4,10 +4,10 @@ workstream: scaffold
 milestone: v1.1
 milestone_name: Widget Library
 status: planning
-last_updated: "2026-08-09T00:00:00.000Z"
-last_activity: 2026-08-09 — v1.1 Widget Library roadmap created; 7 WIDG requirements mapped to phases 6-8
+last_updated: "2026-08-10T00:00:00.000Z"
+last_activity: 2026-08-10 — Phase 6 re-scoped to Core UI Foundation (28 widget atoms + ScaffoldMotion across 4 dependency-layered waves); WIDG-29..31 deferred to Phase 7
 progress:
-  total_phases: 3
+  total_phases: 2
   completed_phases: 1
   total_plans: 0
   completed_plans: 0
@@ -21,43 +21,45 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.1 Widget Library — ship Dart widget implementations for the three template-only components plus the media widget pair that unblocks genius-tube Phase 2
+**Current focus:** v1.1 Widget Library — ship the Core UI Foundation (28 widget atoms + ScaffoldMotion) in Phase 6, then Media & Integration widgets in Phase 7
 
 ## Current Position
 
-Phase: 06 (core-template-widgets) — planned, not started
+Phase: 06 (core-ui-foundation) — re-scoped, not started
 Plan: 0 of 0 — no plans written yet for v1.1
-Status: v1.1 roadmap created 2026-08-09; phases 6-8 planned, awaiting `/gsd:plan-phase 6`
-Last activity: 2026-08-09 — v1.1 Widget Library roadmap created; 7 WIDG requirements mapped across phases 6 (core), 7 (integration), 8 (media)
+Status: Phase 6 re-scoped 2026-08-10 from 3-template-widgets to Core UI Foundation (28 atoms + ScaffoldMotion across 4 waves, plus 3 template-generated composites); Phase 7 scoped to Media & Integration (3 widgets)
+Last activity: 2026-08-10 — explore session re-scoped Phase 6; REQUIREMENTS.md, ROADMAP.md, STATE.md updated
 
 ## v1.1 Milestone
 
-**Goal:** Ship widget implementations for templates that exist but have no `lib/` counterpart (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar), plus workspace-common integration widgets (ScaffoldBadge, WalletConnectSheet) and the media widget pair (MediaCard, MediaControls) critical for genius-tube Phase 2.
+**Goal:** Ship the Core UI Foundation — 28 generic widget atoms consumed by every Genius Network app, plus 3 Jinja2-template-generated composites (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar) — then media and integration widgets in Phase 7.
 
 **Phase map:**
-- Phase 6 — Core Template Widgets (WIDG-01, WIDG-02, WIDG-03): independent atoms from existing Jinja2 templates
-- Phase 7 — Integration Widgets (WIDG-06, WIDG-07): ScaffoldBadge primitive + WalletConnectSheet composite on BottomDrawer
-- Phase 8 — Media Widgets (WIDG-04, WIDG-05): MediaCard (consumes ScaffoldBadge) + MediaControls; new media_card.dart.jinja2 template
+- Phase 6 — Core UI Foundation: 28 widget atoms + ScaffoldMotion across 4 dependency-layered waves
+  - Wave 0 (zero-dep, 10 widgets + ScaffoldMotion): Motion, Surface, TouchTarget, FocusOutline, LiveRegion, OverflowFade, ScrollEdgeIndicator, ResponsiveVisibility, FormattedValue, ColorSwatch
+  - Wave 1 (single-dep, 11 widgets): Badge, StatusIndicator, SelectionIndicator, ImagePlaceholder, Skeleton, AnimatedDisplay, Pressable, DisabledOverlay, DragHandle, ResizeHandle, NumericInput
+  - Wave 2 (multi-dep, 4 widgets): SelectableSurface, Draggable, DropTarget, FileInputSurface
+  - Wave 3 (composites, 3 widgets): ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar (Jinja2-template-generated from existing templates)
+- Phase 7 — Media & Integration Widgets: MediaCard, MediaControls, WalletConnectSheet (depends on Phase 6 atoms)
 
-**Dependency note:** Phases ordered by dependency, not by WIDG number. Phase 8 depends on Phase 7 (ScaffoldBadge). Phase 6 is independent. See ROADMAP.md "Phase ordering rationale" section.
-
-**Coverage:** 7/7 v1.1 requirements mapped. No orphans.
+**Wave count:** 4 (intra-phase dependency layering — each wave builds only on previously shipped waves)
+**Coverage:** 31/31 v1.1 requirements mapped. No orphans.
 
 ## Accumulated Context
 
 ### Key Decisions
 
-- **Phases ordered by dependency, not by WIDG number** — Phase 7 ships ScaffoldBadge before Phase 8's MediaCard consumes it; avoids placeholder badge slots
-- **WalletConnectSheet builds on existing BottomDrawer** (`lib/components/bottom_drawer/bottom_drawer.dart`) rather than re-implementing sheet chrome — composite over reinvention
-- **WalletConnectSheet receives session state externally** — it does NOT own or mutate Reown session state; consumer apps drive it from their own state layer (scaffold stays state-layer-free per the boundary)
-- **ScaffoldBadge is a primitive, MediaCard is its first consumer** — typed badge slots (top-left, top-right, bottom-right) take ScaffoldBadge instances
-- **MediaCard gets a new template** — `templates/components/media_card.dart.jinja2` ships alongside the widget (StrictUndefined, source-schema header per codegen conventions); MediaControls is widget-only for now
+- **Atoms are the primitives, composites are the recipes** — ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar are Jinja2-template-generated compositions of atoms. The template encodes which atoms to wire together for each variant; the atoms are the ingredients.
+- **Template boundary: composition-by-intent vs configuration-by-state** — A template exists when the composition of atoms varies by intent (elevated/outlined/filled card wiring), not by runtime state (is the item selected?). Atoms like ScaffoldBadge are plain parameterized widgets; templates would add indirection with no benefit.
+- **Four template candidates in Wave 1** — ScaffoldFormattedValue, ScaffoldSelectionIndicator, ScaffoldImagePlaceholder, ScaffoldAnimatedDisplay generate from templates because each variant (number vs date vs money, radio vs checkbox vs toggle, loading vs missing vs failed, fade vs pulse vs scale) changes the widget tree structure and imports. The other 7 Wave 1 widgets are plain Dart.
+- **Dependency layering determines wave ordering** — Wave 0 ships zero-dep foundations (Surface, TouchTarget, Motion); Wave 1 ships atoms with a single Wave 0 dep; Wave 2 composites 2+ Wave 0-1 atoms; Wave 3 composites atoms into generated widgets. Execution is strictly sequential within Phase 6.
+- **Phase 7 consolidates what was Phases 7-8** — MediaCard, MediaControls, and WalletConnectSheet all depend on Phase 6 atoms and can execute together in one phase.
 - **All v1.1 widgets consume only `Theme.of(context)`** — no Riverpod, no GeniusTheme, no app-specific logic; exported via the `frontend_scaffold` barrel
 - **Inherited from v1.0 (still locked):** neutral generic package (zero brand names); font choice lives in theme; image caching and localization are infrastructure not widgets; generated code is never committed (CI regenerates + diffs); templates use Jinja2 `StrictUndefined`
 
 ### Pending Todos
 
-- `/gsd:plan-phase 6` — write plans for Core Template Widgets (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar)
+- `/gsd:plan-phase 6` — write plans for Core UI Foundation (28 atoms + composites across 4 waves)
 - (Follow-up, out of v1.1 scope) light default palette to complement the dark-seeded ScaffoldPalette defaults — carried from v1.0
 - (Future, post-v1.1) navigation component widgets, DataTable, FormDialog from their existing templates
 
@@ -73,7 +75,7 @@ Last activity: 2026-08-09 — v1.1 Widget Library roadmap created; 7 WIDG requir
 
 ## Session Continuity
 
-**Last session:** 2026-08-09
-**Stopped at:** v1.1 roadmap created; phases 6-8 planned, no plans written yet
+**Last session:** 2026-08-10
+**Stopped at:** Phase 6 re-scoped to Core UI Foundation (28 atoms + ScaffoldMotion); REQUIREMENTS.md, ROADMAP.md, STATE.md updated
 **Resume file:** .planning/workstreams/scaffold/ROADMAP.md
-**Next action:** `/gsd:plan-phase 6` to decompose Core Template Widgets into executable plans
+**Next action:** `/gsd:discuss-phase 6 --ws scaffold` then `/gsd:plan-phase 6 --ws scaffold` to decompose Core UI Foundation into executable plans
