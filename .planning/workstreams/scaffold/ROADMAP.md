@@ -15,14 +15,13 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 ## Milestones
 
 - ✅ **v1.0 Scaffold Shared Source** — Phase 5 (completed 2026-08-09): submodule established as the single shared widget/template source; `frontend_scaffold` package at v0.3.0
-- ⬜ **v1.1 Widget Library** — Phases 6-8: ship Dart widget implementations for the three template-only components (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar), workspace-common integration widgets (ScaffoldBadge, WalletConnectSheet), and the media widget pair (MediaCard, MediaControls) that unblocks genius-tube Phase 2
+- ⬜ **v1.1 Widget Library** — Phases 6-7: ship 28 widget atoms + ScaffoldMotion utility + 3 template-generated composites as the Core UI Foundation (Phase 6), then media and integration widgets (Phase 7)
 
 ## Phases
 
 - [x] **Phase 5: Scaffold Submodule Consolidation** — submodule is the single shared source for GeniusWallet bloc widgets and genius-tube C++ interface templates, consumable via pinned submodule (completed 2026-08-09)
-- [ ] **Phase 6: Core Template Widgets** — implement ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar from existing Jinja2 templates; three independent M3 atoms with no cross-deps
-- [ ] **Phase 7: Integration Widgets** — ScaffoldBadge primitive + WalletConnectSheet composite (built on existing BottomDrawer); workspace-common, reusable by any consumer app
-- [ ] **Phase 8: Media Widgets** — MediaCard (consumes ScaffoldBadge from Phase 7) + MediaControls; new template+widget pairs, critical path for genius-tube Phase 2
+- [ ] **Phase 6: Core UI Foundation** — 28 widget atoms + ScaffoldMotion across 4 dependency-layered waves; atoms ship as plain Dart widgets (runtime-parameterized) except 4 template candidates (FormattedValue, SelectionIndicator, ImagePlaceholder, AnimatedDisplay) + 3 Jinja2-template-generated composites (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar)
+- [ ] **Phase 7: Media & Integration Widgets** — MediaCard (consumes ScaffoldBadge badge slots), MediaControls (consumes ScaffoldPressable + ScaffoldTouchTarget), WalletConnectSheet (built on existing BottomDrawer); new media_card.dart.jinja2 template
 
 ## Phase Details
 
@@ -46,41 +45,30 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 
 **Phase artifacts**: see `phases/05-scaffold-submodule-consolidation/` (PLAN, RESEARCH, REVIEW, VERIFICATION, and the 05-05 toast-sync RESEARCH/REVIEW/SUMMARY).
 
-### Phase 6: Core Template Widgets
-**Goal**: the three template-only widgets (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar) have shipped Dart implementations in `lib/components/` that consumers can import and render, each behaving exactly as its Jinja2 template envisions
-**Depends on**: Phase 5 (the `frontend_scaffold` package must exist with its barrel export and theme infrastructure)
-**Requirements**: WIDG-01, WIDG-02, WIDG-03
+### Phase 6: Core UI Foundation
+**Goal**: ship 28 widget atoms as the universal UI foundation, grouped into 4 dependency-layered waves — every consumer app builds its interfaces from these primitives; atoms are plain Dart widgets (runtime-parameterized) except where variant-driven code generation earns its keep; the 3 existing Jinja2 templates (card, state, search_bar) ship as pre-built composites consuming the atoms
+**Depends on**: Phase 5 (the `frontend_scaffold` package must exist with its barrel export, theme infrastructure, and Breakpoints utility)
+**Requirements**: WIDG-01 through WIDG-28
 **Success Criteria** (what must be TRUE):
-  1. A consumer app can construct a `ScaffoldCard` with header/body/actions slots and select elevated, outlined, or filled variants — the rendered card matches the M3 surface treatment each variant name promises
-  2. A consumer app can render `ScaffoldStateView` in empty, loading, and error modes from a single variant-enum constructor — empty shows icon+headline+subtitle+optional CTA, loading shows skeleton rows, error shows an inline error card with message and retry button
-  3. A consumer app can mount `ScaffoldSearchBar`, type a query, see the clear button appear, and observe a grouped results dropdown (each group under a labelled header) that hides on focus loss and fires `onResultTap` with the tapped item's id
-  4. All three widgets are exported from the `frontend_scaffold` barrel and pass `dart analyze` with zero warnings; they consume only `Theme.of(context)` (no Riverpod, no GeniusTheme)
-**Plans**: TBD
+  1. **Wave 0 (10 widgets + ScaffoldMotion):** ScaffoldMotion exports shared durations/curves/reduced-motion rules; ScaffoldSurface renders any child with background/border/shape/radius/elevation/state-layer; ScaffoldTouchTarget enforces minimum 48×48 touch area + accessibility semantics; ScaffoldFocusOutline draws a consistent keyboard/accessibility focus border; ScaffoldLiveRegion announces status changes to screen readers; ScaffoldOverflowFade renders edge-fade for clipped content; ScaffoldScrollEdgeIndicator marks scrollable edges; ScaffoldResponsiveVisibility shows/hides/replaces at breakpoints; ScaffoldFormattedValue renders numbers/money/percentages/dates/times/durations via format-specific templates; ScaffoldColorSwatch displays selectable/read-only color samples
+  2. **Wave 1 (11 widgets):** ScaffoldBadge renders dot/count/icon/text over/adjacent to a child; ScaffoldStatusIndicator shows generic status via color/shape/icon + accessible label; ScaffoldSelectionIndicator renders radio/checkbox/toggle states (template-generated per variant); ScaffoldImagePlaceholder renders loading/missing/empty/failed states (template-generated per variant); ScaffoldSkeleton shows animated placeholder consuming ScaffoldMotion; ScaffoldAnimatedDisplay applies fade/pulse/scale/slide/rotate/shake/bounce (template-generated per animation); ScaffoldPressable wraps any child with pressed/hovered/focused/disabled states consuming ScaffoldTouchTarget; ScaffoldDisabledOverlay blocks interaction with visual dim + optional reason tooltip; ScaffoldDragHandle renders the standard reorder grip; ScaffoldResizeHandle provides horizontal/vertical/corner resize drag; ScaffoldNumericInput accepts bounded/precision/step values with increment/decrement
+  3. **Wave 2 (4 widgets):** ScaffoldSelectableSurface renders selected/focused/pressed/disabled states consuming ScaffoldPressable+ScaffoldSurface; ScaffoldDraggable wraps any child with drag feedback/preview/state callbacks consuming ScaffoldPressable+ScaffoldDragHandle; ScaffoldDropTarget accepts dragged content with idle/accepted/rejected/dropped states consuming ScaffoldSurface+ScaffoldStatusIndicator; ScaffoldFileInputSurface provides file select/drop surface with validation states consuming ScaffoldSurface+ScaffoldDropTarget+ScaffoldStatusIndicator
+  4. **Wave 3 (3 composites):** ScaffoldCard renders elevated/outlined/filled variants consuming ScaffoldSurface+ScaffoldPressable with header/body/action slots (template-generated); ScaffoldStateView renders loading/empty/error/unavailable/success states composing different atom sets per variant (template-generated); ScaffoldSearchBar renders pill-shaped search with clear/loading/filtering/result hooks consuming ScaffoldSurface+ScaffoldPressable+ScaffoldStatusIndicator (template-generated)
+  5. All 28 widgets + ScaffoldMotion exported from the `frontend_scaffold` barrel, consuming only `Theme.of(context)` and scaffold atoms (no Riverpod, no GeniusTheme, no app-specific logic); `dart analyze` passes with zero warnings across all waves
+**Plans**: TBD (4 waves, plan count TBD by planner)
 **UI hint**: yes
 
-### Phase 7: Integration Widgets
-**Goal**: the workspace-common primitives ScaffoldBadge and WalletConnectSheet exist as reusable widgets any Genius Network app can drop in — the badge is a generic chip atom, the wallet sheet is a Reown-session-presenting composite built on the existing BottomDrawer
-**Depends on**: Phase 5 (package + BottomDrawer in `lib/components/bottom_drawer/`); Phase 6 is NOT a hard dependency, but executing 7 after 6 keeps the "ship atoms, then composites" rhythm
-**Requirements**: WIDG-06, WIDG-07
-**Success Criteria** (what must be TRUE):
-  1. A consumer app can render a `ScaffoldBadge` with an icon, a label, a configurable background color, and a density (compact or card) — the badge sizes itself correctly in both densities
-  2. `ScaffoldBadge` is exported from the barrel and is ready for MediaCard's badge slots to consume in Phase 8 (typed, theme-respecting, no app-specific logic)
-  3. A consumer app can present `WalletConnectSheet` as a bottom sheet that shows the disconnected state (QR connect affordance) and the connected state (wallet address + network + disconnect action), with `onConnect`/`onDisconnect` callbacks firing as advertised
-  4. `WalletConnectSheet` receives its session state externally (it does not own or mutate Reown session state internally), so two different consumer apps can drive it from their own state layer
-  5. Both widgets consume only `Theme.of(context)` and pass `dart analyze` clean; `WalletConnectSheet` builds on the existing `BottomDrawer` rather than re-implementing sheet chrome
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 8: Media Widgets
-**Goal**: the MediaCard + MediaControls widget pair ships as generic, configurable media atoms — MediaCard renders any thumbnail at a chosen aspect ratio with typed badge slots and a metadata row, MediaControls overlays a full control bar — unblocking genius-tube Phase 2 media surfaces without pulling app-specific logic into the scaffold
-**Depends on**: Phase 7 (ScaffoldBadge must exist so MediaCard's badge slots can consume it); Phase 5 package infrastructure
-**Requirements**: WIDG-04, WIDG-05
+### Phase 7: Media & Integration Widgets
+**Goal**: ship the media widget pair (MediaCard consumes ScaffoldBadge badge slots, MediaControls consumes ScaffoldPressable + ScaffoldTouchTarget) plus WalletConnectSheet (built on existing BottomDrawer); new media_card.dart.jinja2 template ships alongside the widget
+**Depends on**: Phase 6 (ScaffoldBadge for MediaCard badge slots, ScaffoldPressable + ScaffoldTouchTarget for MediaControls, ScaffoldSurface for sheet styling)
+**Requirements**: WIDG-29, WIDG-30, WIDG-31
 **Success Criteria** (what must be TRUE):
   1. A consumer app can mount a `MediaCard` at 16:9, 9:16, or 1:1 aspect ratio with a thumbnail from any `ImageProvider`, and see typed badge slots (top-left, top-right, bottom-right) populated with `ScaffoldBadge` instances
   2. A `MediaCard` renders a metadata row built from arbitrary caller-supplied children (title, subtitle, duration chip, etc.) without the scaffold knowing what media metadata is
-  3. A consumer app can overlay `MediaControls` on a media surface and get play/pause toggle, a seekbar showing buffered amount, volume mute/unmute, and fullscreen enter/exit — all callbacks optional and no-op when null so the widget renders correctly in a static/preview context
-  4. A new `templates/components/media_card.dart.jinja2` exists alongside the widget (Jinja2 `StrictUndefined`, source-schema header per the codegen conventions) so future render-time variants stay codegen-driven
-  5. Both widgets are exported from the barrel, consume only `Theme.of(context)`, and pass `dart analyze` clean; the scaffold ships zero app-specific media logic
+  3. A consumer app can overlay `MediaControls` on a media surface and get play/pause toggle, a seekbar showing buffered amount, volume mute/unmute, and fullscreen enter/exit — all callbacks optional and no-op when null
+  4. A new `templates/components/media_card.dart.jinja2` exists alongside the widget (Jinja2 `StrictUndefined`, source-schema header per the codegen conventions)
+  5. A consumer app can present `WalletConnectSheet` as a bottom sheet that shows disconnected (QR connect) and connected (wallet address + network + disconnect) states, with `onConnect`/`onDisconnect` callbacks; session state passed in externally (no Reown session ownership)
+  6. All three widgets exported from the barrel, consume only `Theme.of(context)` and Phase 6 atoms, and pass `dart analyze` clean
 **Plans**: TBD
 **UI hint**: yes
 
@@ -89,9 +77,8 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 5. Scaffold Submodule Consolidation | v1.0 | 5/5 | Complete | 2026-08-09 |
-| 6. Core Template Widgets | v1.1 | 0/0 | Not started | - |
-| 7. Integration Widgets | v1.1 | 0/0 | Not started | - |
-| 8. Media Widgets | v1.1 | 0/0 | Not started | - |
+| 6. Core UI Foundation | v1.1 | 0/0 | Not started | - |
+| 7. Media & Integration Widgets | v1.1 | 0/0 | Not started | - |
 
 ## Coverage
 
@@ -100,15 +87,13 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 | SUB-01 | Phase 5 |
 | SUB-02 | Phase 5 |
 | SUB-03 | Phase 5 |
-| WIDG-01 | Phase 6 |
-| WIDG-02 | Phase 6 |
-| WIDG-03 | Phase 6 |
-| WIDG-06 | Phase 7 |
-| WIDG-07 | Phase 7 |
-| WIDG-04 | Phase 8 |
-| WIDG-05 | Phase 8 |
+| WIDG-01..WIDG-10 | Phase 6 (Wave 0 — zero-dep foundations) |
+| WIDG-11..WIDG-21 | Phase 6 (Wave 1 — single-dep atoms) |
+| WIDG-22..WIDG-25 | Phase 6 (Wave 2 — multi-dep atoms) |
+| WIDG-26..WIDG-28 | Phase 6 (Wave 3 — template composites) |
+| WIDG-29..WIDG-31 | Phase 7 (Media & Integration) |
 
-**Coverage: 10/10 requirements mapped (3 SUB + 7 WIDG); all 7 v1.1 requirements mapped.**
+**Coverage: 34/34 requirements mapped (3 SUB + 31 WIDG). No orphans.**
 
 ## Out of scope (owned by consuming repos)
 
@@ -120,8 +105,13 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 
 ## Phase ordering rationale (v1.1)
 
-The phases are ordered by dependency, not by the requirement numbering:
+**Phase 6 is the entire Core UI Foundation** — 28 atoms + composites across 4 waves, ordered by dependency layer so each wave builds only on waves that already shipped:
 
-- **Phase 6 first** because WIDG-01/02/03 have existing Jinja2 templates and zero cross-widget dependencies — they are independent atoms and the fastest unblock for genius-ai-boss (ScaffoldCard, ScaffoldStateView) and genius-tube (ScaffoldStateView, ScaffoldSearchBar).
-- **Phase 7 before Phase 8** because `MediaCard` (WIDG-04) has typed badge slots that consume `ScaffoldBadge` (WIDG-07). Shipping the badge primitive first means Phase 8 wires real badge instances rather than placeholders. `WalletConnectSheet` (WIDG-06) rides along in Phase 7 because it is also workspace-common and builds on the existing `BottomDrawer`.
-- **Phase 8 last** because it is the genius-tube Phase 2 critical path and benefits from having both the badge atom (Phase 7) and the template conventions (Phase 6) settled before introducing a new template (`media_card.dart.jinja2`) plus widget pair.
+- **Wave 0 (zero-dep):** ScaffoldMotion + 10 widgets with no scaffold dependencies. Only consume `Theme.of(context)` and existing Breakpoints. Ships first so every other wave has foundations to build on.
+- **Wave 1 (single-dep):** 11 widgets that depend on exactly one Wave 0 atom. Badge, indicators, skeleton, animations, pressable, handles, input. Four are template-generated where variant changes the code structure; seven are plain parameterized widgets.
+- **Wave 2 (multi-dep):** 4 widgets that compose two or more Wave 0-1 atoms. Selectable, draggable, drop target, file input.
+- **Wave 3 (composites):** ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar — generated from existing `templates/components/` Jinja2 templates, consuming atoms shipped in Waves 0-2. Templates encode the composition recipe; atoms are the ingredients.
+
+**Phase 7 consolidates the remaining widgets** (MediaCard, MediaControls, WalletConnectSheet) that depend on Phase 6 atoms — MediaCard consumes ScaffoldBadge, MediaControls consumes ScaffoldPressable + ScaffoldTouchTarget.
+
+**Template boundary:** A template exists whenever the composition of atoms varies by intent, not by runtime state. ScaffoldCard's elevated/outlined/filled variants wire different surface treatments at generate-time. ScaffoldStateView's empty/loading/error/success states compose different atom sets. Plain atoms like ScaffoldBadge or ScaffoldPressable take runtime parameters — a template would add indirection with no benefit.
