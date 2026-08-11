@@ -26,7 +26,7 @@ created: 2026-08-11
 | Component library | Material 3 (Flutter `ThemeData` / `ColorScheme` / `ThemeExtension`) |
 | Icon library | Material Icons (`Icons.*` from `package:flutter/material.dart`) |
 | Font | System font (SF Pro on iOS/macOS, Roboto on Android) — atoms use `Theme.of(context).textTheme`, no custom fonts |
-| State management | None in atoms — pure `StatefulWidget`/`StatelessWidget`; Riverpod/Bloc is consumer scope |
+| State management | None in atoms — pure `StatefulWidget`/`StatelessWidget`. Template-generated composites use Cubit (`flutter_bloc`) for hydrated variant state. Riverpod is consumer app scope only — never in the scaffold. |
 | Theme system | `frontend_scaffold` M3 `ThemeExtension` triple: `ScaffoldPalette` + `ScaffoldDimens` + `ScaffoldElevation` |
 | Package | `frontend_scaffold` (at `src/scaffold/`) — export barrel at `lib/frontend_scaffold.dart` |
 
