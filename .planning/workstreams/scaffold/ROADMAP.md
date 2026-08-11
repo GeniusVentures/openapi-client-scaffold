@@ -55,7 +55,14 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
   3. **Wave 2 (4 widgets):** ScaffoldSelectableSurface renders selected/focused/pressed/disabled states consuming ScaffoldPressable+ScaffoldSurface; ScaffoldDraggable wraps any child with drag feedback/preview/state callbacks consuming ScaffoldPressable+ScaffoldDragHandle; ScaffoldDropTarget accepts dragged content with idle/accepted/rejected/dropped states consuming ScaffoldSurface+ScaffoldStatusIndicator; ScaffoldFileInputSurface provides file select/drop surface with validation states consuming ScaffoldSurface+ScaffoldDropTarget+ScaffoldStatusIndicator
   4. **Wave 3 (3 composites):** ScaffoldCard renders elevated/outlined/filled variants consuming ScaffoldSurface+ScaffoldPressable with header/body/action slots (template-generated); ScaffoldStateView renders loading/empty/error/unavailable/success states composing different atom sets per variant (template-generated); ScaffoldSearchBar renders pill-shaped search with clear/loading/filtering/result hooks consuming ScaffoldSurface+ScaffoldPressable+ScaffoldStatusIndicator (template-generated)
   5. All 28 widgets + ScaffoldMotion exported from the `frontend_scaffold` barrel, consuming only `Theme.of(context)` and scaffold atoms (no Riverpod, no GeniusTheme, no app-specific logic); `dart analyze` passes with zero warnings across all waves
-**Plans**: TBD (4 waves, plan count TBD by planner)
+**Plans**: 6 plans
+**Plan list**:
+- [ ] 06-01-PLAN.md — Tracer: D-03 theme token expansion + ScaffoldMotion + ScaffoldSurface + ScaffoldTouchTarget + ScaffoldFocusOutline + tracer demo (WIDG-01..WIDG-04)
+- [ ] 06-02-PLAN.md — Wave 0 batch: ScaffoldLiveRegion + ScaffoldOverflowFade + ScaffoldScrollEdgeIndicator + ScaffoldResponsiveVisibility + ScaffoldFormattedValue + ScaffoldColorSwatch (WIDG-05..WIDG-10)
+- [ ] 06-03-PLAN.md — Wave 1 batch A: ScaffoldSkeleton + ScaffoldBadge + ScaffoldStatusIndicator + ScaffoldPressable + ScaffoldDisabledOverlay (WIDG-11,WIDG-12,WIDG-15,WIDG-17,WIDG-18)
+- [ ] 06-04-PLAN.md — Wave 1 batch B: ScaffoldSelectionIndicator + ScaffoldImagePlaceholder + ScaffoldAnimatedDisplay + ScaffoldDragHandle + ScaffoldResizeHandle + ScaffoldNumericInput (WIDG-13,WIDG-14,WIDG-16,WIDG-19,WIDG-20,WIDG-21)
+- [ ] 06-05-PLAN.md — Wave 2: ScaffoldSelectableSurface + ScaffoldDraggable + ScaffoldDropTarget + ScaffoldFileInputSurface (WIDG-22..WIDG-25)
+- [ ] 06-06-PLAN.md — Wave 3 composites + kitchen sink: ScaffoldCard + ScaffoldStateView + ScaffoldSearchBar + gallery demo (WIDG-26..WIDG-28)
 **UI hint**: yes
 
 ### Phase 7: Media & Integration Widgets
@@ -77,7 +84,7 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 5. Scaffold Submodule Consolidation | v1.0 | 5/5 | Complete | 2026-08-09 |
-| 6. Core UI Foundation | v1.1 | 0/0 | Not started | - |
+| 6. Core UI Foundation | v1.1 | 0/6 | Planned | - |
 | 7. Media & Integration Widgets | v1.1 | 0/0 | Not started | - |
 
 ## Coverage
