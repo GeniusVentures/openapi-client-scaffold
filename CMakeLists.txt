@@ -53,11 +53,23 @@ add_custom_target(frontend_all
 )
 
 # --------------------------------------------------------
-# 5. Template rendering -- dual-directory (scaffold own + parent M3)
-#    Scans both internal templates/ and parent-passed TEMPLATES_DIR for
-#    .jinja2 files. Renders scaffold's own templates to generated/scaffold/
-#    and parent M3 templates to generated/shared/.
-if(DEFINED TEMPLATES_DIR AND PYTHON3_EXECUTABLE)
+# 5. Template rendering -- dual-directory (scaffold own + consumer templates)
+#    Source A (scaffold's own base/ templates) always runs when Python is
+#    available. Source B (consumer-provided templates via TEMPLATES_DIR) is
+#    opt-in: set TEMPLATES_DIR before add_subdirectory to activate.
+#    All template-render configuration defaults to scaffold-local files and
+#    can be overridden via CACHE or -D before add_subdirectory.
+# --------------------------------------------------------
+set(ENGINE_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/engine.py" CACHE STRING
+    "Path to shared Jinja2 template engine")
+set(DESIGN_TOKENS "${CMAKE_CURRENT_SOURCE_DIR}/design_tokens.json" CACHE STRING
+    "Path to M3 design tokens JSON single source of truth")
+set(GENERATED_DIR "${CMAKE_BINARY_DIR}/generated" CACHE STRING
+    "Output directory for generated template output")
+set(FRONTEND_TARGET "flutter" CACHE STRING
+    "Frontend codegen target (flutter, html)")
+
+if(PYTHON3_EXECUTABLE)
     set(_scaffold_templates_dir "${CMAKE_CURRENT_SOURCE_DIR}/templates")
     set(_scaffold_template_stamps "")
 
@@ -135,4 +147,217 @@ if(DEFINED TEMPLATES_DIR AND PYTHON3_EXECUTABLE)
     if(TARGET frontend_all)
         add_dependencies(frontend_all scaffold_generate_templates)
     endif()
+endif()
+
+# --------------------------------------------------------
+# 6. Component template rendering -- per-component stamp targets.
+#    Each M3 component renders THREE files via parallel stamp blocks in the
+#    loop below: the Flutter widget plus its HydratedMixin Cubit and plain
+#    Dart state class (06-03, BLOC-01/BLOC-02).  The state component's state
+#    template is the Q2 special case: state_view_state.dart (NOT
+#    state_state.dart).  The FRONTEND_TARGET option gates Flutter output
+#    (Phase 4 will add "html" alternative).
+#    Per-component named targets enable selective rebuild:
+#      cmake --build . --target generate_component_data_table
+#    Aggregate target builds all 6 (18 files):
+#      cmake --build . --target generate_all_components
+# --------------------------------------------------------
+set(_comp_templates_dir "${_scaffold_templates_dir}/components")
+set(_widgets_output_dir "${GENERATED_DIR}/widgets")
+
+if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
+    set(_component_names
+        data_table
+        form_dialog
+        navigation
+        search_bar
+        card
+        state
+    )
+    set(_component_stamps "")
+
+    foreach(_comp ${_component_names})
+        set(_template "${_comp_templates_dir}/${_comp}.dart.jinja2")
+        set(_stamp "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}.stamp")
+        set(_output "${_widgets_output_dir}/${_comp}.dart")
+        set(_vars "${_comp_templates_dir}/${_comp}_vars.json")
+
+        add_custom_command(
+            OUTPUT ${_stamp} ${_output}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
+            COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
+                --template "components/${_comp}.dart.jinja2"
+                --tokens ${DESIGN_TOKENS}
+                --output ${_output}
+                --template-dir ${_scaffold_templates_dir}
+                --vars ${_vars}
+            COMMAND ${CMAKE_COMMAND} -E touch ${_stamp}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Rendering component template: ${_comp}"
+            DEPENDS ${_template} ${DESIGN_TOKENS} ${ENGINE_SCRIPT} ${_vars}
+        )
+        list(APPEND _component_stamps ${_stamp})
+
+        # --- Cubit stamp (06-03) -------------------------------------------
+        # Same engine invocation shape as the widget; only the template,
+        # output, and kind-specific DEPENDS differ.  Shares ${_vars},
+        # ${DESIGN_TOKENS}, and ${ENGINE_SCRIPT} so touching only the cubit
+        # template re-renders only this stamp (v1.0 incremental invariant).
+        set(_template_cubit "${_comp_templates_dir}/${_comp}_cubit.dart.jinja2")
+        set(_stamp_cubit "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}_cubit.stamp")
+        set(_output_cubit "${_widgets_output_dir}/${_comp}_cubit.dart")
+
+        add_custom_command(
+            OUTPUT ${_stamp_cubit} ${_output_cubit}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
+            COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
+                --template "components/${_comp}_cubit.dart.jinja2"
+                --tokens ${DESIGN_TOKENS}
+                --output ${_output_cubit}
+                --template-dir ${_scaffold_templates_dir}
+                --vars ${_vars}
+            COMMAND ${CMAKE_COMMAND} -E touch ${_stamp_cubit}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Rendering component cubit template: ${_comp}_cubit"
+            DEPENDS ${_template_cubit} ${DESIGN_TOKENS} ${ENGINE_SCRIPT} ${_vars}
+        )
+        list(APPEND _component_stamps ${_stamp_cubit})
+
+        # --- State stamp (06-03) -------------------------------------------
+        # Q2 special case: the state component's state template is named
+        # state_view_state.dart.jinja2 (renders state_view_state.dart) to
+        # avoid the awkward state_state.dart filename.
+        if(_comp STREQUAL "state")
+            set(_state_basename "state_view_state")
+        else()
+            set(_state_basename "${_comp}_state")
+        endif()
+        set(_template_state "${_comp_templates_dir}/${_state_basename}.dart.jinja2")
+        set(_stamp_state "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}_state.stamp")
+        set(_output_state "${_widgets_output_dir}/${_state_basename}.dart")
+
+        add_custom_command(
+            OUTPUT ${_stamp_state} ${_output_state}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
+            COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
+                --template "components/${_state_basename}.dart.jinja2"
+                --tokens ${DESIGN_TOKENS}
+                --output ${_output_state}
+                --template-dir ${_scaffold_templates_dir}
+                --vars ${_vars}
+            COMMAND ${CMAKE_COMMAND} -E touch ${_stamp_state}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Rendering component state template: ${_state_basename}"
+            DEPENDS ${_template_state} ${DESIGN_TOKENS} ${ENGINE_SCRIPT} ${_vars}
+        )
+        list(APPEND _component_stamps ${_stamp_state})
+
+        add_custom_target(generate_component_${_comp}
+            COMMENT "Generate Flutter widget + cubit + state: ${_comp}"
+            DEPENDS ${_stamp} ${_stamp_cubit} ${_stamp_state}
+        )
+    endforeach()
+
+    add_custom_target(generate_all_components
+        COMMENT "Generate all 6 M3 component Flutter widget/cubit/state triples (18 files)"
+        DEPENDS ${_component_stamps}
+    )
+endif()
+
+# --------------------------------------------------------
+# 7. HTML target -- per-component stamp targets for HTML + CSS output.
+#    Each M3 component .jinja2 template renders to a semantic HTML5
+#    fragment and companion CSS file when FRONTEND_TARGET=html.
+#    Per-component named targets enable selective rebuild:
+#      cmake --build . --target generate_component_data_table_html
+#      cmake --build . --target generate_component_state_html
+#    Aggregate target builds all 6 + m3_tokens.css:
+#      cmake --build . --target generate_all_components_html
+# --------------------------------------------------------
+if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
+    set(_styles_output_dir "${GENERATED_DIR}/styles")
+    set(_html_output_dir "${GENERATED_DIR}/html")
+
+    # -- 7a. M3 design tokens CSS generation (shared stylesheet, runs once)
+    set(_tokens_stamp "${CMAKE_CURRENT_BINARY_DIR}/template_gen/m3_tokens_css.stamp")
+    set(_tokens_output "${_styles_output_dir}/m3_tokens.css")
+
+    add_custom_command(
+        OUTPUT ${_tokens_stamp}
+        COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_m3_tokens_css.py
+            --tokens ${DESIGN_TOKENS}
+            --output ${_tokens_output}
+        COMMAND ${CMAKE_COMMAND} -E touch ${_tokens_stamp}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating M3 design tokens CSS (custom properties)"
+        DEPENDS ${DESIGN_TOKENS} ${CMAKE_CURRENT_SOURCE_DIR}/generate_m3_tokens_css.py
+    )
+
+    # -- 7b. Per-component HTML + CSS rendering loop
+    set(_component_names
+        data_table
+        form_dialog
+        navigation
+        search_bar
+        card
+        state
+    )
+    set(_html_component_stamps "")
+
+    foreach(_comp ${_component_names})
+        set(_template_html "${_comp_templates_dir}/${_comp}.html.jinja2")
+        set(_template_css "${_comp_templates_dir}/${_comp}.css.jinja2")
+        set(_stamp_html "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}_html.stamp")
+        set(_stamp_css "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}_css.stamp")
+        set(_output_html "${_html_output_dir}/${_comp}.html")
+        set(_output_css "${_html_output_dir}/${_comp}.css")
+        set(_vars "${_comp_templates_dir}/${_comp}_vars.json")
+
+        # HTML fragment
+        add_custom_command(
+            OUTPUT ${_stamp_html}
+            COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
+                --template "components/${_comp}.html.jinja2"
+                --tokens ${DESIGN_TOKENS}
+                --output ${_output_html}
+                --template-dir ${_scaffold_templates_dir}
+                --vars ${_vars}
+            COMMAND ${CMAKE_COMMAND} -E touch ${_stamp_html}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Rendering HTML component template: ${_comp}"
+            DEPENDS ${_template_html} ${DESIGN_TOKENS} ${ENGINE_SCRIPT} ${_vars}
+        )
+
+        # CSS stylesheet
+        add_custom_command(
+            OUTPUT ${_stamp_css}
+            COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
+                --template "components/${_comp}.css.jinja2"
+                --tokens ${DESIGN_TOKENS}
+                --output ${_output_css}
+                --template-dir ${_scaffold_templates_dir}
+                --vars ${_vars}
+            COMMAND ${CMAKE_COMMAND} -E touch ${_stamp_css}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Rendering CSS component template: ${_comp}"
+            DEPENDS ${_template_css} ${DESIGN_TOKENS} ${ENGINE_SCRIPT} ${_vars}
+        )
+
+        list(APPEND _html_component_stamps ${_stamp_html} ${_stamp_css})
+
+        add_custom_target(generate_component_${_comp}_html
+            COMMENT "Generate HTML + CSS for component: ${_comp}"
+            DEPENDS ${_stamp_html} ${_stamp_css}
+        )
+    endforeach()
+
+    list(APPEND _html_component_stamps ${_tokens_stamp})
+
+    add_custom_target(generate_all_components_html
+        COMMENT "Generate all 6 M3 component HTML fragments + CSS + m3_tokens.css"
+        DEPENDS ${_html_component_stamps}
+    )
 endif()
