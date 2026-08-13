@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -9,6 +7,8 @@ import 'package:frontend_scaffold/components/scaffold_skeleton.dart';
 import 'package:frontend_scaffold/components/scaffold_state_view.dart';
 import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+
+import '../helpers/memory_storage.dart';
 
 Future<void> _pump(WidgetTester tester, Widget child) {
   return tester.pumpWidget(
@@ -25,13 +25,8 @@ Future<void> _pump(WidgetTester tester, Widget child) {
 }
 
 void main() {
-  setUpAll(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    final Directory dir =
-        Directory.systemTemp.createTempSync('hydrated_state_view_test');
-    HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: HydratedStorageDirectory(dir.path),
-    );
+  setUpAll(() {
+    HydratedBloc.storage = MemoryStorage();
   });
 
   setUp(() async {
