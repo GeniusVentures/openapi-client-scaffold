@@ -12,6 +12,7 @@ library frontend_scaffold;
 
 export 'components/action_button.dart';
 export 'components/app_screen_view.dart';
+export 'components/scaffold_badge.dart';
 export 'components/scaffold_color_swatch.dart';
 export 'components/scaffold_disabled_overlay.dart';
 export 'components/scaffold_focus_outline.dart';

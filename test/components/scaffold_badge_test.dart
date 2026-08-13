@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
