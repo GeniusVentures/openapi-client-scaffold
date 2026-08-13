@@ -1,5 +1,3 @@
-import 'dart:ui' show SemanticsRole;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,7 +55,7 @@ void main() {
     expect(pressed, 1);
   });
 
-  testWidgets('registers SemanticsRole.button and responds to Enter key', (
+  testWidgets('registers button semantics and responds to Enter key', (
     tester,
   ) async {
     int pressed = 0;
@@ -79,8 +77,9 @@ void main() {
             matching: find.byType(Semantics),
           ),
         )
-        .first;
-    expect(semantics.properties.role, SemanticsRole.button);
+        .firstWhere((Semantics s) => s.properties.button == true);
+    expect(semantics.properties.button, isTrue);
+    expect(semantics.properties.enabled, isTrue);
 
     focusNode.requestFocus();
     await tester.pump();
@@ -114,7 +113,7 @@ void main() {
         .where((IgnorePointer w) => w.ignoring);
     expect(ignoring, isNotEmpty);
 
-    await tester.tap(find.byType(ScaffoldPressable));
+    await tester.tap(find.byType(ScaffoldPressable), warnIfMissed: false);
     await tester.pump();
     expect(pressed, 0);
   });
