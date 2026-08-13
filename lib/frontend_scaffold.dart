@@ -36,6 +36,7 @@ export 'components/scaffold_image_placeholder_loading.dart';
 export 'components/scaffold_image_placeholder_missing.dart';
 export 'components/scaffold_live_region.dart';
 export 'components/scaffold_motion.dart';
+export 'components/scaffold_numeric_input.dart';
 export 'components/scaffold_overflow_fade.dart';
 export 'components/scaffold_pressable.dart';
 export 'components/scaffold_resize_handle.dart';
