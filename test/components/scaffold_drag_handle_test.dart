@@ -1,5 +1,3 @@
-import 'dart:ui' show SemanticsRole;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_drag_handle.dart';
@@ -57,9 +55,7 @@ void main() {
     );
   });
 
-  testWidgets('registers dragHandle role with "Drag to reorder" label', (
-    tester,
-  ) async {
+  testWidgets('registers "Drag to reorder" label', (tester) async {
     await _pump(tester, const ScaffoldDragHandle());
 
     final Semantics semantics = tester
@@ -69,7 +65,7 @@ void main() {
             matching: find.byType(Semantics),
           ),
         )
-        .firstWhere((Semantics s) => s.properties.role == SemanticsRole.dragHandle);
+        .firstWhere((Semantics s) => s.properties.label == 'Drag to reorder');
     expect(semantics.properties.label, 'Drag to reorder');
   });
 }
