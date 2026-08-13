@@ -25,10 +25,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: 06 (core-ui-foundation) — context gathered, UI-SPEC approved, ready for planning
-Plan: 0 of 0 — no plans written yet for v1.1
-Status: UI design contract approved 2026-08-11 (5/6 dimensions PASS, 1 non-blocking flag on legacy spacing tokens). Inherits M3 design language from Touch POS (01-UI-SPEC) and Admin (09-UI-SPEC) upstream contracts. Ready for /gsd:plan-phase 6 --ws scaffold.
-Last activity: 2026-08-11 — ui-phase produced 06-UI-SPEC.md (approved by checker)
+Phase: 06 (core-ui-foundation) — planned, ready for execution
+Plan: 6 of 6 — 06-01 through 06-06 written and checker-verified
+Status: 6 plans created and verified (3 checker passes, no blockers). 28 atoms across 6 sequential execution waves (realizing 4 dependency layers). 4 template candidates (FormattedValue, SelectionIndicator, ImagePlaceholder, AnimatedDisplay) + 3 composites (Card, StateView, SearchBar) are Jinja2-template-generated per user decision (loose coupling, no enum-switch). Ready for /gsd:execute-phase 6 --ws scaffold.
+Last activity: 2026-08-11 — plan-phase produced 6 verified PLAN.md files
 
 ## v1.1 Milestone
 
@@ -76,6 +76,6 @@ Last activity: 2026-08-11 — ui-phase produced 06-UI-SPEC.md (approved by check
 ## Session Continuity
 
 **Last session:** 2026-08-11
-**Stopped at:** Phase 6 UI-SPEC approved — design contract inherited from Touch POS + Admin upstream contracts, 5/6 dimensions PASS
-**Resume file:** .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-UI-SPEC.md
-**Next action:** `/gsd:plan-phase 6 --ws scaffold` (use `--skip-ui` since UI-SPEC already exists) to decompose Core UI Foundation into executable plans across 4 waves
+**Stopped at:** Phase 6 planned — 6 plans written and checker-verified (no blockers)
+**Resume file:** .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-01-PLAN.md
+**Next action:** `/gsd:execute-phase 6 --ws scaffold` to build the 28 atoms + ScaffoldMotion across 6 sequential execution waves
