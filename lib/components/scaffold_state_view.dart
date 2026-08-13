@@ -1,17 +1,17 @@
-/// {{ widget_class_name }} -- M3 state widget for loading, empty, error, unavailable, and success states.
+/// ScaffoldStateView -- M3 state widget for loading, empty, error, unavailable, and success states.
 ///
 /// Generated from state.dart.jinja2 -- do not edit by hand.
 /// Source schema: templates/components/state.dart.jinja2
 /// Generator version: 0.4.0
 /// Renders the state variant held by the cubit's ``state.stateType`` at
 /// runtime (loading skeleton, or a status panel for empty / error /
-/// unavailable / success). The constructor ``state`` (``'{{ state_type }}'``)
+/// unavailable / success). The constructor ``state`` (``'empty'``)
 /// seeds the cubit's initial variant only.
 /// Composes ScaffoldSkeleton (loading) + ScaffoldStatusIndicator +
 /// ScaffoldPressable (empty / error / unavailable / success).
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
 /// no Riverpod or GeniusTheme dependency.
-/// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
+/// Consumes ScaffoldStateViewCubit (hydrated_bloc).
 library;
 
 import 'package:flutter/material.dart';
@@ -22,8 +22,7 @@ import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
-{# Consumer note: generated code also reads [{{ widget_class_name }}Cubit]'s
-   literal ``storagePrefix`` at hydration time (see state_cubit.dart.jinja2). #}
+
 import 'scaffold_state_view_cubit.dart';
 import 'scaffold_state_view_state.dart';
 
@@ -35,30 +34,30 @@ import 'scaffold_state_view_state.dart';
 ///
 /// The rendered state variant (loading, empty, error, unavailable, success)
 /// is read from the cubit's ``state.stateType`` on every build; the
-/// constructor ``state`` (``'{{ state_type }}'``) is only the cubit's initial
+/// constructor ``state`` (``'empty'``) is only the cubit's initial
 /// value. Calling ``cubit.showLoading()`` / ``showEmpty()`` /
 /// ``showError(message)`` flips the rendered variant live, and
 /// ``cubit.retry()`` increments the retry counter shown on the error
 /// variant's retry button.
-class {{ widget_class_name }} extends StatelessWidget {
-  /// Creates a [{{ widget_class_name }}].
-  const {{ widget_class_name }}({
+class ScaffoldStateView extends StatelessWidget {
+  /// Creates a [ScaffoldStateView].
+  const ScaffoldStateView({
     this.instanceId = '',
-    this.state = '{{ state_type }}',
+    this.state = 'empty',
     this.loadingWidget,
-    this.emptyIcon = Icons.{{ empty_icon }},
-    this.emptyHeadline = '{{ empty_headline }}',
-    this.emptyBody = '{{ empty_body }}',
+    this.emptyIcon = Icons.inbox_outlined,
+    this.emptyHeadline = 'Nothing here',
+    this.emptyBody = 'No items to display.',
     this.emptyAction,
-    this.errorIcon = Icons.{{ error_icon }},
-    this.errorHeadline = '{{ error_headline }}',
-    this.errorBody = '{{ error_body }}',
+    this.errorIcon = Icons.error_outline,
+    this.errorHeadline = 'Something went wrong',
+    this.errorBody = 'Please try again.',
     this.onRetry,
-    this.unavailableIcon = Icons.{{ unavailable_icon }},
-    this.unavailableHeadline = '{{ unavailable_headline }}',
-    this.unavailableBody = '{{ unavailable_body }}',
-    this.successIcon = Icons.{{ success_icon }},
-    this.successHeadline = '{{ success_headline }}',
+    this.unavailableIcon = Icons.cloud_off,
+    this.unavailableHeadline = 'Service unavailable',
+    this.unavailableBody = 'Please try again later.',
+    this.successIcon = Icons.check_circle,
+    this.successHeadline = 'Done!',
     this.successBody,
     this.successAction,
     super.key,
@@ -125,12 +124,12 @@ class {{ widget_class_name }} extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<{{ widget_class_name }}Cubit>(
-      create: (_) => {{ widget_class_name }}Cubit(
+    return BlocProvider<ScaffoldStateViewCubit>(
+      create: (_) => ScaffoldStateViewCubit(
         instanceId: instanceId,
         initialStateType: state,
       ),
-      child: BlocConsumer<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
+      child: BlocConsumer<ScaffoldStateViewCubit, ScaffoldStateViewState>(
         listenWhen: (prev, curr) =>
             prev.lastError != curr.lastError && curr.lastError != null,
         listener: (context, state) {
@@ -143,8 +142,8 @@ class {{ widget_class_name }} extends StatelessWidget {
         },
         builder: (context, state) {
           final palette = context.palette;
-          final {{ widget_class_name }}Cubit cubit =
-              context.read<{{ widget_class_name }}Cubit>();
+          final ScaffoldStateViewCubit cubit =
+              context.read<ScaffoldStateViewCubit>();
 
           switch (state.stateType) {
             case 'loading':
@@ -172,7 +171,7 @@ class {{ widget_class_name }} extends StatelessWidget {
                     cubit.retry();
                     onRetry?.call();
                   },
-                  child: const Text('{{ error_retry_label }}'),
+                  child: const Text('Retry'),
                 ),
               );
 
@@ -193,7 +192,7 @@ class {{ widget_class_name }} extends StatelessWidget {
                           cubit.retry();
                           onRetry?.call();
                         },
-                        child: const Text('{{ error_retry_label }}'),
+                        child: const Text('Retry'),
                       )
                     : null,
               );

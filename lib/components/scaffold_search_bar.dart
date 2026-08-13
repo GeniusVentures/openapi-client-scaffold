@@ -1,4 +1,4 @@
-/// {{ widget_class_name }} -- M3 pill-shaped search bar with grouped results panel.
+/// ScaffoldSearchBar -- M3 pill-shaped search bar with grouped results panel.
 ///
 /// Generated from search_bar.dart.jinja2 -- do not edit by hand.
 /// Source schema: templates/components/search_bar.dart.jinja2
@@ -8,7 +8,7 @@
 /// + ScaffoldStatusIndicator + ScaffoldBadge + ScaffoldLiveRegion.
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
 /// no Riverpod or GeniusTheme dependency.
-/// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
+/// Consumes ScaffoldSearchBarCubit (hydrated_bloc).
 library;
 
 import 'dart:async' show FutureOr;
@@ -24,8 +24,7 @@ import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
-{# Consumer note: generated code also reads [{{ widget_class_name }}Cubit]'s
-   literal ``storagePrefix`` at hydration time (see search_bar_cubit.dart.jinja2). #}
+
 import 'scaffold_search_bar_cubit.dart';
 import 'scaffold_search_bar_state.dart';
 
@@ -82,11 +81,11 @@ class SearchResultGroup {
 /// [ScaffoldStatusIndicator], a filter icon, and a result-count
 /// [ScaffoldBadge]. When the user types, an [AnimatedSize] panel drops below
 /// showing results grouped under labelled headers.
-class {{ widget_class_name }} extends StatefulWidget {
-  /// Creates a [{{ widget_class_name }}].
-  const {{ widget_class_name }}({
+class ScaffoldSearchBar extends StatefulWidget {
+  /// Creates a [ScaffoldSearchBar].
+  const ScaffoldSearchBar({
     this.instanceId = '',
-    this.hintText = '{{ hint_text }}',
+    this.hintText = 'Search...',
     this.resultGroups = const <SearchResultGroup>[],
     this.onSearch,
     this.onResultTap,
@@ -144,23 +143,23 @@ class {{ widget_class_name }} extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
 
   @override
-  State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
+  State<ScaffoldSearchBar> createState() => _ScaffoldSearchBarState();
 }
 
 // ---------------------------------------------------------------------------
 // Private state
 // ---------------------------------------------------------------------------
 
-class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
+class _ScaffoldSearchBarState extends State<ScaffoldSearchBar> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  late final {{ widget_class_name }}Cubit _cubit;
+  late final ScaffoldSearchBarCubit _cubit;
   bool _showResults = false;
 
   @override
   void initState() {
     super.initState();
-    _cubit = {{ widget_class_name }}Cubit(instanceId: widget.instanceId);
+    _cubit = ScaffoldSearchBarCubit(instanceId: widget.instanceId);
     _focusNode.addListener(_onFocusChange);
     // Seed the controller from the hydrated cubit so a restored query is
     // visible after hot-restart (Pitfall 7: controller objects live in
@@ -191,7 +190,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   /// ``failSearch`` is the ONLY transition that sets ``errorMessage`` --
   /// the BlocConsumer listener below fires the search-failed toast from it.
   Future<void> _handleQueryChanged(
-    {{ widget_class_name }}Cubit cubit,
+    ScaffoldSearchBarCubit cubit,
     String value,
   ) async {
     cubit.updateQuery(value);
@@ -203,7 +202,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
     }
   }
 
-  void _clearSearch({{ widget_class_name }}Cubit cubit) {
+  void _clearSearch(ScaffoldSearchBarCubit cubit) {
     _controller.clear();
     cubit.clearQuery();
     widget.onClear?.call();
@@ -225,9 +224,9 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<{{ widget_class_name }}Cubit>.value(
+    return BlocProvider<ScaffoldSearchBarCubit>.value(
       value: _cubit,
-      child: BlocConsumer<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
+      child: BlocConsumer<ScaffoldSearchBarCubit, ScaffoldSearchBarState>(
         listenWhen: (prev, curr) =>
             prev.errorMessage != curr.errorMessage && curr.errorMessage != null,
         listener: (context, state) {
@@ -239,8 +238,8 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
           );
         },
         builder: (context, state) {
-          final {{ widget_class_name }}Cubit cubit =
-              context.read<{{ widget_class_name }}Cubit>();
+          final ScaffoldSearchBarCubit cubit =
+              context.read<ScaffoldSearchBarCubit>();
           final palette = context.palette;
           final dimens = context.dimens;
           final textTheme = Theme.of(context).textTheme;
