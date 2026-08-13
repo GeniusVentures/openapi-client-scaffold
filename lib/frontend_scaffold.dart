@@ -16,6 +16,7 @@ export 'components/scaffold_focus_outline.dart';
 export 'components/scaffold_live_region.dart';
 export 'components/scaffold_motion.dart';
 export 'components/scaffold_overflow_fade.dart';
+export 'components/scaffold_responsive_visibility.dart';
 export 'components/scaffold_scroll_edge_indicator.dart';
 export 'components/scaffold_surface.dart';
 export 'components/scaffold_touch_target.dart';
