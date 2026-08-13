@@ -1,9 +1,13 @@
-/// {{ widget_class_name }} -- M3 global search bar with grouped results panel.
+/// {{ widget_class_name }} -- M3 pill-shaped search bar with grouped results panel.
 ///
 /// Generated from search_bar.dart.jinja2 -- do not edit by hand.
+/// Source schema: templates/components/search_bar.dart.jinja2
+/// Generator version: 0.4.0
 /// Provides a full-width pill-shaped search input that expands to show
-/// grouped search results below.  Standalone Material 3 widget consuming
-/// Theme.of(context) directly; no Riverpod or GeniusTheme dependency.
+/// grouped search results below. Composes ScaffoldSurface + ScaffoldFocusOutline
+/// + ScaffoldStatusIndicator + ScaffoldBadge + ScaffoldLiveRegion.
+/// Standalone widget consuming Theme.of(context) via context.palette/dimens;
+/// no Riverpod or GeniusTheme dependency.
 /// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
 library;
 
@@ -11,12 +15,19 @@ import 'dart:async' show FutureOr;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_scaffold/components/scaffold_badge.dart';
+import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
+import 'package:frontend_scaffold/components/scaffold_live_region.dart';
+import 'package:frontend_scaffold/components/scaffold_motion.dart';
+import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
+import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 {# Consumer note: generated code also reads [{{ widget_class_name }}Cubit]'s
-   literal ``storagePrefix`` at hydration time (see search_bar_cubit.dart). #}
-import 'search_bar_cubit.dart';
-import 'search_bar_state.dart';
+   literal ``storagePrefix`` at hydration time (see search_bar_cubit.dart.jinja2). #}
+import 'scaffold_search_bar_cubit.dart';
+import 'scaffold_search_bar_state.dart';
 
 // ---------------------------------------------------------------------------
 // Helper data classes — immutable result models
@@ -67,17 +78,24 @@ class SearchResultGroup {
 
 /// A Material 3 search bar with grouped results dropdown.
 ///
-/// Renders a pill-shaped [TextField] with search and clear icons.
-/// When the user types, an [AnimatedSize] panel drops below showing
-/// results grouped under labelled headers.
+/// Renders a pill-shaped [TextField] with search and clear icons, a loading
+/// [ScaffoldStatusIndicator], a filter icon, and a result-count
+/// [ScaffoldBadge]. When the user types, an [AnimatedSize] panel drops below
+/// showing results grouped under labelled headers.
 class {{ widget_class_name }} extends StatefulWidget {
   /// Creates a [{{ widget_class_name }}].
-  const {{ widget_class_name }} ({
+  const {{ widget_class_name }}({
     this.instanceId = '',
     this.hintText = '{{ hint_text }}',
     this.resultGroups = const <SearchResultGroup>[],
     this.onSearch,
     this.onResultTap,
+    this.isLoading = false,
+    this.resultCount = 0,
+    this.onClear,
+    this.onFilterTap,
+    this.isFiltered = false,
+    this.onSubmitted,
     super.key,
   });
 
@@ -105,6 +123,25 @@ class {{ widget_class_name }} extends StatefulWidget {
   ///
   /// Receives the [SearchResult.id] of the tapped item.
   final void Function(String resultId)? onResultTap;
+
+  /// When true, shows a loading [ScaffoldStatusIndicator] and hides the clear
+  /// button.
+  final bool isLoading;
+
+  /// Result count shown in a trailing [ScaffoldBadge] when greater than zero.
+  final int resultCount;
+
+  /// Called after the clear button empties the query.
+  final VoidCallback? onClear;
+
+  /// When non-null, shows a filter icon that invokes this callback.
+  final VoidCallback? onFilterTap;
+
+  /// When true, tints the filter icon with the primary accent.
+  final bool isFiltered;
+
+  /// Called when the user submits the search field.
+  final ValueChanged<String>? onSubmitted;
 
   @override
   State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
@@ -166,6 +203,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
   void _clearSearch({{ widget_class_name }}Cubit cubit) {
     _controller.clear();
     cubit.clearQuery();
+    widget.onClear?.call();
     setState(() => _showResults = false);
   }
 
@@ -199,84 +237,135 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
         builder: (context, state) {
           final {{ widget_class_name }}Cubit cubit =
               context.read<{{ widget_class_name }}Cubit>();
-          final ColorScheme colorScheme = Theme.of(context).colorScheme;
+          final palette = context.palette;
+          final dimens = context.dimens;
+          final textTheme = Theme.of(context).textTheme;
+
+          final Widget inputSurface = ScaffoldFocusOutline(
+            focusNode: _focusNode,
+            borderRadius: BorderRadius.circular(dimens.radiusPill),
+            child: ScaffoldSurface(
+              color: palette.grayPrimary,
+              borderRadius: BorderRadius.circular(dimens.radiusPill),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.search, size: 24.0, color: palette.textSecondary),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      onChanged: (String value) =>
+                          _handleQueryChanged(cubit, value),
+                      onSubmitted: widget.onSubmitted,
+                      decoration: InputDecoration(
+                        hintText: widget.hintText,
+                        hintStyle: textTheme.bodyLarge?.copyWith(
+                          color: palette.textSecondary,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  if (state.query.isNotEmpty && !widget.isLoading)
+                    IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () => _clearSearch(cubit),
+                    ),
+                  if (widget.isLoading)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ScaffoldStatusIndicator(
+                        status: StatusVariant.info,
+                        label: 'Loading',
+                      ),
+                    ),
+                  if (widget.onFilterTap != null)
+                    IconButton(
+                      icon: Icon(
+                        Icons.filter_list,
+                        color: widget.isFiltered
+                            ? palette.lightGreenPrimary
+                            : palette.textSecondary,
+                      ),
+                      onPressed: widget.onFilterTap,
+                    ),
+                  if (widget.resultCount > 0)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ScaffoldBadge(
+                        variant: BadgeVariant.count,
+                        count: widget.resultCount,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
 
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               // -- Search input ------------------------------------------------
-              TextField(
-                controller: _controller,
-                focusNode: _focusNode,
-                onChanged: (String value) =>
-                    _handleQueryChanged(cubit, value),
-                decoration: InputDecoration(
-                  hintText: widget.hintText,
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: state.query.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () => _clearSearch(cubit),
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: colorScheme.surfaceContainerHighest,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      {{ tokens.shape.corner.extraLarge }},
-                    ),
-                  ),
-                ),
+              ScaffoldLiveRegion(
+                label: widget.resultCount > 0
+                    ? '${widget.resultCount} results found'
+                    : null,
+                child: inputSurface,
               ),
 
               // -- Results panel ------------------------------------------------
               AnimatedSize(
-                duration: const Duration(milliseconds: 200),
+                duration: ScaffoldMotionDurations.medium,
                 child: _showResults && widget.resultGroups.isNotEmpty
-                    ? Card(
-                        // surfaceTint opacity guidance (M3 level 3): {{ tokens.elevation.level3.surfaceTint }}
-                        elevation: 3.0,
-                        margin: const EdgeInsets.only(top: 4.0),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              for (final SearchResultGroup group
-                                  in widget.resultGroups) ...<Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 4.0,
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: ScaffoldSurface(
+                          color: palette.surfaceElevated,
+                          elevation: 3,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                for (final SearchResultGroup group
+                                    in widget.resultGroups) ...<Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                      vertical: 4.0,
+                                    ),
+                                    child: Text(
+                                      group.label,
+                                      style: textTheme.labelLarge?.copyWith(
+                                        color: palette.lightGreenPrimary,
+                                      ),
+                                    ),
                                   ),
-                                  child: Text(
-                                    group.label,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelLarge
-                                        ?.copyWith(color: colorScheme.primary),
-                                  ),
-                                ),
-                                for (final SearchResult item in group.items)
-                                  ListTile(
-                                    dense: true,
-                                    leading: item.icon != null
-                                        ? Icon(_resolveIcon(item.icon!))
-                                        : null,
-                                    title: Text(item.title),
-                                    subtitle: item.subtitle != null
-                                        ? Text(item.subtitle!)
-                                        : null,
-                                    onTap: () {
-                                      cubit.selectResult(item.id);
-                                      widget.onResultTap?.call(item.id);
-                                    },
-                                  ),
-                                if (group != widget.resultGroups.last)
-                                  const Divider(height: 1.0),
+                                  for (final SearchResult item in group.items)
+                                    ListTile(
+                                      dense: true,
+                                      leading: item.icon != null
+                                          ? Icon(_resolveIcon(item.icon!))
+                                          : null,
+                                      title: Text(item.title),
+                                      subtitle: item.subtitle != null
+                                          ? Text(item.subtitle!)
+                                          : null,
+                                      onTap: () {
+                                        cubit.selectResult(item.id);
+                                        widget.onResultTap?.call(item.id);
+                                      },
+                                    ),
+                                  if (group != widget.resultGroups.last)
+                                    const Divider(height: 1.0),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                         ),
                       )

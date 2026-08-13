@@ -1,6 +1,8 @@
 /// {{ widget_class_name }}Cubit -- Cubit for {{ widget_class_name }} state management.
 ///
 /// Generated from card_cubit.dart.jinja2 -- do not edit by hand.
+/// Source schema: templates/components/card_cubit.dart.jinja2
+/// Generator version: 0.4.0
 /// Persists state across reloads via hydrated_bloc; uses a stable
 /// literal [storagePrefix] so minified builds retain hydrated state.
 /// Requires HydratedBloc.storage initialized in the consuming app's
@@ -10,7 +12,7 @@ library;
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-import 'card_state.dart';
+import 'scaffold_card_state.dart';
 
 // ---------------------------------------------------------------------------
 // Cubit
@@ -28,8 +30,11 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
   ///
   /// [instanceId] discriminates multi-instance persistence -- pass a
   /// unique value when two instances of this cubit share a screen.
-  {{ widget_class_name }}Cubit({this.instanceId = ''})
-      : super(const {{ widget_class_name }}State()) {
+  /// [initialVariant] seeds the variant used when no hydrated state exists.
+  {{ widget_class_name }}Cubit({
+    this.instanceId = '',
+    this.initialVariant = 'elevated',
+  }) : super({{ widget_class_name }}State(cardVariant: initialVariant)) {
     hydrate(
       onError: (error, stackTrace) => HydrationErrorBehavior.retain,
     );
@@ -37,6 +42,9 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
 
   /// Optional discriminator for multi-instance persistence. Empty by default.
   final String instanceId;
+
+  /// The variant used when no hydrated value exists.
+  final String initialVariant;
 
   @override
   String get id => instanceId;
@@ -55,10 +63,10 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State>
     emit(state.copyWith(lastAction: action));
   }
 
-  /// Wipes hydrated storage and emits the default state (logout/reset flow).
+  /// Wipes hydrated storage and emits the seeded default state.
   Future<void> reset() async {
     await clear();
-    emit(const {{ widget_class_name }}State());
+    emit({{ widget_class_name }}State(cardVariant: initialVariant));
   }
 
   @override

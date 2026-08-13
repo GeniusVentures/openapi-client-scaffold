@@ -1,16 +1,5 @@
 {
-  "_comment": "Fixture variables for standalone rendering of card.dart.jinja2",
-  "widget_class_name": "ContentCard",
-  "card_variant": "elevated",
-  "has_header": true,
-  "has_body": true,
-  "has_actions": true,
-  "header_title": "Card Title",
-  "header_subtitle": "Card subtitle text",
-  "body_content": "text",
-  "action_labels": [
-    "Cancel",
-    "Save"
-  ],
-  "form_factor": "desktop"
+  "_comment": "Fixture variables for standalone rendering of card.dart.jinja2. widget_class_name is the generated class name; card_variant seeds the default variant (elevated/outlined/filled).",
+  "widget_class_name": "ScaffoldCard",
+  "card_variant": "elevated"
 }
