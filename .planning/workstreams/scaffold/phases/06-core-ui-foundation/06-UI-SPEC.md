@@ -37,7 +37,7 @@ Atoms do NOT re-invent theming. They consume the established token system:
 | Token Class | Type | Tokens | Pattern |
 |-------------|------|--------|---------|
 | `ScaffoldPalette` | `ThemeExtension<ScaffoldPalette>` | 15 semantic color tokens + 7 new in Wave 0 (see Color section) | `copyWith` / `lerp` |
-| `ScaffoldDimens` | `ThemeExtension<ScaffoldDimens>` | 17 spacing/sizing tokens + 6 new in Wave 0 (see Spacing section) | `copyWith` / `lerp` |
+| `ScaffoldDimens` | `ThemeExtension<ScaffoldDimens>` | 15 spacing/sizing tokens + 6 new in Wave 0 (see Spacing section) | `copyWith` / `lerp` |
 | `ScaffoldElevation` | Static class | `card` shadow list (black @ 35%, blur 16px, offset y 4) | Constants |
 | `ScaffoldBreakpoints` | Static class | `small` (760), `tablet` (1200), `medium` (1644), `large` (1920) | `MediaQuery` + platform detection |
 | `ScaffoldThemeX` | `BuildContext` extension | `context.palette` → `ScaffoldPalette`, `context.dimens` → `ScaffoldDimens` | `??` fallback to defaults |
@@ -757,7 +757,7 @@ No third-party registries declared. Gate not executed. If a third-party Flutter 
 | 01-UI-SPEC.md (Touch POS) | M3 standard, 8-point spacing, 48px touch targets, semantic token system, typography roles |
 | 09-UI-SPEC.md (Admin) | Responsive breakpoints, dark theme defaults, interaction patterns, status badges |
 | ScaffoldPalette (15 existing tokens) | Color token names, dark defaults, ThemeExtension pattern |
-| ScaffoldDimens (17 existing tokens) | Spacing token names, values, ThemeExtension pattern |
+| ScaffoldDimens (15 existing tokens) | Spacing token names, values, ThemeExtension pattern |
 | ScaffoldElevation | Card shadow token |
 | ScaffoldBreakpoints | Breakpoint thresholds (small, tablet, medium, large) |
 | ScaffoldThemeX | `context.palette`/`context.dimens` extension pattern |
