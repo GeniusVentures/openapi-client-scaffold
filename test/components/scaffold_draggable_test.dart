@@ -19,7 +19,7 @@ void main() {
   testWidgets('idle renders child normally', (tester) async {
     await _pump(
       tester,
-      ScaffoldDraggable<int>(data: 1, child: const Text('drag me')),
+      ScaffoldDraggable(data: 1, child: const Text('drag me')),
     );
     expect(find.text('drag me'), findsOneWidget);
   });
@@ -29,7 +29,7 @@ void main() {
   ) async {
     await _pump(
       tester,
-      ScaffoldDraggable<int>(
+      ScaffoldDraggable(
         data: 1,
         child: const SizedBox(
           width: 100,
@@ -77,7 +77,7 @@ void main() {
   ) async {
     await _pump(
       tester,
-      ScaffoldDraggable<int>(data: 1, dragHandle: true, child: const Text('x')),
+      ScaffoldDraggable(data: 1, dragHandle: true, child: const Text('x')),
     );
     expect(
       find.descendant(
@@ -89,7 +89,7 @@ void main() {
 
     await _pump(
       tester,
-      ScaffoldDraggable<int>(
+      ScaffoldDraggable(
         data: 1,
         dragHandle: const Icon(Icons.menu),
         child: const Text('x'),
@@ -105,7 +105,7 @@ void main() {
     int canceled = 0;
     await _pump(
       tester,
-      ScaffoldDraggable<int>(
+      ScaffoldDraggable(
         data: 1,
         onDragStarted: () => started++,
         onDragEnd: () => ended++,
