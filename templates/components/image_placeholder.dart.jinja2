@@ -1,0 +1,147 @@
+// {{ widget_class_name }} — {{ variant }} image placeholder.
+//
+// Generated from image_placeholder.dart.jinja2 — do not edit by hand.
+// Source schema: templates/components/image_placeholder.dart.jinja2
+// Generator version: {{ generator_version }}
+library;
+
+import 'package:flutter/material.dart';
+{% if variant == "loading" %}
+import 'package:frontend_scaffold/components/scaffold_skeleton.dart';
+{% else %}
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+{% endif %}
+
+/// A {{ variant }} image placeholder.
+///
+/// {% if variant == "loading" %}Renders a [ScaffoldSkeleton] stand-in while an
+/// image loads.{% elif variant == "missing" %}Renders an
+/// `Icons.image_not_supported` glyph on a `palette.deepBlueCardColor` surface
+/// with an optional label.{% elif variant == "empty" %}Renders an
+/// `Icons.photo_outlined` glyph with an optional label.{% elif variant == "failed" %}Renders an
+/// `Icons.broken_image` glyph in `palette.statusError` with an optional retry
+/// action.{% endif %}
+class {{ widget_class_name }} extends StatelessWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }}({
+    super.key,
+    this.width,
+    this.height,
+{% if variant == "loading" %}
+    this.borderRadius,
+{% endif %}
+    this.label = '{{ variant_label }}',
+{% if variant == "failed" %}
+    this.onRetry,
+    this.retryLabel = 'Retry',
+{% endif %}
+  });
+
+  /// Box width; null lets the parent size the placeholder.
+  final double? width;
+
+  /// Box height; null lets the parent size the placeholder.
+  final double? height;
+
+{% if variant == "loading" %}
+  /// Skeleton corner radius; defaults to `dimens.skeletonCornerRadius`.
+  final double? borderRadius;
+
+{% endif %}
+  /// Accessible label announced to screen readers.
+  final String label;
+
+{% if variant == "failed" %}
+  /// Called when the retry action is tapped; the action is omitted when null.
+  final VoidCallback? onRetry;
+
+  /// Label rendered on the retry action. Defaults to 'Retry'.
+  final String retryLabel;
+
+{% endif %}
+  @override
+  Widget build(BuildContext context) {
+{% if variant == "loading" %}
+    return Semantics(
+      image: true,
+      label: label,
+      child: ScaffoldSkeleton(
+        width: width,
+        height: height,
+        borderRadius: borderRadius,
+      ),
+    );
+{% elif variant == "missing" %}
+    final palette = context.palette;
+    final TextStyle? labelStyle = Theme.of(context)
+        .textTheme
+        .bodyLarge
+        ?.copyWith(color: palette.textSecondary);
+    return Semantics(
+      image: true,
+      label: label,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: palette.deepBlueCardColor,
+          border: Border.all(color: palette.borderSubtle),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.image_not_supported,
+              size: 48,
+              color: palette.textSecondary,
+            ),
+            if (label.isNotEmpty)
+              Text(label, textAlign: TextAlign.center, style: labelStyle),
+          ],
+        ),
+      ),
+    );
+{% elif variant == "empty" %}
+    final palette = context.palette;
+    final TextStyle? labelStyle = Theme.of(context)
+        .textTheme
+        .bodyLarge
+        ?.copyWith(color: palette.textSecondary);
+    return Semantics(
+      image: true,
+      label: label,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.photo_outlined, size: 48, color: palette.textSecondary),
+          if (label.isNotEmpty)
+            Text(label, textAlign: TextAlign.center, style: labelStyle),
+        ],
+      ),
+    );
+{% elif variant == "failed" %}
+    final palette = context.palette;
+    final TextStyle? errorStyle = Theme.of(context)
+        .textTheme
+        .bodyLarge
+        ?.copyWith(color: palette.statusError);
+    return Semantics(
+      image: true,
+      label: label,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.broken_image, size: 48, color: palette.statusError),
+          if (label.isNotEmpty)
+            Text(label, textAlign: TextAlign.center, style: errorStyle),
+          if (onRetry != null)
+            TextButton(onPressed: onRetry, child: Text(retryLabel)),
+        ],
+      ),
+    );
+{% endif %}
+  }
+}

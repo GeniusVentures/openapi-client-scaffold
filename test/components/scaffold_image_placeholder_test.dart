@@ -4,6 +4,7 @@ import 'package:frontend_scaffold/components/scaffold_image_placeholder_empty.da
 import 'package:frontend_scaffold/components/scaffold_image_placeholder_failed.dart';
 import 'package:frontend_scaffold/components/scaffold_image_placeholder_loading.dart';
 import 'package:frontend_scaffold/components/scaffold_image_placeholder_missing.dart';
+import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_skeleton.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -12,7 +13,11 @@ Future<void> _pump(WidgetTester tester, Widget child) {
   return tester.pumpWidget(
     MaterialApp(
       theme: ThemeData(extensions: scaffoldThemeExtensions),
-      home: Scaffold(body: Center(child: child)),
+      home: Scaffold(
+        body: Center(
+          child: ScaffoldMotion(reducedMotion: false, child: child),
+        ),
+      ),
     ),
   );
 }
