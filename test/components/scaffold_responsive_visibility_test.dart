@@ -20,10 +20,16 @@ Future<void> _pumpAtSize(
   );
 }
 
-Widget _visibility({double? showAt, double? hideAt, Widget? replacement}) {
+Widget _visibility({
+  double? showAt,
+  double? hideAt,
+  ComparisonOperator operator = ComparisonOperator.greaterThanOrEqual,
+  Widget? replacement,
+}) {
   return ScaffoldResponsiveVisibility(
     showAt: showAt,
     hideAt: hideAt,
+    operator: operator,
     replacement: replacement,
     child: const Text('visible'),
   );
@@ -50,20 +56,21 @@ void main() {
     );
 
     expect(find.text('visible'), findsNothing);
-    expect(
+    final SizedBox box = tester.widget<SizedBox>(
       find.descendant(
         of: find.byType(ScaffoldResponsiveVisibility),
-        matching: find.byWidget(const SizedBox.shrink()),
+        matching: find.byType(SizedBox),
       ),
-      findsOneWidget,
     );
+    expect(box.width, 0.0);
+    expect(box.height, 0.0);
   });
 
   testWidgets('hideAt with <= hides at 600 and renders at 800', (tester) async {
     await _pumpAtSize(
       tester,
       const Size(600, 600),
-      _visibility(hideAt: 760),
+      _visibility(hideAt: 760, operator: ComparisonOperator.lessThanOrEqual),
     );
     expect(find.text('visible'), findsNothing);
 
@@ -78,7 +85,11 @@ void main() {
     await _pumpAtSize(
       tester,
       const Size(600, 600),
-      _visibility(hideAt: 760, replacement: const Text('replacement')),
+      _visibility(
+        hideAt: 760,
+        operator: ComparisonOperator.lessThanOrEqual,
+        replacement: const Text('replacement'),
+      ),
     );
 
     expect(find.text('visible'), findsNothing);
