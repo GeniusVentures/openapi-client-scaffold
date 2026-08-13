@@ -1,0 +1,208 @@
+// {{ widget_class_name }} — {{ variant }} animated display.
+//
+// Generated from animated_display.dart.jinja2 — do not edit by hand.
+// Source schema: templates/components/animated_display.dart.jinja2
+// Generator version: {{ generator_version }}
+library;
+
+{% if variant == "shake" or variant == "bounce" %}import 'dart:math' as math;
+
+{% endif %}import 'package:flutter/material.dart';
+import 'package:frontend_scaffold/components/scaffold_motion.dart';
+
+/// Animates [child] with a {{ variant }} effect.
+///
+/// When [ScaffoldMotion.reducedMotion] is true, the motion is replaced by a
+/// zero-duration fade (child renders fully opaque with no movement). The
+/// animation plays on mount when [trigger] is null; otherwise it replays
+/// whenever [trigger] changes. Content is excluded from semantics while
+/// animating.
+class {{ widget_class_name }} extends StatefulWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }}({
+    super.key,
+    required this.child,
+    this.trigger,
+    this.duration,
+    this.curve,
+    this.intensity,
+  });
+
+  /// Content rendered underneath the animation.
+  final Widget child;
+
+  /// When non-null, the animation replays whenever this value changes.
+  final int? trigger;
+
+  /// Overrides the default animation duration.
+  final Duration? duration;
+
+  /// Overrides the default animation curve.
+  final Curve? curve;
+
+  /// Animation strength (slide offset, turns, oscillation amplitude).
+  final double? intensity;
+
+  @override
+  State<{{ widget_class_name }}> createState() => _{{ widget_class_name }}State();
+}
+
+class _{{ widget_class_name }}State extends State<{{ widget_class_name }}>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+{% if variant == "fade" %}
+  late final Animation<double> _animation;
+{% elif variant == "pulse" or variant == "scale" %}
+  late final Animation<double> _scaleAnimation;
+{% elif variant == "slide" %}
+  late final Animation<Offset> _slideAnimation;
+{% elif variant == "rotate" %}
+  late final Animation<double> _rotationAnimation;
+{% endif %}
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration ?? {% if variant == "pulse" %}ScaffoldMotionDurations.short{% else %}ScaffoldMotionDurations.medium{% endif %},
+    );
+    _configureAnimation();
+    _start();
+  }
+
+  void _configureAnimation() {
+{% if variant == "fade" %}
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: widget.curve ?? ScaffoldMotionCurves.standard,
+    );
+{% elif variant == "pulse" %}
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: widget.curve ?? ScaffoldMotionCurves.standard,
+      ),
+    );
+{% elif variant == "scale" %}
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: widget.curve ?? ScaffoldMotionCurves.standard,
+      ),
+    );
+{% elif variant == "slide" %}
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(-(widget.intensity ?? 0.2), 0.0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: widget.curve ?? ScaffoldMotionCurves.standard,
+      ),
+    );
+{% elif variant == "rotate" %}
+    _rotationAnimation = Tween<double>(
+      begin: 0.0,
+      end: widget.intensity ?? 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: widget.curve ?? ScaffoldMotionCurves.standard,
+      ),
+    );
+{% elif variant == "shake" or variant == "bounce" %}
+    // Oscillation reads the controller value directly; no curve is applied.
+{% endif %}
+  }
+
+  void _start() {
+{% if variant == "pulse" %}
+    _controller.repeat(reverse: true);
+{% else %}
+    if (widget.trigger == null) {
+      _controller.forward();
+    }
+{% endif %}
+  }
+
+  void _replay() {
+{% if variant == "pulse" %}
+    _controller
+      ..reset()
+      ..repeat(reverse: true);
+{% else %}
+    _controller
+      ..reset()
+      ..forward();
+{% endif %}
+  }
+
+  @override
+  void didUpdateWidget({{ widget_class_name }} oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration ?? {% if variant == "pulse" %}ScaffoldMotionDurations.short{% else %}ScaffoldMotionDurations.medium{% endif %};
+    }
+    if (widget.trigger != oldWidget.trigger) {
+      _replay();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool reducedMotion = ScaffoldMotion.of(context).reducedMotion;
+    if (reducedMotion) {
+      return ExcludeSemantics(
+        child: FadeTransition(
+          opacity: const AlwaysStoppedAnimation<double>(1.0),
+          child: widget.child,
+        ),
+      );
+    }
+
+    return ExcludeSemantics(child: _buildMotion());
+  }
+
+  Widget _buildMotion() {
+{% if variant == "fade" %}
+    return FadeTransition(opacity: _animation, child: widget.child);
+{% elif variant == "pulse" %}
+    return ScaleTransition(scale: _scaleAnimation, child: widget.child);
+{% elif variant == "scale" %}
+    return ScaleTransition(scale: _scaleAnimation, child: widget.child);
+{% elif variant == "slide" %}
+    return SlideTransition(position: _slideAnimation, child: widget.child);
+{% elif variant == "rotate" %}
+    return RotationTransition(turns: _rotationAnimation, child: widget.child);
+{% elif variant == "shake" %}
+    return AnimatedBuilder(
+      animation: _controller,
+      child: widget.child,
+      builder: (BuildContext context, Widget? child) {
+        final double amplitude = widget.intensity ?? 4.0;
+        final double dx = math.sin(_controller.value * math.pi * 4) * amplitude;
+        return Transform.translate(offset: Offset(dx, 0.0), child: child);
+      },
+    );
+{% elif variant == "bounce" %}
+    return AnimatedBuilder(
+      animation: _controller,
+      child: widget.child,
+      builder: (BuildContext context, Widget? child) {
+        final double amplitude = widget.intensity ?? 8.0;
+        final double decay = 1.0 - _controller.value;
+        final double dy =
+            -math.sin(_controller.value * math.pi * 3) * amplitude * decay;
+        return Transform.translate(offset: Offset(0.0, dy), child: child);
+      },
+    );
+{% endif %}
+  }
+}

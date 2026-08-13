@@ -1,0 +1,183 @@
+// {{ widget_class_name }} — {{ variant }} selection indicator.
+//
+// Generated from selection_indicator.dart.jinja2 — do not edit by hand.
+// Source schema: templates/components/selection_indicator.dart.jinja2
+// Generator version: {{ generator_version }}
+library;
+
+import 'package:flutter/material.dart';
+import 'package:frontend_scaffold/components/scaffold_touch_target.dart';
+{% if variant == "toggle" %}
+import 'package:frontend_scaffold/components/scaffold_motion.dart';
+{% endif %}
+import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+
+/// A {{ variant }} selection indicator.
+///
+/// {% if variant == "radio" %}Renders a 20px circle outline that fills with a
+/// 12px `palette.lightGreenPrimary` dot when checked, wrapped in a 48px
+/// [ScaffoldTouchTarget].{% elif variant == "checkbox" %}Renders a 20px
+/// rounded-rect outline that fills with `palette.lightGreenPrimary` and shows a
+/// check (or dash when indeterminate), wrapped in a 48px
+/// [ScaffoldTouchTarget].{% elif variant == "toggle" %}Renders a 40x24 pill
+/// track whose 20px thumb slides to the on position, wrapped in a 48px
+/// [ScaffoldTouchTarget].{% endif %}
+class {{ widget_class_name }} extends StatelessWidget {
+  /// Creates a [{{ widget_class_name }}].
+  const {{ widget_class_name }}({
+    super.key,
+{% if variant == "radio" or variant == "toggle" %}
+    required this.value,
+{% elif variant == "checkbox" %}
+    this.value,
+{% endif %}
+    this.onChanged,
+    this.disabled = false,
+{% if variant == "checkbox" %}
+    this.tristate = false,
+{% endif %}
+  });
+
+{% if variant == "radio" or variant == "toggle" %}
+  /// Whether the indicator is in the checked/on state.
+  final bool value;
+
+  /// Called with the toggled value when the indicator is tapped.
+  final ValueChanged<bool>? onChanged;
+{% elif variant == "checkbox" %}
+  /// Whether the indicator is checked; null renders the indeterminate state.
+  final bool? value;
+
+  /// Called with the next value when the indicator is tapped.
+  final ValueChanged<bool?>? onChanged;
+
+  /// When true, tapping cycles unchecked -> checked -> indeterminate.
+  final bool tristate;
+{% endif %}
+
+  /// When true, blocks interaction and dims the indicator to 0.4 opacity.
+  final bool disabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+{% if variant == "radio" %}
+    final Widget indicator = _buildRadio(palette);
+{% elif variant == "checkbox" %}
+    final Widget indicator = _buildCheckbox(palette);
+{% elif variant == "toggle" %}
+    final Widget indicator = _buildToggle(palette);
+{% endif %}
+
+    Widget result = Semantics(
+{% if variant == "radio" %}
+      checked: value,
+      inMutuallyExclusiveGroup: true,
+{% elif variant == "checkbox" %}
+      checked: value ?? false,
+      mixed: value == null,
+{% elif variant == "toggle" %}
+      toggled: value,
+{% endif %}
+      enabled: !disabled,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: disabled ? null : _handleTap,
+        child: ScaffoldTouchTarget(child: indicator),
+      ),
+    );
+
+    if (disabled) {
+      result = Opacity(opacity: 0.4, child: result);
+    }
+
+    return result;
+  }
+
+{% if variant == "radio" %}
+  void _handleTap() => onChanged?.call(!value);
+
+  Widget _buildRadio(ScaffoldPalette palette) {
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: palette.textSecondary, width: 2),
+      ),
+      child: value
+          ? Center(
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: palette.lightGreenPrimary,
+                ),
+              ),
+            )
+          : null,
+    );
+  }
+{% elif variant == "checkbox" %}
+  void _handleTap() {
+    if (tristate) {
+      final bool? next = value == null ? false : (value! ? null : true);
+      onChanged?.call(next);
+    } else {
+      onChanged?.call(!(value ?? false));
+    }
+  }
+
+  Widget _buildCheckbox(ScaffoldPalette palette) {
+    final bool? checked = value;
+    final Widget? icon = checked == null
+        ? const Icon(Icons.remove, color: Colors.white, size: 16)
+        : checked
+            ? const Icon(Icons.check, color: Colors.white, size: 16)
+            : null;
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        color: checked == true ? palette.lightGreenPrimary : null,
+        borderRadius: BorderRadius.circular(2),
+        border: Border.all(color: palette.textSecondary, width: 2),
+      ),
+      child: icon == null ? null : Center(child: icon),
+    );
+  }
+{% elif variant == "toggle" %}
+  void _handleTap() => onChanged?.call(!value);
+
+  Widget _buildToggle(ScaffoldPalette palette) {
+    return Container(
+      width: 40,
+      height: 24,
+      decoration: BoxDecoration(
+        color: value ? palette.lightGreenPrimary : palette.textSecondary,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Stack(
+        children: <Widget>[
+          AnimatedPositioned(
+            duration: ScaffoldMotionDurations.short,
+            curve: ScaffoldMotionCurves.standard,
+            left: value ? 18 : 2,
+            top: 2,
+            child: Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: palette.surfaceElevated,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+{% endif %}
+}
