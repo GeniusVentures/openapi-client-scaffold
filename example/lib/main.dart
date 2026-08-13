@@ -10,6 +10,7 @@ import 'demos/responsive_grid_demo.dart';
 import 'demos/string_button_demo.dart';
 import 'demos/text_entry_field_demo.dart';
 import 'demos/toast_demo.dart';
+import 'demos/tracer_demo.dart';
 
 void main() {
   runApp(const ScaffoldExampleApp());
@@ -144,6 +145,11 @@ class HomePage extends StatelessWidget {
             title: 'ResponsiveGrid',
             subtitle: 'Column count adapts to width / breakpoints',
             builder: (_) => const ResponsiveGridDemo(),
+          ),
+          _DemoTile(
+            title: 'Tracer — Core UI Foundation',
+            subtitle: 'Motion → Surface → TouchTarget → FocusOutline slice',
+            builder: (_) => const TracerDemo(),
           ),
         ],
       ),

@@ -25,20 +25,18 @@ void main() {
   });
 
   testWidgets('registers Semantics(container: true)', (tester) async {
-    final handle = tester.ensureSemantics();
     await _pump(
       tester,
       ScaffoldTouchTarget(child: const SizedBox(width: 16, height: 16)),
     );
 
-    final node = tester.getSemantics(
+    final semantics = tester.widget<Semantics>(
       find.descendant(
         of: find.byType(ScaffoldTouchTarget),
         matching: find.byType(Semantics),
       ),
     );
-    expect(node.hasFlag(SemanticsFlag.isContainer), isTrue);
-    handle.dispose();
+    expect(semantics.container, isTrue);
   });
 
   testWidgets('explicit minWidth/minHeight enforce 56x56', (tester) async {
