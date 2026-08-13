@@ -1,0 +1,6 @@
+{
+  "_comment": "Fixture variables for standalone rendering of selection_indicator.dart.jinja2. The representative variant (radio) renders a single class; scripts/generate_selection_indicator.py overrides `variant` and `widget_class_name` once per variant to emit the three per-variant files.",
+  "widget_class_name": "ScaffoldSelectionIndicatorRadio",
+  "variant": "radio",
+  "generator_version": "0.4.0"
+}
