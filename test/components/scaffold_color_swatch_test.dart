@@ -129,13 +129,15 @@ void main() {
       ScaffoldColorSwatch(colors: [Colors.red, Colors.green], disabled: true),
     );
 
-    expect(
-      find.descendant(
-        of: find.byType(ScaffoldColorSwatch),
-        matching: find.byType(IgnorePointer),
-      ),
-      findsNWidgets(2),
-    );
+    final Iterable<IgnorePointer> disabledPointers = tester
+        .widgetList<IgnorePointer>(
+          find.descendant(
+            of: find.byType(ScaffoldColorSwatch),
+            matching: find.byType(IgnorePointer),
+          ),
+        )
+        .where((IgnorePointer w) => w.ignoring);
+    expect(disabledPointers.length, 2);
 
     final ColoredBox overlay = tester.widget<ColoredBox>(
       find
