@@ -30,8 +30,8 @@ void main() {
     await _pump(tester, const ScaffoldLiveRegion(label: 'Volume'));
 
     final semantics = _semanticsOf(tester);
-    expect(semantics.liveRegion, isTrue);
-    expect(semantics.label, 'Volume');
+    expect(semantics.properties.liveRegion, isTrue);
+    expect(semantics.properties.label, 'Volume');
   });
 
   testWidgets('updates Semantics label when label parameter changes', (
@@ -41,6 +41,6 @@ void main() {
     await _pump(tester, const ScaffoldLiveRegion(label: 'Brightness'));
 
     final semantics = _semanticsOf(tester);
-    expect(semantics.label, 'Brightness');
+    expect(semantics.properties.label, 'Brightness');
   });
 }
