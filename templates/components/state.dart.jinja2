@@ -1,24 +1,31 @@
-/// {{ widget_class_name }} -- M3 state widget for empty, loading, and error states.
+/// {{ widget_class_name }} -- M3 state widget for loading, empty, error, unavailable, and success states.
 ///
 /// Generated from state.dart.jinja2 -- do not edit by hand.
+/// Source schema: templates/components/state.dart.jinja2
+/// Generator version: 0.4.0
 /// Renders the state variant held by the cubit's ``state.stateType`` at
-/// runtime (empty with illustration + CTA, loading skeleton, or error
-/// panel with inline retry). The template-render-time ``state_type``
-/// (``'{{ state_type }}'``) seeds the cubit's initial variant only.
-/// Standalone Material 3 widget consuming Theme.of(context) directly;
+/// runtime (loading skeleton, or a status panel for empty / error /
+/// unavailable / success). The constructor ``state`` (``'{{ state_type }}'``)
+/// seeds the cubit's initial variant only.
+/// Composes ScaffoldSkeleton (loading) + ScaffoldStatusIndicator +
+/// ScaffoldPressable (empty / error / unavailable / success).
+/// Standalone widget consuming Theme.of(context) via context.palette/dimens;
 /// no Riverpod or GeniusTheme dependency.
 /// Consumes {{ widget_class_name }}Cubit (hydrated_bloc).
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend_scaffold/components/loading/loading.dart';
+import 'package:frontend_scaffold/components/scaffold_pressable.dart';
+import 'package:frontend_scaffold/components/scaffold_skeleton.dart';
+import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 {# Consumer note: generated code also reads [{{ widget_class_name }}Cubit]'s
-   literal ``storagePrefix`` at hydration time (see state_cubit.dart). #}
-import 'state_cubit.dart';
-import 'state_view_state.dart';
+   literal ``storagePrefix`` at hydration time (see state_cubit.dart.jinja2). #}
+import 'scaffold_state_view_cubit.dart';
+import 'scaffold_state_view_state.dart';
 
 // ---------------------------------------------------------------------------
 // Public widget
@@ -26,24 +33,34 @@ import 'state_view_state.dart';
 
 /// A Material 3 state widget whose variant is runtime-driven.
 ///
-/// The rendered state variant (empty, loading, error) is read from the
-/// cubit's ``state.stateType`` on every build; the template-render-time
-/// ``state_type`` (``'{{ state_type }}'``) is only the cubit's initial
+/// The rendered state variant (loading, empty, error, unavailable, success)
+/// is read from the cubit's ``state.stateType`` on every build; the
+/// constructor ``state`` (``'{{ state_type }}'``) is only the cubit's initial
 /// value. Calling ``cubit.showLoading()`` / ``showEmpty()`` /
 /// ``showError(message)`` flips the rendered variant live, and
 /// ``cubit.retry()`` increments the retry counter shown on the error
 /// variant's retry button.
-{#
-  M3 color role reference for error state:
-    tokens.color.roles.error.light -> {{ tokens.color.roles.error.light }}
-  The generated code uses Theme.of(context).colorScheme.errorContainer and
-  onErrorContainer — NOT hardcoded hex values.
-#}
 class {{ widget_class_name }} extends StatelessWidget {
   /// Creates a [{{ widget_class_name }}].
   const {{ widget_class_name }}({
     this.instanceId = '',
-    this.onAction,
+    this.state = '{{ state_type }}',
+    this.loadingWidget,
+    this.emptyIcon = Icons.{{ empty_icon }},
+    this.emptyHeadline = '{{ empty_headline }}',
+    this.emptyBody = '{{ empty_body }}',
+    this.emptyAction,
+    this.errorIcon = Icons.{{ error_icon }},
+    this.errorHeadline = '{{ error_headline }}',
+    this.errorBody = '{{ error_body }}',
+    this.onRetry,
+    this.unavailableIcon = Icons.{{ unavailable_icon }},
+    this.unavailableHeadline = '{{ unavailable_headline }}',
+    this.unavailableBody = '{{ unavailable_body }}',
+    this.successIcon = Icons.{{ success_icon }},
+    this.successHeadline = '{{ success_headline }}',
+    this.successBody,
+    this.successAction,
     super.key,
   });
 
@@ -53,16 +70,66 @@ class {{ widget_class_name }} extends StatelessWidget {
   /// leave empty for a single (default) instance.
   final String instanceId;
 
-  /// Callback for the action button (CTA for empty state, retry for error).
-  ///
-  /// In the loading skeleton variant this callback is unused but accepted
-  /// for a consistent constructor signature across all variants.
-  final VoidCallback? onAction;
+  /// Initial state variant: 'loading', 'empty', 'error', 'unavailable', or
+  /// 'success'. Seeds the cubit's hydrated state.
+  final String state;
+
+  /// Optional custom widget for the loading variant; defaults to a
+  /// [ScaffoldSkeleton].
+  final Widget? loadingWidget;
+
+  /// Icon for the empty variant.
+  final IconData emptyIcon;
+
+  /// Headline for the empty variant.
+  final String emptyHeadline;
+
+  /// Body for the empty variant.
+  final String emptyBody;
+
+  /// Optional action rendered at the bottom of the empty variant.
+  final Widget? emptyAction;
+
+  /// Icon for the error variant.
+  final IconData errorIcon;
+
+  /// Headline for the error variant.
+  final String errorHeadline;
+
+  /// Body for the error variant, used when no runtime error message is set.
+  final String errorBody;
+
+  /// Callback for the error/unavailable retry button.
+  final VoidCallback? onRetry;
+
+  /// Icon for the unavailable variant.
+  final IconData unavailableIcon;
+
+  /// Headline for the unavailable variant.
+  final String unavailableHeadline;
+
+  /// Body for the unavailable variant.
+  final String unavailableBody;
+
+  /// Icon for the success variant.
+  final IconData successIcon;
+
+  /// Headline for the success variant.
+  final String successHeadline;
+
+  /// Optional body for the success variant.
+  final String? successBody;
+
+  /// Optional action rendered at the bottom of the success variant.
+  final Widget? successAction;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<{{ widget_class_name }}Cubit>(
-      create: (_) => {{ widget_class_name }}Cubit(instanceId: instanceId),
+      create: (_) => {{ widget_class_name }}Cubit(
+        instanceId: instanceId,
+        initialStateType: state,
+      ),
       child: BlocConsumer<{{ widget_class_name }}Cubit, {{ widget_class_name }}State>(
         listenWhen: (prev, curr) =>
             prev.lastError != curr.lastError && curr.lastError != null,
@@ -75,140 +142,137 @@ class {{ widget_class_name }} extends StatelessWidget {
           );
         },
         builder: (context, state) {
-          final ColorScheme colorScheme = Theme.of(context).colorScheme;
-          final TextTheme textTheme = Theme.of(context).textTheme;
+          final palette = context.palette;
           final {{ widget_class_name }}Cubit cubit =
               context.read<{{ widget_class_name }}Cubit>();
 
           switch (state.stateType) {
-            case 'empty':
-              // ============================================================
-              // Empty state: large faded icon + headline + subtitle + CTA
-              // ============================================================
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        Icons.{{ empty_icon }},
-                        size: 64.0,
-                        color:
-                            colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Text(
-                        '{{ empty_title }}',
-                        style: textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8.0),
-                      Text(
-                        '{{ empty_subtitle }}',
-                        textAlign: TextAlign.center,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      {% if empty_cta_label %}
-                      const SizedBox(height: 24.0),
-                      ElevatedButton.icon(
-                        onPressed: onAction,
-                        icon: const Icon(Icons.{{ empty_cta_icon }}),
-                        label: const Text('{{ empty_cta_label }}'),
-                      ),
-                      {% endif %}
-                    ],
-                  ),
-                ),
-              );
-
             case 'loading':
               // ============================================================
-              // Loading: scaffold Loading widget (BLOC-03 anchor) — the one
-              // direct scaffold widget consumption match; replaces the v1.0
-              // inline shimmer skeleton for this variant.
+              // Loading: ScaffoldSkeleton
               // ============================================================
-              return const Center(
-                child: Loading(text: 'Loading…'),
+              return Center(
+                child: loadingWidget ??
+                    const ScaffoldSkeleton(width: 240.0, height: 128.0),
               );
 
             case 'error':
               // ============================================================
-              // Error panel: inline card with icon, message, and retry button
+              // Error: status indicator + icon + headline + body + retry
               // ============================================================
-              return Card(
-                color: colorScheme.errorContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.{{ error_icon }},
-                            color: colorScheme.onErrorContainer,
-                          ),
-                          const SizedBox(width: 12.0),
-                          Expanded(
-                            child: Text(
-                              '{{ error_title }}',
-                              style: textTheme.titleMedium?.copyWith(
-                                color: colorScheme.onErrorContainer,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8.0),
-                      Text(
-                        state.lastError ?? '{{ error_message }}',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onErrorContainer
-                              .withValues(alpha: 0.8),
-                        ),
-                      ),
-                      {% if error_retry_label %}
-                      const SizedBox(height: 16.0),
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          cubit.retry();
-                          onAction?.call();
-                        },
-                        icon: const Icon(Icons.{{ error_retry_icon }}),
-                        label: Text(
-                          state.retryCount > 0
-                              ? '{{ error_retry_label }} (retried ${state.retryCount})'
-                              : '{{ error_retry_label }}',
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: colorScheme.onErrorContainer,
-                        ),
-                      ),
-                      {% endif %}
-                    ],
-                  ),
+              return _statePanel(
+                context,
+                status: StatusVariant.error,
+                icon: errorIcon,
+                iconColor: palette.statusError,
+                headline: errorHeadline,
+                body: state.lastError ?? errorBody,
+                action: ScaffoldPressable(
+                  onPressed: () {
+                    cubit.retry();
+                    onRetry?.call();
+                  },
+                  child: const Text('{{ error_retry_label }}'),
                 ),
               );
 
+            case 'unavailable':
+              // ============================================================
+              // Unavailable: status indicator + icon + headline + body
+              // ============================================================
+              return _statePanel(
+                context,
+                status: StatusVariant.neutral,
+                icon: unavailableIcon,
+                iconColor: palette.textSecondary,
+                headline: unavailableHeadline,
+                body: unavailableBody,
+                action: onRetry != null
+                    ? ScaffoldPressable(
+                        onPressed: () {
+                          cubit.retry();
+                          onRetry?.call();
+                        },
+                        child: const Text('{{ error_retry_label }}'),
+                      )
+                    : null,
+              );
+
+            case 'success':
+              // ============================================================
+              // Success: status indicator + icon + headline + optional action
+              // ============================================================
+              return _statePanel(
+                context,
+                status: StatusVariant.success,
+                icon: successIcon,
+                iconColor: palette.statusSuccess,
+                headline: successHeadline,
+                body: successBody,
+                action: successAction,
+              );
+
+            case 'empty':
             default:
               // ============================================================
-              // Unknown state type — defensive fallback
+              // Empty: status indicator + icon + headline + body + CTA
               // ============================================================
-              return Center(
-                child: Text(
-                  'Unknown state type: ${state.stateType}',
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.error,
-                  ),
-                ),
+              return _statePanel(
+                context,
+                status: StatusVariant.neutral,
+                icon: emptyIcon,
+                iconColor: palette.textSecondary,
+                headline: emptyHeadline,
+                body: emptyBody,
+                action: emptyAction,
               );
           }
         },
+      ),
+    );
+  }
+
+  /// Renders the shared status-panel layout for the non-loading variants.
+  Widget _statePanel(
+    BuildContext context, {
+    required StatusVariant status,
+    required IconData icon,
+    required Color iconColor,
+    required String headline,
+    required String? body,
+    Widget? action,
+  }) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ScaffoldStatusIndicator(status: status, label: headline),
+            const SizedBox(height: 16.0),
+            Icon(icon, size: 64.0, color: iconColor),
+            const SizedBox(height: 16.0),
+            Text(
+              headline,
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (body != null && body!.isNotEmpty) ...<Widget>[
+              const SizedBox(height: 8.0),
+              Text(
+                body!,
+                textAlign: TextAlign.center,
+                style: textTheme.bodyLarge,
+              ),
+            ],
+            if (action != null) ...<Widget>[
+              const SizedBox(height: 24.0),
+              action,
+            ],
+          ],
+        ),
       ),
     );
   }
