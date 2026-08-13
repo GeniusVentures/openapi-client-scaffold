@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
@@ -35,7 +36,10 @@ void main() {
     addTearDown(focusNode.dispose);
     await _pump(
       tester,
-      ScaffoldFocusOutline(focusNode: focusNode, child: const Text('x')),
+      ScaffoldFocusOutline(
+        focusNode: focusNode,
+        child: Focus(focusNode: focusNode, child: const Text('x')),
+      ),
     );
 
     focusNode.requestFocus();
@@ -55,7 +59,10 @@ void main() {
     addTearDown(focusNode.dispose);
     await _pump(
       tester,
-      ScaffoldFocusOutline(focusNode: focusNode, child: const Text('x')),
+      ScaffoldFocusOutline(
+        focusNode: focusNode,
+        child: Focus(focusNode: focusNode, child: const Text('x')),
+      ),
     );
     await tester.pump();
 
@@ -69,7 +76,10 @@ void main() {
     addTearDown(focusNode.dispose);
     await _pump(
       tester,
-      ScaffoldFocusOutline(focusNode: focusNode, child: const Text('x')),
+      ScaffoldFocusOutline(
+        focusNode: focusNode,
+        child: Focus(focusNode: focusNode, child: const Text('x')),
+      ),
       accessibleNavigation: true,
     );
 
@@ -86,7 +96,10 @@ void main() {
     addTearDown(focusNode.dispose);
     await _pump(
       tester,
-      ScaffoldFocusOutline(focusNode: focusNode, child: const Text('x')),
+      ScaffoldFocusOutline(
+        focusNode: focusNode,
+        child: Focus(focusNode: focusNode, child: const Text('x')),
+      ),
     );
 
     focusNode.requestFocus();
