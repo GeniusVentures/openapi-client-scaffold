@@ -68,7 +68,7 @@ No areas deferred to Claude — all decisions explicitly made.
 
 ### Reusable Assets
 - **ScaffoldPalette** (15 semantic color tokens): extend with focus ring color, skeleton colors, disabled overlay, drag/drop feedback colors
-- **ScaffoldDimens** (17 spacing/sizing tokens): extend with focus ring width, skeleton radius, touch target size, drag handle size, disabled opacity
+- **ScaffoldDimens** (15 spacing/sizing tokens): extend with focus ring width, skeleton radius, touch target size, drag handle size, disabled opacity
 - **ScaffoldBreakpoints**: static breakpoint thresholds (small=760, tablet=1200, medium=1644, large=1920) — Wave 0's ResponsiveVisibility consumes these
 - **ScaffoldThemeX**: `BuildContext` extension providing `context.palette` and `context.dimens` — every atom uses this pattern
 - **ScaffoldElevation**: elevation token class — consumed by Surface and card composite
