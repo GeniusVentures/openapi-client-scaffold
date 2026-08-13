@@ -50,6 +50,24 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
   /// Corner radius for pill shapes.
   final double radiusPill;
 
+  /// Focus ring stroke width.
+  final double focusRingWidth;
+
+  /// Skeleton placeholder corner radius.
+  final double skeletonCornerRadius;
+
+  /// Dim overlay opacity for disabled atoms.
+  final double disabledOverlayOpacity;
+
+  /// Drag-handle grip width.
+  final double dragHandleSize;
+
+  /// Minimum touch target in both dimensions.
+  final double minTouchTarget;
+
+  /// Internal padding used to bring small content up to the touch target.
+  final double touchTargetPadding;
+
   /// Creates a dimension set with the given values.
   const ScaffoldDimens({
     required this.horizontalPadding,
@@ -67,6 +85,12 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     required this.space12,
     required this.radiusMd,
     required this.radiusPill,
+    required this.focusRingWidth,
+    required this.skeletonCornerRadius,
+    required this.disabledOverlayOpacity,
+    required this.dragHandleSize,
+    required this.minTouchTarget,
+    required this.touchTargetPadding,
   });
 
   /// Default dimensions matching the previous static token values.
@@ -86,6 +110,12 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     space12: 24.0,
     radiusMd: 12.0,
     radiusPill: 48.0,
+    focusRingWidth: 2.0,
+    skeletonCornerRadius: 4.0,
+    disabledOverlayOpacity: 0.40,
+    dragHandleSize: 24.0,
+    minTouchTarget: 48.0,
+    touchTargetPadding: 12.0,
   );
 
   /// Returns a copy of this dimension set with the given fields replaced.
@@ -106,6 +136,12 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     double? space12,
     double? radiusMd,
     double? radiusPill,
+    double? focusRingWidth,
+    double? skeletonCornerRadius,
+    double? disabledOverlayOpacity,
+    double? dragHandleSize,
+    double? minTouchTarget,
+    double? touchTargetPadding,
   }) {
     return ScaffoldDimens(
       horizontalPadding: horizontalPadding ?? this.horizontalPadding,
@@ -125,6 +161,14 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
       space12: space12 ?? this.space12,
       radiusMd: radiusMd ?? this.radiusMd,
       radiusPill: radiusPill ?? this.radiusPill,
+      focusRingWidth: focusRingWidth ?? this.focusRingWidth,
+      skeletonCornerRadius:
+          skeletonCornerRadius ?? this.skeletonCornerRadius,
+      disabledOverlayOpacity:
+          disabledOverlayOpacity ?? this.disabledOverlayOpacity,
+      dragHandleSize: dragHandleSize ?? this.dragHandleSize,
+      minTouchTarget: minTouchTarget ?? this.minTouchTarget,
+      touchTargetPadding: touchTargetPadding ?? this.touchTargetPadding,
     );
   }
 
@@ -155,6 +199,15 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
       space12: lerpDouble(space12, other.space12),
       radiusMd: lerpDouble(radiusMd, other.radiusMd),
       radiusPill: lerpDouble(radiusPill, other.radiusPill),
+      focusRingWidth: lerpDouble(focusRingWidth, other.focusRingWidth),
+      skeletonCornerRadius:
+          lerpDouble(skeletonCornerRadius, other.skeletonCornerRadius),
+      disabledOverlayOpacity:
+          lerpDouble(disabledOverlayOpacity, other.disabledOverlayOpacity),
+      dragHandleSize: lerpDouble(dragHandleSize, other.dragHandleSize),
+      minTouchTarget: lerpDouble(minTouchTarget, other.minTouchTarget),
+      touchTargetPadding:
+          lerpDouble(touchTargetPadding, other.touchTargetPadding),
     );
   }
 }
