@@ -12,7 +12,14 @@ library frontend_scaffold;
 
 export 'components/action_button.dart';
 export 'components/app_screen_view.dart';
+export 'components/scaffold_color_swatch.dart';
 export 'components/scaffold_focus_outline.dart';
+export 'components/scaffold_formatted_value_date.dart';
+export 'components/scaffold_formatted_value_duration.dart';
+export 'components/scaffold_formatted_value_money.dart';
+export 'components/scaffold_formatted_value_number.dart';
+export 'components/scaffold_formatted_value_percentage.dart';
+export 'components/scaffold_formatted_value_time.dart';
 export 'components/scaffold_live_region.dart';
 export 'components/scaffold_motion.dart';
 export 'components/scaffold_overflow_fade.dart';
