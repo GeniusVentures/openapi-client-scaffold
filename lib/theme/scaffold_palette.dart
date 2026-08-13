@@ -50,6 +50,28 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   /// Warning status accent (foreground-purposed).
   final Color statusWarningText;
 
+  /// Focus ring color — visible in all focus states (keyboard + screen
+  /// reader). Seeded from the primary accent so it never fights the brand.
+  final Color focusRingColor;
+
+  /// Skeleton placeholder base fill.
+  final Color skeletonBaseColor;
+
+  /// Skeleton shimmer sweep color, contrasted against [skeletonBaseColor].
+  final Color skeletonShimmerColor;
+
+  /// Dim overlay painted over disabled atoms (dark-theme default).
+  final Color disabledOverlayColor;
+
+  /// Drag-feedback chip background.
+  final Color dragFeedbackBackground;
+
+  /// Drop-target accepted/over highlight.
+  final Color dropZoneHighlight;
+
+  /// Drop-target rejected highlight.
+  final Color dropZoneRejected;
+
   /// Creates a palette with the given semantic colors.
   const ScaffoldPalette({
     required this.deepBlueCardColor,
@@ -67,6 +89,13 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     required this.statusSuccess,
     required this.statusError,
     required this.statusWarningText,
+    required this.focusRingColor,
+    required this.skeletonBaseColor,
+    required this.skeletonShimmerColor,
+    required this.disabledOverlayColor,
+    required this.dragFeedbackBackground,
+    required this.dropZoneHighlight,
+    required this.dropZoneRejected,
   });
 
   /// Default palette seeded from the raw [ScaffoldColors] constants, plus
@@ -87,6 +116,13 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     statusSuccess: Color(0xFF0AD89C),
     statusError: Color(0xFFFF4D4D),
     statusWarningText: Color(0xFFFFC42E),
+    focusRingColor: ScaffoldColors.lightGreenPrimary,
+    skeletonBaseColor: Color(0xFF0C0E14),
+    skeletonShimmerColor: Color(0xFF0A121F),
+    disabledOverlayColor: Color(0x66000000),
+    dragFeedbackBackground: Color(0xFF0C0E14),
+    dropZoneHighlight: Color(0x3300EAAE),
+    dropZoneRejected: Color(0x33FF4D4D),
   );
 
   /// Returns a copy of this palette with the given fields replaced.
@@ -107,6 +143,13 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     Color? statusSuccess,
     Color? statusError,
     Color? statusWarningText,
+    Color? focusRingColor,
+    Color? skeletonBaseColor,
+    Color? skeletonShimmerColor,
+    Color? disabledOverlayColor,
+    Color? dragFeedbackBackground,
+    Color? dropZoneHighlight,
+    Color? dropZoneRejected,
   }) {
     return ScaffoldPalette(
       deepBlueCardColor: deepBlueCardColor ?? this.deepBlueCardColor,
@@ -124,6 +167,14 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
       statusSuccess: statusSuccess ?? this.statusSuccess,
       statusError: statusError ?? this.statusError,
       statusWarningText: statusWarningText ?? this.statusWarningText,
+      focusRingColor: focusRingColor ?? this.focusRingColor,
+      skeletonBaseColor: skeletonBaseColor ?? this.skeletonBaseColor,
+      skeletonShimmerColor: skeletonShimmerColor ?? this.skeletonShimmerColor,
+      disabledOverlayColor: disabledOverlayColor ?? this.disabledOverlayColor,
+      dragFeedbackBackground:
+          dragFeedbackBackground ?? this.dragFeedbackBackground,
+      dropZoneHighlight: dropZoneHighlight ?? this.dropZoneHighlight,
+      dropZoneRejected: dropZoneRejected ?? this.dropZoneRejected,
     );
   }
 
@@ -154,6 +205,19 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
       statusError: Color.lerp(statusError, other.statusError, t)!,
       statusWarningText:
           Color.lerp(statusWarningText, other.statusWarningText, t)!,
+      focusRingColor: Color.lerp(focusRingColor, other.focusRingColor, t)!,
+      skeletonBaseColor:
+          Color.lerp(skeletonBaseColor, other.skeletonBaseColor, t)!,
+      skeletonShimmerColor:
+          Color.lerp(skeletonShimmerColor, other.skeletonShimmerColor, t)!,
+      disabledOverlayColor:
+          Color.lerp(disabledOverlayColor, other.disabledOverlayColor, t)!,
+      dragFeedbackBackground:
+          Color.lerp(dragFeedbackBackground, other.dragFeedbackBackground, t)!,
+      dropZoneHighlight:
+          Color.lerp(dropZoneHighlight, other.dropZoneHighlight, t)!,
+      dropZoneRejected:
+          Color.lerp(dropZoneRejected, other.dropZoneRejected, t)!,
     );
   }
 }
