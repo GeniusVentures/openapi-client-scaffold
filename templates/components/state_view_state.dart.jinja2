@@ -5,6 +5,8 @@
 /// {{ widget_class_name }}State -- Immutable state for the {{ widget_class_name }} state widget.
 ///
 /// Generated from state_view_state.dart.jinja2 -- do not edit by hand.
+/// Source schema: templates/components/state_view_state.dart.jinja2
+/// Generator version: 0.4.0
 /// Plain Dart state class consumed by {{ widget_class_name }}Cubit.
 /// All fields are persisted via hydrated_bloc -- this component has no
 /// transient fields, so the active variant, retry count, and last error
@@ -18,8 +20,9 @@ library;
 
 /// Immutable state for [{{ widget_class_name }}].
 ///
-/// Holds the active state variant (``'empty'``, ``'loading'``, or
-/// ``'error'``), the retry counter, and the last error message. New
+/// Holds the active state variant (``'loading'``, ``'empty'``,
+/// ``'error'``, ``'unavailable'``, or ``'success'``), the retry counter, and
+/// the last error message. New
 /// instances are produced exclusively via [copyWith]; the cubit emits
 /// them to drive widget rebuilds.
 class {{ widget_class_name }}State {
@@ -30,8 +33,8 @@ class {{ widget_class_name }}State {
     this.lastError,
   });
 
-  /// The active state variant: ``'empty'``, ``'loading'``, or
-  /// ``'error'``.
+  /// The active state variant: ``'loading'``, ``'empty'``, ``'error'``,
+  /// ``'unavailable'``, or ``'success'``.
   ///
   /// Defaults to ``'empty'``.
   final String stateType;
