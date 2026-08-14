@@ -6,7 +6,8 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// When [disabled] is false, returns [child] unchanged (zero-opacity cost).
 /// When true, paints a `palette.disabledOverlayColor` dim at
 /// `dimens.disabledOverlayOpacity` over [child] and wraps everything in an
-/// [IgnorePointer] so no interaction reaches the content. When [reason] is
+/// [IgnorePointer] (blocking pointer input) plus an [ExcludeFocus] (blocking
+/// keyboard focus) so no interaction reaches the content. When [reason] is
 /// supplied, a `Semantics(tooltip: reason)` explains why the atom is disabled.
 class ScaffoldDisabledOverlay extends StatelessWidget {
   const ScaffoldDisabledOverlay({
@@ -38,12 +39,14 @@ class ScaffoldDisabledOverlay extends StatelessWidget {
       alpha: dimens.disabledOverlayOpacity,
     );
 
-    Widget overlay = IgnorePointer(
-      child: Stack(
-        children: <Widget>[
-          child,
-          Positioned.fill(child: ColoredBox(color: overlayColor)),
-        ],
+    Widget overlay = ExcludeFocus(
+      child: IgnorePointer(
+        child: Stack(
+          children: <Widget>[
+            child,
+            Positioned.fill(child: ColoredBox(color: overlayColor)),
+          ],
+        ),
       ),
     );
 
