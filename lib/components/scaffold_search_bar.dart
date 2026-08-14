@@ -198,7 +198,12 @@ class _ScaffoldSearchBarState extends State<ScaffoldSearchBar> {
     try {
       await widget.onSearch?.call(value);
     } catch (e) {
-      cubit.failSearch(e.toString());
+      // Guard the post-await path: the widget (and its cubit) may have been
+      // disposed while ``onSearch`` was in flight, and emitting on a closed
+      // cubit throws a late, unhandled ``StateError``.
+      if (mounted && !cubit.isClosed) {
+        cubit.failSearch(e.toString());
+      }
     }
   }
 
