@@ -76,4 +76,24 @@ void main() {
         .firstWhere((Semantics s) => s.properties.tooltip == 'Needs upgrade');
     expect(semantics.properties.tooltip, 'Needs upgrade');
   });
+
+  testWidgets('disabled excludes the subtree from keyboard focus', (
+    tester,
+  ) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    await _pump(
+      tester,
+      ScaffoldDisabledOverlay(
+        disabled: true,
+        child: Focus(focusNode: focusNode, child: const Text('hello')),
+      ),
+    );
+
+    expect(find.byType(ExcludeFocus), findsOneWidget);
+
+    focusNode.requestFocus();
+    await tester.pump();
+    expect(focusNode.hasFocus, isFalse);
+  });
 }
