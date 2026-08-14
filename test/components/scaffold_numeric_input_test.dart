@@ -80,6 +80,25 @@ void main() {
     expect(find.text('5.00'), findsOneWidget);
   });
 
+  testWidgets('increment quantizes floating-point sums to decimalPlaces', (
+    tester,
+  ) async {
+    num? changed;
+    await _pump(
+      tester,
+      ScaffoldNumericInput(
+        value: 0.1,
+        step: 0.2,
+        decimalPlaces: 1,
+        onChanged: (num v) => changed = v,
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+    expect(changed, 0.3);
+  });
+
   testWidgets('error renders statusError tint on value text', (tester) async {
     await _pump(
       tester,
