@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_drag_handle.dart';
-import 'package:frontend_scaffold/components/scaffold_pressable.dart';
+import 'package:frontend_scaffold/components/scaffold_touch_target.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// Drag wrapper with feedback / preview.
 ///
 /// Wraps [child] in a Flutter [LongPressDraggable] inside a
-/// [ScaffoldPressable] (48px touch target, hover state layer, focus ring — its
-/// long-press handler is left null so the long-press gesture reaches the
-/// [LongPressDraggable]). The default feedback is the child scaled to 1.05x
-/// with `palette.dragFeedbackBackground` and a card shadow; the original fades
-/// to 40% opacity while dragging. An optional [dragHandle] prepends a
+/// [ScaffoldTouchTarget] (48px hit area) with explicit enabled button
+/// semantics — the drag source is interactive, not a disabled button. The
+/// default feedback is the child scaled to 1.05x with
+/// `palette.dragFeedbackBackground` and a card shadow; the original fades to
+/// 40% opacity while dragging. An optional [dragHandle] prepends a
 /// [ScaffoldDragHandle] (or the supplied widget) above the child.
 class ScaffoldDraggable extends StatelessWidget {
   const ScaffoldDraggable({
@@ -79,7 +79,13 @@ class ScaffoldDraggable extends StatelessWidget {
       );
     }
 
-    return ScaffoldPressable(onLongPress: null, child: dragSource);
+    return ScaffoldTouchTarget(
+      child: Semantics(
+        button: true,
+        enabled: true,
+        child: dragSource,
+      ),
+    );
   }
 
   Widget? _resolveHandle() {
