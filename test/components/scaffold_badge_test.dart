@@ -168,11 +168,11 @@ void main() {
     expect(semantics.properties.label, '5 items');
   });
 
-  testWidgets('hit-tests at a 48x48 touch target', (tester) async {
+  testWidgets('renders at intrinsic size (dot is 8x8, not inflated to 48)', (
+    tester,
+  ) async {
     await _pump(tester, const ScaffoldBadge(variant: BadgeVariant.dot));
 
-    final Size size = tester.getSize(find.byType(ScaffoldBadge));
-    expect(size.width, greaterThanOrEqualTo(ScaffoldDimens.defaultDimens.minTouchTarget));
-    expect(size.height, greaterThanOrEqualTo(ScaffoldDimens.defaultDimens.minTouchTarget));
+    expect(tester.getSize(find.byType(ScaffoldBadge)), const Size(8, 8));
   });
 }
