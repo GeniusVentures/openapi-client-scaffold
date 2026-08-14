@@ -32,14 +32,19 @@ class ScaffoldCardState {
   /// if no action has been recorded yet.
   final String? lastAction;
 
+  /// Sentinel for [copyWith] marking an omitted optional field.
+  static const Object _unset = Object();
+
   /// Returns a copy of this state with the given fields replaced.
+  ///
+  /// [lastAction] may be reset to ``null`` by passing ``null`` explicitly.
   ScaffoldCardState copyWith({
     String? cardVariant,
-    String? lastAction,
+    Object? lastAction = _unset,
   }) {
     return ScaffoldCardState(
       cardVariant: cardVariant ?? this.cardVariant,
-      lastAction: lastAction ?? this.lastAction,
+      lastAction: lastAction == _unset ? this.lastAction : lastAction as String?,
     );
   }
 }
