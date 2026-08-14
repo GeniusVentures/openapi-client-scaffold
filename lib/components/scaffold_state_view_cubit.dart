@@ -40,9 +40,14 @@ class ScaffoldStateViewCubit extends Cubit<ScaffoldStateViewState>
     this.instanceId = '',
     this.initialStateType = 'empty',
   }) : super(ScaffoldStateViewState(stateType: initialStateType)) {
-    hydrate(
-      onError: (error, stackTrace) => HydrationErrorBehavior.retain,
-    );
+    try {
+      hydrate(
+        onError: (error, stackTrace) => HydrationErrorBehavior.retain,
+      );
+    } on StorageNotFound {
+      // HydratedBloc.storage not initialized (no bootstrap in main()) —
+      // run in-memory only; the widget still works, it just won't persist.
+    }
   }
 
   /// Optional discriminator for multi-instance persistence. Empty by default.

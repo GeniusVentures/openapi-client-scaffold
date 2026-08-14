@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:frontend_scaffold/components/scaffold_card.dart';
+import 'package:frontend_scaffold/components/scaffold_card_cubit.dart';
 import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
@@ -99,5 +100,16 @@ void main() {
     expect(find.text('Header'), findsOneWidget);
     expect(find.text('Body'), findsOneWidget);
     expect(find.text('Actions'), findsOneWidget);
+  });
+
+  test('cubit degrades gracefully when hydrated storage is uninitialized',
+      () async {
+    final previous = HydratedBloc.storage;
+    HydratedBloc.storage = null;
+    addTearDown(() => HydratedBloc.storage = previous);
+
+    final cubit = ScaffoldCardCubit(initialVariant: 'outlined');
+    expect(cubit.state.cardVariant, 'outlined');
+    await cubit.close();
   });
 }
