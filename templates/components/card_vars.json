@@ -1,5 +1,6 @@
 {
-  "_comment": "Fixture variables for standalone rendering of card.dart.jinja2. widget_class_name is the generated class name; card_variant seeds the default variant (elevated/outlined/filled).",
+  "_comment": "Fixture variables for standalone rendering of card.dart.jinja2. widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem used to derive the cubit/state import paths; card_variant seeds the default variant (elevated/outlined/filled).",
   "widget_class_name": "ScaffoldCard",
+  "file_stem": "scaffold_card",
   "card_variant": "elevated"
 }
