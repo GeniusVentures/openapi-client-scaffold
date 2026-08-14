@@ -42,6 +42,15 @@ class _ScaffoldScrollEdgeIndicatorState
   }
 
   @override
+  void didUpdateWidget(ScaffoldScrollEdgeIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.scrollController != oldWidget.scrollController) {
+      oldWidget.scrollController.removeListener(_handleScroll);
+      widget.scrollController.addListener(_handleScroll);
+    }
+  }
+
+  @override
   void dispose() {
     widget.scrollController.removeListener(_handleScroll);
     super.dispose();
