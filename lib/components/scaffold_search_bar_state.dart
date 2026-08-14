@@ -4,12 +4,8 @@
 /// Source schema: templates/components/search_bar_state.dart.jinja2
 /// Generator version: 0.4.0
 /// Plain Dart state class consumed by ScaffoldSearchBarCubit.
-/// ``query`` is persisted via hydrated_bloc. ``isSearching`` and
-/// ``errorMessage`` are TRANSIENT: they exist on the class (the widget's
-/// BlocConsumer listener reads ``errorMessage`` to fire the
-/// search-failed toast) but are excluded from ``toJson``/``fromJson``.
-/// The cubit's literal ``storagePrefix`` keeps the hydration key stable
-/// across minified builds.
+/// In-memory only -- no hydration or persistence. The widget's BlocConsumer
+/// listener reads ``errorMessage`` to fire the search-failed toast.
 library;
 
 // ---------------------------------------------------------------------------
@@ -57,25 +53,6 @@ class ScaffoldSearchBarState {
       query: query ?? this.query,
       isSearching: isSearching ?? this.isSearching,
       errorMessage: errorMessage ?? this.errorMessage,
-    );
-  }
-
-  /// Serializes this state to a JSON map for hydrated_bloc persistence.
-  ///
-  /// Transient fields (``isSearching``, ``errorMessage``) are excluded.
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'query': query,
-      };
-
-  /// Deserializes a [ScaffoldSearchBarState] from hydrated JSON.
-  ///
-  /// Uses defensive casts throughout -- hydrated JSON can be hand-edited
-  /// on native targets, so every field falls back to its default when
-  /// missing or of the wrong type. Transient fields always deserialize
-  /// to their defaults.
-  factory ScaffoldSearchBarState.fromJson(Map<String, dynamic> json) {
-    return ScaffoldSearchBarState(
-      query: json['query'] as String? ?? '',
     );
   }
 }

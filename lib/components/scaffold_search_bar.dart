@@ -8,7 +8,7 @@
 /// + ScaffoldStatusIndicator + ScaffoldBadge + ScaffoldLiveRegion.
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
 /// no Riverpod or GeniusTheme dependency.
-/// Consumes ScaffoldSearchBarCubit (hydrated_bloc).
+/// Consumes ScaffoldSearchBarCubit (in-memory).
 library;
 
 import 'dart:async' show FutureOr;
@@ -23,7 +23,6 @@ import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
-
 
 import 'scaffold_search_bar_cubit.dart';
 import 'scaffold_search_bar_state.dart';
@@ -98,10 +97,9 @@ class ScaffoldSearchBar extends StatefulWidget {
     super.key,
   });
 
-  /// Multi-instance hydration discriminator forwarded to the Cubit.
+  /// Optional instance discriminator forwarded to the Cubit.
   ///
-  /// Hydrated cubits sharing a [storagePrefix] disambiguate by this id;
-  /// leave empty for a single (default) instance.
+  /// Reserved for API compatibility; the in-memory cubit does not use it.
   final String instanceId;
 
   /// Placeholder text displayed in the search field.
@@ -161,22 +159,6 @@ class _ScaffoldSearchBarState extends State<ScaffoldSearchBar> {
     super.initState();
     _cubit = ScaffoldSearchBarCubit(instanceId: widget.instanceId);
     _focusNode.addListener(_onFocusChange);
-    // Seed the controller from the hydrated cubit so a restored query is
-    // visible after hot-restart (Pitfall 7: controller objects live in
-    // State, values live in the Cubit — sync them here, after the first
-    // frame). The cubit is held directly by the State (not read via
-    // context) because the BlocProvider is a descendant, not an ancestor,
-    // of the State's element.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      final String restoredQuery = _cubit.state.query;
-      if (restoredQuery.isNotEmpty && _controller.text != restoredQuery) {
-        _controller.text = restoredQuery;
-        setState(() => _showResults = true);
-      }
-    });
   }
 
   void _onFocusChange() {

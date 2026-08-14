@@ -8,10 +8,7 @@
 /// Source schema: templates/components/state_view_state.dart.jinja2
 /// Generator version: 0.4.0
 /// Plain Dart state class consumed by {{ widget_class_name }}Cubit.
-/// All fields are persisted via hydrated_bloc -- this component has no
-/// transient fields, so the active variant, retry count, and last error
-/// all survive reload. The cubit's literal ``storagePrefix`` keeps the
-/// hydration key stable across minified builds.
+/// In-memory only -- no hydration or persistence.
 library;
 
 // ---------------------------------------------------------------------------
@@ -58,26 +55,6 @@ class {{ widget_class_name }}State {
       stateType: stateType ?? this.stateType,
       retryCount: retryCount ?? this.retryCount,
       lastError: lastError ?? this.lastError,
-    );
-  }
-
-  /// Serializes this state to a JSON map for hydrated_bloc persistence.
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'stateType': stateType,
-        'retryCount': retryCount,
-        if (lastError != null) 'lastError': lastError,
-      };
-
-  /// Deserializes a [{{ widget_class_name }}State] from hydrated JSON.
-  ///
-  /// Uses defensive casts throughout -- hydrated JSON can be hand-edited
-  /// on native targets, so every field falls back to its default when
-  /// missing or of the wrong type.
-  factory {{ widget_class_name }}State.fromJson(Map<String, dynamic> json) {
-    return {{ widget_class_name }}State(
-      stateType: json['stateType'] as String? ?? 'empty',
-      retryCount: json['retryCount'] as int? ?? 0,
-      lastError: json['lastError'] as String?,
     );
   }
 }

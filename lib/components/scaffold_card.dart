@@ -7,7 +7,7 @@
 /// filled variants with optional header, body, and actions slots.
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
 /// no Riverpod or GeniusTheme dependency.
-/// Consumes ScaffoldCardCubit (hydrated_bloc).
+/// Consumes ScaffoldCardCubit (in-memory).
 library;
 
 import 'package:flutter/material.dart';
@@ -16,7 +16,6 @@ import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
-
 
 import 'scaffold_card_cubit.dart';
 import 'scaffold_card_state.dart';
@@ -31,8 +30,8 @@ import 'scaffold_card_state.dart';
 /// elevation 4 + palette.deepBlueCardColor), outlined (elevation 0 + 1px
 /// palette.borderSubtle border), or filled (elevation 0 +
 /// palette.surfaceElevated). It is owned by the cubit state
-/// ([ScaffoldCardState.cardVariant]) so a hydrated selection
-/// survives reloads; the [variant] parameter seeds that state.
+/// ([ScaffoldCardState.cardVariant]); the [variant] parameter
+/// seeds that state.
 ///
 /// [header], [body], and [actions] are optional [Widget] slots passed
 /// by the caller. When a slot is null, it is omitted from the layout.
@@ -57,10 +56,10 @@ class ScaffoldCard extends StatefulWidget {
     super.key,
   });
 
-  /// Multi-instance hydration discriminator forwarded to the Cubit.
+  /// Optional instance discriminator forwarded to the Cubit.
   ///
-  /// Hydrated cubits sharing a [storagePrefix] disambiguate by this id;
-  /// leave empty for a single (default) instance.
+  /// Changing it re-seeds the internal cubit; leave empty for a single
+  /// (default) instance.
   final String instanceId;
 
   /// Initial card variant: 'elevated', 'outlined', or 'filled'.
@@ -199,7 +198,7 @@ class _ScaffoldCardState extends State<ScaffoldCard> {
             ),
           );
 
-          // --- Select variant (state-driven; hydrated selection wins) ---
+          // --- Select variant (state-driven) ---
           final Widget surface;
           switch (state.cardVariant) {
             case 'outlined':

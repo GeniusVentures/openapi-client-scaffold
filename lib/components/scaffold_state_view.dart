@@ -11,7 +11,7 @@
 /// ScaffoldPressable (empty / error / unavailable / success).
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
 /// no Riverpod or GeniusTheme dependency.
-/// Consumes ScaffoldStateViewCubit (hydrated_bloc).
+/// Consumes ScaffoldStateViewCubit (in-memory).
 library;
 
 import 'package:flutter/material.dart';
@@ -21,7 +21,6 @@ import 'package:frontend_scaffold/components/scaffold_skeleton.dart';
 import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
-
 
 import 'scaffold_state_view_cubit.dart';
 import 'scaffold_state_view_state.dart';
@@ -69,14 +68,14 @@ class ScaffoldStateView extends StatefulWidget {
     super.key,
   });
 
-  /// Multi-instance hydration discriminator forwarded to the Cubit.
+  /// Optional instance discriminator forwarded to the Cubit.
   ///
-  /// Hydrated cubits sharing a [storagePrefix] disambiguate by this id;
-  /// leave empty for a single (default) instance.
+  /// Changing it re-seeds the internal cubit; leave empty for a single
+  /// (default) instance.
   final String instanceId;
 
   /// Initial state variant: 'loading', 'empty', 'error', 'unavailable', or
-  /// 'success'. Seeds the cubit's hydrated state.
+  /// 'success'. Seeds the cubit's initial state.
   final String state;
 
   /// Optional custom widget for the loading variant; defaults to a

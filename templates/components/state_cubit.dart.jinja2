@@ -33,8 +33,8 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State> {
     this.initialStateType = 'empty',
   }) : super({{ widget_class_name }}State(stateType: initialStateType));
 
-  /// Reserved discriminator (kept for API compatibility; unused without
-  /// persistence).
+  /// Reserved discriminator (kept for API compatibility; unused by the
+  /// in-memory cubit).
   final String instanceId;
 
   /// The variant used when no state exists yet.

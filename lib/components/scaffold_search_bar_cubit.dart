@@ -30,8 +30,8 @@ class ScaffoldSearchBarCubit extends Cubit<ScaffoldSearchBarState> {
   ScaffoldSearchBarCubit({this.instanceId = ''})
       : super(const ScaffoldSearchBarState());
 
-  /// Reserved discriminator (kept for API compatibility; unused without
-  /// persistence).
+  /// Reserved discriminator (kept for API compatibility; unused by the
+  /// in-memory cubit).
   final String instanceId;
 
   /// Updates the current query text and marks the search as in flight.
