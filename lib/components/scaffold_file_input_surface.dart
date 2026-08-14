@@ -1,6 +1,5 @@
 import 'dart:io' show File;
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_dashed_border.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
@@ -18,14 +17,15 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// file shows a `palette.statusSuccess` border with a check icon and filename;
 /// an invalid file shows a `palette.statusError` border with an error icon and
 /// the validation message. The surface is tappable — the tap handler calls
-/// [pickFile] (falling back to `FilePicker`) and then [onFileSelected] with the
-/// picked [File], running [validate] to derive the valid/invalid state.
+/// the consumer-supplied [pickFile] and then [onFileSelected] with the picked
+/// [File], running [validate] to derive the valid/invalid state. When
+/// [pickFile] is null the surface is drop-only (no tap-to-pick), since file
+/// picking is a platform concern the scaffold does not own.
 class ScaffoldFileInputSurface extends StatefulWidget {
   const ScaffoldFileInputSurface({
     super.key,
     required this.onFileSelected,
     this.validate,
-    this.acceptTypes,
     this.maxSize,
     this.disabled = false,
     this.idleLabel = 'Choose a file or drag here',
@@ -38,9 +38,6 @@ class ScaffoldFileInputSurface extends StatefulWidget {
   /// Returns a non-null validation message to mark the file invalid.
   final String? Function(File file)? validate;
 
-  /// File extensions passed to [FilePicker] as `allowedExtensions`.
-  final List<String>? acceptTypes;
-
   /// Optional maximum file size in bytes; larger files are rejected.
   final int? maxSize;
 
@@ -50,8 +47,10 @@ class ScaffoldFileInputSurface extends StatefulWidget {
   /// Label shown in the idle state (consumer-supplied copy).
   final String idleLabel;
 
-  /// Injectable file-picker; when null, `FilePicker.platform.pickFiles` is
-  /// used. Tests inject a fake to avoid native platform channels.
+  /// Injectable file-picker supplied by the consumer. When null, the surface
+  /// is drop-only — no tap-to-pick. The scaffold deliberately has no
+  /// hard file-picker dependency; consumers wire `file_picker`, `image_picker`,
+  /// or a platform channel here. Tests inject a fake to avoid native channels.
   final Future<File?> Function()? pickFile;
 
   @override
@@ -64,26 +63,16 @@ class _ScaffoldFileInputSurfaceState extends State<ScaffoldFileInputSurface> {
   String? _validationError;
 
   Future<void> _pick() async {
-    final File? file = await (widget.pickFile?.call() ?? _pickWithFilePicker());
+    final Future<File?> Function()? picker = widget.pickFile;
+    if (picker == null) {
+      // Drop-only surface — no consumer picker wired, so tap does nothing.
+      return;
+    }
+    final File? file = await picker();
     if (file == null || !mounted) {
       return;
     }
     _applyFile(file);
-  }
-
-  Future<File?> _pickWithFilePicker() async {
-    final List<String>? extensions = widget.acceptTypes;
-    final FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: (extensions == null || extensions.isEmpty)
-          ? FileType.any
-          : FileType.custom,
-      allowedExtensions: extensions,
-    );
-    final String? path = result?.files.single.path;
-    if (path == null) {
-      return null;
-    }
-    return File(path);
   }
 
   void _applyFile(File file) {
