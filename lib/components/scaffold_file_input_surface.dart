@@ -27,6 +27,7 @@ class ScaffoldFileInputSurface extends StatefulWidget {
     required this.onFileSelected,
     this.validate,
     this.maxSize,
+    this.maxSizeExceededMessage = 'File is too large',
     this.disabled = false,
     this.idleLabel = 'Choose a file or drag here',
     this.pickFile,
@@ -40,6 +41,10 @@ class ScaffoldFileInputSurface extends StatefulWidget {
 
   /// Optional maximum file size in bytes; larger files are rejected.
   final int? maxSize;
+
+  /// Error message shown when a file exceeds [maxSize] (consumer-supplied
+  /// copy).
+  final String maxSizeExceededMessage;
 
   /// When true, applies [ScaffoldDisabledOverlay] and blocks interaction.
   final bool disabled;
@@ -81,7 +86,7 @@ class _ScaffoldFileInputSurfaceState extends State<ScaffoldFileInputSurface> {
     if (maxSize != null) {
       try {
         if (file.lengthSync() > maxSize) {
-          error = 'File is too large';
+          error = widget.maxSizeExceededMessage;
         }
       } catch (_) {
         // The file may not exist on disk (e.g. an injected test file); defer

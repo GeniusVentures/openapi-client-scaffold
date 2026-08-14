@@ -138,7 +138,6 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
         builder: (context, state) {
           final palette = context.palette;
           final dimens = context.dimens;
-          final textTheme = Theme.of(context).textTheme;
 
           final BorderRadiusGeometry radius =
               BorderRadius.circular(dimens.borderRadiusCard);
@@ -172,21 +171,10 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
             );
           }
 
-          // Fallback: empty card renders a minimum-height placeholder.
+          // Fallback: empty card renders a minimum-height placeholder (no
+          // hardcoded copy — consumer copy lives in the slots).
           if (slotChildren.isEmpty) {
-            slotChildren.add(
-              SizedBox(
-                height: dimens.minTouchTarget,
-                child: Center(
-                  child: Text(
-                    'No content',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: palette.textSecondary,
-                    ),
-                  ),
-                ),
-              ),
-            );
+            slotChildren.add(SizedBox(height: dimens.minTouchTarget));
           }
 
           final Widget cardChild = Padding(
