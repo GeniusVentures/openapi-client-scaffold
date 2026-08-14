@@ -11,7 +11,7 @@ enum BadgeVariant { dot, count, icon, text }
 /// Dot / count / icon / text indicator.
 ///
 /// Renders a compact status affordance: an 8px [BadgeVariant.dot], a pill
-/// [BadgeVariant.count] (truncating to "99+" beyond [maxDigits]), a 16px
+/// [BadgeVariant.count] (truncating at [maxDigits] digits), a 16px
 /// [BadgeVariant.icon] in a 24px circle, or a custom [BadgeVariant.text] pill.
 /// The badge does NOT position itself — the consumer composes it with a
 /// `Stack` + `Positioned` (pure composability).
@@ -59,7 +59,8 @@ class ScaffoldBadge extends StatelessWidget {
   /// When true, dims the badge to 0.4 opacity.
   final bool disabled;
 
-  /// Maximum digit count before truncating to "99+".
+  /// Maximum digit count before truncating to a "9…9+" form (e.g. `2` → "99+",
+  /// `3` → "999+").
   final int maxDigits;
 
   @override
@@ -151,10 +152,22 @@ class ScaffoldBadge extends StatelessWidget {
   }
 
   String _truncatedCount() {
-    if (count > 99 && maxDigits == 2) {
-      return '99+';
+    if (maxDigits <= 0) {
+      return count.toString();
+    }
+    final int limit = _tenPow(maxDigits) - 1;
+    if (count > limit) {
+      return '$limit+';
     }
     return count.toString();
+  }
+
+  static int _tenPow(int exponent) {
+    int value = 1;
+    for (int i = 0; i < exponent; i++) {
+      value *= 10;
+    }
+    return value;
   }
 
   String _semanticLabel() {
