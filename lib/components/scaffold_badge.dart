@@ -16,10 +16,11 @@ enum BadgeVariant { dot, count, icon, text }
 /// The badge does NOT position itself — the consumer composes it with a
 /// `Stack` + `Positioned` (pure composability).
 ///
-/// Each variant registers `Semantics(role: status)` and wraps its visual in a
-/// `dimens.minTouchTarget` box for a 48x48 hit area. The [BadgeVariant.count]
-/// label reads "{count} items"; the [BadgeVariant.text] label reads the text;
-/// dot/icon variants use [label] (default "New item").
+/// Each variant registers `Semantics(role: status)` and renders at its
+/// intrinsic size (the badge is non-interactive and does not enforce a touch
+/// target). The [BadgeVariant.count] label reads "{count} items"; the
+/// [BadgeVariant.text] label reads the text; dot/icon variants use [label]
+/// (default "New item").
 class ScaffoldBadge extends StatelessWidget {
   const ScaffoldBadge({
     super.key,
@@ -83,11 +84,7 @@ class ScaffoldBadge extends StatelessWidget {
     Widget result = Semantics(
       role: SemanticsRole.status,
       label: _semanticLabel(),
-      child: SizedBox(
-        width: dimens.minTouchTarget,
-        height: dimens.minTouchTarget,
-        child: Center(child: visual),
-      ),
+      child: visual,
     );
 
     if (disabled) {
