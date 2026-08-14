@@ -39,7 +39,12 @@ import 'scaffold_state_view_state.dart';
 /// ``showError(message)`` flips the rendered variant live, and
 /// ``cubit.retry()`` increments the retry counter shown on the error
 /// variant's retry button.
-class ScaffoldStateView extends StatelessWidget {
+///
+/// A parent can supply its own [cubit] to drive the view live (and read it
+/// via ``context.read<ScaffoldStateViewCubit>()``); when [cubit] is
+/// null the widget owns an internal cubit seeded from [state] and re-seeds it
+/// when [state] or [instanceId] change.
+class ScaffoldStateView extends StatefulWidget {
   /// Creates a [ScaffoldStateView].
   const ScaffoldStateView({
     this.instanceId = '',
@@ -60,6 +65,7 @@ class ScaffoldStateView extends StatelessWidget {
     this.successHeadline = 'Done!',
     this.successBody,
     this.successAction,
+    this.cubit,
     super.key,
   });
 
@@ -122,13 +128,60 @@ class ScaffoldStateView extends StatelessWidget {
   /// Optional action rendered at the bottom of the success variant.
   final Widget? successAction;
 
+  /// Optional cubit owned by the parent. When supplied, the parent drives the
+  /// rendered variant; when null, the widget owns an internal cubit seeded
+  /// from [state].
+  final ScaffoldStateViewCubit? cubit;
+
+  @override
+  State<ScaffoldStateView> createState() => _ScaffoldStateViewState();
+}
+
+class _ScaffoldStateViewState extends State<ScaffoldStateView> {
+  late ScaffoldStateViewCubit _cubit;
+  late bool _ownsCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _ownsCubit = widget.cubit == null;
+    _cubit = widget.cubit ??
+        ScaffoldStateViewCubit(
+          instanceId: widget.instanceId,
+          initialStateType: widget.state,
+        );
+  }
+
+  @override
+  void didUpdateWidget(ScaffoldStateView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final bool seedChanged = widget.instanceId != oldWidget.instanceId ||
+        widget.state != oldWidget.state;
+    if (widget.cubit != oldWidget.cubit || (_ownsCubit && seedChanged)) {
+      if (_ownsCubit) {
+        _cubit.close();
+      }
+      _ownsCubit = widget.cubit == null;
+      _cubit = widget.cubit ??
+          ScaffoldStateViewCubit(
+            instanceId: widget.instanceId,
+            initialStateType: widget.state,
+          );
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_ownsCubit) {
+      _cubit.close();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ScaffoldStateViewCubit>(
-      create: (_) => ScaffoldStateViewCubit(
-        instanceId: instanceId,
-        initialStateType: state,
-      ),
+    return BlocProvider<ScaffoldStateViewCubit>.value(
+      value: _cubit,
       child: BlocConsumer<ScaffoldStateViewCubit, ScaffoldStateViewState>(
         listenWhen: (prev, curr) =>
             prev.lastError != curr.lastError && curr.lastError != null,
@@ -151,7 +204,7 @@ class ScaffoldStateView extends StatelessWidget {
               // Loading: ScaffoldSkeleton
               // ============================================================
               return Center(
-                child: loadingWidget ??
+                child: widget.loadingWidget ??
                     const ScaffoldSkeleton(width: 240.0, height: 128.0),
               );
 
@@ -162,14 +215,14 @@ class ScaffoldStateView extends StatelessWidget {
               return _statePanel(
                 context,
                 status: StatusVariant.error,
-                icon: errorIcon,
+                icon: widget.errorIcon,
                 iconColor: palette.statusError,
-                headline: errorHeadline,
-                body: state.lastError ?? errorBody,
+                headline: widget.errorHeadline,
+                body: state.lastError ?? widget.errorBody,
                 action: ScaffoldPressable(
                   onPressed: () {
                     cubit.retry();
-                    onRetry?.call();
+                    widget.onRetry?.call();
                   },
                   child: const Text('Retry'),
                 ),
@@ -182,15 +235,15 @@ class ScaffoldStateView extends StatelessWidget {
               return _statePanel(
                 context,
                 status: StatusVariant.neutral,
-                icon: unavailableIcon,
+                icon: widget.unavailableIcon,
                 iconColor: palette.textSecondary,
-                headline: unavailableHeadline,
-                body: unavailableBody,
-                action: onRetry != null
+                headline: widget.unavailableHeadline,
+                body: widget.unavailableBody,
+                action: widget.onRetry != null
                     ? ScaffoldPressable(
                         onPressed: () {
                           cubit.retry();
-                          onRetry?.call();
+                          widget.onRetry?.call();
                         },
                         child: const Text('Retry'),
                       )
@@ -204,11 +257,11 @@ class ScaffoldStateView extends StatelessWidget {
               return _statePanel(
                 context,
                 status: StatusVariant.success,
-                icon: successIcon,
+                icon: widget.successIcon,
                 iconColor: palette.statusSuccess,
-                headline: successHeadline,
-                body: successBody,
-                action: successAction,
+                headline: widget.successHeadline,
+                body: widget.successBody,
+                action: widget.successAction,
               );
 
             case 'empty':
@@ -219,11 +272,11 @@ class ScaffoldStateView extends StatelessWidget {
               return _statePanel(
                 context,
                 status: StatusVariant.neutral,
-                icon: emptyIcon,
+                icon: widget.emptyIcon,
                 iconColor: palette.textSecondary,
-                headline: emptyHeadline,
-                body: emptyBody,
-                action: emptyAction,
+                headline: widget.emptyHeadline,
+                body: widget.emptyBody,
+                action: widget.emptyAction,
               );
           }
         },
