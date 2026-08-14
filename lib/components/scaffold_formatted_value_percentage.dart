@@ -27,7 +27,8 @@ class ScaffoldFormattedValuePercentage extends StatelessWidget {
   });
 
 
-  /// Value to format.
+  /// Value to format, interpreted as a ratio in the range 0..1 (e.g. ``0.425``
+  /// renders ``"42.5%"``). The value is multiplied by 100 before formatting.
   final num? value;
 
 

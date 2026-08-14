@@ -53,6 +53,9 @@ class ScaffoldFormattedValueDate extends StatelessWidget {
   }
 
 
+  // English month abbreviations only; full locale/pattern customization is a
+  // consumer-tier concern (the atom ships a sensible default, not a locale
+  // formatter).
   static const List<String> _monthAbbreviations = <String>[
     'Jan',
     'Feb',

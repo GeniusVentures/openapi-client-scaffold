@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_formatted_value_date.dart';
+import 'package:frontend_scaffold/components/scaffold_formatted_value_duration.dart';
 import 'package:frontend_scaffold/components/scaffold_formatted_value_money.dart';
 import 'package:frontend_scaffold/components/scaffold_formatted_value_number.dart';
 import 'package:frontend_scaffold/components/scaffold_formatted_value_percentage.dart';
@@ -51,6 +52,38 @@ void main() {
     );
 
     expect(find.text('Aug 11, 2026'), findsOneWidget);
+  });
+
+  testWidgets('duration renders H:MM:SS and M:SS depending on magnitude', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const ScaffoldFormattedValueDuration(
+        value: Duration(hours: 1, minutes: 23, seconds: 45),
+      ),
+    );
+    expect(find.text('1:23:45'), findsOneWidget);
+
+    await _pump(
+      tester,
+      const ScaffoldFormattedValueDuration(
+        value: Duration(minutes: 5, seconds: 7),
+      ),
+    );
+    expect(find.text('5:07'), findsOneWidget);
+  });
+
+  testWidgets('duration formats negative values with a leading sign', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const ScaffoldFormattedValueDuration(
+        value: Duration(hours: -1, minutes: -30),
+      ),
+    );
+    expect(find.text('-1:30:00'), findsOneWidget);
   });
 
   testWidgets('null value renders nullPlaceholder', (tester) async {
