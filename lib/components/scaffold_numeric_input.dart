@@ -85,14 +85,21 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
 
   void _increment() {
     if (_canIncrement) {
-      widget.onChanged(widget.value + widget.step);
+      widget.onChanged(_quantize(widget.value + widget.step));
     }
   }
 
   void _decrement() {
     if (_canDecrement) {
-      widget.onChanged(widget.value - widget.step);
+      widget.onChanged(_quantize(widget.value - widget.step));
     }
+  }
+
+  /// Rounds [value] to [ScaffoldNumericInput.decimalPlaces] so the value
+  /// delivered to [ScaffoldNumericInput.onChanged] matches the displayed
+  /// (`toStringAsFixed`) value instead of a raw floating-point sum.
+  num _quantize(num value) {
+    return num.parse(value.toStringAsFixed(widget.decimalPlaces));
   }
 
   void _setPressed(_PressedButton button) {
