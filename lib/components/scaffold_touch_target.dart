@@ -4,8 +4,10 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// Transparent wrapper guaranteeing a minimum hit-test area.
 ///
 /// Expands a small child to at least [minWidth] x [minHeight] (defaulting to
-/// [ScaffoldDimens.minTouchTarget]) using transparent padding, and registers a
-/// [Semantics] container so screen readers identify the touch region.
+/// [ScaffoldDimens.minTouchTarget]) via a [ConstrainedBox], and registers a
+/// [Semantics] container so screen readers identify the touch region. No
+/// padding is added, so children that already meet the minimum keep their
+/// intrinsic size.
 class ScaffoldTouchTarget extends StatelessWidget {
   const ScaffoldTouchTarget({
     super.key,
@@ -35,10 +37,7 @@ class ScaffoldTouchTarget extends StatelessWidget {
           minWidth: resolvedMinWidth,
           minHeight: resolvedMinHeight,
         ),
-        child: Padding(
-          padding: EdgeInsets.all(dimens.touchTargetPadding),
-          child: child,
-        ),
+        child: child,
       ),
     );
   }
