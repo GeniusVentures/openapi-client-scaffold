@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
 import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_search_bar.dart';
 import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
-
-import '../helpers/memory_storage.dart';
 
 Future<void> _pump(WidgetTester tester, Widget child) {
   return tester.pumpWidget(
@@ -25,14 +22,6 @@ Future<void> _pump(WidgetTester tester, Widget child) {
 }
 
 void main() {
-  setUpAll(() {
-    HydratedBloc.storage = MemoryStorage();
-  });
-
-  setUp(() async {
-    await HydratedBloc.storage.clear();
-  });
-
   testWidgets('idle renders ScaffoldSurface pill + TextField + hintText',
       (tester) async {
     await _pump(tester, const ScaffoldSearchBar());

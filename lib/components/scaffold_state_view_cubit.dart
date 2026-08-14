@@ -3,14 +3,11 @@
 /// Generated from state_cubit.dart.jinja2 -- do not edit by hand.
 /// Source schema: templates/components/state_cubit.dart.jinja2
 /// Generator version: 0.4.0
-/// Persists state across reloads via hydrated_bloc; uses a stable
-/// literal [storagePrefix] so minified builds retain hydrated state.
-/// Requires HydratedBloc.storage initialized in the consuming app's
-/// main(); see frontend/generated/widgets/README.md for the bootstrap
-/// snippet.
+/// In-memory Cubit (flutter_bloc). State does not persist across app
+/// restarts -- persistence is a consumer concern, not a scaffold one.
 library;
 
-import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'scaffold_state_view_state.dart';
 
@@ -22,15 +19,10 @@ import 'scaffold_state_view_state.dart';
 ///
 /// Owns the active state variant (``'loading'``, ``'empty'``, ``'error'``,
 /// ``'unavailable'``, or ``'success'``), the retry counter, and the last
-/// error message. State is restored from hydrated storage on construction;
-/// [hydrate] is the LAST constructor statement so the initial emit always
-/// reflects the restored value.
-class ScaffoldStateViewCubit extends Cubit<ScaffoldStateViewState>
-    with HydratedMixin {
+/// error message. Plain in-memory [Cubit] -- no hydration, so no global
+/// storage bootstrap is required.
+class ScaffoldStateViewCubit extends Cubit<ScaffoldStateViewState> {
   /// Creates a [ScaffoldStateViewCubit].
-  ///
-  /// [instanceId] discriminates multi-instance persistence -- pass a
-  /// unique value when two state widgets share a screen.
   ///
   /// The initial variant is [initialStateType] (seeded from the widget's
   /// ``state`` parameter); the widget renders whichever variant
@@ -39,28 +31,14 @@ class ScaffoldStateViewCubit extends Cubit<ScaffoldStateViewState>
   ScaffoldStateViewCubit({
     this.instanceId = '',
     this.initialStateType = 'empty',
-  }) : super(ScaffoldStateViewState(stateType: initialStateType)) {
-    try {
-      hydrate(
-        onError: (error, stackTrace) => HydrationErrorBehavior.retain,
-      );
-    } on StorageNotFound {
-      // HydratedBloc.storage not initialized (no bootstrap in main()) —
-      // run in-memory only; the widget still works, it just won't persist.
-    }
-  }
+  }) : super(ScaffoldStateViewState(stateType: initialStateType));
 
-  /// Optional discriminator for multi-instance persistence. Empty by default.
+  /// Reserved discriminator (kept for API compatibility; unused without
+  /// persistence).
   final String instanceId;
 
-  /// The variant used when no hydrated value exists.
+  /// The variant used when no state exists yet.
   final String initialStateType;
-
-  @override
-  String get id => instanceId;
-
-  @override
-  String get storagePrefix => 'ScaffoldStateViewCubit';
 
   /// Switches to the loading variant.
   void showLoading() {
@@ -98,17 +76,8 @@ class ScaffoldStateViewCubit extends Cubit<ScaffoldStateViewState>
     emit(state.copyWith(retryCount: state.retryCount + 1));
   }
 
-  /// Wipes hydrated storage and emits the seeded default state.
-  Future<void> reset() async {
-    await clear();
+  /// Resets to the seeded default state.
+  void reset() {
     emit(ScaffoldStateViewState(stateType: initialStateType));
   }
-
-  @override
-  ScaffoldStateViewState? fromJson(Map<String, dynamic> json) =>
-      ScaffoldStateViewState.fromJson(json);
-
-  @override
-  Map<String, dynamic>? toJson(ScaffoldStateViewState state) =>
-      state.toJson();
 }
