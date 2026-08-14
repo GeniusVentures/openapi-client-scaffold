@@ -115,7 +115,7 @@ void main() {
     final TestGesture gesture = await _dragOnto(
       tester,
       ScaffoldDropTarget(
-        acceptType: String,
+        acceptCondition: (dynamic data) => data is String,
         child: const SizedBox(width: 200, height: 100, child: Text('target')),
       ),
     );
