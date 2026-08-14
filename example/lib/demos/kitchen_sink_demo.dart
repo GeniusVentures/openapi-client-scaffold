@@ -14,6 +14,8 @@
 //   ),
 //
 // and `import 'demos/kitchen_sink_demo.dart';` at the top of main.dart.
+import 'dart:io' show File;
+
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 
@@ -332,9 +334,13 @@ class _KitchenSinkDemoState extends State<KitchenSinkDemo> {
               ),
             ),
             _section(
-              'ScaffoldFileInputSurface — drop area',
+              'ScaffoldFileInputSurface — tap or drop',
               ScaffoldFileInputSurface(
-                onFileSelected: (dynamic file) {},
+                // Consumer-supplied picker. The scaffold has no hard
+                // file-picker dependency; the demo returns a sample file so
+                // the tap-to-pick flow is demonstrable without a native plugin.
+                pickFile: () async => File('sample.txt'),
+                onFileSelected: (File file) {},
               ),
             ),
 
