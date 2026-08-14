@@ -77,6 +77,32 @@ void main() {
     expect(_badgeText(tester).data, '99+');
   });
 
+  testWidgets('maxDigits=3 truncates to "999+" and maxDigits=1 to "9+"', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const ScaffoldBadge(variant: BadgeVariant.count, count: 1000, maxDigits: 3),
+    );
+    expect(_badgeText(tester).data, '999+');
+
+    await _pump(
+      tester,
+      const ScaffoldBadge(variant: BadgeVariant.count, count: 10, maxDigits: 1),
+    );
+    expect(_badgeText(tester).data, '9+');
+  });
+
+  testWidgets('maxDigits=3 does not truncate a value within range', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const ScaffoldBadge(variant: BadgeVariant.count, count: 999, maxDigits: 3),
+    );
+    expect(_badgeText(tester).data, '999');
+  });
+
   testWidgets('count=0 renders empty (SizedBox.shrink)', (tester) async {
     await _pump(tester, const ScaffoldBadge(variant: BadgeVariant.count, count: 0));
 
