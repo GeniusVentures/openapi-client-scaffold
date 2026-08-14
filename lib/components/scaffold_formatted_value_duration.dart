@@ -58,10 +58,16 @@ class ScaffoldFormattedValueDuration extends StatelessWidget {
       return null;
     }
     String two(int n) => n.toString().padLeft(2, '0');
-    final int hours = value.inHours;
-    final int minutes = value.inMinutes % 60;
-    final int seconds = value.inSeconds % 60;
-    return '${two(hours)}:${two(minutes)}:${two(seconds)}';
+    final bool negative = value.isNegative;
+    final Duration abs = value.abs();
+    // H:MM:SS when at least one hour, otherwise M:SS (magnitude-aware); the
+    // sign is applied once, up front, so negative durations format correctly.
+    if (abs.inHours > 0) {
+      return '${negative ? '-' : ''}${abs.inHours}:'
+          '${two(abs.inMinutes % 60)}:${two(abs.inSeconds % 60)}';
+    }
+    return '${negative ? '-' : ''}${abs.inMinutes}:'
+        '${two(abs.inSeconds % 60)}';
   }
 
 }
