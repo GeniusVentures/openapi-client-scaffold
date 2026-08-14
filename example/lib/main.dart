@@ -11,6 +11,7 @@ import 'demos/string_button_demo.dart';
 import 'demos/text_entry_field_demo.dart';
 import 'demos/toast_demo.dart';
 import 'demos/tracer_demo.dart';
+import 'demos/kitchen_sink_demo.dart';
 
 void main() {
   runApp(const ScaffoldExampleApp());
@@ -150,6 +151,11 @@ class HomePage extends StatelessWidget {
             title: 'Tracer — Core UI Foundation',
             subtitle: 'Motion → Surface → TouchTarget → FocusOutline slice',
             builder: (_) => const TracerDemo(),
+          ),
+          _DemoTile(
+            title: 'Kitchen Sink — Core UI Foundation',
+            subtitle: 'All 28 atoms + ScaffoldMotion + 3 generated composites',
+            builder: (_) => const KitchenSinkDemo(),
           ),
         ],
       ),
