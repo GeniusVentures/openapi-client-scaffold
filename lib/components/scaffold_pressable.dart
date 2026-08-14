@@ -78,7 +78,9 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
     super.dispose();
   }
 
-  bool get _enabled => !widget.disabled && widget.onPressed != null;
+  bool get _enabled =>
+      !widget.disabled &&
+      (widget.onPressed != null || widget.onLongPress != null);
 
   void _setHovered(bool value) {
     if (_hovered != value) {
@@ -100,7 +102,7 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
     if (event is KeyDownEvent &&
         (event.logicalKey == LogicalKeyboardKey.enter ||
             event.logicalKey == LogicalKeyboardKey.space)) {
-      widget.onPressed!();
+      widget.onPressed?.call();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
