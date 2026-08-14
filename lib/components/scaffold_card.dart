@@ -38,7 +38,12 @@ import 'scaffold_card_state.dart';
 /// by the caller. When a slot is null, it is omitted from the layout.
 /// When [onTap] is non-null the card is wrapped in a [ScaffoldPressable];
 /// when [disabled] is true a [ScaffoldDisabledOverlay] blocks interaction.
-class ScaffoldCard extends StatelessWidget {
+///
+/// A parent can supply its own [cubit] to drive the card (e.g. to select a
+/// variant live); when [cubit] is null the widget owns an internal cubit
+/// seeded from [variant] and re-seeds it when [variant] or [instanceId]
+/// change.
+class ScaffoldCard extends StatefulWidget {
   /// Creates a [ScaffoldCard].
   const ScaffoldCard({
     this.instanceId = '',
@@ -48,6 +53,7 @@ class ScaffoldCard extends StatelessWidget {
     this.actions,
     this.onTap,
     this.disabled = false,
+    this.cubit,
     super.key,
   });
 
@@ -75,13 +81,60 @@ class ScaffoldCard extends StatelessWidget {
   /// When true, blocks interaction via [ScaffoldDisabledOverlay].
   final bool disabled;
 
+  /// Optional cubit owned by the parent. When supplied, the parent drives the
+  /// card's variant; when null, the widget owns an internal cubit seeded from
+  /// [variant].
+  final ScaffoldCardCubit? cubit;
+
+  @override
+  State<ScaffoldCard> createState() => _ScaffoldCardState();
+}
+
+class _ScaffoldCardState extends State<ScaffoldCard> {
+  late ScaffoldCardCubit _cubit;
+  late bool _ownsCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _ownsCubit = widget.cubit == null;
+    _cubit = widget.cubit ??
+        ScaffoldCardCubit(
+          instanceId: widget.instanceId,
+          initialVariant: widget.variant,
+        );
+  }
+
+  @override
+  void didUpdateWidget(ScaffoldCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final bool seedChanged = widget.instanceId != oldWidget.instanceId ||
+        widget.variant != oldWidget.variant;
+    if (widget.cubit != oldWidget.cubit || (_ownsCubit && seedChanged)) {
+      if (_ownsCubit) {
+        _cubit.close();
+      }
+      _ownsCubit = widget.cubit == null;
+      _cubit = widget.cubit ??
+          ScaffoldCardCubit(
+            instanceId: widget.instanceId,
+            initialVariant: widget.variant,
+          );
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_ownsCubit) {
+      _cubit.close();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ScaffoldCardCubit>(
-      create: (_) => ScaffoldCardCubit(
-        instanceId: instanceId,
-        initialVariant: variant,
-      ),
+    return BlocProvider<ScaffoldCardCubit>.value(
+      value: _cubit,
       child: BlocBuilder<ScaffoldCardCubit, ScaffoldCardState>(
         builder: (context, state) {
           final palette = context.palette;
@@ -95,27 +148,27 @@ class ScaffoldCard extends StatelessWidget {
           final List<Widget> slotChildren = <Widget>[];
 
           // --- Header slot ---
-          if (header != null) {
-            slotChildren.add(header!);
-            if (body != null || actions != null) {
+          if (widget.header != null) {
+            slotChildren.add(widget.header!);
+            if (widget.body != null || widget.actions != null) {
               slotChildren.add(SizedBox(height: dimens.space8));
             }
           }
 
           // --- Body slot ---
-          if (body != null) {
-            slotChildren.add(body!);
-            if (actions != null) {
+          if (widget.body != null) {
+            slotChildren.add(widget.body!);
+            if (widget.actions != null) {
               slotChildren.add(SizedBox(height: dimens.space8));
             }
           }
 
           // --- Actions slot ---
-          if (actions != null) {
+          if (widget.actions != null) {
             slotChildren.add(
               Align(
                 alignment: Alignment.centerRight,
-                child: actions!,
+                child: widget.actions!,
               ),
             );
           }
@@ -178,14 +231,14 @@ class ScaffoldCard extends StatelessWidget {
               break;
           }
 
-          if (onTap != null) {
+          if (widget.onTap != null) {
             return ScaffoldPressable(
-              onPressed: onTap,
-              disabled: disabled,
+              onPressed: widget.onTap,
+              disabled: widget.disabled,
               child: surface,
             );
           }
-          if (disabled) {
+          if (widget.disabled) {
             return ScaffoldDisabledOverlay(disabled: true, child: surface);
           }
           return surface;
