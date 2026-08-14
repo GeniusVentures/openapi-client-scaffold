@@ -1,5 +1,3 @@
-import 'dart:ui' show SemanticsRole;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
@@ -163,12 +161,14 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
     );
 
     content = Semantics(
-      role: SemanticsRole.spinButton,
+      textField: true,
       value: formatted,
       increasedValue:
           _canIncrement ? _formatValue(widget.value + widget.step) : null,
       decreasedValue:
           _canDecrement ? _formatValue(widget.value - widget.step) : null,
+      onIncrease: _canIncrement ? _increment : null,
+      onDecrease: _canDecrement ? _decrement : null,
       child: content,
     );
 
