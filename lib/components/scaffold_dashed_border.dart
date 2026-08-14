@@ -72,6 +72,13 @@ class ScaffoldDashedBorderPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // A non-positive dash, a negative gap, or a non-positive advance
+    // (dash + gap) would make the loop below never advance (or run
+    // backwards), hanging the painter. Degenerate input renders nothing.
+    if (dashLength <= 0 || gapLength < 0 || dashLength + gapLength <= 0) {
+      return;
+    }
+
     final Paint paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
