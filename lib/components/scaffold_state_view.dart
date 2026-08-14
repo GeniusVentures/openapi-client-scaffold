@@ -57,6 +57,7 @@ class ScaffoldStateView extends StatefulWidget {
     this.errorHeadline = 'Something went wrong',
     this.errorBody = 'Please try again.',
     this.onRetry,
+    this.retryLabel = 'Retry',
     this.unavailableIcon = Icons.cloud_off,
     this.unavailableHeadline = 'Service unavailable',
     this.unavailableBody = 'Please try again later.',
@@ -105,6 +106,10 @@ class ScaffoldStateView extends StatefulWidget {
 
   /// Callback for the error/unavailable retry button.
   final VoidCallback? onRetry;
+
+  /// Label for the retry button rendered on the error/unavailable variants
+  /// (consumer-configurable; defaults to 'Retry').
+  final String retryLabel;
 
   /// Icon for the unavailable variant.
   final IconData unavailableIcon;
@@ -223,7 +228,7 @@ class _ScaffoldStateViewState extends State<ScaffoldStateView> {
                     cubit.retry();
                     widget.onRetry?.call();
                   },
-                  child: const Text('Retry'),
+                  child: Text(widget.retryLabel),
                 ),
               );
 
@@ -244,7 +249,7 @@ class _ScaffoldStateViewState extends State<ScaffoldStateView> {
                           cubit.retry();
                           widget.onRetry?.call();
                         },
-                        child: const Text('Retry'),
+                        child: Text(widget.retryLabel),
                       )
                     : null,
               );
