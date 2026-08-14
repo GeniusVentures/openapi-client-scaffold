@@ -43,16 +43,23 @@ class ScaffoldSearchBarState {
   /// TRANSIENT -- never persisted.
   final String? errorMessage;
 
+  /// Sentinel for [copyWith] marking an omitted optional field.
+  static const Object _unset = Object();
+
   /// Returns a copy of this state with the given fields replaced.
+  ///
+  /// [errorMessage] may be reset to ``null`` by passing ``null`` explicitly.
   ScaffoldSearchBarState copyWith({
     String? query,
     bool? isSearching,
-    String? errorMessage,
+    Object? errorMessage = _unset,
   }) {
     return ScaffoldSearchBarState(
       query: query ?? this.query,
       isSearching: isSearching ?? this.isSearching,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: errorMessage == _unset
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 }

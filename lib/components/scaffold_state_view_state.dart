@@ -42,16 +42,21 @@ class ScaffoldStateViewState {
   /// ``null`` when no error has been shown.
   final String? lastError;
 
+  /// Sentinel for [copyWith] marking an omitted optional field.
+  static const Object _unset = Object();
+
   /// Returns a copy of this state with the given fields replaced.
+  ///
+  /// [lastError] may be reset to ``null`` by passing ``null`` explicitly.
   ScaffoldStateViewState copyWith({
     String? stateType,
     int? retryCount,
-    String? lastError,
+    Object? lastError = _unset,
   }) {
     return ScaffoldStateViewState(
       stateType: stateType ?? this.stateType,
       retryCount: retryCount ?? this.retryCount,
-      lastError: lastError ?? this.lastError,
+      lastError: lastError == _unset ? this.lastError : lastError as String?,
     );
   }
 }
