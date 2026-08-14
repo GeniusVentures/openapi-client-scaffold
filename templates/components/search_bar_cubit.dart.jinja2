@@ -30,8 +30,8 @@ class {{ widget_class_name }}Cubit extends Cubit<{{ widget_class_name }}State> {
   {{ widget_class_name }}Cubit({this.instanceId = ''})
       : super(const {{ widget_class_name }}State());
 
-  /// Reserved discriminator (kept for API compatibility; unused without
-  /// persistence).
+  /// Reserved discriminator (kept for API compatibility; unused by the
+  /// in-memory cubit).
   final String instanceId;
 
   /// Updates the current query text and marks the search as in flight.

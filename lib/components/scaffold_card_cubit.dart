@@ -28,8 +28,8 @@ class ScaffoldCardCubit extends Cubit<ScaffoldCardState> {
     this.initialVariant = 'elevated',
   }) : super(ScaffoldCardState(cardVariant: initialVariant));
 
-  /// Reserved discriminator (kept for API compatibility; unused without
-  /// persistence).
+  /// Reserved discriminator (kept for API compatibility; unused by the
+  /// in-memory cubit).
   final String instanceId;
 
   /// The variant used when no state exists yet.

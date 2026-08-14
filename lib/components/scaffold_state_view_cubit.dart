@@ -33,8 +33,8 @@ class ScaffoldStateViewCubit extends Cubit<ScaffoldStateViewState> {
     this.initialStateType = 'empty',
   }) : super(ScaffoldStateViewState(stateType: initialStateType));
 
-  /// Reserved discriminator (kept for API compatibility; unused without
-  /// persistence).
+  /// Reserved discriminator (kept for API compatibility; unused by the
+  /// in-memory cubit).
   final String instanceId;
 
   /// The variant used when no state exists yet.
