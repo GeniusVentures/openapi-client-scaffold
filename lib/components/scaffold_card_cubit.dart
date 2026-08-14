@@ -3,14 +3,11 @@
 /// Generated from card_cubit.dart.jinja2 -- do not edit by hand.
 /// Source schema: templates/components/card_cubit.dart.jinja2
 /// Generator version: 0.4.0
-/// Persists state across reloads via hydrated_bloc; uses a stable
-/// literal [storagePrefix] so minified builds retain hydrated state.
-/// Requires HydratedBloc.storage initialized in the consuming app's
-/// main(); see frontend/generated/widgets/README.md for the bootstrap
-/// snippet.
+/// In-memory Cubit (flutter_bloc). State does not persist across app
+/// restarts -- persistence is a consumer concern, not a scaffold one.
 library;
 
-import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'scaffold_card_state.dart';
 
@@ -20,42 +17,23 @@ import 'scaffold_card_state.dart';
 
 /// Cubit for [ScaffoldCard].
 ///
-/// Owns the card's variant selection and last-action record. State is
-/// restored from hydrated storage on construction; [hydrate] is the
-/// LAST constructor statement so the initial emit always reflects the
-/// restored value.
-class ScaffoldCardCubit extends Cubit<ScaffoldCardState>
-    with HydratedMixin {
+/// Owns the card's variant selection and last-action record. Plain in-memory
+/// [Cubit] -- no hydration, so no global storage bootstrap is required.
+class ScaffoldCardCubit extends Cubit<ScaffoldCardState> {
   /// Creates a [ScaffoldCardCubit].
   ///
-  /// [instanceId] discriminates multi-instance persistence -- pass a
-  /// unique value when two instances of this cubit share a screen.
-  /// [initialVariant] seeds the variant used when no hydrated state exists.
+  /// [initialVariant] seeds the variant.
   ScaffoldCardCubit({
     this.instanceId = '',
     this.initialVariant = 'elevated',
-  }) : super(ScaffoldCardState(cardVariant: initialVariant)) {
-    try {
-      hydrate(
-        onError: (error, stackTrace) => HydrationErrorBehavior.retain,
-      );
-    } on StorageNotFound {
-      // HydratedBloc.storage not initialized (no bootstrap in main()) —
-      // run in-memory only; the widget still works, it just won't persist.
-    }
-  }
+  }) : super(ScaffoldCardState(cardVariant: initialVariant));
 
-  /// Optional discriminator for multi-instance persistence. Empty by default.
+  /// Reserved discriminator (kept for API compatibility; unused without
+  /// persistence).
   final String instanceId;
 
-  /// The variant used when no hydrated value exists.
+  /// The variant used when no state exists yet.
   final String initialVariant;
-
-  @override
-  String get id => instanceId;
-
-  @override
-  String get storagePrefix => 'ScaffoldCardCubit';
 
   /// Selects the card variant (``'elevated'``, ``'outlined'``, or
   /// ``'filled'``).
@@ -68,17 +46,8 @@ class ScaffoldCardCubit extends Cubit<ScaffoldCardState>
     emit(state.copyWith(lastAction: action));
   }
 
-  /// Wipes hydrated storage and emits the seeded default state.
-  Future<void> reset() async {
-    await clear();
+  /// Resets to the seeded default state.
+  void reset() {
     emit(ScaffoldCardState(cardVariant: initialVariant));
   }
-
-  @override
-  ScaffoldCardState? fromJson(Map<String, dynamic> json) =>
-      ScaffoldCardState.fromJson(json);
-
-  @override
-  Map<String, dynamic>? toJson(ScaffoldCardState state) =>
-      state.toJson();
 }
