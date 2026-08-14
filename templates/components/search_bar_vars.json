@@ -1,5 +1,6 @@
 {
-  "_comment": "Fixture variables for standalone rendering of search_bar.dart.jinja2. widget_class_name is the generated class name.",
+  "_comment": "Fixture variables for standalone rendering of search_bar.dart.jinja2. widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem used to derive the cubit/state import paths.",
   "widget_class_name": "ScaffoldSearchBar",
+  "file_stem": "scaffold_search_bar",
   "hint_text": "Search..."
 }
