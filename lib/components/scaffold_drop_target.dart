@@ -27,14 +27,18 @@ class ScaffoldDropTarget extends StatefulWidget {
     this.acceptCondition,
     this.onAccept,
     this.onReject,
-    this.acceptType,
     this.showIdleBorder = true,
   });
 
   /// Content rendered inside the drop zone.
   final Widget? child;
 
-  /// Screens drag data; when null, [acceptType] (then accept-all) applies.
+  /// Screens drag data; when null, all drags are accepted.
+  ///
+  /// Prefer this over a type check: Dart's runtime `Type` equality cannot
+  /// match interface/abstract types (e.g. a dropped `File` has the private
+  /// runtime type `_File`, so `runtimeType == File` is always false). Use
+  /// `(data) => data is File` instead.
   final bool Function(dynamic data)? acceptCondition;
 
   /// Called with the dropped data when a drag is accepted.
@@ -42,9 +46,6 @@ class ScaffoldDropTarget extends StatefulWidget {
 
   /// Called when a rejected drag is dropped on (or leaves) the zone.
   final VoidCallback? onReject;
-
-  /// When non-null, accepts only data whose runtime type matches this [Type].
-  final Type? acceptType;
 
   /// When false, the idle state renders no dashed border (used when an outer
   /// surface owns the border, e.g. [ScaffoldFileInputSurface]).
@@ -68,10 +69,6 @@ class _ScaffoldDropTargetState extends State<ScaffoldDropTarget> {
     final bool Function(dynamic data)? acceptCondition = widget.acceptCondition;
     if (acceptCondition != null) {
       return acceptCondition(data);
-    }
-    final Type? acceptType = widget.acceptType;
-    if (acceptType != null) {
-      return data.runtimeType == acceptType;
     }
     return true;
   }
