@@ -1,4 +1,7 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
 import 'package:frontend_scaffold/components/scaffold_live_region.dart';
@@ -68,6 +71,13 @@ enum _PressedButton { none, decrement, increment }
 
 class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
   _PressedButton _pressed = _PressedButton.none;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   bool get _canIncrement =>
       !widget.disabled && (widget.value + widget.step) <= widget.max;
@@ -152,7 +162,23 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
       ],
     );
 
-    content = ScaffoldFocusOutline(child: content);
+    content = Semantics(
+      role: SemanticsRole.spinButton,
+      value: formatted,
+      increasedValue:
+          _canIncrement ? _formatValue(widget.value + widget.step) : null,
+      decreasedValue:
+          _canDecrement ? _formatValue(widget.value - widget.step) : null,
+      child: content,
+    );
+
+    content = Focus(
+      focusNode: _focusNode,
+      child: ScaffoldFocusOutline(
+        focusNode: _focusNode,
+        child: content,
+      ),
+    );
 
     if (widget.disabled) {
       content = ScaffoldDisabledOverlay(disabled: true, child: content);
@@ -161,17 +187,19 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
     return content;
   }
 
-  String _format() {
+  String _formatValue(num value) {
     final StringBuffer buffer = StringBuffer();
     if (widget.prefix != null) {
       buffer.write(widget.prefix);
     }
-    buffer.write(widget.value.toStringAsFixed(widget.decimalPlaces));
+    buffer.write(value.toStringAsFixed(widget.decimalPlaces));
     if (widget.suffix != null) {
       buffer.write(widget.suffix);
     }
     return buffer.toString();
   }
+
+  String _format() => _formatValue(widget.value);
 
   Widget _buildButton({
     required IconData icon,
@@ -186,17 +214,29 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
     final Color iconColor =
         pressed ? palette.lightGreenPrimary : palette.textPrimary;
 
-    return Semantics(
-      button: true,
-      label: label,
-      enabled: enabled,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: enabled ? (_) => onPressChanged() : null,
-        onTapUp: enabled ? (_) => onPressEnded() : null,
-        onTapCancel: enabled ? onPressEnded : null,
-        onTap: enabled ? onTap : null,
-        child: ScaffoldTouchTarget(child: Icon(icon, color: iconColor)),
+    return Focus(
+      onKeyEvent: (FocusNode node, KeyEvent event) {
+        if (enabled &&
+            event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          onTap();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Semantics(
+        button: true,
+        label: label,
+        enabled: enabled,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: enabled ? (_) => onPressChanged() : null,
+          onTapUp: enabled ? (_) => onPressEnded() : null,
+          onTapCancel: enabled ? onPressEnded : null,
+          onTap: enabled ? onTap : null,
+          child: ScaffoldTouchTarget(child: Icon(icon, color: iconColor)),
+        ),
       ),
     );
   }
