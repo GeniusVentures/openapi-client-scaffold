@@ -69,15 +69,11 @@ void main() {
       expect(ScaffoldMotion.of(context).reducedMotion, isFalse);
     });
 
-    testWidgets('of(context) throws FlutterError without an ancestor', (
-      tester,
-    ) async {
+    testWidgets('of(context) falls back to reducedMotion=false without an '
+        'ancestor', (tester) async {
       await tester.pumpWidget(const MaterialApp(home: Text('orphan')));
       final context = tester.element(find.text('orphan'));
-      expect(
-        () => ScaffoldMotion.of(context),
-        throwsA(isA<FlutterError>()),
-      );
+      expect(ScaffoldMotion.of(context).reducedMotion, isFalse);
     });
 
     testWidgets('reducedMotion propagates to a nested child', (tester) async {

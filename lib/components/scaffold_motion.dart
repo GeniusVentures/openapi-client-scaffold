@@ -50,18 +50,13 @@ class ScaffoldMotion extends InheritedWidget {
 
   /// Returns the nearest [ScaffoldMotion] ancestor.
   ///
-  /// Throws a [FlutterError] when no [ScaffoldMotion] ancestor is present, so
-  /// a missing ancestor fails loudly rather than silently disabling motion.
+  /// When no [ScaffoldMotion] ancestor is present, falls back to a default
+  /// instance with [reducedMotion] false — matching the `context.palette` /
+  /// `context.dimens` fallback philosophy, so atoms render gracefully (with
+  /// motion enabled) rather than throwing.
   static ScaffoldMotion of(BuildContext context) {
-    final ScaffoldMotion? motion =
-        context.dependOnInheritedWidgetOfExactType<ScaffoldMotion>();
-    if (motion == null) {
-      throw FlutterError(
-        'No ScaffoldMotion found in context. Wrap the app (or the consuming '
-        'subtree) in a ScaffoldMotion(reducedMotion: ..., child: ...).',
-      );
-    }
-    return motion;
+    return context.dependOnInheritedWidgetOfExactType<ScaffoldMotion>() ??
+        const ScaffoldMotion(reducedMotion: false, child: SizedBox.shrink());
   }
 
   @override
