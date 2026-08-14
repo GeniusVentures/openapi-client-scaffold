@@ -32,26 +32,30 @@ class ScaffoldExampleApp extends StatefulWidget {
 class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
   bool _useOverridePalette = false;
 
-  List<ThemeExtension<dynamic>> get _extensions {
+  /// The palette currently in effect — the default, or an orange override
+  /// when "Theme overrides" is toggled on.
+  ScaffoldPalette get _activePalette {
     if (!_useOverridePalette) {
-      return scaffoldThemeExtensions;
+      return ScaffoldPalette.defaultPalette;
     }
-    return <ThemeExtension<dynamic>>[
-      ScaffoldPalette.defaultPalette.copyWith(
-        lightGreenPrimary: Colors.orange,
-        lightGreenSecondary: Colors.deepOrange,
-        blue500: Colors.orangeAccent,
-      ),
-      ScaffoldDimens.defaultDimens,
-    ];
+    return ScaffoldPalette.defaultPalette.copyWith(
+      lightGreenPrimary: Colors.orange,
+      lightGreenSecondary: Colors.deepOrange,
+      blue500: Colors.orangeAccent,
+    );
   }
+
+  List<ThemeExtension<dynamic>> get _extensions => <ThemeExtension<dynamic>>[
+        _activePalette,
+        ScaffoldDimens.defaultDimens,
+      ];
 
   ThemeData _buildTheme(Brightness brightness) {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: ScaffoldPalette.defaultPalette.lightGreenPrimary,
+        seedColor: _activePalette.lightGreenPrimary,
         brightness: brightness,
       ),
       extensions: _extensions,
