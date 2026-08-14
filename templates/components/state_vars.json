@@ -1,6 +1,7 @@
 {
-  "_comment": "Fixture variables for standalone rendering of state.dart.jinja2. widget_class_name is the generated class name; state_type seeds the default variant (loading/empty/error/unavailable/success).",
+  "_comment": "Fixture variables for standalone rendering of state.dart.jinja2. widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem used to derive the cubit/state import paths; state_type seeds the default variant (loading/empty/error/unavailable/success).",
   "widget_class_name": "ScaffoldStateView",
+  "file_stem": "scaffold_state_view",
   "state_type": "empty",
   "empty_icon": "inbox_outlined",
   "empty_headline": "Nothing here",
