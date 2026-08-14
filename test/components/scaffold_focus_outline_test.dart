@@ -112,4 +112,28 @@ void main() {
     expect(painter.color, ScaffoldPalette.defaultPalette.focusRingColor);
     expect(painter.strokeWidth, ScaffoldDimens.defaultDimens.focusRingWidth);
   });
+
+  testWidgets('transitions from an internal to an external node', (tester) async {
+    final external = FocusNode();
+    addTearDown(external.dispose);
+
+    // First build owns an internal node; the rebuild hands it an external one.
+    // The internal node must be disposed (not leaked) and the ring must keep
+    // tracking the new node.
+    await _pump(tester, const ScaffoldFocusOutline(child: Text('x')));
+    await _pump(
+      tester,
+      ScaffoldFocusOutline(
+        focusNode: external,
+        child: Focus(focusNode: external, child: const Text('x')),
+      ),
+    );
+
+    external.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+
+    expect(_ringPaint(), findsOneWidget);
+  });
 }

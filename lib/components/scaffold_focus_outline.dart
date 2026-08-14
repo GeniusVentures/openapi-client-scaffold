@@ -54,6 +54,11 @@ class _ScaffoldFocusOutlineState extends State<ScaffoldFocusOutline> {
     super.didUpdateWidget(oldWidget);
     if (widget.focusNode != oldWidget.focusNode) {
       _focusNode.removeListener(_onFocusChanged);
+      // We own the node only when no external node was supplied; dispose the
+      // internal node before swapping so it is not leaked.
+      if (oldWidget.focusNode == null) {
+        _focusNode.dispose();
+      }
       _focusNode = widget.focusNode ?? FocusNode();
       _hasFocus = _focusNode.hasFocus;
       _focusNode.addListener(_onFocusChanged);
