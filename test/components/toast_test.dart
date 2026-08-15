@@ -165,6 +165,21 @@ void main() {
     }
   });
 
+  testWidgets('disposeAll removes the mounted overlay entry', (tester) async {
+    final context = await _pumpHost(tester);
+    showToast(context, 'Link copied');
+    await tester.pump();
+
+    expect(find.byType(ToastWidget), findsOneWidget);
+
+    ToastManager.instance.disposeAll();
+    await tester.pump();
+
+    // The OverlayEntry must actually leave the tree; a plain list-drop would
+    // leave the toast visible forever (its later auto-dismiss is a no-op).
+    expect(find.byType(ToastWidget), findsNothing);
+  });
+
   testWidgets('the stack caps at three and evicts the oldest', (tester) async {
     final context = await _pumpHost(tester);
     for (var i = 1; i <= 5; i++) {

@@ -242,6 +242,12 @@ class ToastManager {
     // Iterate a copy — _drop mutates the list.
     for (final toast in [..._toasts]) {
       _drop(toast);
+      // _drop only clears the manager record; a mounted OverlayEntry would
+      // otherwise stay visible forever (its later auto-dismiss is a no-op
+      // because `dismissed` is already set). Remove the entry directly.
+      if (toast.entry.mounted) {
+        toast.entry.remove();
+      }
     }
   }
 }
