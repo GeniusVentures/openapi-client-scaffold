@@ -68,4 +68,24 @@ void main() {
       );
     });
   });
+
+  group('ScaffoldPalette lightPalette', () {
+    const light = ScaffoldPalette.lightPalette;
+
+    test('uses light surfaces and dark text (contrast-safe)', () {
+      expect(light.surfaceElevated, const Color(0xFFFFFFFF));
+      expect(light.grayPrimary, const Color(0xFFF1F3F5));
+      expect(light.textPrimary, const Color(0xFF17191E));
+      expect(light.textSecondary, const Color(0xFF5A6070));
+    });
+
+    test('dark hairline border for light surfaces', () {
+      expect(light.borderSubtle, const Color(0x1F000000));
+    });
+
+    test('shares brand accents with the dark palette', () {
+      expect(light.lightGreenPrimary, ScaffoldPalette.defaultPalette.lightGreenPrimary);
+      expect(light.focusRingColor, ScaffoldPalette.defaultPalette.focusRingColor);
+    });
+  });
 }
