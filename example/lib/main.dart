@@ -37,33 +37,36 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
   /// "Light mode" toggle is on. Exposed so both themes are inspectable.
   ThemeMode get _themeMode => _useLightTheme ? ThemeMode.light : ThemeMode.dark;
 
-  /// The palette currently in effect — the default, or an orange override
-  /// when "Theme overrides" is toggled on.
-  ScaffoldPalette get _activePalette {
+  /// The palette for the given [brightness] — light-mode uses
+  /// [ScaffoldPalette.lightPalette], dark-mode uses [ScaffoldPalette.defaultPalette].
+  /// The orange "Theme overrides" swap is applied on top of whichever base.
+  ScaffoldPalette _paletteFor(Brightness brightness) {
+    final ScaffoldPalette base = brightness == Brightness.light
+        ? ScaffoldPalette.lightPalette
+        : ScaffoldPalette.defaultPalette;
     if (!_useOverridePalette) {
-      return ScaffoldPalette.defaultPalette;
+      return base;
     }
-    return ScaffoldPalette.defaultPalette.copyWith(
+    return base.copyWith(
       lightGreenPrimary: Colors.orange,
       lightGreenSecondary: Colors.deepOrange,
       blue500: Colors.orangeAccent,
     );
   }
 
-  List<ThemeExtension<dynamic>> get _extensions => <ThemeExtension<dynamic>>[
-        _activePalette,
-        ScaffoldDimens.defaultDimens,
-      ];
-
   ThemeData _buildTheme(Brightness brightness) {
+    final ScaffoldPalette palette = _paletteFor(brightness);
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: _activePalette.lightGreenPrimary,
+        seedColor: palette.lightGreenPrimary,
         brightness: brightness,
       ),
-      extensions: _extensions,
+      extensions: <ThemeExtension<dynamic>>[
+        palette,
+        ScaffoldDimens.defaultDimens,
+      ],
     );
   }
 

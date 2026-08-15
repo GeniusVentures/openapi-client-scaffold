@@ -125,6 +125,35 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     dropZoneRejected: Color(0x33FF4D4D),
   );
 
+  /// Light-mode palette — light surfaces and dark text, mirroring
+  /// [defaultPalette] (dark-seeded) for bright backgrounds. Host apps register
+  /// this on their light [ThemeData] so scaffold atoms render correctly in
+  /// light mode; accents (green/blue) are shared with the dark palette.
+  static const ScaffoldPalette lightPalette = ScaffoldPalette(
+    deepBlueCardColor: Color(0xFFFFFFFF),
+    lightGreenPrimary: ScaffoldColors.lightGreenPrimary,
+    lightGreenSecondary: ScaffoldColors.lightGreenSecondary,
+    gray500: ScaffoldColors.gray500,
+    blue500: ScaffoldColors.blue500,
+    borderGrey: Color(0x1F000000),
+    grayPrimary: Color(0xFFF1F3F5),
+    deepBlueTertiary: Color(0xFFE9EDF2),
+    surfaceElevated: Color(0xFFFFFFFF),
+    borderSubtle: Color(0x1F000000),
+    textPrimary: Color(0xFF17191E),
+    textSecondary: Color(0xFF5A6070),
+    statusSuccess: Color(0xFF0AA06B),
+    statusError: Color(0xFFD13438),
+    statusWarningText: Color(0xFF9A6A00),
+    focusRingColor: ScaffoldColors.lightGreenPrimary,
+    skeletonBaseColor: Color(0xFFE9EDF2),
+    skeletonShimmerColor: Color(0xFFF5F7FA),
+    disabledOverlayColor: Color(0x66000000),
+    dragFeedbackBackground: Color(0xFFFFFFFF),
+    dropZoneHighlight: Color(0x3300B57A),
+    dropZoneRejected: Color(0x33D13438),
+  );
+
   /// Returns a copy of this palette with the given fields replaced.
   @override
   ScaffoldPalette copyWith({
