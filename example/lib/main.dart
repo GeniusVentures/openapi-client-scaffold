@@ -31,6 +31,11 @@ class ScaffoldExampleApp extends StatefulWidget {
 
 class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
   bool _useOverridePalette = false;
+  bool _useLightTheme = false;
+
+  /// Brightness mode currently in effect — dark by default, light when the
+  /// "Light mode" toggle is on. Exposed so both themes are inspectable.
+  ThemeMode get _themeMode => _useLightTheme ? ThemeMode.light : ThemeMode.dark;
 
   /// The palette currently in effect — the default, or an orange override
   /// when "Theme overrides" is toggled on.
@@ -68,11 +73,15 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
       title: 'frontend_scaffold demo',
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
-      themeMode: ThemeMode.dark,
+      themeMode: _themeMode,
       home: HomePage(
         overrideEnabled: _useOverridePalette,
         onOverrideChanged: (value) {
           setState(() => _useOverridePalette = value);
+        },
+        lightTheme: _useLightTheme,
+        onLightThemeChanged: (value) {
+          setState(() => _useLightTheme = value);
         },
       ),
     );
@@ -83,11 +92,15 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
 class HomePage extends StatelessWidget {
   final bool overrideEnabled;
   final ValueChanged<bool> onOverrideChanged;
+  final bool lightTheme;
+  final ValueChanged<bool> onLightThemeChanged;
 
   const HomePage({
     super.key,
     required this.overrideEnabled,
     required this.onOverrideChanged,
+    required this.lightTheme,
+    required this.onLightThemeChanged,
   });
 
   @override
@@ -104,6 +117,15 @@ class HomePage extends StatelessWidget {
             ),
             value: overrideEnabled,
             onChanged: onOverrideChanged,
+          ),
+          SwitchListTile(
+            title: const Text('Light mode'),
+            subtitle: const Text(
+              'Toggle between the dark and light ThemeData (see both '
+              'backgrounds/surfaces)',
+            ),
+            value: lightTheme,
+            onChanged: onLightThemeChanged,
           ),
           const Divider(),
           _DemoTile(
