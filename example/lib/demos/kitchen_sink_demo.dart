@@ -116,11 +116,12 @@ class _KitchenSinkDemoState extends State<KitchenSinkDemo> {
             _section(
               'ScaffoldOverflowFade — long text',
               const ScaffoldOverflowFade(
+                fadeDirection: FadeDirection.right,
                 child: SizedBox(
                   width: 220,
                   child: Text(
                     'This is a very long line of text that overflows its '
-                    'container and fades at the edges.',
+                    'container and fades at the right edge.',
                     maxLines: 1,
                     overflow: TextOverflow.clip,
                   ),
