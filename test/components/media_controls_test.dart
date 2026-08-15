@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/media_controls.dart';
 import 'package:frontend_scaffold/components/scaffold_formatted_value_duration.dart';
@@ -255,13 +256,9 @@ void main() {
     // Three interactive ScaffoldPressables (play, mute, fullscreen).
     expect(find.byType(ScaffoldPressable), findsNWidgets(3));
 
-    // Seekbar has a slider semantic.
-    final Semantics sliderSemantics = tester.widget<Semantics>(
-      find.ancestor(
-        of: find.byType(Slider),
-        matching: find.byType(Semantics),
-      ).first,
-    );
-    expect(sliderSemantics.properties.slider, isTrue);
+    // Seekbar exposes slider semantics via its SemanticsNode flags.
+    final SemanticsNode sliderNode =
+        tester.getSemantics(find.byType(Slider));
+    expect(sliderNode.flagsCollection.isSlider, isTrue);
   });
 }
