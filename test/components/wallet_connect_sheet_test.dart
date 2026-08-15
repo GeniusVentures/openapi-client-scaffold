@@ -103,9 +103,15 @@ void main() {
 
     final Finder addressFinder = find.text(address);
     expect(addressFinder, findsWidgets);
-    final Text textWidget = tester.widget<Text>(addressFinder.first);
-    expect(textWidget.overflow, TextOverflow.ellipsis);
-    expect(textWidget.maxLines, 1);
+    // At least one of the rendered Text widgets must use ellipsis + maxLines 1
+    // (the body copy). The BottomDrawer header also renders the title text.
+    final Iterable<Text> texts =
+        tester.widgetList<Text>(addressFinder);
+    final bool hasEllipsisBody = texts.any(
+      (Text t) =>
+          t.overflow == TextOverflow.ellipsis && t.maxLines == 1,
+    );
+    expect(hasEllipsisBody, isTrue);
   });
 
   testWidgets(
