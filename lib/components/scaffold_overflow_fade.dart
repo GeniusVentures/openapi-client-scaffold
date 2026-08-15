@@ -11,6 +11,18 @@ enum FadeDirection {
 
   /// Fade all four edges.
   both,
+
+  /// Fade only the left edge.
+  left,
+
+  /// Fade only the right edge.
+  right,
+
+  /// Fade only the top edge.
+  top,
+
+  /// Fade only the bottom edge.
+  bottom,
 }
 
 /// Edge-fade gradient overlay.
@@ -79,6 +91,38 @@ class ScaffoldOverflowFade extends StatelessWidget {
         return RadialGradient(
           colors: <Color>[transparent, opaque],
           stops: <double>[1.0 - stop, 1.0],
+        );
+      case FadeDirection.left:
+        final double startStop = _edgeStop(extent, bounds.width);
+        return LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: <Color>[opaque, transparent],
+          stops: <double>[0.0, startStop],
+        );
+      case FadeDirection.right:
+        final double startStop = _edgeStop(extent, bounds.width);
+        return LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: <Color>[transparent, opaque],
+          stops: <double>[1.0 - startStop, 1.0],
+        );
+      case FadeDirection.top:
+        final double startStop = _edgeStop(extent, bounds.height);
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[opaque, transparent],
+          stops: <double>[0.0, startStop],
+        );
+      case FadeDirection.bottom:
+        final double startStop = _edgeStop(extent, bounds.height);
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[transparent, opaque],
+          stops: <double>[1.0 - startStop, 1.0],
         );
     }
   }
