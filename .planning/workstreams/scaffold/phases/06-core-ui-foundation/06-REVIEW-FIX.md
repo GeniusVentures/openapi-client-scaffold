@@ -2,10 +2,10 @@
 phase: 06-core-ui-foundation
 fixed_at: 2026-08-14T21:49:23Z
 review_path: .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-REVIEW.md
-iteration: 1
-findings_in_scope: 8
-fixed: 8
-skipped: 0
+iteration: 2
+findings_in_scope: 21
+fixed: 20
+skipped: 1
 status: all_fixed
 ---
 
@@ -13,12 +13,12 @@ status: all_fixed
 
 **Fixed at:** 2026-08-14T21:49:23Z
 **Source review:** 06-REVIEW.md
-**Iteration:** 1
+**Iterations:** 2 (pass 1: Critical+Warning; pass 2: Info)
 
 **Summary:**
-- Findings in scope: 8 (CR-01, WR-01 .. WR-07; 13 Info findings out of scope)
-- Fixed: 8
-- Skipped: 0
+- Findings in scope: 21 (1 blocker, 7 major, 13 minor/cosmetic)
+- Fixed: 20
+- Skipped (SDK-N/A): 1 (IN-03)
 
 ## Fixed Issues
 
@@ -102,12 +102,34 @@ now wraps its `LongPressDraggable` in `ScaffoldTouchTarget` + explicit
 `Semantics(button: true, enabled: true)` instead of a `ScaffoldPressable` with
 null handlers that announced "disabled".
 
+## Info Fixes (pass 2 — `--all`)
+
+| Finding | Commit | Fix |
+|---------|--------|-----|
+| IN-01 Badge.maxDigits non-functional | d2bc0f5 | derive truncation threshold from maxDigits |
+| IN-02 NumericInput decimalPlaces | 2c1265b | quantize increment/decrement to decimalPlaces |
+| IN-04 ScrollEdgeIndicator controller | 329790a | re-attach listener on controller change |
+| IN-05 FocusOutline node leak | 8d5e71d | dispose internal node on external-node transition |
+| IN-06 dead toJson/fromJson + stale docs | 66b138c | drop dead serializers + hydration doc mentions |
+| IN-07 copyWith null-out | 1ba5180 | sentinel so nullable fields can be cleared |
+| IN-08 FormattedValue spec deviations | db74239 | magnitude-aware duration, negative handling |
+| IN-09 acceptType runtimeType | c85f8bb | remove runtime-type equality in favor of acceptCondition |
+| IN-10 disabled atoms focusable | 6ed3eee | ExcludeFocus on disabled atoms |
+| IN-11 hardcoded strings | 3060881 | retry label + size-exceeded message configurable |
+| IN-12 orphaned deps | 8f8bbad | remove equatable + bloc_concurrency |
+| IN-13 degenerate dash/gap painter | 5bae9a4 | guard dashed border painter against zero/negative values |
+
 ## Skipped Issues
 
-None — all in-scope findings were fixed.
+- **IN-03** (SelectionIndicator omits `SemanticsRole.checkbox/radio/switch`): SDK-N/A.
+  Flutter 3.41.9 removed those `SemanticsRole` enum values (marked `_unimplemented`,
+  throws a debug assertion on use). The generated indicators already express the
+  equivalent ARIA-aligned semantics via the boolean flags `checked:` / `mixed:` /
+  `toggled:` / `inMutuallyExclusiveGroup:`, matching the framework's own
+  `Checkbox`/`Radio`/`Switch`. No code change is possible or needed on this SDK.
 
 ---
 
 _Fixed: 2026-08-14T21:49:23Z_
 _Fixer: Claude (gsd-code-fixer)_
-_Iteration: 1_
+_Iterations: 2 (Critical+Warning, then Info)_
