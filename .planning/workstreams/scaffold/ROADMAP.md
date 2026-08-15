@@ -92,7 +92,7 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 **Plans**: 4 plans
 **Plan list**:
 
-- [ ] 07-01-PLAN.md — MediaCard widget + media_card.dart.jinja2 template + fixture + tests + demo (WIDG-29)
+- [x] 07-01-PLAN.md — MediaCard widget + media_card.dart.jinja2 template + fixture + tests + demo (WIDG-29)
 - [ ] 07-02-PLAN.md — MediaControls widget + tests + demo (WIDG-30)
 - [ ] 07-03-PLAN.md — WalletConnectSheet widget + tests + demo (WIDG-31)
 - [ ] 07-04-PLAN.md — Barrel export + demo registration + final analyze/test gate (WIDG-29, WIDG-30, WIDG-31)
