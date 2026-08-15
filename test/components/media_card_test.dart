@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/media_card.dart';
@@ -8,11 +10,35 @@ import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
+// 1x1 transparent PNG used as a deterministic in-memory thumbnail provider.
+final Uint8List _onePixelPng = Uint8List.fromList(const <int>[
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+  0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+  0x89, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x44, 0x41,
+  0x54, 0x78, 0x9C, 0x62, 0x00, 0x01, 0x00, 0x00,
+  0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+  0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+  0x42, 0x60, 0x82,
+]);
+
+// Test-harness width that keeps tall-aspect-ratio cards within the default
+// 800x600 test surface. Chosen so a 9/16 card fits: 240 * (16/9) ≈ 427 < 600.
+const double _kCardWidth = 240.0;
+
 Future<void> _pump(WidgetTester tester, Widget child) {
   return tester.pumpWidget(
     MaterialApp(
       theme: ThemeData(extensions: scaffoldThemeExtensions),
-      home: Scaffold(body: Center(child: child)),
+      home: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: _kCardWidth,
+            child: child,
+          ),
+        ),
+      ),
     ),
   );
 }
@@ -56,9 +82,9 @@ void main() {
 
   testWidgets('thumbnail ImageProvider renders an Image with that provider',
       (tester) async {
-    const NetworkImage provider = NetworkImage('https://example.com/t.png');
+    final MemoryImage provider = MemoryImage(_onePixelPng);
 
-    await _pump(tester, const MediaCard(thumbnail: provider));
+    await _pump(tester, MediaCard(thumbnail: provider));
 
     final Image image = tester.widget<Image>(find.byType(Image));
     expect(image.image, provider);
@@ -157,7 +183,7 @@ void main() {
       ),
     );
     expect(flexible.child, isA<Text>());
-    final Text text = flexible.child! as Text;
+    final Text text = flexible.child as Text;
     expect(text.overflow, TextOverflow.ellipsis);
   });
 
