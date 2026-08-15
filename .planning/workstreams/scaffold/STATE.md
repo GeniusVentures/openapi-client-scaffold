@@ -4,16 +4,16 @@ milestone: v1.1
 milestone_name: Widget Library
 current_phase: 7
 current_phase_name: Media & Integration Widgets
-status: planning
-stopped_at: Phase 7 context gathered — 6 decisions captured, ready to plan
-last_updated: "2026-08-15T21:15:00.000Z"
-last_activity: 2026-08-15
-last_activity_desc: Phase 7 context gathered (MediaCard/MediaControls/WalletConnectSheet decisions)
+status: executing
+stopped_at: Phase 7 planned — 4 plans across 2 waves, ready to execute
+last_updated: "2026-08-15T23:17:21.445Z"
+last_activity: 2026-08-15 -- Phase 7 planning complete
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
-  total_plans: 7
+  total_plans: 11
   completed_plans: 7
+  percent: 64
 workstream: scaffold
 ---
 
@@ -29,9 +29,9 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 ## Current Position
 
 Phase: 7 — Media & Integration Widgets
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
+Plan: 4 plans (07-01..07-04) across 2 waves — planned, not yet executed
+Status: Ready to execute
+Last activity: 2026-08-15 -- Phase 7 planning complete
 
 ## v1.1 Milestone
 
@@ -64,7 +64,7 @@ Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
 ### Pending Todos
 
 - [x] `/gsd:plan-phase 6` — wrote plans for Core UI Foundation (28 atoms + composites across 4 waves); executed + verified 28/28
-- `/gsd:plan-phase 7` — write plans for Media & Integration Widgets (MediaCard, MediaControls, WalletConnectSheet)
+- [x] `/gsd:plan-phase 7` — wrote plans for Media & Integration Widgets (4 plans, 2 waves: MediaCard, MediaControls, WalletConnectSheet, barrel+demos+gate); checker passed 7/7 decisions
 - (Follow-up, out of v1.1 scope) light default palette to complement the dark-seeded ScaffoldPalette defaults — carried from v1.0
 - (Future, post-v1.1) navigation component widgets, DataTable, FormDialog from their existing templates
 
@@ -81,6 +81,6 @@ Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
 ## Session Continuity
 
 **Last session:** 2026-08-15
-**Stopped at:** Phase 7 context gathered — 6 decisions captured (badge slots, metadata row, MediaControls state, QR builder, template scope)
+**Stopped at:** Phase 7 planned — 4 plans (07-01 MediaCard, 07-02 MediaControls, 07-03 WalletConnectSheet, 07-04 barrel+demos+gate) across 2 waves, checker passed
 **Resume file:** .planning/workstreams/scaffold/phases/07-media-integration-widgets/07-CONTEXT.md
-**Next action:** `/gsd:plan-phase 7 --ws scaffold` to plan MediaCard + MediaControls + WalletConnectSheet
+**Next action:** `/gsd:execute-phase 7 --ws scaffold` to execute MediaCard + MediaControls + WalletConnectSheet
