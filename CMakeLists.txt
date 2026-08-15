@@ -73,6 +73,14 @@ if(PYTHON3_EXECUTABLE)
     set(_scaffold_templates_dir "${CMAKE_CURRENT_SOURCE_DIR}/templates")
     set(_scaffold_template_stamps "")
 
+    # Optional consumer templates dir — only pass the flag when set, otherwise
+    # a bare `--template-dir` (no value) breaks engine.py argument parsing.
+    if(TEMPLATES_DIR)
+        set(_parent_template_dir_flag "--template-dir ${TEMPLATES_DIR}")
+    else()
+        set(_parent_template_dir_flag "")
+    endif()
+
     # --- Source A: Scaffold's own templates -------------------------------
     # This blanket target renders ONLY standalone templates — those that take
     # design tokens alone and no per-template context. In practice that is the
@@ -94,7 +102,7 @@ if(PYTHON3_EXECUTABLE)
                 --tokens ${DESIGN_TOKENS}
                 --output ${_output}
                 --template-dir ${_scaffold_templates_dir}
-                --template-dir ${TEMPLATES_DIR}
+                ${_parent_template_dir_flag}
             COMMAND ${CMAKE_COMMAND} -E touch ${_stamp}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             COMMENT "Rendering scaffold template: ${_rel}"
@@ -175,12 +183,22 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
         state
     )
     set(_component_stamps "")
+    set(_component_outputs "")
 
     foreach(_comp ${_component_names})
         set(_template "${_comp_templates_dir}/${_comp}.dart.jinja2")
         set(_stamp "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}.stamp")
-        set(_output "${_widgets_output_dir}/${_comp}.dart")
         set(_vars "${_comp_templates_dir}/${_comp}_vars.json")
+
+        # Read file_stem from vars.json — card/search_bar/state use it to
+        # derive generated import filenames; fall back to the component name.
+        file(READ ${_vars} _vars_json)
+        if(_vars_json MATCHES "\"file_stem\"[ \t]*:[ \t]*\"([^\"]+)\"")
+            set(_file_stem "${CMAKE_MATCH_1}")
+        else()
+            set(_file_stem "${_comp}")
+        endif()
+        set(_output "${_widgets_output_dir}/${_file_stem}.dart")
 
         add_custom_command(
             OUTPUT ${_stamp} ${_output}
@@ -206,7 +224,7 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
         # template re-renders only this stamp (v1.0 incremental invariant).
         set(_template_cubit "${_comp_templates_dir}/${_comp}_cubit.dart.jinja2")
         set(_stamp_cubit "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}_cubit.stamp")
-        set(_output_cubit "${_widgets_output_dir}/${_comp}_cubit.dart")
+        set(_output_cubit "${_widgets_output_dir}/${_file_stem}_cubit.dart")
 
         add_custom_command(
             OUTPUT ${_stamp_cubit} ${_output_cubit}
@@ -236,7 +254,7 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
         endif()
         set(_template_state "${_comp_templates_dir}/${_state_basename}.dart.jinja2")
         set(_stamp_state "${CMAKE_CURRENT_BINARY_DIR}/template_gen/component_${_comp}_state.stamp")
-        set(_output_state "${_widgets_output_dir}/${_state_basename}.dart")
+        set(_output_state "${_widgets_output_dir}/${_file_stem}_state.dart")
 
         add_custom_command(
             OUTPUT ${_stamp_state} ${_output_state}
@@ -258,12 +276,14 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
         add_custom_target(generate_component_${_comp}
             COMMENT "Generate Flutter widget + cubit + state: ${_comp}"
             DEPENDS ${_stamp} ${_stamp_cubit} ${_stamp_state}
+                    ${_output} ${_output_cubit} ${_output_state}
         )
+        list(APPEND _component_outputs ${_output} ${_output_cubit} ${_output_state})
     endforeach()
 
     add_custom_target(generate_all_components
         COMMENT "Generate all 6 M3 component Flutter widget/cubit/state triples (18 files)"
-        DEPENDS ${_component_stamps}
+        DEPENDS ${_component_stamps} ${_component_outputs}
     )
 endif()
 
@@ -306,6 +326,7 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
         state
     )
     set(_html_component_stamps "")
+    set(_html_component_outputs "")
 
     foreach(_comp ${_component_names})
         set(_template_html "${_comp_templates_dir}/${_comp}.html.jinja2")
@@ -318,7 +339,7 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
 
         # HTML fragment
         add_custom_command(
-            OUTPUT ${_stamp_html}
+            OUTPUT ${_stamp_html} ${_output_html}
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template "components/${_comp}.html.jinja2"
                 --tokens ${DESIGN_TOKENS}
@@ -333,7 +354,7 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
 
         # CSS stylesheet
         add_custom_command(
-            OUTPUT ${_stamp_css}
+            OUTPUT ${_stamp_css} ${_output_css}
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template "components/${_comp}.css.jinja2"
                 --tokens ${DESIGN_TOKENS}
@@ -347,10 +368,11 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
         )
 
         list(APPEND _html_component_stamps ${_stamp_html} ${_stamp_css})
+        list(APPEND _html_component_outputs ${_output_html} ${_output_css})
 
         add_custom_target(generate_component_${_comp}_html
             COMMENT "Generate HTML + CSS for component: ${_comp}"
-            DEPENDS ${_stamp_html} ${_stamp_css}
+            DEPENDS ${_stamp_html} ${_stamp_css} ${_output_html} ${_output_css}
         )
     endforeach()
 
@@ -358,6 +380,6 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
 
     add_custom_target(generate_all_components_html
         COMMENT "Generate all 6 M3 component HTML fragments + CSS + m3_tokens.css"
-        DEPENDS ${_html_component_stamps}
+        DEPENDS ${_html_component_stamps} ${_html_component_outputs}
     )
 endif()
