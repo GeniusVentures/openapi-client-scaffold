@@ -18,8 +18,7 @@
 //
 // and `import 'demos/wallet_connect_sheet_demo.dart';` at the top of main.dart.
 import 'package:flutter/material.dart';
-import 'package:frontend_scaffold/components/wallet_connect_sheet.dart';
-import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+import 'package:frontend_scaffold/frontend_scaffold.dart';
 
 /// Demo that triggers the WalletConnectSheet in disconnected and connected
 /// states.

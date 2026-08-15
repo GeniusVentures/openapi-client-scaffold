@@ -27,8 +27,7 @@
 // component directly. Plan 07-04 will switch to the barrel import when it
 // adds the export line.
 import 'package:flutter/material.dart';
-import 'package:frontend_scaffold/components/media_controls.dart';
-import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+import 'package:frontend_scaffold/frontend_scaffold.dart';
 
 /// Demo page for the Phase 7 MediaControls widget.
 class MediaControlsDemo extends StatefulWidget {
