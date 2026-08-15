@@ -5,15 +5,15 @@ milestone_name: Widget Library
 current_phase: 7
 current_phase_name: Media & Integration Widgets
 status: executing
-stopped_at: Phase 07 plan 01 (MediaCard) complete; 3 plans remain (07-02 MediaControls, 07-03 WalletConnectSheet, 07-04 barrel+gate)
-last_updated: "2026-08-15T23:55:00.000Z"
-last_activity: 2026-08-15 -- Phase 07 plan 01 (MediaCard) executed — RED/GREEN/template+demo
+stopped_at: Phase 07 plan 02 (MediaControls) complete; 2 plans remain (07-03 WalletConnectSheet, 07-04 barrel+gate)
+last_updated: "2026-08-15T23:59:00.000Z"
+last_activity: 2026-08-15 -- Phase 07 plan 02 (MediaControls) executed — RED/GREEN/demo
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 11
-  completed_plans: 8
-  percent: 73
+  completed_plans: 9
+  percent: 82
 workstream: scaffold
 ---
 
@@ -29,9 +29,9 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 ## Current Position
 
 Phase: 7 — Media & Integration Widgets
-Plan: 4 plans (07-01..07-04) across 2 waves — 07-01 complete, 3 remaining
-Status: Executing — plan 01 (MediaCard) done; next is 07-02 (MediaControls)
-Last activity: 2026-08-15 -- Phase 07 plan 01 (MediaCard) executed; commits ca6f067, 8f9b206, dca9fa0
+Plan: 4 plans (07-01..07-04) across 2 waves — 07-01 and 07-02 complete, 2 remaining
+Status: Executing — plan 02 (MediaControls) done; next is 07-03 (WalletConnectSheet)
+Last activity: 2026-08-15 -- Phase 07 plan 02 (MediaControls) executed; commits 1a812e5, 2724697, e63cdcf, 7fcd28a
 
 ## v1.1 Milestone
 
@@ -81,6 +81,6 @@ Last activity: 2026-08-15 -- Phase 07 plan 01 (MediaCard) executed; commits ca6f
 ## Session Continuity
 
 **Last session:** 2026-08-15
-**Stopped at:** Phase 07 plan 01 (MediaCard) complete — RED (`ca6f067`) / GREEN (`8f9b206`) / template+demo (`dca9fa0`); SUMMARY at `.planning/workstreams/scaffold/phases/07-media-integration-widgets/07-01-SUMMARY.md`
-**Resume file:** .planning/workstreams/scaffold/phases/07-media-integration-widgets/07-02-PLAN.md
-**Next action:** `/gsd:execute-phase 7 --ws scaffold` to execute plan 07-02 (MediaControls)
+**Stopped at:** Phase 07 plan 02 (MediaControls) complete — RED (`1a812e5`) / GREEN (`2724697`) / demo (`e63cdcf`); SUMMARY at `.planning/workstreams/scaffold/phases/07-media-integration-widgets/07-02-SUMMARY.md`
+**Resume file:** .planning/workstreams/scaffold/phases/07-media-integration-widgets/07-03-PLAN.md
+**Next action:** `/gsd:execute-phase 7 --ws scaffold` to execute plan 07-03 (WalletConnectSheet)
