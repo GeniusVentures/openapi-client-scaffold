@@ -77,21 +77,31 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
     super.dispose();
   }
 
-  bool get _canIncrement =>
-      !widget.disabled && (widget.value + widget.step) <= widget.max;
+  bool get _canIncrement => !widget.disabled && widget.value < widget.max;
 
-  bool get _canDecrement =>
-      !widget.disabled && (widget.value - widget.step) >= widget.min;
+  bool get _canDecrement => !widget.disabled && widget.value > widget.min;
+
+  /// Clamps [value] into `[min, max]` so a step that crosses a bound lands
+  /// exactly on the bound instead of being rejected by the enable predicate.
+  num _clampToBounds(num value) {
+    if (value > widget.max) {
+      return widget.max;
+    }
+    if (value < widget.min) {
+      return widget.min;
+    }
+    return value;
+  }
 
   void _increment() {
     if (_canIncrement) {
-      widget.onChanged(_quantize(widget.value + widget.step));
+      widget.onChanged(_quantize(_clampToBounds(widget.value + widget.step)));
     }
   }
 
   void _decrement() {
     if (_canDecrement) {
-      widget.onChanged(_quantize(widget.value - widget.step));
+      widget.onChanged(_quantize(_clampToBounds(widget.value - widget.step)));
     }
   }
 

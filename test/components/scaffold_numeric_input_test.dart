@@ -71,6 +71,40 @@ void main() {
     expect(changed, isNull);
   });
 
+  testWidgets('increment clamps a step that crosses max', (tester) async {
+    num? changed;
+    await _pump(
+      tester,
+      ScaffoldNumericInput(
+        value: 9,
+        step: 2,
+        max: 10,
+        onChanged: (num v) => changed = v,
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+    expect(changed, 10);
+  });
+
+  testWidgets('decrement clamps a step that crosses min', (tester) async {
+    num? changed;
+    await _pump(
+      tester,
+      ScaffoldNumericInput(
+        value: 1,
+        step: 2,
+        min: 0,
+        onChanged: (num v) => changed = v,
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.remove));
+    await tester.pump();
+    expect(changed, 0);
+  });
+
   testWidgets('value formats to decimalPlaces=2 as "5.00"', (tester) async {
     await _pump(
       tester,
