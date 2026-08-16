@@ -203,7 +203,8 @@ void main() {
 
   testWidgets(
       'title switches with state — disconnected shows Connect Wallet, '
-      'connected shows the address', (WidgetTester tester) async {
+      'connected shows static Wallet title (address lives in body only)',
+      (WidgetTester tester) async {
     const String address =
         '0xABCDEF1234567890abcdef1234567890ABCDEF12';
 
@@ -224,7 +225,10 @@ void main() {
       sessionState: WalletConnectSessionState.connected,
       address: address,
     );
-    expect(find.text(address), findsWidgets);
+    // Static title — not the address.
+    expect(find.text('Wallet'), findsOneWidget);
+    // Address appears exactly once (body), not duplicated in the title.
+    expect(find.text(address), findsOneWidget);
   });
 
   testWidgets(

@@ -98,7 +98,9 @@ class WalletConnectSheet {
       case WalletConnectSessionState.connecting:
         return 'Connect Wallet';
       case WalletConnectSessionState.connected:
-        return address ?? 'Wallet';
+        // Address is shown in the body; keep the title a static label so
+        // the address is not duplicated visually.
+        return 'Wallet';
     }
   }
 
