@@ -33,7 +33,7 @@ class WalletConnectSheetDemo extends StatelessWidget {
       qrBuilder: (BuildContext ctx, String uri) => Container(
         width: 200,
         height: 200,
-        color: Colors.black12,
+        color: ctx.palette.borderSubtle,
         child: Center(
           child: Text(
             'QR placeholder\n$uri',
