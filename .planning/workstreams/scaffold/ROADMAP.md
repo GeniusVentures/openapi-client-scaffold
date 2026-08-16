@@ -95,7 +95,7 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 - [x] 07-01-PLAN.md — MediaCard widget + media_card.dart.jinja2 template + fixture + tests + demo (WIDG-29)
 - [x] 07-02-PLAN.md — MediaControls widget + tests + demo (WIDG-30)
 - [x] 07-03-PLAN.md — WalletConnectSheet widget + tests + demo (WIDG-31)
-- [ ] 07-04-PLAN.md — Barrel export + demo registration + final analyze/test gate (WIDG-29, WIDG-30, WIDG-31)
+- [x] 07-04-PLAN.md — Barrel export + demo registration + final analyze/test gate (WIDG-29, WIDG-30, WIDG-31)
 
 **UI hint**: yes
 
@@ -105,7 +105,7 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 |-------|-----------|----------------|--------|-----------|
 | 5. Scaffold Submodule Consolidation | v1.0 | 5/5 | Complete | 2026-08-09 |
 | 6. Core UI Foundation | v1.1 | 6/6 | Complete    | 2026-08-14 |
-| 7. Media & Integration Widgets | v1.1 | 3/4 | In progress | - |
+| 7. Media & Integration Widgets | v1.1 | 4/4 | Complete    | 2026-08-15 |
 
 ## Coverage
 
