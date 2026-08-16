@@ -36,6 +36,7 @@ class MediaCard extends StatelessWidget {
     this.metadataRow = const <Widget>[],
     this.onTap,
     this.disabled = false,
+    this.semanticLabel,
   });
 
   /// Width / height ratio of the thumbnail area (default 16:9).
@@ -64,6 +65,11 @@ class MediaCard extends StatelessWidget {
 
   /// When true, blocks interaction via [ScaffoldDisabledOverlay].
   final bool disabled;
+
+  /// Optional accessible name announced by screen readers when [onTap] is
+  /// non-null. Required for cards that render no visible title text
+  /// (WCAG 4.1.2 Name, Role, Value).
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +161,7 @@ class MediaCard extends StatelessWidget {
       return ScaffoldPressable(
         onPressed: onTap,
         disabled: disabled,
+        semanticLabel: semanticLabel,
         child: surface,
       );
     }

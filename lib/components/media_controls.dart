@@ -192,12 +192,20 @@ class _MediaControlsState extends State<MediaControls> {
               widget.onSeek != null ? _handleSeekStart : null,
           onChanged: widget.onSeek != null ? _handleSeekChanged : null,
           onChangeEnd: widget.onSeek != null ? _handleSeekEnd : null,
+          semanticFormatterCallback: (double v) {
+            final Duration d = Duration(
+              milliseconds: (v * widget.duration.inMilliseconds).round(),
+            );
+            return '${d.inMinutes}:'
+                '${(d.inSeconds % 60).toString().padLeft(2, '0')}';
+          },
         ),
       ],
     );
 
     final List<Widget> rowChildren = <Widget>[
       ScaffoldPressable(
+        semanticLabel: widget.isPlaying ? 'Pause' : 'Play',
         onPressed: widget.onPlayPause,
         child: Icon(
           widget.isPlaying ? Icons.pause : Icons.play_arrow,
@@ -229,6 +237,7 @@ class _MediaControlsState extends State<MediaControls> {
       ..add(SizedBox(width: dimens.space8))
       ..add(
         ScaffoldPressable(
+          semanticLabel: widget.isMuted ? 'Unmute' : 'Mute',
           onPressed: widget.onToggleMute,
           child: Icon(
             widget.isMuted ? Icons.volume_off : Icons.volume_up,
@@ -237,6 +246,8 @@ class _MediaControlsState extends State<MediaControls> {
       )
       ..add(
         ScaffoldPressable(
+          semanticLabel:
+              widget.isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen',
           onPressed: widget.onToggleFullscreen,
           child: Icon(
             widget.isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
