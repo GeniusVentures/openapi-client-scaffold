@@ -164,6 +164,10 @@ class _MediaControlsState extends State<MediaControls> {
     final dimens = context.dimens;
 
     final double? bufferedFraction = _bufferedFraction;
+    // Keep the buffered layer's height aligned with the Slider's track so
+    // the two bars overlay visually regardless of SliderTheme overrides.
+    final double trackHeight =
+        SliderTheme.of(context).trackHeight ?? 4.0;
 
     final Widget seekbar = Stack(
       alignment: Alignment.centerLeft,
@@ -177,7 +181,7 @@ class _MediaControlsState extends State<MediaControls> {
                 key: const ValueKey<String>('media_controls_buffered'),
                 widthFactor: bufferedFraction,
                 child: Container(
-                  height: 4.0,
+                  height: trackHeight,
                   decoration: BoxDecoration(
                     color: palette.borderSubtle,
                     borderRadius: BorderRadius.circular(dimens.radiusPill),
