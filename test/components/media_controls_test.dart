@@ -134,15 +134,13 @@ void main() {
       ),
     );
 
-    final Offset sliderTopLeft =
-        tester.getTopLeft(find.byType(Slider));
-    final Offset sliderSize =
-        tester.getSize(find.byType(Slider)).bottomCenter(Offset.zero) -
-            sliderTopLeft;
+    final Size sliderSize = tester.getSize(find.byType(Slider));
+    final Offset sliderTopLeft = tester.getTopLeft(find.byType(Slider));
     // Drag from near the start to near the middle.
-    final TestGesture gesture = await tester.startGesture(sliderTopLeft +
-        Offset(4, tester.getSize(find.byType(Slider)).height / 2));
-    await gesture.moveBy(Offset(sliderSize.dx / 4, 0));
+    final Offset start =
+        sliderTopLeft + Offset(4, sliderSize.height / 2);
+    final TestGesture gesture = await tester.startGesture(start);
+    await gesture.moveBy(Offset(sliderSize.width / 4, 0));
     await tester.pump();
     // onSeek must NOT have fired during the drag (D-03).
     expect(seeks, isEmpty);
