@@ -23,7 +23,9 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// in [Flexible] so [TextOverflow.ellipsis] works for long labels.
 ///
 /// When [onTap] is non-null the card is wrapped in a [ScaffoldPressable];
-/// when [disabled] is true a [ScaffoldDisabledOverlay] blocks interaction.
+/// when [disabled] is true, interaction is blocked — either via
+/// [ScaffoldPressable]'s internal disabled state (when [onTap] is set) or
+/// via an explicit [ScaffoldDisabledOverlay] wrapper.
 class MediaCard extends StatelessWidget {
   /// Creates a [MediaCard].
   const MediaCard({
