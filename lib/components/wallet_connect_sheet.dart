@@ -52,16 +52,33 @@ class WalletConnectSheet {
     VoidCallback? onClose,
   }) {
     final String title = _titleFor(sessionState, address);
-    final List<Widget> children = _childrenFor(
-      context,
-      sessionState: sessionState,
-      qrBuilder: qrBuilder,
-      uri: uri,
-      address: address,
-      networkName: networkName,
-      onConnect: onConnect,
-    );
     final Widget? footer = _footerFor(sessionState, onDisconnect);
+
+    // Build children lazily inside the modal route so they receive the
+    // sheet's own BuildContext (not the caller's). This lets qrBuilder
+    // call Navigator.of(sheetContext).pop() to dismiss the sheet, and
+    // keeps Theme.of(sheetContext) reactive to theme changes while the
+    // sheet is open.
+    final List<Widget> children = <Widget>[
+      Builder(
+        builder: (BuildContext sheetContext) {
+          final List<Widget> content = _childrenFor(
+            sheetContext,
+            sessionState: sessionState,
+            qrBuilder: qrBuilder,
+            uri: uri,
+            address: address,
+            networkName: networkName,
+            onConnect: onConnect,
+          );
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: content,
+          );
+        },
+      ),
+    ];
 
     return ResponsiveDrawer.show<T>(
       context: context,
