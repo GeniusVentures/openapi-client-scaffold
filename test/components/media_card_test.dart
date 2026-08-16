@@ -218,7 +218,11 @@ void main() {
       ),
     );
 
-    expect(find.byType(ScaffoldDisabledOverlay), findsWidgets);
+    expect(find.byType(ScaffoldDisabledOverlay), findsOneWidget);
+
+    final ScaffoldPressable pressable =
+        tester.widget(find.byType(ScaffoldPressable));
+    expect(pressable.disabled, isTrue);
 
     await tester.tap(find.byType(MediaCard), warnIfMissed: false);
     await tester.pump();
