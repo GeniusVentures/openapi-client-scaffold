@@ -95,6 +95,7 @@ class WalletConnectSheet {
     required VoidCallback? onConnect,
   }) {
     final TextTheme textTheme = Theme.of(context).textTheme;
+    final dimens = context.dimens;
 
     switch (sessionState) {
       case WalletConnectSessionState.disconnected:
@@ -102,13 +103,13 @@ class WalletConnectSheet {
           if (qrBuilder != null && uri != null) qrBuilder(context, uri),
           if (onConnect != null)
             Padding(
-              padding: const EdgeInsets.only(top: 16),
+              padding: EdgeInsets.only(top: dimens.space8),
               child: ScaffoldPressable(
                 onPressed: onConnect,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: dimens.space8,
+                    vertical: dimens.space4,
                   ),
                   child: Text(
                     'Connect',
@@ -120,7 +121,7 @@ class WalletConnectSheet {
               ),
             ),
           Padding(
-            padding: const EdgeInsets.only(top: 16),
+            padding: EdgeInsets.only(top: dimens.space8),
             child: Text(
               'Scan the QR code with your wallet to connect.',
               style: textTheme.bodyMedium?.copyWith(
@@ -132,14 +133,14 @@ class WalletConnectSheet {
         ];
       case WalletConnectSessionState.connecting:
         return <Widget>[
-          const Center(
+          Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: CircularProgressIndicator(),
+              padding: EdgeInsets.symmetric(vertical: dimens.space12),
+              child: const CircularProgressIndicator(),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 16),
+            padding: EdgeInsets.only(top: dimens.space8),
             child: Text(
               'Awaiting wallet approval…',
               style: textTheme.bodyMedium?.copyWith(
@@ -162,7 +163,7 @@ class WalletConnectSheet {
             ),
           if (networkName != null)
             Padding(
-              padding: const EdgeInsets.only(top: 8),
+              padding: EdgeInsets.only(top: dimens.space4),
               child: ScaffoldBadge(
                 variant: BadgeVariant.text,
                 text: networkName,
@@ -182,12 +183,13 @@ class WalletConnectSheet {
     return Builder(
       builder: (BuildContext context) {
         final TextTheme textTheme = Theme.of(context).textTheme;
+        final dimens = context.dimens;
         return ScaffoldPressable(
           onPressed: onDisconnect,
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
+            padding: EdgeInsets.symmetric(
+              horizontal: dimens.space8,
+              vertical: dimens.space6,
             ),
             child: Text(
               'Disconnect',
