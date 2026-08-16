@@ -21,11 +21,6 @@
 //
 // and `import 'demos/media_controls_demo.dart';` at the top of main.dart.
 // (Registration is owned by Plan 07-04 — do NOT modify main.dart here.)
-//
-// NOTE on imports: Plan 07-04 owns the barrel export for media_controls.
-// To keep this plan scoped to its own files, this demo imports the
-// component directly. Plan 07-04 will switch to the barrel import when it
-// adds the export line.
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 
