@@ -87,5 +87,33 @@ void main() {
       expect(light.lightGreenPrimary, ScaffoldPalette.defaultPalette.lightGreenPrimary);
       expect(light.focusRingColor, ScaffoldPalette.defaultPalette.focusRingColor);
     });
+
+    test('lightPalette covers all tokens consumed by shipped widgets', () {
+      // Tokens consumed by shipped scaffold widgets per 08-UI-SPEC "Color"
+      // section. One isNotNull per token locks the coverage contract so a
+      // missing lightPalette value trips CI before it ships.
+      expect(ScaffoldPalette.lightPalette.surfaceElevated, isNotNull);
+      expect(ScaffoldPalette.lightPalette.deepBlueCardColor, isNotNull);
+      expect(ScaffoldPalette.lightPalette.lightGreenPrimary, isNotNull);
+      expect(ScaffoldPalette.lightPalette.textPrimary, isNotNull);
+      expect(ScaffoldPalette.lightPalette.textSecondary, isNotNull);
+      expect(ScaffoldPalette.lightPalette.borderSubtle, isNotNull);
+      expect(ScaffoldPalette.lightPalette.focusRingColor, isNotNull);
+      expect(ScaffoldPalette.lightPalette.statusSuccess, isNotNull);
+      expect(ScaffoldPalette.lightPalette.statusError, isNotNull);
+      expect(ScaffoldPalette.lightPalette.statusWarningText, isNotNull);
+      expect(ScaffoldPalette.lightPalette.blue500, isNotNull);
+
+      // Surface flip contract: light palette must actually flip the
+      // dominant surface and primary text from their dark values.
+      expect(
+        ScaffoldPalette.lightPalette.surfaceElevated,
+        isNot(equals(ScaffoldPalette.defaultPalette.surfaceElevated)),
+      );
+      expect(
+        ScaffoldPalette.lightPalette.textPrimary,
+        isNot(equals(ScaffoldPalette.defaultPalette.textPrimary)),
+      );
+    });
   });
 }
