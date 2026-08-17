@@ -163,7 +163,7 @@ void main() {
     expect(_badgeText(tester).data, 'New');
   });
 
-  testWidgets('disabled applies 0.4 opacity', (tester) async {
+  testWidgets('disabled applies dimens.disabledOverlayOpacity', (tester) async {
     await _pump(
       tester,
       const ScaffoldBadge(variant: BadgeVariant.dot, disabled: true),
@@ -175,7 +175,10 @@ void main() {
         matching: find.byType(Opacity),
       ),
     );
-    expect(opacity.opacity, 0.4);
+    expect(
+      opacity.opacity,
+      ScaffoldDimens.defaultDimens.disabledOverlayOpacity,
+    );
   });
 
   testWidgets('badgeColor override replaces default lightGreenPrimary', (
