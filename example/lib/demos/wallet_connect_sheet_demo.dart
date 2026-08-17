@@ -3,7 +3,7 @@
 // Exercises both presentation states of WalletConnectSheet:
 //   - disconnected: QR placeholder via a consumer-supplied qrBuilder (D-05)
 //     plus an optional Connect CTA wired to a stub callback.
-//   - connected:    wallet address (truncated via TextOverflow.ellipsis),
+//   - connected:    wallet address (truncated in the middle — head…tail),
 //     a network chip (ScaffoldBadge text variant), and a Disconnect footer
 //     button that pops the sheet.
 import 'package:flutter/material.dart';
