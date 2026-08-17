@@ -165,6 +165,7 @@ void main() {
       await _pump(
         tester,
         const ScaffoldDisclosure(
+          key: Key('caseA'),
           title: 'Header',
           body: Text('Body'),
         ),
@@ -176,6 +177,7 @@ void main() {
       await _pump(
         tester,
         const ScaffoldDisclosure(
+          key: Key('caseB'),
           title: 'Header',
           initiallyExpanded: true,
           highlightWhenExpanded: true,
@@ -189,6 +191,7 @@ void main() {
       await _pump(
         tester,
         const ScaffoldDisclosure(
+          key: Key('caseC'),
           title: 'Header',
           initiallyExpanded: true,
           body: Text('Body'),
