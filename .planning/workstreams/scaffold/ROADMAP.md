@@ -15,13 +15,13 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 ## Milestones
 
 - ✅ **v1.0 Scaffold Shared Source** — Phase 5 (completed 2026-08-09): submodule established as the single shared widget/template source; `frontend_scaffold` package at v0.3.0
-- ⬜ **v1.1 Widget Library** — Phases 6-7: ship 28 widget atoms + ScaffoldMotion utility + 3 template-generated composites as the Core UI Foundation (Phase 6), then media and integration widgets (Phase 7)
+- ✅ **v1.1 Widget Library** — Phases 6-7: ship 28 widget atoms + ScaffoldMotion utility + 3 template-generated composites as the Core UI Foundation (Phase 6), then media and integration widgets (Phase 7)
 
 ## Phases
 
 - [x] **Phase 5: Scaffold Submodule Consolidation** — submodule is the single shared source for GeniusWallet bloc widgets and genius-tube C++ interface templates, consumable via pinned submodule (completed 2026-08-09)
 - [x] **Phase 6: Core UI Foundation** — 28 widget atoms + ScaffoldMotion across 4 dependency-layered waves; atoms ship as plain Dart widgets (runtime-parameterized) except 4 template candidates (FormattedValue, SelectionIndicator, ImagePlaceholder, AnimatedDisplay) + 3 Jinja2-template-generated composites (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar) (completed 2026-08-14)
-- [ ] **Phase 7: Media & Integration Widgets** — MediaCard (consumes ScaffoldBadge badge slots), MediaControls (consumes ScaffoldPressable + ScaffoldTouchTarget), WalletConnectSheet (built on existing BottomDrawer); new media_card.dart.jinja2 template
+- [x] **Phase 7: Media & Integration Widgets** — MediaCard (consumes ScaffoldBadge badge slots), MediaControls (consumes ScaffoldPressable + ScaffoldTouchTarget), WalletConnectSheet (built on existing BottomDrawer); new media_card.dart.jinja2 template
 
 ## Phase Details
 
