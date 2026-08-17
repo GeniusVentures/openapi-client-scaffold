@@ -31,18 +31,18 @@ The full generic widget library is live: 28 atoms + ScaffoldMotion across 4 depe
 
 **Codebase:** `lib/components/` (~30 widgets), `lib/theme/` (tokens, palette, dimens, breakpoints), `templates/components/` (Jinja2 + StrictUndefined fixtures), `example/` (per-widget demos + kitchen sink).
 
-## Next Milestone Goals
+## Current Milestone: v1.2 Atom Extensions
 
-**v1.2 — AI-native additions** (seed: [.planning/atoms-v1.2-additions.md](atoms-v1.2-additions.md)). Coverage analysis for the 19 Beautiful UI components: 7 ready via existing atoms, 8 need thin composites, 4 need new rendering/interaction primitives.
+**Goal:** Extend the scaffold's generic atom library so the primitives support arbitrary composable widgets — streaming text, charts, code, selection-driven actions, chips, disclosures, composers, and extensible table cells — verified against the 19-component Beautiful UI set as the coverage yardstick.
 
-Candidate new primitives:
-- `ScaffoldStreamingRichText` — incremental rich text, inline citations, streaming cursor, response actions
-- `ScaffoldChart` + `ScaffoldChartScrubber` — neutral chart contract, point selection/scrubbing
-- `ScaffoldCodeBlock` — syntax spans, line numbers, streamed lines, selection
-- `ScaffoldSelectionActions` — selection-aware surface + anchored action toolbar
-- Smaller: `ScaffoldChip`/`ChipGroup`, `ScaffoldDisclosure`/`TraceList`, `ScaffoldComposer`, extensible `ScaffoldDataTable` cell builders
+**Target features** (all generic, in `lib/components/`):
 
-Layering: generic atoms in `lib/components/`, AI composites in `lib/ai_components/` consuming typed models + slots.
+- New primitives: `ScaffoldStreamingRichText`, `ScaffoldChart` + `ScaffoldChartScrubber`, `ScaffoldCodeBlock`, `ScaffoldSelectionActions`
+- Smaller additions: `ScaffoldChip`/`ScaffoldChipGroup`, `ScaffoldDisclosure`/`ScaffoldTraceList`, `ScaffoldComposer`, extensible `ScaffoldDataTable` cell builders (`DataColumnConfig<T>` with `cellBuilder`)
+
+**Out of scope for v1.2:** AI-specific composites (`lib/ai_components/` — built in the AI chat app, not the scaffold); HTML generator parity (deprecated, Flutter only).
+
+Seed analysis: [.planning/atoms-v1.2-additions.md](atoms-v1.2-additions.md) — 7/19 Beautiful UI components ready via existing atoms, 8 via thin composites, 4 enabled by the new primitives.
 
 ## Validated Requirements
 
@@ -64,7 +64,7 @@ Layering: generic atoms in `lib/components/`, AI composites in `lib/ai_component
 
 ## Active Requirements
 
-_Populated at next milestone (`/gsd:new-milestone` for v1.2)._
+_Populated during milestone v1.2 requirement definition (this session)._
 
 ## Out of Scope
 
@@ -92,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-17 after v1.1 milestone*
+*Last updated: 2026-08-17 — milestone v1.2 Atom Extensions started*

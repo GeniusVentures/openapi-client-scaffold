@@ -1,20 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Widget Library
-current_phase: 7
-current_phase_name: Media & Integration Widgets
-status: milestone_complete
-stopped_at: v1.1 Widget Library shipped + archived — PR #6 merged, milestones/v1.1-* written, ROADMAP collapsed; ready for v1.2
-last_updated: "2026-08-17T00:00:00.000Z"
-last_activity: 2026-08-17 -- v1.1 milestone complete (Phases 6-7, 10 plans); archived to .planning/milestones/
+milestone: v1.2
+milestone_name: Atom Extensions
+status: planning
+last_updated: "2026-08-17T15:55:56.397Z"
+last_activity: 2026-08-17
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 11
-  completed_plans: 11
-  percent: 100
-workstream: scaffold
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -24,13 +20,14 @@ workstream: scaffold
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.1 Widget Library SHIPPED (2026-08-17, PR #6 → develop) — preparing next milestone v1.2 (AI-native additions, seed: .planning/atoms-v1.2-additions.md)
+**Current focus:** v1.2 Atom Extensions — generic primitives supporting arbitrary composable widgets (streaming rich text, charts, code block, selection actions, chips, disclosures, composer, extensible data table cells); seed: .planning/atoms-v1.2-additions.md
 
 ## Current Position
 
-Milestone: v1.1 Widget Library — COMPLETE (Phases 6-7, 10 plans, 34/34 requirements)
-Status: Milestone shipped and archived; ROADMAP collapsed, archives in .planning/milestones/
-Last activity: 2026-08-17 -- PR #6 merged to develop; v1.1 archived (ROADMAP + REQUIREMENTS + MILESTONES index)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-08-17 — Milestone v1.2 started
 
 ## v1.1 Milestone
 
