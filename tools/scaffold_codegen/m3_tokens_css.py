@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """
-generate_m3_tokens_css.py -- Read design_tokens.json, write m3_tokens.css.
+scaffold_codegen.m3_tokens_css -- Read design_tokens.json, write m3_tokens.css.
 
 Outputs CSS custom properties for all four M3 token categories (color,
 typography, shape, elevation) with light and dark color scheme variants.
 
 Usage
 -----
-    python3 generate_m3_tokens_css.py \\
+    python3 -m scaffold_codegen.m3_tokens_css \\
         --tokens design_tokens.json \\
         --output generated/styles/m3_tokens.css
+
+Requires ``tools/`` on ``PYTHONPATH`` (or an editable install of this package).
 
 CLI
 ---
@@ -22,8 +24,6 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any
-
 
 # ---------------------------------------------------------------------------
 # Kebab-case conversion
@@ -190,7 +190,7 @@ def generate_css(tokens: dict) -> str:
     # Comment header
     lines.append(
         "/* Auto-generated from design_tokens.json "
-        "by generate_m3_tokens_css.py -- do not edit by hand. */"
+        "by scaffold_codegen.m3_tokens_css -- do not edit by hand. */"
     )
     lines.append("")
 

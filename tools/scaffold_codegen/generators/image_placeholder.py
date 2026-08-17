@@ -8,18 +8,15 @@ The template is the source of truth: regenerate and diff against the committed
 ``lib/components/`` files to detect drift.
 
 Usage:
-    python3 scripts/generate_image_placeholder.py
+    python3 -m scaffold_codegen.generators.image_placeholder
 """
 from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
-
-from engine import create_environment, render_template  # noqa: E402
+from scaffold_codegen import DESIGN_TOKENS, LIB_COMPONENTS_DIR, TEMPLATES_DIR
+from scaffold_codegen.engine import create_environment, render_template
 
 VARIANTS = {
     "loading": ("ScaffoldImagePlaceholderLoading", "Loading image"),
@@ -30,13 +27,12 @@ VARIANTS = {
 
 
 def main() -> int:
-    vars_path = ROOT / "templates" / "components" / "image_placeholder_vars.json"
-    tokens_path = ROOT / "design_tokens.json"
+    vars_path = TEMPLATES_DIR / "components" / "image_placeholder_vars.json"
 
     base_vars = json.loads(vars_path.read_text(encoding="utf-8"))
-    tokens = json.loads(tokens_path.read_text(encoding="utf-8"))
+    tokens = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))
 
-    env = create_environment([str(ROOT / "templates")])
+    env = create_environment([str(TEMPLATES_DIR)])
 
     for variant, (class_name, variant_label) in VARIANTS.items():
         context = dict(base_vars)
@@ -45,7 +41,7 @@ def main() -> int:
         context["variant_label"] = variant_label
         context["tokens"] = tokens
         output = (
-            ROOT / "lib" / "components" / f"scaffold_image_placeholder_{variant}.dart"
+            LIB_COMPONENTS_DIR / f"scaffold_image_placeholder_{variant}.dart"
         )
         render_template(
             env,

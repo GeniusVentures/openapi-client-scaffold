@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-generate_api_clients.py
+scaffold_codegen.api_clients
 
 Generates typed API clients from OpenAPI specs using openapi-generator-cli.
 Supports multiple generator targets: dart-dio, typescript-axios, javascript, etc.
@@ -9,9 +9,11 @@ Reads specs from ../api-specs/*_openapi.json (parent project).
 Generates into generated/{language}/{domain}/ (gitignored, never committed).
 
 Usage:
-    python3 generate_api_clients.py                     # all generators, all specs
-    python3 generate_api_clients.py -g typescript-axios # specific generator
-    python3 generate_api_clients.py -g dart-dio -s gsm  # specific generator + spec
+    python3 -m scaffold_codegen.api_clients                     # all generators, all specs
+    python3 -m scaffold_codegen.api_clients -g typescript-axios # specific generator
+    python3 -m scaffold_codegen.api_clients -g dart-dio -s gsm  # specific generator + spec
+
+Requires ``tools/`` on ``PYTHONPATH`` (or an editable install of this package).
 """
 
 import argparse
@@ -21,6 +23,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from scaffold_codegen import REPO_ROOT
 
 # Generator configurations — add new targets here
 GENERATORS = {
@@ -77,8 +80,7 @@ def main():
     )
     args = parser.parse_args()
 
-    script_dir = Path(__file__).resolve().parent
-    scaffold_root = script_dir.parent  # frontend/ submodule root
+    scaffold_root = REPO_ROOT  # frontend/ submodule root
     project_root = scaffold_root.parent  # parent project root
 
     spec_dir = project_root / "api-specs"

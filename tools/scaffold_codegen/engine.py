@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-engine.py — Shared Jinja2 template engine for M3 UI codegen.
+scaffold_codegen.engine — Shared Jinja2 template engine for M3 UI codegen.
 
 Provides a reusable rendering pipeline that any script or CMake target can
 import.  Uses Jinja2's ``StrictUndefined`` so missing template variables
@@ -17,12 +17,14 @@ Public API
 
 CLI
 ---
-    python3 frontend/scaffold/engine.py \\
+    python3 -m scaffold_codegen.engine \\
         --template base/m3_base_layout.jinja2 \\
         --output path/to/output.html \\
-        --template-dir frontend/scaffold/templates/ \\
-        --tokens frontend/scaffold/design_tokens.json \\
+        --template-dir templates/ \\
+        --tokens design_tokens.json \\
         --vars vars.json
+
+Requires ``tools/`` on ``PYTHONPATH`` (or an editable install of this package).
 """
 
 from __future__ import annotations
