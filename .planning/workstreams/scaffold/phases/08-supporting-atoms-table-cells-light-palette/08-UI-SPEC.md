@@ -1,10 +1,11 @@
 ---
 phase: 8
 slug: supporting-atoms-table-cells-light-palette
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-08-17
+reviewed_at: 2026-08-17
 ---
 
 # Phase 8 — UI Design Contract
