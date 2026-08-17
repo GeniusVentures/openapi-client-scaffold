@@ -3,17 +3,6 @@
 // Shows MediaCard in 16:9, 9:16, and 1:1 aspect ratios. The 16:9 section
 // populates all three typed badge slots and a two-item metadataRow to
 // demonstrate the D-01 / D-02 contracts.
-//
-// To wire into the example app, add an entry to example/lib/main.dart's
-// HomePage list:
-//
-//   _DemoTile(
-//     title: 'MediaCard',
-//     subtitle: 'Aspect ratios, typed badge slots, metadataRow',
-//     builder: (_) => const MediaCardDemo(),
-//   ),
-//
-// and `import 'demos/media_card_demo.dart';` at the top of main.dart.
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 

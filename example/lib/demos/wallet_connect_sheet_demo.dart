@@ -6,17 +6,6 @@
 //   - connected:    wallet address (truncated via TextOverflow.ellipsis),
 //     a network chip (ScaffoldBadge text variant), and a Disconnect footer
 //     button that pops the sheet.
-//
-// To wire into the example app, add an entry to example/lib/main.dart's
-// HomePage list:
-//
-//   _DemoTile(
-//     title: 'WalletConnectSheet',
-//     subtitle: 'Reown session sheet — disconnected + connected states',
-//     builder: (_) => const WalletConnectSheetDemo(),
-//   ),
-//
-// and `import 'demos/wallet_connect_sheet_demo.dart';` at the top of main.dart.
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 

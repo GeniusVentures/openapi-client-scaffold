@@ -9,18 +9,6 @@
 // Tapping play/pause toggles `isPlaying` LOCALLY in this demo — the widget
 // itself is render-only, and playback truth lives in the consuming app's
 // playback cubit (D-03).
-//
-// To wire into the example app, add an entry to example/lib/main.dart's
-// HomePage list:
-//
-//   _DemoTile(
-//     title: 'MediaControls',
-//     subtitle: 'Play/pause, seekbar with buffered, mute, fullscreen',
-//     builder: (_) => const MediaControlsDemo(),
-//   ),
-//
-// and `import 'demos/media_controls_demo.dart';` at the top of main.dart.
-// (Registration is owned by Plan 07-04 — do NOT modify main.dart here.)
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 
