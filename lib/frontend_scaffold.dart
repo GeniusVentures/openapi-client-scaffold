@@ -8,7 +8,7 @@
 /// ([ScaffoldPalette] and [ScaffoldDimens]). Host apps override them via
 /// `ThemeData.extensions` (see [scaffoldThemeExtensions]); widgets fall back
 /// to the default palette/dimens when no extension is registered.
-library frontend_scaffold;
+library;
 
 export 'components/action_button.dart';
 export 'components/app_screen_view.dart';
