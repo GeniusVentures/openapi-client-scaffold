@@ -58,8 +58,10 @@ class MediaCard extends StatelessWidget {
   final ScaffoldBadge? bottomRightBadge;
 
   /// Caller-supplied metadata widgets laid out beneath the thumbnail in a
-  /// [Row] with theme spacing. Children should use
-  /// [TextOverflow.ellipsis] for overflow.
+  /// [Row] with theme spacing. Each child is wrapped in [Flexible] by the
+  /// card — do NOT wrap children in [Flexible] or [Expanded] yourself (that
+  /// double-wraps FlexParentData and crashes). Long [Text] children should
+  /// declare `overflow: TextOverflow.ellipsis` + `maxLines: 1`.
   final List<Widget> metadataRow;
 
   /// When non-null, wraps the card in a [ScaffoldPressable].

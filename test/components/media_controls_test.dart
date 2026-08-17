@@ -5,6 +5,7 @@ import 'package:frontend_scaffold/components/media_controls.dart';
 import 'package:frontend_scaffold/components/scaffold_formatted_value_duration.dart';
 import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
+import 'package:frontend_scaffold/components/scaffold_slider.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 Future<void> _pump(WidgetTester tester, Widget child) {
@@ -110,14 +111,12 @@ void main() {
         buffered: Duration(seconds: 8),
       ),
     );
-    // The buffered layer is a FractionallySizedBox keyed with a stable key
-    // so the test can find it deterministically.
-    expect(find.byKey(const ValueKey<String>('media_controls_buffered')),
-        findsOneWidget);
-    final FractionallySizedBox buffered = tester.widget<FractionallySizedBox>(
-      find.byKey(const ValueKey<String>('media_controls_buffered')),
-    );
-    expect(buffered.widthFactor, moreOrLessEquals(0.8, epsilon: 0.001));
+    // The buffered layer is painted inside the ScaffoldSlider track shape
+    // (see scaffold_slider_test.dart for the in-track alignment assertion).
+    // Here we assert the wiring: the buffered fraction reaches the slider.
+    final ScaffoldSlider slider =
+        tester.widget<ScaffoldSlider>(find.byType(ScaffoldSlider));
+    expect(slider.bufferedValue, moreOrLessEquals(0.8, epsilon: 0.001));
   });
 
   testWidgets(
@@ -258,5 +257,60 @@ void main() {
     final SemanticsNode sliderNode =
         tester.getSemantics(find.byType(Slider));
     expect(sliderNode.flagsCollection.isSlider, isTrue);
+  });
+
+  testWidgets(
+      'position label is fixed-width so the seekbar left edge is stable '
+      'across label-width changes (no bounce)', (tester) async {
+    // Regression for UAT: the seekbar previously bounced left/right as the
+    // magnitude-aware position label changed width (M:SS vs H:MM:SS). The
+    // position label must live inside a fixed-width SizedBox whose width is
+    // measured from the ambient text style (not hard-coded).
+    await _pump(
+      tester,
+      const MediaControls(
+        isPlaying: false,
+        position: Duration.zero,
+        duration: Duration(seconds: 10),
+      ),
+    );
+
+    // The position label is the ScaffoldFormattedValueDuration directly
+    // before the Slider in the row. Find its fixed-width SizedBox ancestor.
+    final Finder positionLabel = find.byWidgetPredicate(
+      (Widget w) =>
+          w is ScaffoldFormattedValueDuration &&
+          w.value == Duration.zero,
+    );
+    expect(positionLabel, findsOneWidget);
+
+    final Finder fixedBox = find.ancestor(
+      of: positionLabel,
+      matching: find.byWidgetPredicate(
+        (Widget w) => w is SizedBox && w.width != null && w.width! < 480.0,
+      ),
+    );
+    expect(
+      fixedBox,
+      findsOneWidget,
+      reason: 'position label must be wrapped in a fixed-width SizedBox',
+    );
+
+    // The reserved width must fit the widest label the magnitude-aware
+    // formatter emits for a sub-hour duration (`M:SS`) in bodyLarge, so the
+    // seekbar extent never shifts as the position changes. The position is
+    // clamped to [0, duration], so no sign is reserved.
+    final SizedBox box = tester.widget<SizedBox>(fixedBox);
+    final TextPainter widest = TextPainter(
+      text: TextSpan(
+        text: '0:00',
+        style: Theme.of(tester.element(find.byType(MediaControls)))
+            .textTheme
+            .bodyLarge,
+      ),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    expect(box.width, greaterThanOrEqualTo(widest.width));
   });
 }

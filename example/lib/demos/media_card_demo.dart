@@ -53,12 +53,12 @@ class MediaCardDemo extends StatelessWidget {
                 text: 'HD',
               ),
               metadataRow: <Widget>[
-                Expanded(
-                  child: Text(
-                    'A very long creator-channel-name-that-ellipsizes',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
+                // MediaCard wraps each child in Flexible — do NOT add
+                // Expanded/Flexible here. Just declare ellipsis on the Text.
+                Text(
+                  'A very long creator-channel-name-that-ellipsizes',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
                 Text('12:34'),
               ],

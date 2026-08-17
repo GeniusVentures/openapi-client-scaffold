@@ -16,6 +16,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_formatted_value_duration.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
+import 'package:frontend_scaffold/components/scaffold_slider.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// Material 3 media playback control bar.
@@ -163,48 +164,45 @@ class _MediaControlsState extends State<MediaControls> {
     final palette = context.palette;
     final dimens = context.dimens;
 
-    final double? bufferedFraction = _bufferedFraction;
-    // Keep the buffered layer's height aligned with the Slider's track so
-    // the two bars overlay visually regardless of SliderTheme overrides.
-    final double trackHeight =
-        SliderTheme.of(context).trackHeight ?? 4.0;
+    // Tabular (fixed-pitch) figures for the time labels so the digits never
+    // reflow as the value changes — every digit is the same width, so the
+    // label text is visually stable regardless of alignment. Combined with
+    // the fixed-width label box this eliminates all seekbar jitter.
+    final TextStyle baseLabelStyle =
+        Theme.of(context).textTheme.bodyLarge ?? const TextStyle();
+    final TextStyle timeLabelStyle = baseLabelStyle.copyWith(
+      fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+    );
 
-    final Widget seekbar = Stack(
-      alignment: Alignment.centerLeft,
-      children: <Widget>[
-        // Buffered layer behind the played position.
-        if (bufferedFraction != null)
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: FractionallySizedBox(
-                key: const ValueKey<String>('media_controls_buffered'),
-                widthFactor: bufferedFraction,
-                child: Container(
-                  height: trackHeight,
-                  decoration: BoxDecoration(
-                    color: palette.borderSubtle,
-                    borderRadius: BorderRadius.circular(dimens.radiusPill),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        Slider(
-          value: _sliderValue.clamp(0.0, 1.0),
-          onChangeStart:
-              widget.onSeek != null ? _handleSeekStart : null,
-          onChanged: widget.onSeek != null ? _handleSeekChanged : null,
-          onChangeEnd: widget.onSeek != null ? _handleSeekEnd : null,
-          semanticFormatterCallback: (double v) {
-            final Duration d = Duration(
-              milliseconds: (v * widget.duration.inMilliseconds).round(),
-            );
-            return '${d.inMinutes}:'
-                '${(d.inSeconds % 60).toString().padLeft(2, '0')}';
-          },
-        ),
-      ],
+    // The label width is MEASURED, not hard-coded: format the widest value
+    // the magnitude-aware formatter can emit for this duration (`-H:MM:SS`
+    // when the duration is >= 1 hour, `-M:SS` otherwise) in the actual label
+    // style, and reserve exactly its painted width. The seekbar's extent then
+    // never shifts as the formatted value changes (D-04), and the reservation
+    // tracks the ambient text theme / text scale instead of a magic number.
+    final double labelWidth = _measureTimeLabelWidth(
+      widget.duration,
+      timeLabelStyle,
+    );
+
+    // The seekbar is the composable ScaffoldSlider base widget: its buffered
+    // span is painted INSIDE the track shape using the same track rect as the
+    // played/inactive segments, so the buffered band and the played track
+    // share one coordinate space by construction — no inset math, and the two
+    // can never drift apart under any SliderTheme.
+    final Widget seekbar = ScaffoldSlider(
+      value: _sliderValue,
+      bufferedValue: _bufferedFraction,
+      onChangeStart: widget.onSeek != null ? _handleSeekStart : null,
+      onChanged: widget.onSeek != null ? _handleSeekChanged : null,
+      onChangeEnd: widget.onSeek != null ? _handleSeekEnd : null,
+      semanticFormatterCallback: (double v) {
+        final Duration d = Duration(
+          milliseconds: (v * widget.duration.inMilliseconds).round(),
+        );
+        return '${d.inMinutes}:'
+            '${(d.inSeconds % 60).toString().padLeft(2, '0')}';
+      },
     );
 
     final List<Widget> rowChildren = <Widget>[
@@ -221,19 +219,42 @@ class _MediaControlsState extends State<MediaControls> {
       rowChildren
         ..add(SizedBox(width: dimens.space8))
         ..add(
-          ScaffoldFormattedValueDuration(value: _effectivePosition),
+          // Fixed-width box reserving the exact measured label width, with
+          // tabular figures, so the label text never reflows and the seekbar
+          // extent never shifts (D-04). Right-aligned so the glyphs sit flush
+          // against the seekbar side of the box.
+          SizedBox(
+            width: labelWidth,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: ScaffoldFormattedValueDuration(
+                value: _effectivePosition,
+                style: timeLabelStyle,
+              ),
+            ),
+          ),
         );
     }
 
     rowChildren
-      ..add(SizedBox(width: dimens.space8))
+      ..add(SizedBox(width: dimens.space4))
       ..add(Expanded(child: seekbar));
 
     if (widget.showTimeLabels) {
       rowChildren
-        ..add(SizedBox(width: dimens.space8))
+        ..add(SizedBox(width: dimens.space4))
         ..add(
-          ScaffoldFormattedValueDuration(value: widget.duration),
+          // Fixed-width, left-aligned to mirror the position label.
+          SizedBox(
+            width: labelWidth,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ScaffoldFormattedValueDuration(
+                value: widget.duration,
+                style: timeLabelStyle,
+              ),
+            ),
+          ),
         );
     }
 
@@ -270,5 +291,29 @@ class _MediaControlsState extends State<MediaControls> {
         children: rowChildren,
       ),
     );
+  }
+
+  /// Measures the width of the widest time label this control renders, using
+  /// the ambient label [style]. Reserved so the seekbar's extent never shifts
+  /// as the position label changes magnitude (D-04).
+  ///
+  /// Mirrors the magnitude logic of ScaffoldFormattedValueDuration: at or
+  /// above one hour the widest label is `H:MM:SS`, otherwise `M:SS`. The
+  /// width comes from a [TextPainter] laid out with the real style, so it
+  /// tracks font family, size, and text scale instead of a magic number. The
+  /// position is clamped to [0, duration], so it is never negative and never
+  /// exceeds the duration — no sign or extra digit needs reserving.
+  double _measureTimeLabelWidth(Duration duration, TextStyle style) {
+    final String longest =
+        duration.abs().inHours > 0 ? '0:00:00' : '0:00';
+    final TextPainter painter = TextPainter(
+      text: TextSpan(text: longest, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    // Ceil so the reserved width is a whole pixel: a fractional width beside
+    // integer-sized siblings (48px pressables, 8px spacers) can overflow a
+    // tight Row by a sub-pixel fraction.
+    return painter.width.ceilToDouble();
   }
 }

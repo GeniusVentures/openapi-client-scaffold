@@ -173,8 +173,11 @@ class WalletConnectSheet {
         return <Widget>[
           if (address != null)
             Text(
-              address,
-              overflow: TextOverflow.ellipsis,
+              // Wallet addresses are identified by BOTH their prefix (0x…)
+              // and their checksum tail. End-ellipsis drops the tail, so
+              // truncate in the middle instead: keep the leading and
+              // trailing characters and elide the center.
+              _truncateMiddle(address),
               maxLines: 1,
               style: textTheme.bodyLarge?.copyWith(
                 color: context.palette.textPrimary,
@@ -190,6 +193,32 @@ class WalletConnectSheet {
             ),
         ];
     }
+  }
+
+  /// Number of leading characters kept when middle-truncating an address.
+  static const int _kAddressHeadLength = 6;
+
+  /// Number of trailing characters kept when middle-truncating an address.
+  static const int _kAddressTailLength = 4;
+
+  /// Truncates [value] in the middle, keeping the leading
+  /// [_kAddressHeadLength] and trailing [_kAddressTailLength] characters with
+  /// a single-character ellipsis between them.
+  ///
+  /// Wallet addresses are long hex strings identified by both their `0x`
+  /// prefix and their checksum tail. [TextOverflow.ellipsis] truncates at the
+  /// END for LTR text, which drops the tail — so the connected-state address
+  /// is pre-truncated in the middle instead. Short values (too short to
+  /// truncate meaningfully) are returned unchanged.
+  static String _truncateMiddle(String value) {
+    const int kept = _kAddressHeadLength + _kAddressTailLength;
+    // +1 for the ellipsis itself: only truncate when it actually shortens.
+    if (value.length <= kept + 1) {
+      return value;
+    }
+    return '${value.substring(0, _kAddressHeadLength)}'
+        '…'
+        '${value.substring(value.length - _kAddressTailLength)}';
   }
 
   static Widget? _footerFor(

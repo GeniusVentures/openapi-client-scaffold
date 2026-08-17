@@ -59,6 +59,7 @@ export 'components/scaffold_selection_indicator_radio.dart';
 export 'components/scaffold_selection_indicator_toggle.dart';
 export 'components/scaffold_selectable_surface.dart';
 export 'components/scaffold_skeleton.dart';
+export 'components/scaffold_slider.dart';
 export 'components/scaffold_status_indicator.dart';
 export 'components/scaffold_state_view.dart';
 export 'components/scaffold_state_view_cubit.dart';

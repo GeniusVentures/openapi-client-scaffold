@@ -91,7 +91,7 @@ void main() {
   });
 
   testWidgets(
-      'connected state renders the address with TextOverflow.ellipsis',
+      'connected state renders the address truncated in the MIDDLE',
       (WidgetTester tester) async {
     const String address =
         '0xABCDEF1234567890abcdef1234567890ABCDEF12';
@@ -101,17 +101,11 @@ void main() {
       address: address,
     );
 
-    final Finder addressFinder = find.text(address);
-    expect(addressFinder, findsWidgets);
-    // At least one of the rendered Text widgets must use ellipsis + maxLines 1
-    // (the body copy). The BottomDrawer header also renders the title text.
-    final Iterable<Text> texts =
-        tester.widgetList<Text>(addressFinder);
-    final bool hasEllipsisBody = texts.any(
-      (Text t) =>
-          t.overflow == TextOverflow.ellipsis && t.maxLines == 1,
-    );
-    expect(hasEllipsisBody, isTrue);
+    // Middle truncation keeps the 0x… prefix (6 chars) and checksum tail (4).
+    const String truncated = '0xABCD…EF12';
+    expect(find.text(truncated), findsOneWidget);
+    // The full, untruncated address must NOT be rendered.
+    expect(find.text(address), findsNothing);
   });
 
   testWidgets(
@@ -227,8 +221,9 @@ void main() {
     );
     // Static title — not the address.
     expect(find.text('Wallet'), findsOneWidget);
-    // Address appears exactly once (body), not duplicated in the title.
-    expect(find.text(address), findsOneWidget);
+    // Address appears exactly once (body, middle-truncated), not duplicated
+    // in the title.
+    expect(find.text('0xABCD…EF12'), findsOneWidget);
   });
 
   testWidgets(
