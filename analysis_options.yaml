@@ -1,0 +1,11 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# Kept in sync with example/analysis_options.yaml. Template-derived files under
+# lib/ (see templates/components/*.jinja2) are deliberately NOT excluded — fix
+# lint findings in the template and regenerate, never by hand-editing lib/.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_single_quotes: true

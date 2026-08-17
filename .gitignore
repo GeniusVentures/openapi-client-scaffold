@@ -1,9 +1,15 @@
 generated/
-__pycache__/
-.dart_tool/
-pubspec.lock
-
 build/
 
+# Dart / Flutter
+.dart_tool/
+pubspec.lock
 # Flutter-generated plugin dependency cache
 .flutter-plugins-dependencies
+
+# Python (tools/scaffold_codegen)
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/

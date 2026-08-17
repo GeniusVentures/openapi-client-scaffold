@@ -1,17 +1,49 @@
-# frontend_scaffold_example
+# frontend_scaffold demo gallery
 
-A new Flutter project.
+A runnable gallery for the [`frontend_scaffold`](../) widget library. Each
+screen exercises one widget family against the real theme extensions, so it
+doubles as a visual check when changing a widget or a design token.
 
-## Getting Started
+## Run
 
-This project is a starting point for a Flutter application.
+```bash
+cd example
+flutter pub get
+flutter run -d macos     # or: -d chrome
+```
 
-A few resources to get you started if this is your first Flutter project:
+Committed platform scaffolding covers **macOS and web** only. For any other
+target, run `flutter create --platforms=<platform> .` first.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+The app depends on the parent package by relative path (`path: ../` in
+`pubspec.yaml`), so it always builds the working-tree version of `lib/` — no
+reinstall needed after editing a widget.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## What's in it
+
+The home screen lists every demo, plus two live controls at the top for
+toggling **theme overrides** and **light/dark mode** — useful for confirming a
+widget reads its tokens from `Theme.of(context)` rather than hardcoding values.
+
+| Demo | Covers |
+|---|---|
+| `action_button_demo` | `ActionButton` |
+| `string_button_demo` | `StringButton` |
+| `text_entry_field_demo` | `TextEntryFieldWidget` |
+| `media_card_demo` | `MediaCard` |
+| `media_controls_demo` | `MediaControls`, `ScaffoldSlider` |
+| `responsive_grid_demo` | `ResponsiveGrid`, breakpoints |
+| `page_chrome_demo` | `AppScreenView`, `DesktopBodyContainer` |
+| `bottom_drawer_demo` | Bottom drawer + `SlidingDrawerButton` |
+| `wallet_connect_sheet_demo` | `WalletConnectSheet` |
+| `animations_demo` | `ScaffoldAnimatedDisplay*`, `ScaffoldMotion` |
+| `loading_demo` | `Loading` |
+| `toast_demo` | `showToast` and the toast stack |
+| `tracer_demo` | Tracer animation |
+| `kitchen_sink_demo` | Many atoms on one screen |
+
+## Note
+
+This package is `publish_to: 'none'` and is not part of the published surface —
+it exists for manual verification. Automated coverage lives in the parent's
+`test/` directory (214 tests); the example app itself has no test suite.
