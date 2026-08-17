@@ -78,25 +78,40 @@ class ScaffoldDisclosureDemo extends StatelessWidget {
               style: TextStyle(color: palette.textPrimary),
             ),
             SizedBox(height: dimens.space8),
-            StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-                bool expanded = false;
-                return ScaffoldDisclosure(
-                  title: 'Parent-owned state',
-                  expanded: expanded,
-                  onExpandedChanged: (bool next) {
-                    setState(() => expanded = next);
-                  },
-                  body: Text(
-                    'Expansion truth lives in the parent — this row only '
-                    'fires the callback.',
-                    style: TextStyle(color: palette.textSecondary),
-                  ),
-                );
-              },
-            ),
+            const _ControlledDisclosure(),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Controlled disclosure owning its local expansion state.
+///
+/// Hoists the `expanded` boolean out of the build path so the parent truly
+/// owns the truth — the disclosure only fires the callback.
+class _ControlledDisclosure extends StatefulWidget {
+  const _ControlledDisclosure();
+
+  @override
+  State<_ControlledDisclosure> createState() => _ControlledDisclosureState();
+}
+
+class _ControlledDisclosureState extends State<_ControlledDisclosure> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+
+    return ScaffoldDisclosure(
+      title: 'Parent-owned state',
+      expanded: _expanded,
+      onExpandedChanged: (bool next) => setState(() => _expanded = next),
+      body: Text(
+        'Expansion truth lives in the parent — this row only '
+        'fires the callback.',
+        style: TextStyle(color: palette.textSecondary),
       ),
     );
   }
