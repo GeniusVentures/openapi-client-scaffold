@@ -16,6 +16,20 @@ Future<void> _pump(WidgetTester tester, Widget child) {
   );
 }
 
+Future<void> _pumpLight(WidgetTester tester, Widget child) {
+  return tester.pumpWidget(
+    MaterialApp(
+      theme: ThemeData.light().copyWith(
+        extensions: const <ThemeExtension<dynamic>>[
+          ScaffoldPalette.lightPalette,
+          ScaffoldDimens.defaultDimens,
+        ],
+      ),
+      home: Scaffold(body: Center(child: child)),
+    ),
+  );
+}
+
 Container _badgeContainer(WidgetTester tester) {
   return tester.widget<Container>(
     find.descendant(
@@ -47,7 +61,7 @@ void main() {
     expect(decoration.color, ScaffoldPalette.defaultPalette.lightGreenPrimary);
   });
 
-  testWidgets('count variant renders pill with labelSmall white text', (
+  testWidgets('count variant renders pill with labelSmall dark text on bright fill', (
     tester,
   ) async {
     await _pump(
@@ -65,7 +79,9 @@ void main() {
 
     final Text text = _badgeText(tester);
     expect(text.data, '5');
-    expect(text.style?.color, Colors.white);
+    // lightGreenPrimary (#00EAAE) is a bright fill → on-status color is dark
+    // per the WIDG-46 WCAG-AA remediation.
+    expect(text.style?.color, const Color(0xFF17191E));
   });
 
   testWidgets('count truncates to "99+" beyond maxDigits', (tester) async {
@@ -200,5 +216,115 @@ void main() {
     await _pump(tester, const ScaffoldBadge(variant: BadgeVariant.dot));
 
     expect(tester.getSize(find.byType(ScaffoldBadge)), const Size(8, 8));
+  });
+
+  group('on-status color resolution (WIDG-46)', () {
+    testWidgets(
+      'lightGreenPrimary fill renders dark label under defaultPalette',
+      (tester) async {
+        await _pump(
+          tester,
+          ScaffoldBadge(
+            variant: BadgeVariant.text,
+            text: 'OK',
+            badgeColor: ScaffoldPalette.defaultPalette.lightGreenPrimary,
+          ),
+        );
+
+        expect(_badgeText(tester).style?.color, const Color(0xFF17191E));
+      },
+    );
+
+    testWidgets(
+      'lightGreenPrimary fill renders dark label under lightPalette',
+      (tester) async {
+        await _pumpLight(
+          tester,
+          ScaffoldBadge(
+            variant: BadgeVariant.text,
+            text: 'OK',
+            badgeColor: ScaffoldPalette.lightPalette.lightGreenPrimary,
+          ),
+        );
+
+        expect(_badgeText(tester).style?.color, const Color(0xFF17191E));
+      },
+    );
+
+    testWidgets(
+      'statusError fill renders light label under defaultPalette',
+      (tester) async {
+        await _pump(
+          tester,
+          ScaffoldBadge(
+            variant: BadgeVariant.text,
+            text: 'ERR',
+            badgeColor: ScaffoldPalette.defaultPalette.statusError,
+          ),
+        );
+
+        expect(_badgeText(tester).style?.color, const Color(0xFFFFFFFF));
+      },
+    );
+
+    testWidgets(
+      'statusError fill renders light label under lightPalette',
+      (tester) async {
+        await _pumpLight(
+          tester,
+          ScaffoldBadge(
+            variant: BadgeVariant.text,
+            text: 'ERR',
+            badgeColor: ScaffoldPalette.lightPalette.statusError,
+          ),
+        );
+
+        expect(_badgeText(tester).style?.color, const Color(0xFFFFFFFF));
+      },
+    );
+
+    testWidgets(
+      'icon-only badge with lightGreenPrimary fill renders dark icon glyph',
+      (tester) async {
+        await _pump(
+          tester,
+          ScaffoldBadge(
+            variant: BadgeVariant.icon,
+            icon: Icons.check,
+            badgeColor: ScaffoldPalette.defaultPalette.lightGreenPrimary,
+          ),
+        );
+
+        final Icon icon = tester.widget<Icon>(
+          find.descendant(
+            of: find.byType(ScaffoldBadge),
+            matching: find.byType(Icon),
+          ),
+        );
+        expect(icon.color, const Color(0xFF17191E));
+      },
+    );
+
+    testWidgets(
+      'icon-only badge with statusError fill renders light icon glyph',
+      (tester) async {
+        await _pump(
+          tester,
+          ScaffoldBadge(
+            variant: BadgeVariant.icon,
+            icon: Icons.close,
+            badgeColor: ScaffoldPalette.defaultPalette.statusError,
+          ),
+        );
+
+        final Icon icon = tester.widget<Icon>(
+          find.descendant(
+            of: find.byType(ScaffoldBadge),
+            matching: find.byType(Icon),
+          ),
+        );
+        expect(icon.color, const Color(0xFFFFFFFF));
+      },
+    );
   });
 }
