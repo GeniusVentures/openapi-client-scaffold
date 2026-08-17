@@ -59,11 +59,11 @@ Full phase details, goals, and success criteria: [milestones/v1.1-ROADMAP.md](mi
 **Plans:** 6 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — ScaffoldBadge on-status remediation + light palette token verification (WIDG-46)
-- [ ] 08-02-PLAN.md — DataColumnConfig<T> cellBuilder template extension (WIDG-43)
-- [ ] 08-03-PLAN.md — ScaffoldDisclosure + ScaffoldTraceList atoms (WIDG-41)
-- [ ] 08-04-PLAN.md — ScaffoldChip + ScaffoldChipGroup atoms (WIDG-40)
-- [ ] 08-05-PLAN.md — ScaffoldComposer atom (WIDG-42)
+- [x] 08-01-PLAN.md — ScaffoldBadge on-status remediation + light palette token verification (WIDG-46)
+- [x] 08-02-PLAN.md — DataColumnConfig<T> cellBuilder template extension (WIDG-43)
+- [x] 08-03-PLAN.md — ScaffoldDisclosure + ScaffoldTraceList atoms (WIDG-41)
+- [x] 08-04-PLAN.md — ScaffoldChip + ScaffoldChipGroup atoms (WIDG-40)
+- [x] 08-05-PLAN.md — ScaffoldComposer atom (WIDG-42)
 - [ ] 08-06-PLAN.md — Barrel exports + demo registrations + final gates (WIDG-40, 41, 42 closure)
 **UI hint**: yes
 
