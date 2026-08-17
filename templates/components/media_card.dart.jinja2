@@ -1,4 +1,5 @@
-/// {{ widget_class_name }} -- M3 media card with thumbnail, badge slots, metadata.
+/// {{ widget_class_name }} -- M3 media card with thumbnail, typed badge
+/// slots, and metadata.
 ///
 /// Generated from media_card.dart.jinja2 -- do not edit by hand.
 /// Source schema: templates/components/media_card.dart.jinja2
@@ -31,7 +32,9 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// long labels.
 ///
 /// When [onTap] is non-null the card is wrapped in a [ScaffoldPressable];
-/// when [disabled] is true a [ScaffoldDisabledOverlay] blocks interaction.
+/// when [disabled] is true, interaction is blocked — either via
+/// [ScaffoldPressable]'s internal disabled state (when [onTap] is set) or
+/// via an explicit [ScaffoldDisabledOverlay] wrapper.
 class {{ widget_class_name }} extends StatelessWidget {
   /// Creates a [{{ widget_class_name }}].
   const {{ widget_class_name }}({
@@ -44,9 +47,10 @@ class {{ widget_class_name }} extends StatelessWidget {
     this.metadataRow = const <Widget>[],
     this.onTap,
     this.disabled = false,
+    this.semanticLabel,
   });
 
-  /// Width / height ratio of the thumbnail area.
+  /// Width / height ratio of the thumbnail area (default 16:9).
   final double aspectRatio;
 
   /// Thumbnail image provider; when null the slot renders a plain surface
@@ -63,8 +67,10 @@ class {{ widget_class_name }} extends StatelessWidget {
   final ScaffoldBadge? bottomRightBadge;
 
   /// Caller-supplied metadata widgets laid out beneath the thumbnail in a
-  /// [Row] with theme spacing. Children should use
-  /// [TextOverflow.ellipsis] for overflow.
+  /// [Row] with theme spacing. Each child is wrapped in [Flexible] by the
+  /// card — do NOT wrap children in [Flexible] or [Expanded] yourself (that
+  /// double-wraps FlexParentData and crashes). Long [Text] children should
+  /// declare `overflow: TextOverflow.ellipsis` + `maxLines: 1`.
   final List<Widget> metadataRow;
 
   /// When non-null, wraps the card in a [ScaffoldPressable].
@@ -72,6 +78,11 @@ class {{ widget_class_name }} extends StatelessWidget {
 
   /// When true, blocks interaction via [ScaffoldDisabledOverlay].
   final bool disabled;
+
+  /// Optional accessible name announced by screen readers when [onTap] is
+  /// non-null. Required for cards that render no visible title text
+  /// (WCAG 4.1.2 Name, Role, Value).
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +174,7 @@ class {{ widget_class_name }} extends StatelessWidget {
       return ScaffoldPressable(
         onPressed: onTap,
         disabled: disabled,
+        semanticLabel: semanticLabel,
         child: surface,
       );
     }
