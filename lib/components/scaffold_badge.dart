@@ -119,7 +119,7 @@ class ScaffoldBadge extends StatelessWidget {
     );
 
     if (disabled) {
-      result = Opacity(opacity: 0.4, child: result);
+      result = Opacity(opacity: dimens.disabledOverlayOpacity, child: result);
     }
 
     return result;
