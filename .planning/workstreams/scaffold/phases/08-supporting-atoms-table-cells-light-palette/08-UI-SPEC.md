@@ -55,8 +55,8 @@ Reuse the existing `ScaffoldDimens` scale (2px base step, named by step index).
 |-------|-------|---------------|
 | `space2` | 4px | Chip internal icon↔text gap; badge-to-label gap inside `ScaffoldComposer` action row |
 | `space3` | 6px | (rare) Tight inline gap inside a chip when both icon + status dot present |
-| `space4` | 8px | Default chip horizontal internal padding; disclosure header↔chevron gap; composer badge-row gap |
-| `space6` | 12px | Chip vertical internal padding; disclosure body indent; composer action-button separation |
+| `space4` | 8px | Default chip horizontal AND vertical internal padding (8h × 8v); disclosure header↔chevron gap; composer badge-row gap |
+| `space6` | 12px | Disclosure body indent; composer action-button separation |
 | `space8` | 16px | Default chip-group inter-chip spacing; disclosure item vertical rhythm; composer text-field↔action-row separation; DataTable cell padding (matches existing template) |
 | `space12` | 24px | Section-level padding inside `ScaffoldTraceList` between disclosure groups; composer outer padding |
 
@@ -65,7 +65,7 @@ Reuse the existing `ScaffoldDimens` scale (2px base step, named by step index).
 - Chip min-height is governed by `minTouchTarget` (48px) via `ScaffoldTouchTarget`, not by a new token.
 - Composer action button slots inherit `ScaffoldTouchTarget` 48x48 minimum.
 
-**Multiples-of-4 audit:** all values above (4, 8, 12, 16, 24) are multiples of 4 except `space3` (6px) which is reserved for the rare icon+status-dot chip case and matches the existing dimens scale.
+**Multiples-of-4 audit:** all default paddings and gaps above (4, 8, 12, 16, 24) are multiples of 4. The only sub-multiple-of-4 token, `space3` (6px), is restricted to the rare tight icon+status-dot chip gap and is NOT used as default padding on any Phase 8 widget — the chip's default internal padding is 8h × 8v (`space4` both axes).
 
 ---
 
@@ -78,8 +78,11 @@ Use exactly these four slots; do not introduce additional ones.
 |------|---------|--------|---------------|
 | Body | `textTheme.bodyMedium` | inherited (default 400) | Composer text field, disclosure body content, custom cellBuilder default text when consumer does not override |
 | Label | `textTheme.labelMedium` | inherited (default 500) | `ScaffoldChip` text label, disclosure header title, composer badge labels |
-| Heading | `textTheme.titleSmall` | inherited (default 500) | `ScaffoldTraceList` group headers, disclosure header when emphasized, DataTable column header (matches existing template: `labelLarge` w600) |
+| Heading | `textTheme.titleSmall` | inherited (default 500) | `ScaffoldTraceList` group headers; disclosure header when emphasized |
+| DataTable column header (existing template, locked) | `textTheme.labelLarge` | w600 (existing template — `templates/components/data_table.dart.jinja2` line 245) | DataTable column headers only — locked slot, NOT reused by any new Phase 8 widget |
 | Display | not used in Phase 8 | — | — |
+
+**Heading slot disambiguation:** the new `ScaffoldTraceList` group header uses `titleSmall`. The pre-existing DataTable column header uses `labelLarge` w600 and remains locked to that slot. These are two distinct slots — Phase 8 does NOT consolidate them.
 
 **Table header alignment rule (WIDG-43 contract):**
 - Custom `cellBuilder` widgets inherit `textTheme.bodyMedium` styling by default and align left, matching the built-in string-cell rendering.
@@ -116,7 +119,11 @@ Reuse the existing `ScaffoldPalette` — do NOT introduce new tokens. Phase 8 sh
 **Light palette coverage gap closure (WIDG-46):**
 - `ScaffoldPalette.lightPalette` already exists in source. Phase 8 verifies EVERY widget (existing v1.1 + new v1.2) renders correctly under a default `ThemeData.light()` registered with `ScaffoldPalette.lightPalette` — no consumer override.
 - Any widget that hardcodes a dark-only color (e.g. `Colors.white` for badge text) must use a palette token that has both dark and light values, OR a neutral token whose contrast holds on both surfaces.
-- Specifically: `ScaffoldBadge` text on `lightGreenPrimary` currently uses `Colors.white` — under light palette this must remain readable (verify or switch to `textPrimary` if needed).
+- **REQUIRED Phase 8 remediation — `ScaffoldBadge` hardcoded `Colors.white`:** `lib/components/scaffold_badge.dart` lines 105 and 140 currently hardcode `Colors.white` for the badge label text style and the icon glyph color. Under `lightPalette`, several status fills (notably `lightGreenPrimary` `#00EAAE`, `statusSuccess`, `statusWarningText`) render white-on-light-bright at sub-WCAG-AA contrast. The planner MUST treat this as a required Phase 8 change, not optional polish:
+  - Replace the hardcoded `Colors.white` at line 105 with a palette-resolved "on-status" color (introduce `onStatus` semantics by resolving per-variant from the badge's fill — e.g. dark text `palette.textPrimary` on bright fills such as `lightGreenPrimary` / `statusSuccess` / `statusWarningText`, and light text on dark fills such as `statusError` / `blue500`).
+  - Replace the hardcoded `Colors.white` at line 140 with the same resolved on-status color.
+  - The resolution logic must live in `ScaffoldBadge` (not the consumer) so badges render correctly in BOTH palettes without consumer overrides.
+  - Acceptance: `ScaffoldBadge` passes WCAG AA (4.5:1) for every `BadgeVariant` × every status fill × both `defaultPalette` and `lightPalette`.
 
 ---
 
@@ -148,9 +155,9 @@ Atoms are domain-agnostic (locked constraint). Atoms ship with NO hardcoded copy
 |----------|----------|
 | Shape | Pill — `BorderRadius.circular(dimens.radiusPill)` (48px) |
 | Fill | Default: `palette.deepBlueCardColor`. Selected: same fill + 2px `palette.lightGreenPrimary` border (NOT a fill change — preserves 60/30/10). |
-| Padding | `EdgeInsets.symmetric(horizontal: dimens.space4, vertical: dimens.space3)` — 8h x 6v |
+| Padding | `EdgeInsets.symmetric(horizontal: dimens.space4, vertical: dimens.space4)` — 8h × 8v |
 | Internal gap | `dimens.space2` (4px) between leading icon, label, status indicator, trailing slot |
-| Min size | `ScaffoldTouchTarget` enforced (48x48 hit area; visual may be smaller) |
+| Min size | `ScaffoldTouchTarget` enforced (48x48 hit area; visual may be smaller). With 8h × 8v internal padding, the touch-target wrapper supplies the 48px minimum — the contract does not rely on padding to reach 48px. |
 | Press behavior | `ScaffoldPressable` — inherits hover (8% `textPrimary`), press (12% `textPrimary`), focus ring, disabled overlay |
 | Status slot | Optional `ScaffoldStatusIndicator` — positioned trailing, after label |
 | Leading slot | Optional icon (16px) or avatar-sized widget |
@@ -222,6 +229,7 @@ Atoms are domain-agnostic (locked constraint). Atoms ship with NO hardcoded copy
 | Scope | Verify + complete `ScaffoldPalette.lightPalette` so every scaffold widget renders correctly under a default light `ThemeData` |
 | Token coverage | All 22 tokens in `ScaffoldPalette` have light values |
 | Existing gap | `lightPalette` already exists in `scaffold_palette.dart` — Phase 8 confirms every widget consumes palette tokens (no hardcoded colors) |
+| Required remediation | `ScaffoldBadge` `Colors.white` at lines 105 and 140 of `lib/components/scaffold_badge.dart` MUST be replaced with palette-resolved on-status color (see Color section "REQUIRED Phase 8 remediation" above) |
 | Verification | Per-widget golden or screenshot test under `ThemeData.light()` + `ScaffoldPalette.lightPalette` |
 | Contrast | All text/background pairs meet WCAG AA (4.5:1 for body, 3:1 for large text) in BOTH palettes |
 
@@ -293,7 +301,9 @@ Atoms are domain-agnostic (locked constraint). Atoms ship with NO hardcoded copy
 | Disabled state | `lib/components/scaffold_disabled_overlay.dart` — 40% opacity via `dimens.disabledOverlayOpacity` |
 | Status colors | `lib/components/scaffold_status_indicator.dart` — 5-variant mapping to palette tokens |
 | Badge sizing | `lib/components/scaffold_badge.dart` — 8px dot, 24px icon circle, pill text |
+| Badge hardcoded white (Phase 8 remediation target) | `lib/components/scaffold_badge.dart` lines 105, 140 — required WIDG-46 fix |
 | DataTable cell padding/typography | `templates/components/data_table.dart.jinja2` lines 204-310 |
+| DataTable column-header slot (`labelLarge` w600) | `templates/components/data_table.dart.jinja2` line 245 — locked |
 | DataTable existing strings | `templates/components/data_table.dart.jinja2` lines 169, 183 ("Table load failed", "No items to display") |
 | Theme consumption rule | `STATE.md` "All v1.1 widgets consume only `Theme.of(context)`" |
 | Domain-agnostic rule | `REQUIREMENTS.md` Out of Scope + `atoms-v1.2-additions.md` owner note 2026-08-17 |
