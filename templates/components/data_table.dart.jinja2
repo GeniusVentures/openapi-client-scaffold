@@ -197,8 +197,9 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
             );
           }
 
-          final int totalPages =
-              (widget.items.length / _rowsPerPage).ceil().clamp(1, 999999);
+          final int totalPages = widget.items.isEmpty
+              ? 1
+              : (widget.items.length / _rowsPerPage).ceil();
           final int currentPage =
               state.currentPage.clamp(0, totalPages - 1);
           final int start = currentPage * _rowsPerPage;
