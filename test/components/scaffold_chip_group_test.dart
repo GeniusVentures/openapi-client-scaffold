@@ -204,8 +204,10 @@ void main() {
     expect(wrap.runSpacing, ScaffoldDimens.defaultDimens.space4);
   });
 
-  // Test 17 — Semantics role: radiogroup for single, group for multi.
-  testWidgets('single-select exposes radiogroup role; multi exposes group',
+  // Test 17 — Semantics role: radioGroup for single, list for multi.
+  // Flutter SDK exposes `radioGroup` (camelCase) and has no generic `group`
+  // role — multi-select uses `list` as the closest container role.
+  testWidgets('single-select exposes radioGroup role; multi exposes list',
       (tester) async {
     await _pump(
       tester,
@@ -221,11 +223,11 @@ void main() {
         of: find.byType(ScaffoldChipGroup),
         matching: find.byWidgetPredicate(
           (Widget w) =>
-              w is Semantics && w.properties.role == SemanticsRole.radiogroup,
+              w is Semantics && w.properties.role == SemanticsRole.radioGroup,
         ),
       ),
     ).first;
-    expect(singleNode.properties.role, SemanticsRole.radiogroup);
+    expect(singleNode.properties.role, SemanticsRole.radioGroup);
 
     await _pump(
       tester,
@@ -242,11 +244,11 @@ void main() {
         of: find.byType(ScaffoldChipGroup),
         matching: find.byWidgetPredicate(
           (Widget w) =>
-              w is Semantics && w.properties.role == SemanticsRole.group,
+              w is Semantics && w.properties.role == SemanticsRole.list,
         ),
       ),
     ).first;
-    expect(multiNode.properties.role, SemanticsRole.group);
+    expect(multiNode.properties.role, SemanticsRole.list);
   });
 
   // Test 18 — renders under lightPalette without exception.
