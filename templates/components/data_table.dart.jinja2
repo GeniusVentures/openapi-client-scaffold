@@ -58,6 +58,7 @@ class DataColumnConfig {
     required this.label,
     required this.accessor,
     this.sortable = true,
+    this.cellBuilder,
   });
 
   /// Display label shown in the column header.
@@ -68,6 +69,15 @@ class DataColumnConfig {
 
   /// Whether this column supports sort-by-click.
   final bool sortable;
+
+  /// Optional custom cell renderer. When non-null, the cell renders
+  /// `cellBuilder(context, item)` inside the default `DataCell`. Custom
+  /// builders MUST NOT add their own outer padding — they inherit the
+  /// DataTable's default cell padding so they align with string cells
+  /// (WIDG-43 contract). Sort behavior is driven by [accessor] regardless
+  /// of [cellBuilder] presence.
+  final Widget Function(BuildContext context, {{ data_type_name }} item)?
+      cellBuilder;
 }
 
 /// Standalone M3 data table widget with sort, row selection, and pagination.
@@ -306,7 +316,15 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
                           ),
 {% for col in columns %}
                           DataCell(
+{% if col.cellBuilder is defined and col.cellBuilder %}
+                            Builder(
+                              builder: (BuildContext cellContext) =>
+                                  widget.columns[{{ loop.index0 }}]
+                                      .cellBuilder!(cellContext, item),
+                            ),
+{% else %}
                             Text(item.{{ col.accessor }}?.toString() ?? ''),
+{% endif %}
                           ),
 {% endfor %}
                         ],
