@@ -9,11 +9,17 @@ doubles as a visual check when changing a widget or a design token.
 ```bash
 cd example
 flutter pub get
-flutter run -d macos     # or: -d chrome
+flutter run -d linux     # or: -d macos, -d chrome
 ```
 
-Committed platform scaffolding covers **macOS and web** only. For any other
-target, run `flutter create --platforms=<platform> .` first.
+Committed platform scaffolding covers **Linux, macOS, and web**. For any other
+target, run `flutter create --platforms=<platform> .` first — and if you do,
+check `git diff .metadata` afterwards, since `flutter create` rewrites the
+platform list rather than appending to it.
+
+Linux desktop needs the GTK toolchain (`flutter doctor` should show
+"Linux toolchain — develop for Linux desktop"); on Debian/Ubuntu/Mint that is
+`clang cmake ninja-build pkg-config libgtk-3-dev`.
 
 The app depends on the parent package by relative path (`path: ../` in
 `pubspec.yaml`), so it always builds the working-tree version of `lib/` — no
