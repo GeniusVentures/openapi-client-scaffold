@@ -1,5 +1,5 @@
 {
-  "_comment": "Fixture variables for standalone rendering of formatted_value.dart.jinja2. The representative variant (number) renders a single class; scripts/generate_formatted_value.py overrides `variant` and `widget_class_name` once per variant to emit the six per-variant files.",
+  "_comment": "Fixture variables for standalone rendering of formatted_value.dart.jinja2. The representative variant (number) renders a single class; scaffold_codegen.generators.formatted_value overrides `variant` and `widget_class_name` once per variant to emit the six per-variant files.",
   "widget_class_name": "ScaffoldFormattedValueNumber",
   "variant": "number",
   "generator_version": "0.4.0"

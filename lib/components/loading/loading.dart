@@ -13,11 +13,11 @@ class Loading extends StatelessWidget {
   final Color? rightDotColor;
 
   const Loading({
-    Key? key,
+    super.key,
     this.text,
     this.leftDotColor,
     this.rightDotColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class Loading extends StatelessWidget {
             size: 50,
           ),
           AutoSizeText(
-            text ?? "",
+            text ?? '',
             style: const TextStyle(fontSize: 24),
           )
         ]);
