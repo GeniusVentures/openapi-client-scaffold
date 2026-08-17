@@ -100,7 +100,7 @@ class _ScaffoldComposerState extends State<ScaffoldComposer> {
         isDense: true,
       ),
       minLines: 1,
-      maxLines: widget.maxLines,
+      maxLines: widget.maxLines ?? 1,
       enabled: !widget.disabled,
       onSubmitted: (String value) {
         widget.onSubmit?.call(value);
