@@ -63,6 +63,36 @@ class ScaffoldBadge extends StatelessWidget {
   /// `3` → "999+").
   final int maxDigits;
 
+  /// WCAG-AA on-status luminance threshold. Fills whose
+  /// [Color.computeLuminance] exceeds this value are treated as "bright"
+  /// and receive [_kOnStatusDark] text/icon; fills at or below receive
+  /// [_kOnStatusLight]. Calibrated so that brand-bright fills like
+  /// `lightGreenPrimary` (#00EAAE), `statusSuccess`, and
+  /// `statusWarningText` land on the dark side, while dark fills like
+  /// `statusError` (#FF4D4D / #D13438) and `blue500` land on the light
+  /// side under BOTH [ScaffoldPalette.defaultPalette] and
+  /// [ScaffoldPalette.lightPalette].
+  static const double _kOnStatusLuminanceThreshold = 0.40;
+
+  /// On-status color used on bright fills (matches light-mode
+  /// `palette.textPrimary` so badge text harmonizes with surrounding body
+  /// text in either palette).
+  static const Color _kOnStatusDark = Color(0xFF17191E);
+
+  /// On-status color used on dark fills.
+  static const Color _kOnStatusLight = Color(0xFFFFFFFF);
+
+  /// Resolves the on-status color for a given badge [fill] so the label
+  /// text and icon glyph meet WCAG AA (4.5:1) against the fill in both
+  /// palettes. The resolution lives inside [ScaffoldBadge] (D-10) so
+  /// badges render correctly under [ScaffoldPalette.defaultPalette] and
+  /// [ScaffoldPalette.lightPalette] without consumer overrides.
+  static Color _resolveOnStatusColor(Color fill) {
+    return fill.computeLuminance() > _kOnStatusLuminanceThreshold
+        ? _kOnStatusDark
+        : _kOnStatusLight;
+  }
+
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
@@ -102,7 +132,7 @@ class ScaffoldBadge extends StatelessWidget {
     Color resolvedBadgeColor,
   ) {
     final TextStyle? labelStyle = textTheme.labelSmall?.copyWith(
-      color: Colors.white,
+      color: _resolveOnStatusColor(resolvedBadgeColor),
     );
 
     switch (variant) {
@@ -137,7 +167,11 @@ class ScaffoldBadge extends StatelessWidget {
             shape: BoxShape.circle,
             color: resolvedBadgeColor,
           ),
-          child: Icon(icon, size: 16, color: Colors.white),
+          child: Icon(
+            icon,
+            size: 16,
+            color: _resolveOnStatusColor(resolvedBadgeColor),
+          ),
         );
       case BadgeVariant.text:
         return Container(

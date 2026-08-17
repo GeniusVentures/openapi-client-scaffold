@@ -61,7 +61,7 @@ void main() {
     expect(decoration.color, ScaffoldPalette.defaultPalette.lightGreenPrimary);
   });
 
-  testWidgets('count variant renders pill with labelSmall white text', (
+  testWidgets('count variant renders pill with labelSmall dark text on bright fill', (
     tester,
   ) async {
     await _pump(
@@ -79,7 +79,9 @@ void main() {
 
     final Text text = _badgeText(tester);
     expect(text.data, '5');
-    expect(text.style?.color, Colors.white);
+    // lightGreenPrimary (#00EAAE) is a bright fill → on-status color is dark
+    // per the WIDG-46 WCAG-AA remediation.
+    expect(text.style?.color, const Color(0xFF17191E));
   });
 
   testWidgets('count truncates to "99+" beyond maxDigits', (tester) async {
