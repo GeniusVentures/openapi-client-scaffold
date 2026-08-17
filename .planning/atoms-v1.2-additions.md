@@ -160,10 +160,11 @@ The atoms should know nothing about agents, prompts, suppliers, flavors, or sour
 
 ## Flutter versus HTML
 
-**Deprecated for v1.2 (owner note, 2026-08-17):** the HTML generator side is
-out of scope for this milestone and likely deprecated for future versions.
-v1.2 targets Flutter only; the "Current HTML generator" gap noted below is
-not v1.2 work.
+**Deferred for v1.2 (owner note, 2026-08-17):** the HTML generator side is
+out of scope for this milestone but **reserved for a future version** — HTML
+template parity with the Flutter atom library remains planned work. v1.2
+targets Flutter only; the "Current HTML generator" gap noted below is not
+v1.2 work.
 
 * **Flutter:** Yes, the whole set is feasible with the additions above.
 * **Existing Flutter atoms only:** No; four components need substantial new primitives and eight need thin helpers.
