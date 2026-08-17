@@ -12,6 +12,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 
+/// Height of the stage `Container` wrapping each `MediaControls` scenario,
+/// in logical pixels. Tall enough to host the controls at the bottom edge
+/// without clipping the press halo.
+const double _kDemoStageHeight = 120;
+
 /// Demo page for the Phase 7 MediaControls widget.
 class MediaControlsDemo extends StatefulWidget {
   const MediaControlsDemo({super.key});
@@ -61,7 +66,7 @@ class _MediaControlsDemoState extends State<MediaControlsDemo> {
             SizedBox(height: dimens.space8),
             Container(
               color: palette.deepBlueTertiary,
-              height: 120,
+              height: _kDemoStageHeight,
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: MediaControls(
@@ -91,7 +96,7 @@ class _MediaControlsDemoState extends State<MediaControlsDemo> {
             SizedBox(height: dimens.space8),
             Container(
               color: palette.deepBlueTertiary,
-              height: 120,
+              height: _kDemoStageHeight,
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: MediaControls(
@@ -121,7 +126,7 @@ class _MediaControlsDemoState extends State<MediaControlsDemo> {
             SizedBox(height: dimens.space8),
             Container(
               color: palette.deepBlueTertiary,
-              height: 120,
+              height: _kDemoStageHeight,
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: MediaControls(

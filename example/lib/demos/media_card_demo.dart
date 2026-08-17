@@ -6,6 +6,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
 
+/// Width of the narrow (9:16) and square (1:1) demo cards, in logical
+/// pixels. Keeps the demo section compact on desktop while wide enough for
+/// the metadata row to be legible.
+const double _kDemoCardWidth = 180;
+
 /// Demo showing [MediaCard] in 16:9 / 9:16 / 1:1 with badge and
 /// metadataRow compositions.
 class MediaCardDemo extends StatelessWidget {
@@ -60,7 +65,7 @@ class MediaCardDemo extends StatelessWidget {
                 style: TextStyle(color: palette.textPrimary)),
             SizedBox(height: dimens.space8),
             const SizedBox(
-              width: 180,
+              width: _kDemoCardWidth,
               child: MediaCard(
                 aspectRatio: 9 / 16,
                 metadataRow: <Widget>[Text('Shorts')],
@@ -74,7 +79,7 @@ class MediaCardDemo extends StatelessWidget {
                 style: TextStyle(color: palette.textPrimary)),
             SizedBox(height: dimens.space8),
             SizedBox(
-              width: 180,
+              width: _kDemoCardWidth,
               child: MediaCard(
                 aspectRatio: 1.0,
                 onTap: () {},
