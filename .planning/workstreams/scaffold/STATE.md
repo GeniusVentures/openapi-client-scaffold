@@ -4,10 +4,10 @@ milestone: v1.1
 milestone_name: Widget Library
 current_phase: 7
 current_phase_name: Media & Integration Widgets
-status: shipped
-stopped_at: Phase 07 shipped — UAT 7/7, verification 6/6, code review 0 critical (8/9 findings fixed); PR opened to develop
+status: milestone_complete
+stopped_at: v1.1 Widget Library shipped + archived — PR #6 merged, milestones/v1.1-* written, ROADMAP collapsed; ready for v1.2
 last_updated: "2026-08-17T00:00:00.000Z"
-last_activity: 2026-08-17 -- Phase 07 shipped (UAT + verification + code review green); PR to develop
+last_activity: 2026-08-17 -- v1.1 milestone complete (Phases 6-7, 10 plans); archived to .planning/milestones/
 progress:
   total_phases: 3
   completed_phases: 3
@@ -24,14 +24,13 @@ workstream: scaffold
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.1 Widget Library — ship the Core UI Foundation (28 widget atoms + ScaffoldMotion) in Phase 6, then Media & Integration widgets in Phase 7
+**Current focus:** v1.1 Widget Library SHIPPED (2026-08-17, PR #6 → develop) — preparing next milestone v1.2 (AI-native additions, seed: .planning/atoms-v1.2-additions.md)
 
 ## Current Position
 
-Phase: 7 — Media & Integration Widgets
-Plan: 4 plans (07-01..07-04) across 2 waves — ALL COMPLETE
-Status: Phase complete — analyzer + test gates green; ready for verification
-Last activity: 2026-08-15 -- Phase 07 plan 04 (final wiring + gate) executed; commits 3c70e16, 54680d0, 42d06f7; 208/208 tests passing
+Milestone: v1.1 Widget Library — COMPLETE (Phases 6-7, 10 plans, 34/34 requirements)
+Status: Milestone shipped and archived; ROADMAP collapsed, archives in .planning/milestones/
+Last activity: 2026-08-17 -- PR #6 merged to develop; v1.1 archived (ROADMAP + REQUIREMENTS + MILESTONES index)
 
 ## v1.1 Milestone
 
@@ -80,7 +79,7 @@ Last activity: 2026-08-15 -- Phase 07 plan 04 (final wiring + gate) executed; co
 
 ## Session Continuity
 
-**Last session:** 2026-08-15
-**Stopped at:** Phase 07 complete — all 4 plans shipped. Plan 07-04 (final wiring + gate) added media_controls + wallet_connect_sheet barrel exports, registered three demos in example/lib/main.dart, switched direct-import demos to the barrel, and confirmed full-package `dart analyze --fatal-infos` exit 0 and `flutter test` exit 0 (208/208 passing). SUMMARY at `.planning/workstreams/scaffold/phases/07-media-integration-widgets/07-04-SUMMARY.md`
-**Resume file:** None — Phase 07 complete
-**Next action:** `/gsd:verify-phase 7 --ws scaffold` (or equivalent phase-verification step) to validate Phase 7 against REQUIREMENTS.md, then proceed to next milestone planning
+**Last session:** 2026-08-17
+**Stopped at:** v1.1 milestone complete — Phase 7 shipped (UAT 7/7, verification 6/6, review 0 critical), PR #6 merged to develop, milestone archived to .planning/milestones/v1.1-*
+**Resume file:** None — milestone complete
+**Next action:** `/gsd:new-milestone` for v1.2 (AI-native additions) — seed scope at .planning/atoms-v1.2-additions.md

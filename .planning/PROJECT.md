@@ -23,18 +23,32 @@ The single shared source for Genius Network Flutter widgets, M3 theme infrastruc
 - **NOT** a state management framework — providers/blocs live in consuming apps
 - **NOT** a backend — no server-side code, no database
 
-## Current Milestone: v1.1 Widget Library
+## Current State
 
-**Goal:** Ship widget implementations for templates that exist but have no `lib/` counterpart, plus MediaCard/MediaControls for genius-tube Phase 2 consumption.
+**Shipped: v1.1 Widget Library (2026-08-17)** — [archive](milestones/v1.1-ROADMAP.md) · [MILESTONES.md](MILESTONES.md)
 
-**Target features:**
-- ScaffoldCard widget (from card.dart.jinja2)
-- ScaffoldStateView widget (from state.dart.jinja2)
-- ScaffoldSearchBar widget (from search_bar.dart.jinja2)
-- MediaCard template + widget (aspect ratio + badge slots + metadata)
-- MediaControls widget (play/pause/seekbar/volume/fullscreen)
-- WalletConnectSheet (Reown session UI, reusable by any consumer app)
-- ScaffoldBadge widget (icon + label chip)
+The full generic widget library is live: 28 atoms + ScaffoldMotion across 4 dependency waves, 3 template-generated composites (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar), and the media/integration set (MediaCard, MediaControls + composable ScaffoldSlider, WalletConnectSheet). 214/214 widget tests, `dart analyze --fatal-infos` clean. All widgets consume only `Theme.of(context)` — no Riverpod, no GeniusTheme, zero app-specific logic.
+
+**Codebase:** `lib/components/` (~30 widgets), `lib/theme/` (tokens, palette, dimens, breakpoints), `templates/components/` (Jinja2 + StrictUndefined fixtures), `example/` (per-widget demos + kitchen sink).
+
+## Next Milestone Goals
+
+**v1.2 — AI-native additions** (seed: [.planning/atoms-v1.2-additions.md](atoms-v1.2-additions.md)). Coverage analysis for the 19 Beautiful UI components: 7 ready via existing atoms, 8 need thin composites, 4 need new rendering/interaction primitives.
+
+Candidate new primitives:
+- `ScaffoldStreamingRichText` — incremental rich text, inline citations, streaming cursor, response actions
+- `ScaffoldChart` + `ScaffoldChartScrubber` — neutral chart contract, point selection/scrubbing
+- `ScaffoldCodeBlock` — syntax spans, line numbers, streamed lines, selection
+- `ScaffoldSelectionActions` — selection-aware surface + anchored action toolbar
+- Smaller: `ScaffoldChip`/`ChipGroup`, `ScaffoldDisclosure`/`TraceList`, `ScaffoldComposer`, extensible `ScaffoldDataTable` cell builders
+
+Layering: generic atoms in `lib/components/`, AI composites in `lib/ai_components/` consuming typed models + slots.
+
+## Validated Requirements
+
+- ✓ SUB-01..03 — submodule as single shared source (v1.0)
+- ✓ WIDG-01..28 — 28 atoms + ScaffoldMotion + 3 composites (v1.1, Phase 6)
+- ✓ WIDG-29..31 — MediaCard, MediaControls, WalletConnectSheet (v1.1, Phase 7)
 
 ## Key Design Decisions
 
@@ -45,10 +59,12 @@ The single shared source for Genius Network Flutter widgets, M3 theme infrastruc
 - **Generated code is never committed** — D-16, CI regenerates and diffs
 - **Templates use Jinja2 `StrictUndefined`** — missing variables fail loudly
 - **Neutral generic package** — zero brand names in `lib/`/`example/`
+- **Atoms are primitives, composites are recipes** — composites are template-generated compositions of atoms (v1.1)
+- **Composable base widgets over monoliths** — ScaffoldSlider extracted so MediaControls composes rather than embeds slider logic (v1.1, Phase 7 UAT)
 
 ## Active Requirements
 
-_Will be populated by milestone v1.1 requirements._
+_Populated at next milestone (`/gsd:new-milestone` for v1.2)._
 
 ## Out of Scope
 
@@ -56,6 +72,7 @@ _Will be populated by milestone v1.1 requirements._
 - State management (providers/blocs/cubits — consumers own their state)
 - Backend integration (API clients, sockets)
 - Platform channels (FFI is the consuming app's concern)
+- Business-domain widgets in atoms — AI composites accept typed models/slots; atoms know nothing about agents, prompts, or sources (v1.2 boundary)
 
 ## Evolution
 
@@ -75,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-09 — milestone v1.1 initialized*
+*Last updated: 2026-08-17 after v1.1 milestone*
