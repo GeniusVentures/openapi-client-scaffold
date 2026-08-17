@@ -181,6 +181,7 @@ class _MediaControlsState extends State<MediaControls> {
     // never shifts as the formatted value changes (D-04), and the reservation
     // tracks the ambient text theme / text scale instead of a magic number.
     final double labelWidth = _measureTimeLabelWidth(
+      context,
       widget.duration,
       timeLabelStyle,
     );
@@ -294,22 +295,37 @@ class _MediaControlsState extends State<MediaControls> {
   }
 
   /// Measures the width of the widest time label this control renders, using
-  /// the ambient label [style]. Reserved so the seekbar's extent never shifts
-  /// as the position label changes magnitude (D-04).
+  /// the ambient label [style] and the ambient text scaler from [context].
+  /// Reserved so the seekbar's extent never shifts as the position label
+  /// changes magnitude (D-04).
   ///
   /// Mirrors the magnitude logic of ScaffoldFormattedValueDuration: at or
   /// above one hour the widest label is `H:MM:SS`, otherwise `M:SS`. The
-  /// width comes from a [TextPainter] laid out with the real style, so it
-  /// tracks font family, size, and text scale instead of a magic number. The
-  /// position is clamped to [0, duration], so it is never negative and never
-  /// exceeds the duration — no sign or extra digit needs reserving.
-  double _measureTimeLabelWidth(Duration duration, TextStyle style) {
+  /// formatter prints hours unpadded, so durations of 10+ hours widen the
+  /// label by a digit (`HH:MM:SS`); the seed mirrors that so the reservation
+  /// covers it. The width comes from a [TextPainter] laid out with the real
+  /// style AND the ambient textScaler, so it tracks font family, size, and
+  /// accessibility text scale instead of a magic number. The position is
+  /// clamped to [0, duration], so it is never negative and never exceeds the
+  /// duration — no sign or extra digit needs reserving.
+  double _measureTimeLabelWidth(
+    BuildContext context,
+    Duration duration,
+    TextStyle style,
+  ) {
+    final int hours = duration.abs().inHours;
+    // ScaffoldFormattedValueDuration prints hours unpadded. Reserve for the
+    // actual magnitude: 0 -> 'M:SS', 1..9 -> 'H:MM:SS', 10+ -> 'HH:MM:SS'.
     final String longest =
-        duration.abs().inHours > 0 ? '0:00:00' : '0:00';
+        hours > 9 ? '00:00:00' : (hours > 0 ? '0:00:00' : '0:00');
     final TextPainter painter = TextPainter(
       text: TextSpan(text: longest, style: style),
       maxLines: 1,
       textDirection: TextDirection.ltr,
+      // Mirror the ambient text scaler so the reservation matches what the
+      // Text widget inside ScaffoldFormattedValueDuration will actually
+      // paint under accessibility text scaling.
+      textScaler: MediaQuery.textScalerOf(context),
     )..layout();
     // Ceil so the reserved width is a whole pixel: a fractional width beside
     // integer-sized siblings (48px pressables, 8px spacers) can overflow a
