@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
 status: executing
-stopped_at: Phase 8 UI-SPEC approved
+stopped_at: Phase 8 wave 1 complete (5/6 plans), wave 2 (08-06) dispatching
 last_updated: "2026-08-17T22:17:24.016Z"
-last_activity: 2026-08-17 -- Phase 8 planning complete
+last_activity: 2026-08-17 -- Phase 8 wave 1 executed (5 plans, 269/269 tests, analyze clean)
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 6
-  completed_plans: 0
-  percent: 0
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: Not started (roadmap created, awaiting plan-phase)
-Plan: —
-Status: Ready to execute
-Last activity: 2026-08-17 -- Phase 8 planning complete
+Phase: 8 — Supporting Atoms, Table Cells & Light Palette (wave 1 complete)
+Plan: 08-06 (barrel exports + demo registration + final gate)
+Status: Executing
+Last activity: 2026-08-17 -- Phase 8 wave 1 executed (5 plans, 269/269 tests, analyze clean)
 
 ## v1.2 Milestone
 
