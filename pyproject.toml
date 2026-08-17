@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scaffold-codegen"
+version = "0.4.0"
+description = "Build-time Jinja2 template engine and M3 UI generators for the frontend_scaffold Flutter package."
+requires-python = ">=3.11"
+dependencies = ["jinja2>=3.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+# The Python side is build tooling for a Dart package, so it lives under tools/
+# rather than at the repo root (the root belongs to pubspec.yaml / lib/).
+[tool.setuptools.packages.find]
+where = ["tools"]
+include = ["scaffold_codegen*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tools/tests"]
+pythonpath = ["tools"]
+
+[tool.ruff]
+# 100 rather than the 88 default: matches the width the existing modules and
+# their numpydoc-style docstrings were already written to.
+line-length = 100
+src = ["tools"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.format]
+quote-style = "double"
