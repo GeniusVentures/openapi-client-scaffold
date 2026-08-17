@@ -51,7 +51,7 @@ class WalletConnectSheet {
     VoidCallback? onDisconnect,
     VoidCallback? onClose,
   }) {
-    final String title = _titleFor(sessionState, address);
+    final String title = _titleFor(sessionState);
     final Widget? footer = _footerFor(sessionState, onDisconnect);
 
     // Build children lazily inside the modal route so they receive the
@@ -89,10 +89,7 @@ class WalletConnectSheet {
     );
   }
 
-  static String _titleFor(
-    WalletConnectSessionState sessionState,
-    String? address,
-  ) {
+  static String _titleFor(WalletConnectSessionState sessionState) {
     switch (sessionState) {
       case WalletConnectSessionState.disconnected:
       case WalletConnectSessionState.connecting:
