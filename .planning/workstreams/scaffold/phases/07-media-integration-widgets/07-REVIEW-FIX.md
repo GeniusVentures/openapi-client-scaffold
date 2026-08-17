@@ -1,104 +1,90 @@
 ---
 phase: 07-media-integration-widgets
-fixed_at: 2026-08-15T00:00:00Z
+fixed_at: 2026-08-17T01:28:00Z
 review_path: .planning/workstreams/scaffold/phases/07-media-integration-widgets/07-REVIEW.md
 iteration: 1
-findings_in_scope: 11
-fixed: 11
-skipped: 0
-status: all_fixed
+findings_in_scope: 9
+fixed: 8
+skipped: 1
+status: partial
 ---
 
 # Phase 7: Code Review Fix Report
 
-**Fixed at:** 2026-08-15
+**Fixed at:** 2026-08-17T01:28:00Z
 **Source review:** .planning/workstreams/scaffold/phases/07-media-integration-widgets/07-REVIEW.md
 **Iteration:** 1
 
 **Summary:**
-- Findings in scope: 11
-- Fixed: 11
-- Skipped: 0
+- Findings in scope: 9
+- Fixed: 8
+- Skipped: 1
 
 ## Fixed Issues
 
-### CR-01: Missing semantic labels on all icon-only buttons and on the seekbar
-
-**Files modified:** `lib/components/scaffold_pressable.dart`, `lib/components/media_controls.dart`, `lib/components/media_card.dart`
-**Commit:** 11a7137
-**Applied fix:**
-- Added optional `semanticLabel` named parameter to `ScaffoldPressable` (default `null`) and threaded it into the `Semantics(label:)` registration. Additive, non-breaking.
-- In `MediaControls`, supplied `semanticLabel` to the play/pause (`'Pause'`/`'Play'`), mute (`'Unmute'`/`'Mute'`), and fullscreen (`'Exit fullscreen'`/`'Enter fullscreen'`) icon-only `ScaffoldPressable`s, and added a `semanticFormatterCallback` on the `Slider` that renders the position as `m:ss`.
-- In `MediaCard`, added an optional `semanticLabel` parameter and forwarded it to the wrapping `ScaffoldPressable` when `onTap` is non-null.
-
-### WR-01: Hardcoded dimensions in WalletConnectSheet violate theme-token rule
-
-**Files modified:** `lib/components/wallet_connect_sheet.dart`
-**Commit:** f2893ab
-**Applied fix:** Replaced every hardcoded `EdgeInsets` literal with theme-token lookups via `context.dimens`. Mapping used: `16 -> dimens.space8`, `8 -> dimens.space4`, `12 -> dimens.space6`, `24 -> dimens.space12`. Both `_childrenFor` and `_footerFor` resolve `dimens` from the build context they receive. `CircularProgressIndicator` remains `const` since only the padding depends on runtime tokens.
-
-### WR-02: Hardcoded `Container(height: 4.0)` for buffered layer in MediaControls
+### WR-01/WR-02: `_measureTimeLabelWidth` text scale + 10h under-reservation
 
 **Files modified:** `lib/components/media_controls.dart`
-**Commit:** d36d5cf
-**Applied fix:** Resolved the buffered bar's height from `SliderTheme.of(context).trackHeight ?? 4.0` at the top of `build()` so the buffered layer stays aligned with the active slider theme. Falls back to Material's default `4.0` when no `SliderTheme` override is present. No new `ScaffoldDimens` token was added — the track height is owned by the slider theme, not by scaffold spacing, so this is the minimal correct fix.
+**Commit:** 97f75fd
+**Applied fix:** Combined both warnings (per orchestrator guidance — both touch the same helper). Changed signature to `_measureTimeLabelWidth(BuildContext, Duration, TextStyle)` so the helper can resolve the ambient text scaler, then:
+- WR-01: pass `textScaler: MediaQuery.textScalerOf(context)` to the `TextPainter` so the measured reservation matches what `ScaffoldFormattedValueDuration`'s `Text` will actually paint under accessibility text scaling.
+- WR-02: derive the widest-label seed from `duration.abs().inHours` (`'0:00'` for `<1h`, `'0:00:00'` for `1..9h`, `'00:00:00'` for `>=10h`) so 10+ hour durations reserve for the unpadded two-digit hour the formatter emits.
+- Doc comment updated to reflect the new magnitude contract (previously claimed to track text scale; now actually does).
 
-### WR-03 + WR-04: Sheet builds children with the caller's `BuildContext` (stale theme + wrong Navigator)
+### WR-03: Jinja2 template drifted from generated `media_card.dart`
+
+**Files modified:** `templates/components/media_card.dart.jinja2`
+**Commit:** ed8859b
+**Applied fix:** Re-synced the template TO the generated file (generated file is authoritative — it carries the UAT `semanticLabel` a11y fix). Preserved all `{% %}`/`{{ }}` control structure and the source-schema header; only the variable slots and doc text were aligned:
+- Added `this.semanticLabel` constructor parameter (Jinja slot unchanged).
+- Added `final String? semanticLabel;` field with the WCAG 4.1.2 doc comment.
+- Forwarded `semanticLabel: semanticLabel` to the `ScaffoldPressable` call.
+- Aligned class-level doc text (the "interaction is blocked — either via … or via …" wording) and the `metadataRow` doc comment (the "do NOT wrap children in [Flexible] or [Expanded] yourself" warning) with the generated file.
+- Updated the file-level doc header (added "typed badge slots" wording) to match the generated file.
+
+### IN-01: Dead `address` parameter on `WalletConnectSheet._titleFor`
 
 **Files modified:** `lib/components/wallet_connect_sheet.dart`
-**Commit:** 3ee1a5c
-**Applied fix:** Combined into a single commit because they share the same root cause. `WalletConnectSheet.show` no longer invokes `_childrenFor` synchronously with the caller's context. Instead, it wraps the children list in a single `Builder` that re-invokes `_childrenFor` with the sheet's own `BuildContext` (`sheetContext`). As a result:
-- `qrBuilder(sheetContext, uri)` now receives the sheet's context, so a consumer's `Navigator.of(sheetContext).pop()` dismisses the sheet (not the underlying page).
-- `Theme.of(sheetContext)` is re-evaluated whenever the modal rebuilds, so the sheet's text styles track theme changes (light/dark toggle, palette override) while open.
+**Commit:** 5f20007
+**Applied fix:** Removed the unused `String? address` parameter from `_titleFor` and removed the corresponding argument at the call site (`_titleFor(sessionState, address)` → `_titleFor(sessionState)`). The connected branch's comment ("Address is shown in the body …") is retained as it still explains why the title is static.
 
-Existing tests still pass (11/11 in `wallet_connect_sheet_test.dart`).
+### IN-02: Stale "how to wire into main.dart" comments in demos
 
-### WR-05: `MediaCard` disabled + onTap test asserts behavior owned by `ScaffoldPressable`
+**Files modified:** `example/lib/demos/media_card_demo.dart`, `example/lib/demos/media_controls_demo.dart`, `example/lib/demos/wallet_connect_sheet_demo.dart`
+**Commit:** 5766398
+**Applied fix:** Deleted the `_DemoTile`/`import` wiring instructions from all three demo header comments. All three demos are already registered in `example/lib/main.dart` (lines 192-206) — the comments were misleading. Also removed the now-stale "(Registration is owned by Plan 07-04 — do NOT modify main.dart here.)" parenthetical from `media_controls_demo.dart`.
 
-**Files modified:** `test/components/media_card_test.dart`
-**Commit:** 1b71479
-**Applied fix:** Tightened two assertions in the "disabled + onTap blocks interaction and wraps in ScaffoldDisabledOverlay" test:
-- `find.byType(ScaffoldDisabledOverlay)` changed from `findsWidgets` (matches zero) to `findsOneWidget`.
-- Added `tester.widget(find.byType(ScaffoldPressable)).disabled` assert to lock in that `MediaCard` itself passes `disabled: true` through to `ScaffoldPressable`.
-
-Test-only change; no production behavior modified.
-
-### WR-06: `MediaControls` scrub test gesture math is fragile
-
-**Files modified:** `test/components/media_controls_test.dart`
-**Commit:** 6679b6c
-**Applied fix:** Replaced the coordinate math that subtracted a global top-left from `Size.bottomCenter(Offset.zero)` (which mixed a local size with a global offset). New code keeps `sliderSize` as a `Size` and computes the drag start as `sliderTopLeft + Offset(4, sliderSize.height / 2)` and the drag delta as `Offset(sliderSize.width / 4, 0)` — exactly what the review suggested. Test continues to pass (1 seek fired on release, none during drag).
-
-### IN-01: MediaCard doc comment over-promises on `ScaffoldDisabledOverlay`
-
-**Files modified:** `lib/components/media_card.dart`
-**Commit:** b302e62
-**Applied fix:** Rephrased the class doc to clarify ownership: "When [disabled] is true, interaction is blocked — either via [ScaffoldPressable]'s internal disabled state (when [onTap] is set) or via an explicit [ScaffoldDisabledOverlay] wrapper."
-
-### IN-02: `WalletConnectSheet` duplicates the address as both title and body
-
-**Files modified:** `lib/components/wallet_connect_sheet.dart`, `test/components/wallet_connect_sheet_test.dart`
-**Commit:** 08cb7a3
-**Applied fix:** `_titleFor` now returns the static label `'Wallet'` for the connected state (was `address ?? 'Wallet'`). The address is rendered only in the body via the existing `Text(address, overflow: TextOverflow.ellipsis, maxLines: 1, ...)`. Updated the "title switches with state" test to assert the new behavior: title is the static label, and `find.text(address)` matches exactly one widget (the body), not two.
-
-### IN-03: `WalletConnectSheetDemo` uses hardcoded `Colors.black12`
+### IN-05: Demo docstring referenced `TextOverflow.ellipsis` for the address
 
 **Files modified:** `example/lib/demos/wallet_connect_sheet_demo.dart`
-**Commit:** 9912b17
-**Applied fix:** Replaced `color: Colors.black12` with `color: ctx.palette.borderSubtle` so the QR placeholder tracks the active palette in both light and dark themes. The `qrBuilder` already receives a context, so no signature change was needed.
+**Commit:** 3306daf
+**Applied fix:** Updated the connected-state line in the demo header from "wallet address (truncated via TextOverflow.ellipsis)" to "wallet address (truncated in the middle — head…tail)" to match the `_truncateMiddle` implementation in `wallet_connect_sheet.dart`.
 
-### IN-04: MediaControls Demo note is stale — Plan 07-04 has already landed
+### IN-03: Magic numbers in demo layout code
 
-**Files modified:** `example/lib/demos/media_controls_demo.dart`
-**Commit:** f7a1304
-**Applied fix:** Deleted the four-line stale "NOTE on imports" comment block (lines 25-28 of the demo file). The file already imports `frontend_scaffold/frontend_scaffold.dart` (the barrel) and the barrel already exports `media_controls.dart`.
+**Files modified:** `example/lib/demos/media_card_demo.dart`, `example/lib/demos/media_controls_demo.dart`
+**Commit:** a784252
+**Applied fix:** Hoisted bare literals to file-level named constants:
+- `media_card_demo.dart`: `const double _kDemoCardWidth = 180;` replaces the two `width: 180` literals (9:16 and 1:1 sections).
+- `media_controls_demo.dart`: `const double _kDemoStageHeight = 120;` replaces the three `height: 120` literals (scenarios 1/2/3 stage containers).
+Each constant carries a doc comment explaining what the value represents.
+
+### IN-04: Magic numbers in `MainFlutterWindow.swift` min-size clamp
+
+**Files modified:** `example/macos/Runner/MainFlutterWindow.swift`
+**Commit:** 369cb9d
+**Applied fix:** Introduced `private let kMinContentWidth: CGFloat = 420` and `private let kMinContentHeight: CGFloat = 480` at file scope and replaced the `NSSize(width: 420, height: 480)` literals. Moved the derivation comment from the call site up to the constants so the rationale is co-located with the named values.
 
 ## Skipped Issues
 
-None — all 11 findings in scope were fixed.
+### IN-06: `scaffold_slider_test.dart` "buffered layer paints inside the track shape" asserts nothing about painting
+
+**File:** `test/components/scaffold_slider_test.dart:47-57`
+**Reason:** No golden-test infrastructure exists in this repo (no `goldens/` directories, no `flutter_test_config.dart`, no prior `matchesGoldenFile` usage anywhere in `test/components/`). Introducing the golden-test pattern in a fix pass would mean (a) adding new test infra, (b) generating platform-specific golden PNGs that are brittle across macOS/Linux/Windows host configurations and Flutter versions, and (c) making CI depend on bit-exact rendering for a single test. The alternative — capturing the canvas via a recording `PaintingContext` and asserting `drawRRect` calls — requires reaching into `_BufferedTrackShape`, which is private. Making it `@visibleForTesting` public solely for this test is API-surface scope creep beyond the review's intent. Per the orchestrator's guidance ("If a golden/canvas-capture proves too brittle to write reliably, mark it skipped with a clear reason rather than committing a broken test"), this finding is skipped. The drag-regression test at lines 59-85 still provides indirect coverage (the buffered boundary at 0.5 is crossed during the drag).
+**Original issue:** The test only asserts `theme.trackShape, isNotNull` — identical to the two tests above it. The buffered value 0.8 is never observed, and the in-track alignment claim in the test name is unverified. The in-track buffered painting is the phase's headline UAT fix and has no direct rendering assertion.
 
 ---
 
-_Fixed: 2026-08-15_
+_Fixed: 2026-08-17T01:28:00Z_
 _Fixer: Claude (gsd-code-fixer)_
 _Iteration: 1_
