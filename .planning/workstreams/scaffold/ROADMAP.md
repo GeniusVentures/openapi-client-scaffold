@@ -56,7 +56,15 @@ Full phase details, goals, and success criteria: [milestones/v1.1-ROADMAP.md](mi
   3. `ScaffoldComposer` provides a text-entry area with action button slots and badge/attachment slots
   4. A consumer passes `cellBuilder` on `DataColumnConfig<T>` and the generated data table renders that custom widget per cell without forking the table
   5. All scaffold widgets render correctly under a default light `ThemeData` with no consumer overrides (light palette ships with full token coverage)
-**Plans**: TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — ScaffoldBadge on-status remediation + light palette token verification (WIDG-46)
+- [ ] 08-02-PLAN.md — DataColumnConfig<T> cellBuilder template extension (WIDG-43)
+- [ ] 08-03-PLAN.md — ScaffoldDisclosure + ScaffoldTraceList atoms (WIDG-41)
+- [ ] 08-04-PLAN.md — ScaffoldChip + ScaffoldChipGroup atoms (WIDG-40)
+- [ ] 08-05-PLAN.md — ScaffoldComposer atom (WIDG-42)
+- [ ] 08-06-PLAN.md — Barrel exports + demo registrations + final gates (WIDG-40, 41, 42 closure)
 **UI hint**: yes
 
 ### Phase 9: Text & Code Primitives
