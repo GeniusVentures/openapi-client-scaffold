@@ -74,10 +74,10 @@ void main() {
     expect(decoration.color, ScaffoldPalette.defaultPalette.deepBlueCardColor);
     final Border border = decoration.border! as Border;
     expect(border.top.color, ScaffoldPalette.defaultPalette.lightGreenPrimary);
-    expect(border.top.width, 2.0);
+    expect(border.top.width, ScaffoldDimens.defaultDimens.focusRingWidth);
     expect(border.bottom.color,
         ScaffoldPalette.defaultPalette.lightGreenPrimary);
-    expect(border.bottom.width, 2.0);
+    expect(border.bottom.width, ScaffoldDimens.defaultDimens.focusRingWidth);
   });
 
   // Test 3 — tapping fires onPressed exactly once.

@@ -94,7 +94,10 @@ class ScaffoldChip extends StatelessWidget {
       color: palette.deepBlueCardColor,
       borderRadius: BorderRadius.circular(dimens.radiusPill),
       border: selected
-          ? Border.all(color: palette.lightGreenPrimary, width: 2.0)
+          ? Border.all(
+              color: palette.lightGreenPrimary,
+              width: dimens.focusRingWidth,
+            )
           : null,
       padding: EdgeInsets.symmetric(
         horizontal: dimens.space4,
