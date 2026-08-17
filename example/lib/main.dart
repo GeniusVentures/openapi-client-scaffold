@@ -15,6 +15,10 @@ import 'demos/toast_demo.dart';
 import 'demos/tracer_demo.dart';
 import 'demos/wallet_connect_sheet_demo.dart';
 import 'demos/kitchen_sink_demo.dart';
+import 'demos/chip_demo.dart';
+import 'demos/composer_demo.dart';
+import 'demos/disclosure_demo.dart';
+import 'demos/trace_list_demo.dart';
 
 void main() {
   runApp(const ScaffoldExampleApp());
@@ -203,6 +207,26 @@ class HomePage extends StatelessWidget {
             title: 'Wallet connect sheet',
             subtitle: 'Reown session sheet — disconnected + connected states',
             builder: (_) => const WalletConnectSheetDemo(),
+          ),
+          _DemoTile(
+            title: 'Chip / ChipGroup',
+            subtitle: 'Pill pressable atom + selection group',
+            builder: (_) => const ScaffoldChipDemo(),
+          ),
+          _DemoTile(
+            title: 'Composer',
+            subtitle: 'Text composition area with badge/action slots',
+            builder: (_) => const ScaffoldComposerDemo(),
+          ),
+          _DemoTile(
+            title: 'Disclosure',
+            subtitle: 'Expand/collapse row with AnimatedSize + reduced-motion',
+            builder: (_) => const ScaffoldDisclosureDemo(),
+          ),
+          _DemoTile(
+            title: 'Trace list',
+            subtitle: 'Ordered disclosure items + optional group header',
+            builder: (_) => const ScaffoldTraceListDemo(),
           ),
         ],
       ),
