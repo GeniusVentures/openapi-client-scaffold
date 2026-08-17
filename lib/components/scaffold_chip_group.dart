@@ -7,6 +7,12 @@
 /// set on each tap; multi-select toggles the tapped index. Registers
 /// `Semantics(role: radiogroup)` in single-select mode and
 /// `Semantics(role: group)` in multi-select mode.
+///
+/// Per-chip `onPressed` chaining: each chip's consumer-supplied `onPressed`
+/// callback fires FIRST (for logging, analytics, or other side effects),
+/// then the group's internal selection dispatch runs and emits the next
+/// selection set via [onSelectionChanged]. A chip with `onPressed == null`
+/// is rendered disabled and no selection event fires for it.
 library;
 
 import 'dart:ui' show SemanticsRole;
@@ -66,6 +72,7 @@ class ScaffoldChipGroup extends StatelessWidget {
   }
 
   Widget _wrapChipAtIndex(int index, ScaffoldChip chip) {
+    final VoidCallback? chipOnPressed = chip.onPressed;
     return ScaffoldChip(
       label: chip.label,
       icon: chip.icon,
@@ -73,8 +80,16 @@ class ScaffoldChipGroup extends StatelessWidget {
       selected: selected.contains(index),
       disabled: chip.disabled,
       semanticLabel: chip.semanticLabel,
-      onPressed:
-          chip.onPressed == null ? null : () => _handleChipTap(index),
+      onPressed: chipOnPressed == null
+          ? null
+          : () {
+              // Chain contract: consumer-supplied per-chip callback fires
+              // FIRST (logging, analytics, side effects), then the group's
+              // selection dispatch runs. Consumers can rely on their
+              // callback always being invoked when the chip is enabled.
+              chipOnPressed();
+              _handleChipTap(index);
+            },
     );
   }
 

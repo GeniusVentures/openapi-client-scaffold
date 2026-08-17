@@ -122,7 +122,10 @@ class _SingleSelectGroupState extends State<_SingleSelectGroup> {
   Widget build(BuildContext context) {
     return ScaffoldChipGroup(
       chips: <ScaffoldChip>[
-        ScaffoldChip(label: 'One', onPressed: () {}),
+        ScaffoldChip(
+          label: 'One',
+          onPressed: () => debugPrint('single-select chip "One" tapped'),
+        ),
         ScaffoldChip(label: 'Two', onPressed: () {}),
         ScaffoldChip(label: 'Three', onPressed: () {}),
       ],
@@ -149,7 +152,10 @@ class _MultiSelectGroupState extends State<_MultiSelectGroup> {
   Widget build(BuildContext context) {
     return ScaffoldChipGroup(
       chips: <ScaffoldChip>[
-        ScaffoldChip(label: 'One', onPressed: () {}),
+        ScaffoldChip(
+          label: 'One',
+          onPressed: () => debugPrint('multi-select chip "One" tapped'),
+        ),
         ScaffoldChip(label: 'Two', onPressed: () {}),
         ScaffoldChip(label: 'Three', onPressed: () {}),
         ScaffoldChip(label: 'Four', onPressed: () {}),
