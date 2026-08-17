@@ -68,27 +68,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WIDG-32 | — | Pending |
-| WIDG-33 | — | Pending |
-| WIDG-34 | — | Pending |
-| WIDG-35 | — | Pending |
-| WIDG-36 | — | Pending |
-| WIDG-37 | — | Pending |
-| WIDG-38 | — | Pending |
-| WIDG-39 | — | Pending |
-| WIDG-40 | — | Pending |
-| WIDG-41 | — | Pending |
-| WIDG-42 | — | Pending |
-| WIDG-43 | — | Pending |
-| WIDG-44 | — | Pending |
-| WIDG-45 | — | Pending |
-| WIDG-46 | — | Pending |
+| WIDG-32 | Phase 9 | Pending |
+| WIDG-33 | Phase 9 | Pending |
+| WIDG-34 | Phase 9 | Pending |
+| WIDG-35 | Phase 10 | Pending |
+| WIDG-36 | Phase 10 | Pending |
+| WIDG-37 | Phase 9 | Pending |
+| WIDG-38 | Phase 9 | Pending |
+| WIDG-39 | Phase 9 | Pending |
+| WIDG-40 | Phase 8 | Pending |
+| WIDG-41 | Phase 8 | Pending |
+| WIDG-42 | Phase 8 | Pending |
+| WIDG-43 | Phase 8 | Pending |
+| WIDG-44 | Phase 11 | Pending |
+| WIDG-45 | Phase 11 | Pending |
+| WIDG-46 | Phase 8 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 16 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 16 (roadmap pending)
+- Mapped to phases: 16
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-08-17*
-*Last updated: 2026-08-17 after initial definition*
+*Last updated: 2026-08-17 after v1.2 roadmap creation*
