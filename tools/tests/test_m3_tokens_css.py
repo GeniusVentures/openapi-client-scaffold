@@ -1,32 +1,40 @@
 #!/usr/bin/env python3
 """
-Tests for generate_m3_tokens_css.py — M3 design token to CSS custom property generator.
+Tests for scaffold_codegen.m3_tokens_css — M3 design token to CSS custom
+property generator.
 
 Tests exercise the CLI entry point via subprocess.run(), validating exit codes,
 stderr messages, and output file content against design_tokens.json.
 """
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
 
+import pytest
+
+from scaffold_codegen import DESIGN_TOKENS, REPO_ROOT
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-TOOLS_DIR = Path(os.getenv("TOOLS_DIR", ".")).resolve()
+#: The CLI runs in a subprocess, which does not inherit pytest's ``pythonpath``
+#: setting (that only mutates the test process's sys.path). Put tools/ on the
+#: child's PYTHONPATH so the package resolves without an editable install.
+_TOOLS_DIR = REPO_ROOT / "tools"
 
-DEFAULT_BUILD_DIR = Path(os.getenv(
-    "BUILD_DIR",
-    os.path.join(os.path.join(os.path.dirname(os.path.dirname(".")), "build"), "OSX/Debug"),
-))
-RUNNER = os.path.join(str(DEFAULT_BUILD_DIR), "..", "cmake-debug-build", "CMakeFiles", "template_gen"
-)
+
+def _subprocess_env() -> dict[str, str]:
+    """Return os.environ with tools/ prepended to PYTHONPATH."""
+    env = dict(os.environ)
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = (
+        f"{_TOOLS_DIR}{os.pathsep}{existing}" if existing else str(_TOOLS_DIR)
+    )
+    return env
 
 
 class RunResult:
@@ -36,37 +44,36 @@ class RunResult:
         self.stderr = completed.stderr
 
 
-def _resolve_script_path() -> str:
-    """Return the absolute path to the generate_m3_tokens_css.py script."""
-    return str(Path(__file__).resolve().parent / "generate_m3_tokens_css.py")
-
-
 def _resolve_tokens_path() -> str:
     """Return the absolute path to the design_tokens.json fixture."""
-    return str(Path(__file__).resolve().parent / "design_tokens.json")
+    return str(DESIGN_TOKENS)
 
 
 def _run_script(*args: str) -> RunResult:
-    """Execute generate_m3_tokens_css.py with the given CLI arguments.
+    """Execute the m3_tokens_css CLI with the given arguments.
+
+    Invoked as ``python -m scaffold_codegen.m3_tokens_css`` from the repo root
+    so the package resolves the same way it does under CMake and CI.
 
     Returns
     -------
     RunResult
         Completed process with .returncode, .stdout, .stderr as str.
     """
-    script_path = _resolve_script_path()
     completed = subprocess.run(
-        [sys.executable, script_path] + list(args),
+        [sys.executable, "-m", "scaffold_codegen.m3_tokens_css", *args],
         capture_output=True,
         text=True,
         timeout=10,
+        cwd=REPO_ROOT,
+        env=_subprocess_env(),
     )
     return RunResult(completed)
 
 
 def _read_output(path: str) -> str:
     """Read a file and return its contents as a string."""
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return f.read()
 
 
@@ -76,7 +83,7 @@ def _read_output(path: str) -> str:
 
 
 class TestGenerateM3TokensCss:
-    """Test generate_m3_tokens_css.py CLI behavior and output correctness."""
+    """Test the m3_tokens_css CLI behavior and output correctness."""
 
     # -- Test 1: Produces a valid CSS file -----------------------------------
 
@@ -163,7 +170,7 @@ class TestGenerateM3TokensCss:
                     )
                     break
             else:
-                assert False, "typography-display-size property not found in output"
+                pytest.fail("typography-display-size property not found in output")
         finally:
             os.unlink(output_path)
 
@@ -190,7 +197,7 @@ class TestGenerateM3TokensCss:
                     )
                     break
             else:
-                assert False, "shape-extra-small property not found in output"
+                pytest.fail("shape-extra-small property not found in output")
         finally:
             os.unlink(output_path)
 
@@ -218,7 +225,7 @@ class TestGenerateM3TokensCss:
                     )
                     break
             else:
-                assert False, "elevation-level0 property not found in output"
+                pytest.fail("elevation-level0 property not found in output")
         finally:
             os.unlink(output_path)
 

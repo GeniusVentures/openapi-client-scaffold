@@ -9,18 +9,15 @@ drift (any hand-edit to a generated file, or any divergence between template
 and committed output, fails the build).
 
 Usage:
-    python3 scripts/generate_composites.py
+    python3 -m scaffold_codegen.generators.composites
 """
 from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
-
-from engine import create_environment, render_template  # noqa: E402
+from scaffold_codegen import DESIGN_TOKENS, LIB_COMPONENTS_DIR, TEMPLATES_DIR
+from scaffold_codegen.engine import create_environment, render_template
 
 COMPONENTS = {
     "card": {
@@ -51,18 +48,17 @@ COMPONENTS = {
 
 
 def main() -> int:
-    tokens_path = ROOT / "design_tokens.json"
-    tokens = json.loads(tokens_path.read_text(encoding="utf-8"))
+    tokens = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))
 
-    env = create_environment([str(ROOT / "templates")])
+    env = create_environment([str(TEMPLATES_DIR)])
 
     for spec in COMPONENTS.values():
-        vars_path = ROOT / "templates" / "components" / spec["vars"]
+        vars_path = TEMPLATES_DIR / "components" / spec["vars"]
         base_vars = json.loads(vars_path.read_text(encoding="utf-8"))
         context = dict(base_vars)
         context["tokens"] = tokens
         for template_name, output_name in spec["templates"].items():
-            output = ROOT / "lib" / "components" / output_name
+            output = LIB_COMPONENTS_DIR / output_name
             render_template(env, template_name, str(output), context)
             print(f"rendered lib/components/{output_name}")
 
