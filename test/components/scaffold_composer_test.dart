@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
 import 'package:frontend_scaffold/components/scaffold_composer.dart';
@@ -262,6 +261,8 @@ void main() {
     expect(row.mainAxisAlignment, MainAxisAlignment.end);
 
     // One separator between the two action slots, sized dimens.space4.
+    // IconButton contributes its own 24px internal SizedBoxes — filter to
+    // width-only spacers (height == null), which only our separator matches.
     final Iterable<SizedBox> separators = tester
         .widgetList<SizedBox>(
           find.descendant(
@@ -269,7 +270,7 @@ void main() {
             matching: find.byType(SizedBox),
           ),
         )
-        .where((SizedBox box) => box.width != null);
+        .where((SizedBox box) => box.width != null && box.height == null);
     expect(separators, hasLength(1));
     expect(separators.single.width, ScaffoldDimens.defaultDimens.space4);
   });
