@@ -1,3 +1,6 @@
+// Sync-drift note: The _CellHost test double below mirrors the cell render
+// path in templates/components/data_table.dart.jinja2 — keep in sync (full CI
+// regen+diff harness is Phase 11 scope, WIDG-44).
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
