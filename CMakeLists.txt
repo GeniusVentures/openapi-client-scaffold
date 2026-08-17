@@ -9,6 +9,10 @@
 #   frontend_build_javascript - Bundle JavaScript client (esbuild)
 #   frontend_all              - Run all frontend targets
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    project(frontend_scaffold_codegen NONE)
+endif()
+
 # --------------------------------------------------------
 # Find required tools
 find_program(PYTHON3_EXECUTABLE python3)
@@ -17,11 +21,18 @@ if(NOT PYTHON3_EXECUTABLE)
 endif()
 
 # --------------------------------------------------------
+# Python build tooling lives in tools/ as the `scaffold_codegen` package
+# (see pyproject.toml). PYTHONPATH is set per-invocation rather than relying on
+# an installed package, so CMake builds need no pip install.
+set(_scaffold_pythonpath "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+set(_scaffold_python_env ${CMAKE_COMMAND} -E env "PYTHONPATH=${_scaffold_pythonpath}")
+
+# --------------------------------------------------------
 # 1. Generate typed API clients from OpenAPI specs
 #    Reads ../api-specs/*_openapi.json (parent project)
 if(PYTHON3_EXECUTABLE)
     add_custom_target(frontend_generate_api
-        COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_api_clients.py
+        COMMAND ${_scaffold_python_env} ${PYTHON3_EXECUTABLE} -m scaffold_codegen.api_clients
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating typed API clients from OpenAPI specs"
     )
@@ -60,7 +71,7 @@ add_custom_target(frontend_all
 #    All template-render configuration defaults to scaffold-local files and
 #    can be overridden via CACHE or -D before add_subdirectory.
 # --------------------------------------------------------
-set(ENGINE_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/engine.py" CACHE STRING
+set(ENGINE_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/tools/scaffold_codegen/engine.py" CACHE STRING
     "Path to shared Jinja2 template engine")
 set(DESIGN_TOKENS "${CMAKE_CURRENT_SOURCE_DIR}/design_tokens.json" CACHE STRING
     "Path to M3 design tokens JSON single source of truth")
@@ -307,13 +318,13 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
 
     add_custom_command(
         OUTPUT ${_tokens_stamp}
-        COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_m3_tokens_css.py
+        COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/scaffold_codegen/m3_tokens_css.py
             --tokens ${DESIGN_TOKENS}
             --output ${_tokens_output}
         COMMAND ${CMAKE_COMMAND} -E touch ${_tokens_stamp}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating M3 design tokens CSS (custom properties)"
-        DEPENDS ${DESIGN_TOKENS} ${CMAKE_CURRENT_SOURCE_DIR}/generate_m3_tokens_css.py
+        DEPENDS ${DESIGN_TOKENS} ${CMAKE_CURRENT_SOURCE_DIR}/tools/scaffold_codegen/m3_tokens_css.py
     )
 
     # -- 7b. Per-component HTML + CSS rendering loop
