@@ -15,13 +15,13 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 ## Milestones
 
 - ✅ **v1.0 Scaffold Shared Source** — Phase 5 (completed 2026-08-09): submodule established as the single shared widget/template source; `frontend_scaffold` package at v0.3.0
-- ⬜ **v1.1 Widget Library** — Phases 6-7: ship 28 widget atoms + ScaffoldMotion utility + 3 template-generated composites as the Core UI Foundation (Phase 6), then media and integration widgets (Phase 7)
+- ✅ **v1.1 Widget Library** — Phases 6-7: ship 28 widget atoms + ScaffoldMotion utility + 3 template-generated composites as the Core UI Foundation (Phase 6), then media and integration widgets (Phase 7)
 
 ## Phases
 
 - [x] **Phase 5: Scaffold Submodule Consolidation** — submodule is the single shared source for GeniusWallet bloc widgets and genius-tube C++ interface templates, consumable via pinned submodule (completed 2026-08-09)
 - [x] **Phase 6: Core UI Foundation** — 28 widget atoms + ScaffoldMotion across 4 dependency-layered waves; atoms ship as plain Dart widgets (runtime-parameterized) except 4 template candidates (FormattedValue, SelectionIndicator, ImagePlaceholder, AnimatedDisplay) + 3 Jinja2-template-generated composites (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar) (completed 2026-08-14)
-- [ ] **Phase 7: Media & Integration Widgets** — MediaCard (consumes ScaffoldBadge badge slots), MediaControls (consumes ScaffoldPressable + ScaffoldTouchTarget), WalletConnectSheet (built on existing BottomDrawer); new media_card.dart.jinja2 template
+- [x] **Phase 7: Media & Integration Widgets** — MediaCard (consumes ScaffoldBadge badge slots), MediaControls (consumes ScaffoldPressable + ScaffoldTouchTarget), WalletConnectSheet (built on existing BottomDrawer); new media_card.dart.jinja2 template
 
 ## Phase Details
 
@@ -89,7 +89,14 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
   5. A consumer app can present `WalletConnectSheet` as a bottom sheet that shows disconnected (QR connect) and connected (wallet address + network + disconnect) states, with `onConnect`/`onDisconnect` callbacks; session state passed in externally (no Reown session ownership)
   6. All three widgets exported from the barrel, consume only `Theme.of(context)` and Phase 6 atoms, and pass `dart analyze` clean
 
-**Plans**: TBD
+**Plans**: 4 plans
+**Plan list**:
+
+- [x] 07-01-PLAN.md — MediaCard widget + media_card.dart.jinja2 template + fixture + tests + demo (WIDG-29)
+- [x] 07-02-PLAN.md — MediaControls widget + tests + demo (WIDG-30)
+- [x] 07-03-PLAN.md — WalletConnectSheet widget + tests + demo (WIDG-31)
+- [x] 07-04-PLAN.md — Barrel export + demo registration + final analyze/test gate (WIDG-29, WIDG-30, WIDG-31)
+
 **UI hint**: yes
 
 ## Progress
@@ -98,7 +105,7 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 |-------|-----------|----------------|--------|-----------|
 | 5. Scaffold Submodule Consolidation | v1.0 | 5/5 | Complete | 2026-08-09 |
 | 6. Core UI Foundation | v1.1 | 6/6 | Complete    | 2026-08-14 |
-| 7. Media & Integration Widgets | v1.1 | 0/0 | Not started | - |
+| 7. Media & Integration Widgets | v1.1 | 4/4 | Complete    | 2026-08-15 |
 
 ## Coverage
 

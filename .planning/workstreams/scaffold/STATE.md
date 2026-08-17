@@ -4,16 +4,16 @@ milestone: v1.1
 milestone_name: Widget Library
 current_phase: 7
 current_phase_name: Media & Integration Widgets
-status: planning
-stopped_at: Phase 6 planned — 6 plans written and checker-verified (no blockers)
-last_updated: "2026-08-15T04:47:45.333Z"
-last_activity: 2026-08-14
-last_activity_desc: Phase 6 complete, transitioned to Phase 7
+status: shipped
+stopped_at: Phase 07 shipped — UAT 7/7, verification 6/6, code review 0 critical (8/9 findings fixed); PR opened to develop
+last_updated: "2026-08-17T00:00:00.000Z"
+last_activity: 2026-08-17 -- Phase 07 shipped (UAT + verification + code review green); PR to develop
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 11
+  completed_plans: 11
+  percent: 100
 workstream: scaffold
 ---
 
@@ -29,9 +29,9 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 ## Current Position
 
 Phase: 7 — Media & Integration Widgets
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
+Plan: 4 plans (07-01..07-04) across 2 waves — ALL COMPLETE
+Status: Phase complete — analyzer + test gates green; ready for verification
+Last activity: 2026-08-15 -- Phase 07 plan 04 (final wiring + gate) executed; commits 3c70e16, 54680d0, 42d06f7; 208/208 tests passing
 
 ## v1.1 Milestone
 
@@ -63,7 +63,8 @@ Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
 
 ### Pending Todos
 
-- `/gsd:plan-phase 6` — write plans for Core UI Foundation (28 atoms + composites across 4 waves)
+- [x] `/gsd:plan-phase 6` — wrote plans for Core UI Foundation (28 atoms + composites across 4 waves); executed + verified 28/28
+- [x] `/gsd:plan-phase 7` — wrote plans for Media & Integration Widgets (4 plans, 2 waves: MediaCard, MediaControls, WalletConnectSheet, barrel+demos+gate); checker passed 7/7 decisions
 - (Follow-up, out of v1.1 scope) light default palette to complement the dark-seeded ScaffoldPalette defaults — carried from v1.0
 - (Future, post-v1.1) navigation component widgets, DataTable, FormDialog from their existing templates
 
@@ -79,7 +80,7 @@ Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
 
 ## Session Continuity
 
-**Last session:** 2026-08-11
-**Stopped at:** Phase 6 planned — 6 plans written and checker-verified (no blockers)
-**Resume file:** .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-01-PLAN.md
-**Next action:** `/gsd:execute-phase 6 --ws scaffold` to build the 28 atoms + ScaffoldMotion across 6 sequential execution waves
+**Last session:** 2026-08-15
+**Stopped at:** Phase 07 complete — all 4 plans shipped. Plan 07-04 (final wiring + gate) added media_controls + wallet_connect_sheet barrel exports, registered three demos in example/lib/main.dart, switched direct-import demos to the barrel, and confirmed full-package `dart analyze --fatal-infos` exit 0 and `flutter test` exit 0 (208/208 passing). SUMMARY at `.planning/workstreams/scaffold/phases/07-media-integration-widgets/07-04-SUMMARY.md`
+**Resume file:** None — Phase 07 complete
+**Next action:** `/gsd:verify-phase 7 --ws scaffold` (or equivalent phase-verification step) to validate Phase 7 against REQUIREMENTS.md, then proceed to next milestone planning

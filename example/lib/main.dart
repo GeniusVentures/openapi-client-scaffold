@@ -5,12 +5,15 @@ import 'demos/action_button_demo.dart';
 import 'demos/animations_demo.dart';
 import 'demos/bottom_drawer_demo.dart';
 import 'demos/loading_demo.dart';
+import 'demos/media_card_demo.dart';
+import 'demos/media_controls_demo.dart';
 import 'demos/page_chrome_demo.dart';
 import 'demos/responsive_grid_demo.dart';
 import 'demos/string_button_demo.dart';
 import 'demos/text_entry_field_demo.dart';
 import 'demos/toast_demo.dart';
 import 'demos/tracer_demo.dart';
+import 'demos/wallet_connect_sheet_demo.dart';
 import 'demos/kitchen_sink_demo.dart';
 
 void main() {
@@ -185,6 +188,21 @@ class HomePage extends StatelessWidget {
             title: 'Kitchen Sink — Core UI Foundation',
             subtitle: 'All 28 atoms + ScaffoldMotion + 3 generated composites',
             builder: (_) => const KitchenSinkDemo(),
+          ),
+          _DemoTile(
+            title: 'Media card',
+            subtitle: 'Aspect ratios, typed badge slots, metadataRow',
+            builder: (_) => const MediaCardDemo(),
+          ),
+          _DemoTile(
+            title: 'Media controls',
+            subtitle: 'Play/pause, seekbar with buffered, mute, fullscreen',
+            builder: (_) => const MediaControlsDemo(),
+          ),
+          _DemoTile(
+            title: 'Wallet connect sheet',
+            subtitle: 'Reown session sheet — disconnected + connected states',
+            builder: (_) => const WalletConnectSheetDemo(),
           ),
         ],
       ),
