@@ -39,7 +39,7 @@ Full phase details, goals, and success criteria: [milestones/v1.1-ROADMAP.md](mi
 
 ### v1.2 Atom Extensions (Phases 8-11) — IN PROGRESS
 
-- [ ] **Phase 8: Supporting Atoms, Table Cells & Light Palette** — ScaffoldChip/ChipGroup, ScaffoldDisclosure/TraceList, ScaffoldComposer, DataColumnConfig cellBuilder extension, light default palette
+- [x] **Phase 8: Supporting Atoms, Table Cells & Light Palette** (6/6 plans, completed 2026-08-17) — ScaffoldChip/ChipGroup, ScaffoldDisclosure/TraceList, ScaffoldComposer, DataColumnConfig cellBuilder extension, light default palette
 - [ ] **Phase 9: Text & Code Primitives** — ScaffoldStreamingRichText (incremental render, citations, action slots, a11y), ScaffoldCodeBlock (syntax spans, line numbers, streamed lines), ScaffoldSelectionActions (anchored toolbar)
 - [ ] **Phase 10: Chart & Scrubber** — ScaffoldChart (neutral series contract), ScaffoldChartScrubber (point selection composing with chart)
 - [ ] **Phase 11: Verification & Coverage Gate** — per-atom tests/demos/barrel sweep, Beautiful UI 19-component coverage check
@@ -64,7 +64,7 @@ Plans:
 - [x] 08-03-PLAN.md — ScaffoldDisclosure + ScaffoldTraceList atoms (WIDG-41)
 - [x] 08-04-PLAN.md — ScaffoldChip + ScaffoldChipGroup atoms (WIDG-40)
 - [x] 08-05-PLAN.md — ScaffoldComposer atom (WIDG-42)
-- [ ] 08-06-PLAN.md — Barrel exports + demo registrations + final gates (WIDG-40, 41, 42 closure)
+- [x] 08-06-PLAN.md — Barrel exports + demo registrations + final gates (WIDG-40, 41, 42 closure)
 **UI hint**: yes
 
 ### Phase 9: Text & Code Primitives
@@ -108,7 +108,7 @@ Plans:
 | 5. Scaffold Submodule Consolidation | v1.0 | 5/5 | Complete | 2026-08-09 |
 | 6. Core UI Foundation | v1.1 | 6/6 | Complete | 2026-08-14 |
 | 7. Media & Integration Widgets | v1.1 | 4/4 | Complete | 2026-08-15 |
-| 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 0/? | Not started | - |
+| 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 6/6 | Complete | 2026-08-17 |
 | 9. Text & Code Primitives | v1.2 | 0/? | Not started | - |
 | 10. Chart & Scrubber | v1.2 | 0/? | Not started | - |
 | 11. Verification & Coverage Gate | v1.2 | 0/? | Not started | - |

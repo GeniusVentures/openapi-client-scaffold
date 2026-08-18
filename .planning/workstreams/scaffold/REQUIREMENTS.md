@@ -22,17 +22,17 @@ Seed analysis: `.planning/atoms-v1.2-additions.md` (7/19 Beautiful UI components
 
 ### Supporting Atoms
 
-- [ ] **WIDG-40**: `ScaffoldChip` renders a pressable token atom (icon/text + optional status indicator); `ScaffoldChipGroup` lays out and manages chip sets
-- [ ] **WIDG-41**: `ScaffoldDisclosure` provides generic expand/collapse of rows; `ScaffoldTraceList` renders an ordered trace of disclosure items
-- [ ] **WIDG-42**: `ScaffoldComposer` provides a text-entry composition area with action button slots and badge/attachment slots
+- [x] **WIDG-40**: `ScaffoldChip` renders a pressable token atom (icon/text + optional status indicator); `ScaffoldChipGroup` lays out and manages chip sets
+- [x] **WIDG-41**: `ScaffoldDisclosure` provides generic expand/collapse of rows; `ScaffoldTraceList` renders an ordered trace of disclosure items
+- [x] **WIDG-42**: `ScaffoldComposer` provides a text-entry composition area with action button slots and badge/attachment slots
 
 ### DataTable Extension
 
-- [ ] **WIDG-43**: `DataColumnConfig<T>` gains a `cellBuilder` (`Widget Function(BuildContext, T item)?`) so consumers render custom cells without forking the table
+- [x] **WIDG-43**: `DataColumnConfig<T>` gains a `cellBuilder` (`Widget Function(BuildContext, T item)?`) so consumers render custom cells without forking the table
 
 ### Theme
 
-- [ ] **WIDG-46**: Light default palette complementing the dark-seeded `ScaffoldPalette` defaults — full token coverage so widgets render correctly under a light `ThemeData` without consumer overrides (carried from v1.0)
+- [x] **WIDG-46**: Light default palette complementing the dark-seeded `ScaffoldPalette` defaults — full token coverage so widgets render correctly under a light `ThemeData` without consumer overrides (carried from v1.0)
 
 ### Verification & Polish
 
@@ -76,13 +76,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WIDG-37 | Phase 9 | Pending |
 | WIDG-38 | Phase 9 | Pending |
 | WIDG-39 | Phase 9 | Pending |
-| WIDG-40 | Phase 8 | Pending |
-| WIDG-41 | Phase 8 | Pending |
-| WIDG-42 | Phase 8 | Pending |
-| WIDG-43 | Phase 8 | Pending |
+| WIDG-40 | Phase 8 | Complete |
+| WIDG-41 | Phase 8 | Complete |
+| WIDG-42 | Phase 8 | Complete |
+| WIDG-43 | Phase 8 | Complete |
 | WIDG-44 | Phase 11 | Pending |
 | WIDG-45 | Phase 11 | Pending |
-| WIDG-46 | Phase 8 | Pending |
+| WIDG-46 | Phase 8 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 16 total
