@@ -40,7 +40,7 @@ The full generic widget library is live: 28 atoms + ScaffoldMotion across 4 depe
 - New primitives: `ScaffoldStreamingRichText`, `ScaffoldChart` + `ScaffoldChartScrubber`, `ScaffoldCodeBlock`, `ScaffoldSelectionActions`
 - Smaller additions: `ScaffoldChip`/`ScaffoldChipGroup`, `ScaffoldDisclosure`/`ScaffoldTraceList`, `ScaffoldComposer`, extensible `ScaffoldDataTable` cell builders (`DataColumnConfig<T>` with `cellBuilder`)
 
-**Out of scope for v1.2:** AI-specific composites (`lib/ai_components/` — built in the AI chat app, not the scaffold); HTML generator parity (deprecated, Flutter only).
+**Out of scope for v1.2:** AI-specific composites (`lib/ai_components/` — built in the AI chat app, not the scaffold); HTML template parity (reserved for a future version — NOT deprecated; Flutter only for v1.2).
 
 Seed analysis: [.planning/atoms-v1.2-additions.md](atoms-v1.2-additions.md) — 7/19 Beautiful UI components ready via existing atoms, 8 via thin composites, 4 enabled by the new primitives.
 
@@ -49,6 +49,7 @@ Seed analysis: [.planning/atoms-v1.2-additions.md](atoms-v1.2-additions.md) — 
 - ✓ SUB-01..03 — submodule as single shared source (v1.0)
 - ✓ WIDG-01..28 — 28 atoms + ScaffoldMotion + 3 composites (v1.1, Phase 6)
 - ✓ WIDG-29..31 — MediaCard, MediaControls, WalletConnectSheet (v1.1, Phase 7)
+- ✓ WIDG-40..43, 46 — ScaffoldChip/ChipGroup, ScaffoldDisclosure/TraceList, ScaffoldComposer, DataColumnConfig cellBuilder, light default palette (v1.2, Phase 8)
 
 ## Key Design Decisions
 
@@ -92,4 +93,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-17 — milestone v1.2 Atom Extensions started*
+*Last updated: 2026-08-17 — Phase 8 complete (Supporting Atoms, Table Cells & Light Palette)*
