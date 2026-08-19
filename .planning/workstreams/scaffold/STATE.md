@@ -5,7 +5,7 @@ milestone_name: Atom Extensions
 status: Phase 8 complete
 stopped_at: Phase 8 verified (5/5 must-haves), ready for Phase 9
 last_updated: "2026-08-17T22:17:24.016Z"
-last_activity: 2026-08-17 -- Phase 8 complete (6/6 plans, verification passed, review findings fixed)
+last_activity: 2026-08-19 -- Completed quick task 260818-oe8: CMakeLists Source A/B stamp dir creation
 progress:
   total_phases: 4
   completed_phases: 1
@@ -93,6 +93,12 @@ Last activity: 2026-08-17 -- Phase 8 complete (6/6 plans, verification passed, r
 ### Blockers/Concerns
 
 - None active.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260818-oe8 | CMakeLists Source A/B stamp targets missing make_directory | 2026-08-19 | 7c598a7 | [260818-oe8](./quick/260818-oe8-cmakelists-txt-source-a-source-b-templat/) |
 
 ## Session Continuity
 
