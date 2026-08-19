@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
-status: Phase 8 complete
-stopped_at: Phase 8 verified (5/5 must-haves), ready for Phase 9
+status: Phase 8 shipped
+stopped_at: Phase 8 shipped — PR #8 open; Phase 9 awaiting plan-phase
 last_updated: "2026-08-17T22:17:24.016Z"
-last_activity: 2026-08-19 -- Completed quick task 260818-oe8: CMakeLists Source A/B stamp dir creation
+last_activity: 2026-08-19 -- Phase 8 shipped — PR #8 (UAT 7/7 macOS+Chrome, iOS scaffolding added for manual check)
 progress:
   total_phases: 4
   completed_phases: 1
@@ -27,8 +27,8 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 Phase: 9 — Text & Code Primitives (not started)
 Plan: —
-Status: Phase 8 complete, Phase 9 awaiting plan-phase
-Last activity: 2026-08-17 -- Phase 8 complete (6/6 plans, verification passed, review findings fixed)
+Status: Phase 8 shipped — PR #8 open, Phase 9 awaiting plan-phase
+Last activity: 2026-08-19 -- Phase 8 shipped (PR #8); UAT 7/7 macOS+Chrome
 
 ## v1.2 Milestone
 
