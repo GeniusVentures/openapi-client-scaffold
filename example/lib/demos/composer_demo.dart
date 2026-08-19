@@ -144,10 +144,14 @@ class _SubmissionLogComposerState extends State<_SubmissionLogComposer> {
         // composer in a GestureDetector that requests that node. Translucent
         // hit-testing lets the tap also reach the inner TextField, so tapping
         // the text line still focuses natively while tapping the surrounding
-        // surface requests the node here.
+        // surface requests the node here. Focus is requested through the
+        // field's FocusScope (not node.requestFocus) so the editable-text
+        // input connection attaches on desktop — a bare node.requestFocus()
+        // lights the focus ring but leaves the keyboard beeping.
         GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: _composerFocusNode.requestFocus,
+          onTap: () =>
+              FocusScope.of(context).requestFocus(_composerFocusNode),
           child: ScaffoldComposer(
             hintText: 'Type a message…',
             focusNode: _composerFocusNode,
