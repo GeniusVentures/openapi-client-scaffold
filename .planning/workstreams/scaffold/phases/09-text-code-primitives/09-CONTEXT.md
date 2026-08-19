@@ -46,6 +46,10 @@ All three are generic atoms: they know nothing about agents, prompts, sources, o
 - **Consumer-supplied renderers for external content (D-05):** scaffold gains no rendering dependencies.
 - **Generated code never committed; Jinja2 `StrictUndefined`; generated-header convention; barrel export from `lib/frontend_scaffold.dart`; tests in `test/components/`; demos in `example/lib/demos/`; `dart analyze --fatal-infos` clean.**
 
+### Support-library parts (demonstrability requirement)
+- **D-07:** The example app must be able to *show* the convenience layers working — Markdown rendering, syntax highlighting, streaming input — not just the raw typed atoms. That means the Markdown→span mapper and the syntax tokenizer must ship as **real, runnable support parts** of the scaffold (a Dart part in `lib/`, or a C++ part in the native core if the consumer's stack calls for it), each with its own demo. A DI slot that no shipped part implements is not acceptable — every DI hook in D-02/D-04/D-06 must have at least one concrete support-part implementation demonstrated in the example app.
+- **D-08:** The base atoms in `lib/components/` gain **no new pubspec dependencies** (per D-05 no-rendering-dependencies). Support-library parts that need a package (e.g. a Markdown parser) isolate that dependency in the support part, so consumers who only want the typed atoms don't pay for it.
+
 </decisions>
 
 <canonical_refs>
