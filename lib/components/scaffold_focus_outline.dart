@@ -112,24 +112,30 @@ class _ScaffoldFocusOutlineState extends State<ScaffoldFocusOutline> {
 
     final bool showRing = _hasFocus && (keyboardFocus || accessibleNavigation);
 
-    if (!showRing) {
-      return child;
-    }
-
+    // Always return the same root widget type (Stack) whether or not the ring
+    // is visible. Returning bare `child` when hidden and a Stack when shown
+    // changes the root runtimeType, which remounts the entire child subtree —
+    // for a TextField that tears down EditableText state and the text input
+    // connection the moment focus lands (desktop: first click lights the ring
+    // but the caret/keyboard never attach). The ring simply appears or
+    // disappears at slot 1; the child at slot 0 is preserved.
+    // StackFit.passthrough keeps layout identical to returning the bare child.
     return Stack(
-      children: [
+      fit: StackFit.passthrough,
+      children: <Widget>[
         child,
-        Positioned.fill(
-          child: IgnorePointer(
-            child: CustomPaint(
-              painter: ScaffoldFocusRingPainter(
-                color: resolvedRingColor,
-                strokeWidth: resolvedRingWidth,
-                borderRadius: resolvedRadius,
+        if (showRing)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: ScaffoldFocusRingPainter(
+                  color: resolvedRingColor,
+                  strokeWidth: resolvedRingWidth,
+                  borderRadius: resolvedRadius,
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
