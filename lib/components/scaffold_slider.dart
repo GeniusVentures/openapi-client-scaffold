@@ -95,11 +95,12 @@ class ScaffoldSlider extends StatelessWidget {
 /// Track shape that paints a buffered span inside the slider track.
 ///
 /// Delegates the played/inactive segments to the stock rounded-rect painter,
-/// then paints the buffered span using the SAME [BaseSliderTrackShape]
-/// rect, so the buffered band shares the track's exact origin, height, and
-/// rounding by construction. Registered as the theme's track shape, Flutter
-/// positions the thumb relative to this shape's rect (`isRounded`), keeping
-/// thumb and buffered layer in one coordinate space.
+/// then paints the buffered span — thumb to buffered edge — over the inactive
+/// segment using the SAME [BaseSliderTrackShape] rect, so the buffered band
+/// shares the track's exact origin, height, and rounding by construction.
+/// Registered as the theme's track shape, Flutter positions the thumb
+/// relative to this shape's rect (`isRounded`), keeping thumb and buffered
+/// layer in one coordinate space.
 class _BufferedTrackShape extends RoundedRectSliderTrackShape {
   const _BufferedTrackShape({
     required this.bufferedFraction,
@@ -130,35 +131,8 @@ class _BufferedTrackShape extends RoundedRectSliderTrackShape {
       return;
     }
 
-    final Rect trackRect = getPreferredRect(
-      parentBox: parentBox,
-      offset: offset,
-      sliderTheme: sliderTheme,
-      isEnabled: isEnabled,
-      isDiscrete: isDiscrete,
-    );
-
-    // Buffered span: from the leading edge to the buffered fraction, painted
-    // BEFORE the stock segments so the played track and thumb draw over it.
-    // Painted within the same rect the played/inactive segments use, so the
-    // band's origin and the played track's origin are identical.
-    final Paint bufferedPaint = Paint()..color = bufferedColor;
-    final Radius trackRadius = Radius.circular(trackRect.height / 2);
-    final double spanWidth = trackRect.width * bufferedFraction.clamp(0.0, 1.0);
-    final Rect bufferedRect = switch (textDirection) {
-      TextDirection.ltr => Rect.fromLTRB(trackRect.left, trackRect.top,
-          trackRect.left + spanWidth, trackRect.bottom),
-      TextDirection.rtl => Rect.fromLTRB(trackRect.right - spanWidth,
-          trackRect.top, trackRect.right, trackRect.bottom),
-    };
-    if (!bufferedRect.isEmpty) {
-      context.canvas.drawRRect(
-        RRect.fromRectAndRadius(bufferedRect, trackRadius),
-        bufferedPaint,
-      );
-    }
-
-    // Stock played/inactive segments (and secondary track) on top.
+    // Stock played/inactive segments first. The inactive segment fills
+    // thumb → track end with the ambient inactiveTrackColor.
     super.paint(
       context,
       offset,
@@ -172,5 +146,35 @@ class _BufferedTrackShape extends RoundedRectSliderTrackShape {
       isEnabled: isEnabled,
       additionalActiveTrackHeight: additionalActiveTrackHeight,
     );
+
+    // Buffered span: thumb → buffered edge, painted AFTER the stock segments
+    // so the inactive segment can never cover it (Codex P2 on PR #8). The
+    // leading edge → thumb interval intentionally shows the plain inactive
+    // color — the band reads as "buffered ahead of the playhead". Geometry
+    // comes from the same getPreferredRect the stock segments use, so the
+    // band shares the track's exact origin, height, and rounding.
+    final Rect trackRect = getPreferredRect(
+      parentBox: parentBox,
+      offset: offset,
+      sliderTheme: sliderTheme,
+      isEnabled: isEnabled,
+      isDiscrete: isDiscrete,
+    );
+    final Paint bufferedPaint = Paint()..color = bufferedColor;
+    final Radius trackRadius = Radius.circular(trackRect.height / 2);
+    final double bufferEdge =
+        trackRect.width * bufferedFraction.clamp(0.0, 1.0);
+    final Rect bufferedRect = switch (textDirection) {
+      TextDirection.ltr => Rect.fromLTRB(thumbCenter.dx, trackRect.top,
+          trackRect.left + bufferEdge, trackRect.bottom),
+      TextDirection.rtl => Rect.fromLTRB(trackRect.right - bufferEdge,
+          trackRect.top, thumbCenter.dx, trackRect.bottom),
+    };
+    if (!bufferedRect.isEmpty) {
+      context.canvas.drawRRect(
+        RRect.fromRectAndRadius(bufferedRect, trackRadius),
+        bufferedPaint,
+      );
+    }
   }
 }

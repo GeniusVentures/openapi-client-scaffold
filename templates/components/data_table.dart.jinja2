@@ -321,15 +321,17 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
    test/components/data_table_cell_builder_test.dart mirrors this template's
    cell render path — keep in sync (full CI regen+diff harness is Phase 11
    scope, WIDG-44). #}
-{% if col.cellBuilder is defined and col.cellBuilder %}
                             Builder(
                               builder: (BuildContext cellContext) =>
                                   widget.columns[{{ loop.index0 }}]
-                                      .cellBuilder!(cellContext, item),
+                                              .cellBuilder !=
+                                          null
+                                      ? widget.columns[{{ loop.index0 }}]
+                                          .cellBuilder!(cellContext, item)
+                                      : Text(item.{{ col.accessor }}
+                                              ?.toString() ??
+                                          ''),
                             ),
-{% else %}
-                            Text(item.{{ col.accessor }}?.toString() ?? ''),
-{% endif %}
                           ),
 {% endfor %}
                         ],
