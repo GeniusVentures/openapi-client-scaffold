@@ -9,12 +9,12 @@ doubles as a visual check when changing a widget or a design token.
 ```bash
 cd example
 flutter pub get
-flutter run -d linux     # or: -d macos, -d chrome
+flutter run -d linux     # or: -d macos, -d chrome, -d ios (simulator)
 ```
 
-Committed platform scaffolding covers **Linux, macOS, and web**. For any other
-target, run `flutter create --platforms=<platform> .` first — and if you do,
-check `git diff .metadata` afterwards, since `flutter create` rewrites the
+Committed platform scaffolding covers **Linux, macOS, web, and iOS**. For any
+other target, run `flutter create --platforms=<platform> .` first — and if you
+do, check `git diff .metadata` afterwards, since `flutter create` rewrites the
 platform list rather than appending to it.
 
 Linux desktop needs the GTK toolchain (`flutter doctor` should show
