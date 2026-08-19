@@ -108,6 +108,8 @@ if(PYTHON3_EXECUTABLE)
         set(_output "${GENERATED_DIR}/scaffold/${_out}")
         add_custom_command(
             OUTPUT ${_stamp}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen/scaffold/base"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template ${_rel}
                 --tokens ${DESIGN_TOKENS}
@@ -143,6 +145,8 @@ if(PYTHON3_EXECUTABLE)
         set(_output "${GENERATED_DIR}/shared/${_out}")
         add_custom_command(
             OUTPUT ${_stamp}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen/shared/base"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template ${_rel}
                 --tokens ${DESIGN_TOKENS}
