@@ -123,6 +123,13 @@ class _SubmissionLogComposer extends StatefulWidget {
 
 class _SubmissionLogComposerState extends State<_SubmissionLogComposer> {
   final List<String> _submissions = <String>[];
+  final FocusNode _composerFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _composerFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,14 +139,25 @@ class _SubmissionLogComposerState extends State<_SubmissionLogComposer> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        ScaffoldComposer(
-          hintText: 'Type a message…',
-          actionRow: <Widget>[
-            IconButton(icon: const Icon(Icons.send), onPressed: () {}),
-          ],
-          onSubmit: (String value) {
-            setState(() => _submissions.add(value));
-          },
+        // Consumer-side tap-to-focus (D-07): the composer exposes its
+        // focusNode; the demo owns the tap-to-focus behavior by wrapping the
+        // composer in a GestureDetector that requests that node. Translucent
+        // hit-testing lets the tap also reach the inner TextField, so tapping
+        // the text line still focuses natively while tapping the surrounding
+        // surface requests the node here.
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: _composerFocusNode.requestFocus,
+          child: ScaffoldComposer(
+            hintText: 'Type a message…',
+            focusNode: _composerFocusNode,
+            actionRow: <Widget>[
+              IconButton(icon: const Icon(Icons.send), onPressed: () {}),
+            ],
+            onSubmit: (String value) {
+              setState(() => _submissions.add(value));
+            },
+          ),
         ),
         SizedBox(height: dimens.space8),
         for (int i = 0; i < _submissions.length; i++)
