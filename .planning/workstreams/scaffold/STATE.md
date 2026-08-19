@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
-status: Phase 8 shipped
-stopped_at: Phase 8 shipped — PR #8 open; Phase 9 awaiting plan-phase
-last_updated: "2026-08-17T22:17:24.016Z"
-last_activity: 2026-08-19 -- Phase 8 shipped — PR #8 (UAT 7/7 macOS+Chrome, iOS scaffolding added for manual check)
+status: Phase 8 merged
+stopped_at: Phase 8 merged into develop (PR #8); Phase 9 awaiting plan-phase
+last_updated: "2026-08-19T00:00:00.000Z"
+last_activity: 2026-08-19 -- Phase 8 merged into develop via PR #8 (Codex P1+P2 findings fixed pre-merge); back on develop
 progress:
   total_phases: 4
   completed_phases: 1
@@ -27,8 +27,8 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 Phase: 9 — Text & Code Primitives (not started)
 Plan: —
-Status: Phase 8 shipped — PR #8 open, Phase 9 awaiting plan-phase
-Last activity: 2026-08-19 -- Phase 8 shipped (PR #8); UAT 7/7 macOS+Chrome
+Status: Phase 8 merged into develop (PR #8), Phase 9 awaiting plan-phase
+Last activity: 2026-08-19 -- Phase 8 merged (PR #8); Codex findings fixed pre-merge; UAT 7/7 macOS+Chrome
 
 ## v1.2 Milestone
 
@@ -102,7 +102,7 @@ Last activity: 2026-08-19 -- Phase 8 shipped (PR #8); UAT 7/7 macOS+Chrome
 
 ## Session Continuity
 
-**Last session:** 2026-08-17T18:37:00.455Z
-**Stopped at:** Phase 8 UI-SPEC approved
-**Resume file:** .planning/workstreams/scaffold/phases/08-supporting-atoms-table-cells-light-palette/08-UI-SPEC.md
-**Next action:** `/gsd:plan-phase 8` to plan Supporting Atoms, Table Cells & Light Palette
+**Last session:** 2026-08-19
+**Stopped at:** Phase 8 merged into develop (PR #8); local branch deleted; working tree on develop
+**Resume file:** .planning/workstreams/scaffold/STATE.md
+**Next action:** `/gsd:discuss-phase 9 --ws scaffold` to plan Text & Code Primitives (ScaffoldStreamingRichText, ScaffoldCodeBlock, ScaffoldSelectionActions — WIDG-32..34, 37..39)
