@@ -36,6 +36,7 @@ class ScaffoldComposer extends StatefulWidget {
     this.onSubmit,
     this.disabled = false,
     this.maxLines,
+    this.focusNode,
   });
 
   /// Hint text shown inside the text field (consumer-supplied).
@@ -59,6 +60,13 @@ class ScaffoldComposer extends StatefulWidget {
   /// Maximum lines for the text field (defaults to 1 via [TextField]).
   final int? maxLines;
 
+  /// Optional focus node for the text field. When null an internal node is
+  /// created. Supplying one lets the consumer drive focus (e.g. tap-to-focus
+  /// on a wrapping surface, keyboard shortcuts) — the composer never requests
+  /// focus itself (D-07: behavior is consumer-owned). A consumer-supplied
+  /// node is owned and disposed by the consumer.
+  final FocusNode? focusNode;
+
   @override
   State<ScaffoldComposer> createState() => _ScaffoldComposerState();
 }
@@ -66,19 +74,37 @@ class ScaffoldComposer extends StatefulWidget {
 class _ScaffoldComposerState extends State<ScaffoldComposer> {
   /// Transient state only — submission truth lives in the consumer (D-03).
   late final TextEditingController _controller;
-  late final FocusNode _textFieldFocusNode;
+  late FocusNode _textFieldFocusNode;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
-    _textFieldFocusNode = FocusNode();
+    _textFieldFocusNode = widget.focusNode ?? FocusNode();
+  }
+
+  @override
+  void didUpdateWidget(ScaffoldComposer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      // The consumer swapped the node. Dispose the previous node only if the
+      // composer owned it, then follow the new node (or create an internal
+      // one when the consumer cleared the override).
+      if (oldWidget.focusNode == null) {
+        _textFieldFocusNode.dispose();
+      }
+      _textFieldFocusNode = widget.focusNode ?? FocusNode();
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _textFieldFocusNode.dispose();
+    // Only dispose the focus node when the composer created it; a
+    // consumer-supplied node is owned and disposed by the consumer.
+    if (widget.focusNode == null) {
+      _textFieldFocusNode.dispose();
+    }
     super.dispose();
   }
 

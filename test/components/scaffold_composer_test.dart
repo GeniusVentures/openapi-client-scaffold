@@ -224,6 +224,66 @@ void main() {
     expect(outline.focusNode, same(field.focusNode));
   });
 
+  testWidgets('consumer-supplied focusNode is wired to field and outline, '
+      'and tapping the wrapping surface focuses it', (tester) async {
+    final FocusNode externalNode = FocusNode();
+    addTearDown(externalNode.dispose);
+
+    await _pump(
+      tester,
+      GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: externalNode.requestFocus,
+        child: ScaffoldComposer(hintText: 'Type…', focusNode: externalNode),
+      ),
+    );
+
+    // The consumer's node is the one wired through to field + outline.
+    final TextField field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.focusNode, same(externalNode));
+    final ScaffoldFocusOutline outline = tester.widget<ScaffoldFocusOutline>(
+      find.descendant(
+        of: find.byType(ScaffoldComposer),
+        matching: find.byType(ScaffoldFocusOutline),
+      ),
+    );
+    expect(outline.focusNode, same(externalNode));
+
+    // Tap the wrapping surface (off the text line) → focus is requested.
+    expect(externalNode.hasFocus, isFalse);
+    await tester.tap(find.byType(ScaffoldComposer));
+    await tester.pump();
+    expect(externalNode.hasFocus, isTrue);
+  });
+
+  testWidgets('composer does NOT dispose a consumer-supplied focus node',
+      (tester) async {
+    final FocusNode externalNode = FocusNode();
+    await _pump(
+      tester,
+      ScaffoldComposer(hintText: 'Type…', focusNode: externalNode),
+    );
+
+    // Tear down the tree — the composer must leave the consumer node alive.
+    await tester.pumpWidget(const SizedBox.shrink());
+    // A disposed ChangeNotifier throws on addListener; a live one does not.
+    void listener() {}
+    expect(() => externalNode.addListener(listener), returnsNormally);
+    externalNode.removeListener(listener);
+    externalNode.dispose();
+  });
+
+  testWidgets('composer disposes its own internal focus node', (tester) async {
+    await _pump(tester, const ScaffoldComposer(hintText: 'Type…'));
+    final FocusNode captured =
+        tester.widget<TextField>(find.byType(TextField)).focusNode!;
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    // The composer-owned node is disposed with the tree: adding a listener
+    // to a disposed ChangeNotifier throws a FlutterError.
+    expect(() => captured.addListener(() {}), throwsFlutterError);
+  });
+
   testWidgets('renders under lightPalette without exception', (tester) async {
     await _pumpLight(
       tester,
