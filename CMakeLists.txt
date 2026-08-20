@@ -30,9 +30,19 @@ set(_scaffold_python_env ${CMAKE_COMMAND} -E env "PYTHONPATH=${_scaffold_pythonp
 # --------------------------------------------------------
 # 1. Generate typed API clients from OpenAPI specs
 #    Reads ../api-specs/*_openapi.json (parent project)
+#    Optional API_SPECS_DIR cache var overrides the default parent-project
+#    api-specs/ resolution (mirror of TEMPLATES_DIR pattern). List form so
+#    the flag expands to TWO argv tokens — a single space-embedded string
+#    reaches argparse as one token and fails (same bug class as 1762a45).
+if(API_SPECS_DIR)
+    set(_api_specs_dir_flag --api-specs-dir "${API_SPECS_DIR}")
+else()
+    set(_api_specs_dir_flag "")
+endif()
+
 if(PYTHON3_EXECUTABLE)
     add_custom_target(frontend_generate_api
-        COMMAND ${_scaffold_python_env} ${PYTHON3_EXECUTABLE} -m scaffold_codegen.api_clients
+        COMMAND ${_scaffold_python_env} ${PYTHON3_EXECUTABLE} -m scaffold_codegen.api_clients ${_api_specs_dir_flag}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating typed API clients from OpenAPI specs"
     )
@@ -79,6 +89,8 @@ set(GENERATED_DIR "${CMAKE_BINARY_DIR}/generated" CACHE STRING
     "Output directory for generated template output")
 set(FRONTEND_TARGET "flutter" CACHE STRING
     "Frontend codegen target (flutter, html)")
+set(API_SPECS_DIR "" CACHE STRING
+    "Path to api-specs/ containing *_openapi.json; empty = <scaffold-parent>/api-specs")
 
 if(PYTHON3_EXECUTABLE)
     set(_scaffold_templates_dir "${CMAKE_CURRENT_SOURCE_DIR}/templates")

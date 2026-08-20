@@ -78,12 +78,17 @@ def main():
         "-s", "--spec",
         help="Specific spec to generate (without _openapi.json suffix, e.g. 'gsm')"
     )
+    parser.add_argument(
+        "--api-specs-dir",
+        default=None,
+        help="Directory containing *_openapi.json specs (overrides default parent-project api-specs/)"
+    )
     args = parser.parse_args()
 
     scaffold_root = REPO_ROOT  # frontend/ submodule root
     project_root = scaffold_root.parent  # parent project root
 
-    spec_dir = project_root / "api-specs"
+    spec_dir = Path(args.api_specs_dir) if args.api_specs_dir else (project_root / "api-specs")
     output_base = scaffold_root / "generated"
 
     openapi_gen = find_openapi_generator()
