@@ -7,6 +7,8 @@
 /// no Riverpod or app-specific theme dependency.
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_scaffold/components/scaffold_live_region.dart';
@@ -91,7 +93,10 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
 
   List<ScaffoldRichSpan> _previousSpans = const <ScaffoldRichSpan>[];
   String? _lastAnnouncedText;
-  DateTime? _lastAnnounceAt;
+  // Debounce gate for the live-region announce path. Implemented with a
+  // Timer so widget tests can drive the window via tester.pump(Duration).
+  bool _announceThrottled = false;
+  Timer? _announceThrottleTimer;
 
   @override
   void initState() {
@@ -121,6 +126,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
 
   @override
   void dispose() {
+    _announceThrottleTimer?.cancel();
     _cursorController.dispose();
     if (_ownsCubit) {
       _cubit.close();
@@ -145,12 +151,15 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
               (policy is ScaffoldBlockBoundaryAnnouncePolicy)
                   ? policy.debounce
                   : Duration.zero;
-          if (next != null &&
-              (_lastAnnounceAt == null ||
-                  DateTime.now().difference(_lastAnnounceAt!) >=
-                      policyDebounce)) {
+          if (next != null && !_announceThrottled) {
             _lastAnnouncedText = next;
-            _lastAnnounceAt = DateTime.now();
+            if (policyDebounce > Duration.zero) {
+              _announceThrottled = true;
+              _announceThrottleTimer?.cancel();
+              _announceThrottleTimer = Timer(policyDebounce, () {
+                _announceThrottled = false;
+              });
+            }
           }
 
           final palette = context.palette;
