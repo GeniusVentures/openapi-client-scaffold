@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
-status: "Phase 8 merged into develop (PR #8), Phase 9 awaiting plan-phase"
+status: executing
 stopped_at: Phase 9 UI-SPEC approved
-last_updated: "2026-08-20T16:26:56.238Z"
-last_activity: "2026-08-19 -- Phase 8 merged (PR #8); Codex findings fixed pre-merge; UAT 7/7 macOS+Chrome"
+last_updated: "2026-08-20T17:47:35.778Z"
+last_activity: 2026-08-20 -- Phase 09 planning complete
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 6
+  total_plans: 12
   completed_plans: 6
   percent: 25
 ---
@@ -27,8 +27,8 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 Phase: 9 — Text & Code Primitives (not started)
 Plan: —
-Status: Phase 8 merged into develop (PR #8), Phase 9 awaiting plan-phase
-Last activity: 2026-08-19 -- Phase 8 merged (PR #8); Codex findings fixed pre-merge; UAT 7/7 macOS+Chrome
+Status: Ready to execute
+Last activity: 2026-08-20 -- Phase 09 planning complete
 
 ## v1.2 Milestone
 
