@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
-status: Phase 8 merged
-stopped_at: Phase 8 merged into develop (PR #8); Phase 9 awaiting plan-phase
-last_updated: "2026-08-19T00:00:00.000Z"
-last_activity: 2026-08-19 -- Phase 8 merged into develop via PR #8 (Codex P1+P2 findings fixed pre-merge); back on develop
+status: "Phase 8 merged into develop (PR #8), Phase 9 awaiting plan-phase"
+stopped_at: Phase 9 UI-SPEC approved
+last_updated: "2026-08-20T16:26:56.238Z"
+last_activity: "2026-08-19 -- Phase 8 merged (PR #8); Codex findings fixed pre-merge; UAT 7/7 macOS+Chrome"
 progress:
   total_phases: 4
   completed_phases: 1
@@ -98,11 +98,12 @@ Last activity: 2026-08-19 -- Phase 8 merged (PR #8); Codex findings fixed pre-me
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 260820-fix | Source A parent template-dir flag: list expansion + self-reference guard (cherry-picked to develop 1762a45) | 2026-08-20 | 9037950 | — |
 | 260818-oe8 | CMakeLists Source A/B stamp targets missing make_directory | 2026-08-19 | 7c598a7 | [260818-oe8](./quick/260818-oe8-cmakelists-txt-source-a-source-b-templat/) |
 
 ## Session Continuity
 
-**Last session:** 2026-08-19
-**Stopped at:** Phase 8 merged into develop (PR #8); local branch deleted; working tree on develop
-**Resume file:** .planning/workstreams/scaffold/STATE.md
-**Next action:** `/gsd:discuss-phase 9 --ws scaffold` to plan Text & Code Primitives (ScaffoldStreamingRichText, ScaffoldCodeBlock, ScaffoldSelectionActions — WIDG-32..34, 37..39)
+**Last session:** 2026-08-20T16:26:56.203Z
+**Stopped at:** Phase 9 UI-SPEC approved
+**Resume file:** .planning/workstreams/scaffold/phases/09-text-code-primitives/09-UI-SPEC.md
+**Next action:** `/gsd:plan-phase 9 --ws scaffold` to plan Text & Code Primitives (ScaffoldStreamingRichText, ScaffoldCodeBlock, ScaffoldSelectionActions — WIDG-32..34, 37..39)
