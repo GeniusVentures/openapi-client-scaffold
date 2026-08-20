@@ -4,11 +4,16 @@ import 'package:frontend_scaffold/frontend_scaffold.dart';
 import 'demos/action_button_demo.dart';
 import 'demos/animations_demo.dart';
 import 'demos/bottom_drawer_demo.dart';
+import 'demos/code_block_demo.dart';
+import 'demos/light_syntax_tokenizer_demo.dart';
 import 'demos/loading_demo.dart';
+import 'demos/markdown_to_spans_demo.dart';
 import 'demos/media_card_demo.dart';
 import 'demos/media_controls_demo.dart';
 import 'demos/page_chrome_demo.dart';
 import 'demos/responsive_grid_demo.dart';
+import 'demos/selection_actions_demo.dart';
+import 'demos/streaming_rich_text_demo.dart';
 import 'demos/string_button_demo.dart';
 import 'demos/text_entry_field_demo.dart';
 import 'demos/toast_demo.dart';
@@ -227,6 +232,31 @@ class HomePage extends StatelessWidget {
             title: 'Trace list',
             subtitle: 'Ordered disclosure items + optional group header',
             builder: (_) => const ScaffoldTraceListDemo(),
+          ),
+          _DemoTile(
+            title: 'Streaming rich text',
+            subtitle: 'Incremental typed-span rendering + citations + action slots',
+            builder: (_) => const ScaffoldStreamingRichTextDemo(),
+          ),
+          _DemoTile(
+            title: 'Code block',
+            subtitle: 'Syntax-highlighted code + line numbers + copy + streamed lines',
+            builder: (_) => const ScaffoldCodeBlockDemo(),
+          ),
+          _DemoTile(
+            title: 'Selection actions',
+            subtitle: 'Anchored toolbar on text selection (consumer-built actions)',
+            builder: (_) => const ScaffoldSelectionActionsDemo(),
+          ),
+          _DemoTile(
+            title: 'Markdown to spans',
+            subtitle: 'Markdown parser -> typed-span mapper (D-03 support part)',
+            builder: (_) => const ScaffoldMarkdownToSpansDemo(),
+          ),
+          _DemoTile(
+            title: 'Light syntax tokenizer',
+            subtitle: 'Regex-based syntax highlighting (D-04 support part)',
+            builder: (_) => const ScaffoldLightSyntaxTokenizerDemo(),
           ),
         ],
       ),
