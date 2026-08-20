@@ -84,6 +84,27 @@ class ScaffoldSelectionActions extends StatefulWidget {
   @override
   State<ScaffoldSelectionActions> createState() =>
       _ScaffoldSelectionActionsState();
+
+  /// Deterministic selection-injection hook for tests.
+  ///
+  /// Drives the SAME internal handler as a real [SelectionArea]
+  /// `onSelectionChanged` callback. Exists because driving a real
+  /// [SelectionArea] selection in `flutter_test` is framework-brittle.
+  ///
+  /// When [plainText] is empty, simulates a collapsed selection (hides the
+  /// toolbar, fires `onSelectionChanged` with collapsed offset -1). When
+  /// non-empty, updates the cached selection/plainText, shows the toolbar,
+  /// and fires `onSelectionChanged` with the supplied or synthesized
+  /// full-span [TextSelection].
+  @visibleForTesting
+  static void debugSimulateSelection(
+    State<ScaffoldSelectionActions> state,
+    String plainText, {
+    TextSelection? selection,
+  }) {
+    (state as _ScaffoldSelectionActionsState)
+        ._handleSelection(plainText, selection: selection);
+  }
 }
 
 class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
@@ -282,15 +303,27 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
               horizontal: dimens.space4,
               vertical: dimens.space4,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                widget.toolbarBuilder(
-                  overlayContext,
-                  _lastSelection,
-                  _lastPlainText,
-                ),
-              ],
+            // IntrinsicWidth is REQUIRED here (not optional): inside an
+            // UnconstrainedBox + Align(widthFactor:1.0) the child gets
+            // fully-loose constraints (max = infinity), and a bare
+            // Row(mainAxisSize: min) under infinite max-width still tries
+            // to expand to the constraint max because RenderFlex performs
+            // layout in two passes — first asking children for intrinsic
+            // size, then allocating. With an unconstrained max, the Row's
+            // reported width can exceed the visible child width.
+            // IntrinsicWidth forces the Row to its child's intrinsic width
+            // before RenderFlex runs, which pins the shrink-wrap.
+            child: IntrinsicWidth(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  widget.toolbarBuilder(
+                    overlayContext,
+                    _lastSelection,
+                    _lastPlainText,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -306,9 +339,30 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
           targetAnchor: targetAnchor,
           followerAnchor: followerAnchor,
           offset: offset,
-          child: Align(
+          // CompositedTransformFollower enforces tight full-screen
+          // constraints on its child (documented RenderFollower behavior).
+          // The child must be allowed to shrink to its intrinsic size.
+          // OverflowBox(minWidth:0, maxWidth:inf, minHeight:0, maxHeight:inf)
+          // is the canonical Flutter idiom for this: it replaces the tight
+          // incoming constraints with fully-loose ones, letting the inner
+          // Align + Row shrink-wrap to the toolbarBuilder's child.
+          // UnconstrainedBox + ClipRect was attempted first but still
+          // leaked an 82px overflow because the Align inherited the
+          // parent's tight width before UnconstrainedBox could intercept
+          // (RenderConstraintsTransformBox reports against the *incoming*
+          // constraints, not the substituted ones).
+          child: OverflowBox(
+            minWidth: 0.0,
+            maxWidth: double.infinity,
+            minHeight: 0.0,
+            maxHeight: double.infinity,
             alignment: Alignment.topLeft,
-            child: toolbarCard,
+            child: Align(
+              alignment: Alignment.topLeft,
+              widthFactor: 1.0,
+              heightFactor: 1.0,
+              child: toolbarCard,
+            ),
           ),
         ),
       ),
@@ -336,27 +390,11 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
     return KeyEventResult.ignored;
   }
 
-  /// Deterministic selection-injection hook for tests.
-  ///
-  /// Drives the SAME internal handler as a real [SelectionArea]
-  /// `onSelectionChanged` callback. Exists because driving a real
-  /// [SelectionArea] selection in `flutter_test` is framework-brittle.
-  ///
-  /// When [plainText] is empty, simulates a collapsed selection (hides the
-  /// toolbar, fires `onSelectionChanged` with collapsed offset -1). When
-  /// non-empty, updates the cached selection/plainText, shows the toolbar,
-  /// and fires `onSelectionChanged` with the supplied or synthesized
-  /// full-span [TextSelection].
-  @visibleForTesting
-  // ignore: unused_element
-  static void debugSimulateSelection(
-    _ScaffoldSelectionActionsState state,
-    String plainText, {
-    TextSelection? selection,
-  }) {
-    state._handleSelection(plainText, selection: selection);
-  }
-
+  /// Deterministic selection-injection hook for tests — see
+  /// [ScaffoldSelectionActions.debugSimulateSelection]. The static hook on
+  /// the public class forwards here via the private [_handleSelection]
+  /// handler so test-injected and real SelectionArea-driven selection
+  /// updates share the exact same code path.
   @override
   Widget build(BuildContext context) {
     return Focus(
