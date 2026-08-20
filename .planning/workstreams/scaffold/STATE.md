@@ -4,8 +4,8 @@ milestone: v1.2
 milestone_name: Atom Extensions
 status: executing
 stopped_at: Phase 9 UI-SPEC approved
-last_updated: "2026-08-20T17:47:35.778Z"
-last_activity: 2026-08-20 -- Phase 09 planning complete
+last_updated: "2026-08-20T18:17:49.954Z"
+last_activity: 2026-08-20 -- Phase 09 execution started
 progress:
   total_phases: 4
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.2 Atom Extensions — generic primitives supporting arbitrary composable widgets (streaming rich text, charts, code block, selection actions, chips, disclosures, composer, extensible data table cells); seed: .planning/atoms-v1.2-additions.md
+**Current focus:** Phase 09 — text-code-primitives
 
 ## Current Position
 
-Phase: 9 — Text & Code Primitives (not started)
-Plan: —
-Status: Ready to execute
-Last activity: 2026-08-20 -- Phase 09 planning complete
+Phase: 09 (text-code-primitives) — EXECUTING
+Plan: 1 of 6
+Status: Executing Phase 09
+Last activity: 2026-08-20 -- Phase 09 execution started
 
 ## v1.2 Milestone
 
