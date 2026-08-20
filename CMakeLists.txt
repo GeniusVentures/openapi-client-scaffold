@@ -86,8 +86,12 @@ if(PYTHON3_EXECUTABLE)
 
     # Optional consumer templates dir — only pass the flag when set, otherwise
     # a bare `--template-dir` (no value) breaks engine.py argument parsing.
-    if(TEMPLATES_DIR)
-        set(_parent_template_dir_flag "--template-dir ${TEMPLATES_DIR}")
+    # List form so the flag expands to TWO argv tokens (a single space-embedded
+    # string reaches argparse as one token and fails). Skip when TEMPLATES_DIR
+    # points back at our own templates/ — that duplicates the Source A
+    # `--template-dir ${_scaffold_templates_dir}` (same guard as Source B).
+    if(TEMPLATES_DIR AND NOT TEMPLATES_DIR STREQUAL _scaffold_templates_dir)
+        set(_parent_template_dir_flag --template-dir "${TEMPLATES_DIR}")
     else()
         set(_parent_template_dir_flag "")
     endif()
