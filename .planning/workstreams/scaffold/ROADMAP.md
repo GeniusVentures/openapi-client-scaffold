@@ -77,12 +77,12 @@ Plans:
   3. Response-action slots (copy, retry, rate, follow-up) render below the streaming text, and accessibility announcements do not reread the whole answer per token
   4. `ScaffoldCodeBlock` renders syntax-highlighted spans with line numbers, a language/filename header, and a working copy action
   5. Code block supports horizontal scrolling, streamed line insertion, reduced-motion behavior, and `ScaffoldSelectionActions` wraps selectable content reporting `onSelectionChanged(TextSelection, String)` with an anchored action toolbar
-**Plans:** 6 plans
+**Plans:** 3/6 plans executed
 
 Plans:
-- [ ] 09-01-PLAN.md — ScaffoldStreamingRichText atom + typed span model + announce-policy hook (WIDG-32, 33, 34)
-- [ ] 09-02-PLAN.md — ScaffoldCodeBlock atom with DI highlighting + streamed lines (WIDG-37, 38)
-- [ ] 09-03-PLAN.md — ScaffoldSelectionActions anchored toolbar wrapper (WIDG-39)
+- [x] 09-01-PLAN.md — ScaffoldStreamingRichText atom + typed span model + announce-policy hook (WIDG-32, 33, 34)
+- [x] 09-02-PLAN.md — ScaffoldCodeBlock atom with DI highlighting + streamed lines (WIDG-37, 38)
+- [x] 09-03-PLAN.md — ScaffoldSelectionActions anchored toolbar wrapper (WIDG-39)
 - [ ] 09-04-PLAN.md — Demos for the three atoms (D-07 demonstrability)
 - [ ] 09-05-PLAN.md — Support parts: markdown_to_spans + light_syntax_tokenizer + copy buttons + their demos/tests (D-03, D-04, D-07, D-08)
 - [ ] 09-06-PLAN.md — Barrel exports + demo registration + final gates + human UAT (WIDG-32..34, 37..39 closure)
@@ -117,7 +117,7 @@ Plans:
 | 6. Core UI Foundation | v1.1 | 6/6 | Complete | 2026-08-14 |
 | 7. Media & Integration Widgets | v1.1 | 4/4 | Complete | 2026-08-15 |
 | 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 6/6 | Complete | 2026-08-17 |
-| 9. Text & Code Primitives | v1.2 | 0/6 | Not started | - |
+| 9. Text & Code Primitives | v1.2 | 3/6 | In Progress|  |
 | 10. Chart & Scrubber | v1.2 | 0/? | Not started | - |
 | 11. Verification & Coverage Gate | v1.2 | 0/? | Not started | - |
 
