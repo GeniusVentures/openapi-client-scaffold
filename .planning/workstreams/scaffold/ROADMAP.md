@@ -77,13 +77,13 @@ Plans:
   3. Response-action slots (copy, retry, rate, follow-up) render below the streaming text, and accessibility announcements do not reread the whole answer per token
   4. `ScaffoldCodeBlock` renders syntax-highlighted spans with line numbers, a language/filename header, and a working copy action
   5. Code block supports horizontal scrolling, streamed line insertion, reduced-motion behavior, and `ScaffoldSelectionActions` wraps selectable content reporting `onSelectionChanged(TextSelection, String)` with an anchored action toolbar
-**Plans:** 4/6 plans executed
+**Plans:** 5/6 plans executed
 
 Plans:
 - [x] 09-01-PLAN.md — ScaffoldStreamingRichText atom + typed span model + announce-policy hook (WIDG-32, 33, 34)
 - [x] 09-02-PLAN.md — ScaffoldCodeBlock atom with DI highlighting + streamed lines (WIDG-37, 38)
 - [x] 09-03-PLAN.md — ScaffoldSelectionActions anchored toolbar wrapper (WIDG-39)
-- [ ] 09-04-PLAN.md — Demos for the three atoms (D-07 demonstrability)
+- [x] 09-04-PLAN.md — Demos for the three atoms (D-07 demonstrability)
 - [x] 09-05-PLAN.md — Support parts: markdown_to_spans + light_syntax_tokenizer + copy buttons + their demos/tests (D-03, D-04, D-07, D-08)
 - [ ] 09-06-PLAN.md — Barrel exports + demo registration + final gates + human UAT (WIDG-32..34, 37..39 closure)
 **UI hint**: yes
