@@ -3,7 +3,8 @@
 // Demonstrates wrapping selectable text, the toolbar appearing on
 // selection, the Plan 05 ScaffoldSelectionCopyAction wired into the
 // toolbarBuilder slot, placement override (above/below), empty toolbar
-// builders, reduced-motion gating, and light-palette rendering.
+// builders, reduced-motion gating, light-palette rendering, and a live
+// toolbarAlignment (left/center/right) toggle.
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_chip.dart';
 import 'package:frontend_scaffold/components/scaffold_motion.dart';
@@ -151,9 +152,85 @@ class ScaffoldSelectionActionsDemo extends StatelessWidget {
                 },
               ),
             ),
+
+            SizedBox(height: dimens.itemSpacing),
+
+            // --- 7. Toolbar alignment toggle ---
+            Text('Toolbar alignment (left / center / right / first / last)',
+                style: TextStyle(color: palette.textPrimary)),
+            SizedBox(height: dimens.space8),
+            const _AlignmentToggle(),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Live toolbar-alignment toggle — flips [ScaffoldToolbarAlignment] between
+/// left / center / right (selection bounding box) and first / last (selection
+/// order) so the anchor change is visible on the next selection without
+/// restarting the demo.
+class _AlignmentToggle extends StatefulWidget {
+  const _AlignmentToggle();
+
+  @override
+  State<_AlignmentToggle> createState() => _AlignmentToggleState();
+}
+
+class _AlignmentToggleState extends State<_AlignmentToggle> {
+  ScaffoldToolbarAlignment _alignment = ScaffoldToolbarAlignment.last;
+
+  @override
+  Widget build(BuildContext context) {
+    final ScaffoldDimens dimens = context.dimens;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SegmentedButton<ScaffoldToolbarAlignment>(
+          segments: const <ButtonSegment<ScaffoldToolbarAlignment>>[
+            ButtonSegment<ScaffoldToolbarAlignment>(
+              value: ScaffoldToolbarAlignment.left,
+              label: Text('Left'),
+            ),
+            ButtonSegment<ScaffoldToolbarAlignment>(
+              value: ScaffoldToolbarAlignment.center,
+              label: Text('Center'),
+            ),
+            ButtonSegment<ScaffoldToolbarAlignment>(
+              value: ScaffoldToolbarAlignment.right,
+              label: Text('Right'),
+            ),
+            ButtonSegment<ScaffoldToolbarAlignment>(
+              value: ScaffoldToolbarAlignment.first,
+              label: Text('First'),
+            ),
+            ButtonSegment<ScaffoldToolbarAlignment>(
+              value: ScaffoldToolbarAlignment.last,
+              label: Text('Last'),
+            ),
+          ],
+          selected: <ScaffoldToolbarAlignment>{_alignment},
+          onSelectionChanged: (Set<ScaffoldToolbarAlignment> chosen) {
+            setState(() => _alignment = chosen.first);
+          },
+        ),
+        SizedBox(height: dimens.space8),
+        ScaffoldSelectionActions(
+          toolbarAlignment: _alignment,
+          toolbarBuilder:
+              (BuildContext ctx, TextSelection sel, String plainText) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ScaffoldSelectionCopyAction(selectedText: plainText),
+              ],
+            );
+          },
+          child: const Text(_kSampleParagraph),
+        ),
+      ],
     );
   }
 }
