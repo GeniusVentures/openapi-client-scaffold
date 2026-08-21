@@ -117,4 +117,24 @@ void main() {
       reason: 'expected at least one number span',
     );
   });
+
+  // Test 9 — digits embedded in an identifier are not tokenized as numbers.
+  // "sha256" / "token2" read as a single identifier; the trailing digits must
+  // not be split into a number-colored span.
+  test('digits inside identifiers are not tokenized as numbers', () {
+    const String input = 'sha256 token2';
+    final List<ScaffoldCodeSpan> spans =
+        scaffoldLightTokenize(input, ScaffoldLightLanguage.dart);
+    expect(
+      spans.map((ScaffoldCodeSpan s) => s.text).join(),
+      input,
+    );
+    for (final ScaffoldCodeSpan span in spans) {
+      expect(
+        span.color,
+        isNot(const Color(0xFFB5CEA8)),
+        reason: 'no digit run inside an identifier may be number-colored',
+      );
+    }
+  });
 }

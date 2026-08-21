@@ -77,7 +77,15 @@ final class ScaffoldBlockBoundaryAnnouncePolicy
     if (!endsBlock) {
       return null;
     }
-    return tailText;
+    // Announce the newly-completed block's full plain text, not just the tail
+    // span. markdown_to_spans emits the '\n\n' boundary as a SEPARATE trailing
+    // span after the paragraph content, so returning only the tail would
+    // surface whitespace instead of the actual paragraph (D-06 a11y).
+    final StringBuffer buffer = StringBuffer();
+    for (int i = previous.length; i < next.length; i++) {
+      buffer.write(_plainTextOf(next[i]));
+    }
+    return buffer.toString();
   }
 }
 

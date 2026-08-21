@@ -247,7 +247,7 @@ void main() {
   });
 
   // Test 6 — streamed line insertion + reduced-motion instant insertion (WIDG-38).
-  testWidgets('streamedLines append lines after pump; reduced-motion yields zero-duration AnimatedOpacity',
+  testWidgets('streamedLines append lines after pump; reduced-motion yields zero-duration fade-in',
       (tester) async {
     final StreamController<List<ScaffoldCodeLine>> controller =
         StreamController<List<ScaffoldCodeLine>>.broadcast(sync: true);
@@ -274,7 +274,7 @@ void main() {
 
     await controller.close();
 
-    // Reduced-motion branch: AnimatedOpacity duration is zero.
+    // Reduced-motion branch: streamed-line fade-in duration is zero.
     final StreamController<List<ScaffoldCodeLine>> controller2 =
         StreamController<List<ScaffoldCodeLine>>.broadcast(sync: true);
 
@@ -303,13 +303,14 @@ void main() {
     await tester.pump();
     expect(find.text('b'), findsOneWidget);
 
-    final AnimatedOpacity opacity = tester.widget<AnimatedOpacity>(
+    final TweenAnimationBuilder<double> fade =
+        tester.widget<TweenAnimationBuilder<double>>(
       find.ancestor(
         of: find.text('b'),
-        matching: find.byType(AnimatedOpacity),
+        matching: find.byType(TweenAnimationBuilder<double>),
       ).first,
     );
-    expect(opacity.duration, Duration.zero);
+    expect(fade.duration, Duration.zero);
 
     await controller2.close();
   });

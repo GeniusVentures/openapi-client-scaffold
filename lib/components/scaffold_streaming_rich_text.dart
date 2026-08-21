@@ -9,6 +9,7 @@ library;
 
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_scaffold/components/scaffold_live_region.dart';
@@ -52,6 +53,7 @@ class ScaffoldStreamingRichText extends StatefulWidget {
     this.actions,
     this.announcePolicy,
     this.onCitationToggled,
+    this.onLinkTap,
     super.key,
   });
 
@@ -80,6 +82,10 @@ class ScaffoldStreamingRichText extends StatefulWidget {
   /// expansion state externally.
   final ValueChanged<String>? onCitationToggled;
 
+  /// Fired when a link span is tapped, carrying the link's target [Uri].
+  /// When null, link spans render but are not interactive.
+  final ValueChanged<Uri>? onLinkTap;
+
   @override
   State<ScaffoldStreamingRichText> createState() =>
       _ScaffoldStreamingRichTextState();
@@ -97,6 +103,11 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
   // Timer so widget tests can drive the window via tester.pump(Duration).
   bool _announceThrottled = false;
   Timer? _announceThrottleTimer;
+
+  // Recognizers attached to link spans, rebuilt each span-tree update and
+  // disposed before rebuild to avoid leaking gesture recognizers.
+  final List<TapGestureRecognizer> _linkRecognizers =
+      <TapGestureRecognizer>[];
 
   @override
   void initState() {
@@ -127,6 +138,10 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
   @override
   void dispose() {
     _announceThrottleTimer?.cancel();
+    for (final TapGestureRecognizer recognizer in _linkRecognizers) {
+      recognizer.dispose();
+    }
+    _linkRecognizers.clear();
     _cursorController.dispose();
     if (_ownsCubit) {
       _cubit.close();
@@ -141,6 +156,14 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
       child: BlocBuilder<ScaffoldStreamingRichTextCubit,
           ScaffoldStreamingRichTextState>(
         builder: (context, state) {
+          // Dispose recognizers from the previous span-tree build before
+          // constructing fresh ones below (gesture recognizers are not
+          // garbage-collected and must be disposed explicitly).
+          for (final TapGestureRecognizer recognizer in _linkRecognizers) {
+            recognizer.dispose();
+          }
+          _linkRecognizers.clear();
+
           // --- Announce check (before building children) ---
           final ScaffoldStreamingAnnouncePolicy policy =
               widget.announcePolicy ??
@@ -201,13 +224,8 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
                     style: textTheme.bodyMedium
                         ?.copyWith(fontFamily: 'monospace'),
                   ),
-                ScaffoldLinkSpan(:final String text) => TextSpan(
-                    text: text,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: palette.lightGreenPrimary,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
+                ScaffoldLinkSpan(:final String text, :final Uri uri) =>
+                    _buildLinkSpan(text, uri, textTheme, palette),
                 ScaffoldCitationSpan() => WidgetSpan(
                     alignment: PlaceholderAlignment.middle,
                     child: _buildCitationPill(
@@ -348,6 +366,25 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
             ),
           );
         },
+      ),
+    );
+  }
+
+  InlineSpan _buildLinkSpan(
+    String text,
+    Uri uri,
+    TextTheme textTheme,
+    palette,
+  ) {
+    final TapGestureRecognizer recognizer = TapGestureRecognizer()
+      ..onTap = () => widget.onLinkTap?.call(uri);
+    _linkRecognizers.add(recognizer);
+    return TextSpan(
+      text: text,
+      recognizer: recognizer,
+      style: textTheme.bodyMedium?.copyWith(
+        color: palette.lightGreenPrimary,
+        decoration: TextDecoration.underline,
       ),
     );
   }
