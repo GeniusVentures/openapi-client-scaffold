@@ -460,14 +460,17 @@ class _ScaffoldCodeBlockState extends State<ScaffoldCodeBlock> {
     }
 
     if (isStreamed) {
-      row = AnimatedOpacity(
-        // Key ensures Flutter treats this as a new widget on insertion so
-        // AnimatedOpacity runs its 0 -> 1 transition once.
+      row = TweenAnimationBuilder<double>(
+        // Key ensures Flutter treats this as a new widget on insertion so the
+        // fade-in runs once — TweenAnimationBuilder animates from `begin` on
+        // its first build (AnimatedOpacity at a constant 1.0 would not).
         key: ValueKey<int>(index),
-        opacity: 1.0,
+        tween: Tween<double>(begin: 0.0, end: 1.0),
         duration:
             reducedMotion ? Duration.zero : ScaffoldMotionDurations.short,
         curve: ScaffoldMotionCurves.decelerate,
+        builder: (BuildContext context, double opacity, Widget? child) =>
+            Opacity(opacity: opacity, child: child),
         child: row,
       );
     }

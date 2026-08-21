@@ -255,9 +255,15 @@ _Token? _matchAt(String rawText, int start, _LanguageSpec spec) {
   }
 
   // 3. Numbers — `\b\d+(\.\d+)?\b`. Treat as a token only when the digit is
-  // not preceded by an identifier character (the scanner already ensures
-  // start is non-identifier since we advanced past identifiers via fallback).
+  // not preceded by an identifier character. Non-keyword identifiers advance
+  // one code unit at a time (the identifier fallback returns null), so when a
+  // digit is reached mid-identifier (e.g. "sha256", "token2") the preceding
+  // character is already an identifier part — skip number matching so the
+  // digit stays uncolored as part of the identifier.
   if (_isDigit(rawText.codeUnitAt(start))) {
+    if (start > 0 && _isIdentifierPart(rawText.codeUnitAt(start - 1))) {
+      return null;
+    }
     int end = start;
     while (end < length && _isDigit(rawText.codeUnitAt(end))) {
       end++;

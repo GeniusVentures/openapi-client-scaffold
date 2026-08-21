@@ -335,4 +335,30 @@ void main() {
     expect(find.byType(ScaffoldStreamingRichText), findsOneWidget);
     expect(find.textContaining('hello'), findsWidgets);
   });
+
+  // Test 10 -- link spans are tappable and forward their target Uri to
+  // onLinkTap.
+  testWidgets('link span tap invokes onLinkTap with its Uri', (tester) async {
+    final Uri target = Uri.parse('https://example.com/docs');
+    final cubit = ScaffoldStreamingRichTextCubit()
+      ..appendSpans(<ScaffoldRichSpan>[
+        ScaffoldLinkSpan(text: 'docs', uri: target),
+      ]);
+    addTearDown(cubit.close);
+
+    Uri? tapped;
+    await _pump(
+      tester,
+      ScaffoldStreamingRichText(
+        cubit: cubit,
+        onLinkTap: (Uri uri) => tapped = uri,
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.text('docs'));
+    await tester.pump();
+
+    expect(tapped, target);
+  });
 }
