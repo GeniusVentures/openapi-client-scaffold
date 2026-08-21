@@ -376,7 +376,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
           ),
           child: Text(
             span.marker,
-            style: textTheme.labelMedium
+            style: textTheme.bodyMedium
                 ?.copyWith(color: palette.lightGreenPrimary),
           ),
         ),

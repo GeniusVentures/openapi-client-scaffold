@@ -34,7 +34,7 @@ Future<void> _pumpLight(WidgetTester tester, Widget child) {
 /// Builds a minimal marker widget the toolbarBuilder returns so tests can
 /// locate the consumer-supplied child inside the overlay.
 Widget _defaultToolbarBuilder(BuildContext context, TextSelection s, String t) {
-  return const Text('__toolbar_marker__');
+  return const Text('toolbar');
 }
 
 void main() {
@@ -83,7 +83,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.byType(ScaffoldSurface), findsWidgets);
-    expect(find.text('__toolbar_marker__'), findsOneWidget);
+    expect(find.text('toolbar'), findsOneWidget);
 
     final ScaffoldSurface surface = tester.widgetList<ScaffoldSurface>(
       find.byType(ScaffoldSurface),
@@ -111,7 +111,7 @@ void main() {
     ScaffoldSelectionActions.debugSimulateSelection(state, 'hello world');
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
-    expect(find.text('__toolbar_marker__'), findsOneWidget);
+    expect(find.text('toolbar'), findsOneWidget);
 
     // Collapse the selection.
     // ignore: invalid_use_of_visible_for_testing_member
@@ -120,7 +120,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     // Toolbar marker is gone from the overlay tree.
-    expect(find.text('__toolbar_marker__'), findsNothing);
+    expect(find.text('toolbar'), findsNothing);
   });
 
   // Test 4 — toolbarBuilder is invoked with (BuildContext, TextSelection,
@@ -135,7 +135,7 @@ void main() {
         toolbarBuilder: (BuildContext ctx, TextSelection sel, String text) {
           seenSelection = sel;
           seenPlainText = text;
-          return const Text('__consumer_built__');
+          return const Text('built');
         },
         child: const SelectableText('hello world'),
       ),
@@ -148,7 +148,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
-    expect(find.text('__consumer_built__'), findsOneWidget);
+    expect(find.text('built'), findsOneWidget);
     expect(seenPlainText, 'abc');
     expect(seenSelection, isNotNull);
     expect(seenSelection!.isCollapsed, isFalse);
@@ -261,13 +261,13 @@ void main() {
     ScaffoldSelectionActions.debugSimulateSelection(state, 'hello world');
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
-    expect(find.text('__toolbar_marker__'), findsOneWidget);
+    expect(find.text('toolbar'), findsOneWidget);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
-    expect(find.text('__toolbar_marker__'), findsNothing);
+    expect(find.text('toolbar'), findsNothing);
   });
 
   // Test 9 — reduced-motion gates the toolbar fade.
@@ -321,7 +321,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.byType(ScaffoldSelectionActions), findsOneWidget);
-    expect(find.text('__toolbar_marker__'), findsOneWidget);
+    expect(find.text('toolbar'), findsOneWidget);
   });
 
   // Test 11 — SMOKE: real SelectionArea path via longPress + drag.
@@ -366,4 +366,34 @@ void main() {
 
     expect(calls, greaterThanOrEqualTo(1));
   }, skip: true); // Framework-flaky — see comment above.
+
+  // Test 18 — the toolbar paints on-screen, centered above the selection.
+  testWidgets('toolbar paints on-screen, centered above the selection',
+      (tester) async {
+    await _pump(
+      tester,
+      const ScaffoldSelectionActions(
+        toolbarPlacement: ScaffoldToolbarPlacement.above,
+        toolbarBuilder: _defaultToolbarBuilder,
+        child: SelectableText('hello world'),
+      ),
+    );
+
+    final dynamic state = tester.state(find.byType(ScaffoldSelectionActions));
+    // ignore: invalid_use_of_visible_for_testing_member
+    ScaffoldSelectionActions.debugSimulateSelection(state, 'hello world');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+
+    final Rect leaderRect =
+        tester.getRect(find.byType(ScaffoldSelectionActions));
+    final Rect toolbarRect = tester.getRect(find.text('toolbar'));
+    expect(toolbarRect.isEmpty, isFalse);
+    expect(toolbarRect.top, greaterThanOrEqualTo(0.0),
+        reason: 'toolbar must not be painted off-screen');
+    expect(toolbarRect.bottom, lessThanOrEqualTo(leaderRect.top),
+        reason: 'above placement anchors the toolbar above the selection');
+    expect((toolbarRect.center.dx - leaderRect.center.dx).abs(), lessThan(1.0),
+        reason: 'toolbar must be horizontally centered on the selection');
+  });
 }

@@ -110,7 +110,7 @@ void main() {
   });
 
   // Test 2 — line numbers + monospace body (WIDG-37).
-  testWidgets('line-number gutter renders 1..N right-aligned monospace labelSmall; body is bodyMedium monospace height 1.5; gutter excluded from semantics',
+  testWidgets('line-number gutter renders 1..N right-aligned monospace bodyMedium (matching body size); body is bodyMedium monospace height 1.5; gutter excluded from semantics',
       (tester) async {
     await _pump(
       tester,
@@ -132,6 +132,14 @@ void main() {
     expect(one.style?.fontFamily, 'monospace');
     expect(one.style?.color, ScaffoldPalette.defaultPalette.textSecondary);
     expect(one.style?.height, 1.5);
+
+    // Gutter MUST match the body font size (bodyMedium) so line numbers stay
+    // vertically aligned with their code lines.
+    final BuildContext gutterCtx =
+        tester.element(find.byType(ScaffoldCodeBlock));
+    final double? expectedGutterSize =
+        Theme.of(gutterCtx).textTheme.bodyMedium?.fontSize;
+    expect(one.style?.fontSize, expectedGutterSize);
 
     // Gutter column alignment is right-aligned.
     final Column gutterColumn = tester.widget<Column>(
