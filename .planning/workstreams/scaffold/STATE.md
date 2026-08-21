@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
 status: executing
-stopped_at: Phase 9 UAT checkpoint — 09-06 tasks 1-3 merged, awaiting human approval
-last_updated: "2026-08-20T19:45:00.000Z"
-last_activity: 2026-08-20 -- Phase 09 waves 1-4 merged (09-01..09-06 tasks 1-3); UAT pending
+stopped_at: Phase 9 shipped — PR #9 (base develop), awaiting Codex review + merge
+last_updated: "2026-08-21T00:00:00.000Z"
+last_activity: 2026-08-21 -- Phase 09 shipped as PR #9 (base develop)
 progress:
   total_phases: 4
   completed_phases: 1
@@ -25,10 +25,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: 09 (text-code-primitives) — EXECUTING
-Plan: 6 of 6 — tasks 1-3 merged; Task 4 (human UAT) pending
-Status: Executing Phase 09 — human UAT checkpoint
-Last activity: 2026-08-20 -- Phase 09 wave 4 merged (barrel + demo registration)
+Phase: 09 (text-code-primitives) — SHIPPED
+Plan: 6 of 6 — all tasks merged; human UAT passed; shipped as PR #9
+Status: Phase 09 shipped — PR #9 open (base develop), awaiting review/merge
+Last activity: 2026-08-21 -- Phase 09 shipped (PR #9)
 
 ## v1.2 Milestone
 
