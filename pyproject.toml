@@ -23,9 +23,9 @@ testpaths = ["tools/tests"]
 pythonpath = ["tools"]
 
 [tool.ruff]
-# 100 rather than the 88 default: matches the width the existing modules and
-# their numpydoc-style docstrings were already written to.
-line-length = 100
+# 110 rather than the 88 default (or the previous 100): gives a little headroom
+# for argparse help strings and numpydoc-style docstrings that run just past 100.
+line-length = 110
 src = ["tools"]
 
 [tool.ruff.lint]
