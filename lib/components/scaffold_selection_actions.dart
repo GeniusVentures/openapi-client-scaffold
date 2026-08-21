@@ -126,6 +126,16 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
   ScrollPosition? _observedScrollPosition;
 
   @override
+  void initState() {
+    super.initState();
+    // Attach the Escape handler directly to the node. The node is also passed
+    // to SelectionArea as its focusNode (see build()), so during an active
+    // selection SelectableRegion owns focus on this same node and Escape
+    // reaches this handler without stealing focus from the region.
+    _escapeFocusNode.onKeyEvent = _handleEscapeKey;
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _attachScrollListener();
@@ -303,69 +313,46 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
               horizontal: dimens.space4,
               vertical: dimens.space4,
             ),
-            // IntrinsicWidth is REQUIRED here (not optional): inside an
-            // UnconstrainedBox + Align(widthFactor:1.0) the child gets
-            // fully-loose constraints (max = infinity), and a bare
-            // Row(mainAxisSize: min) under infinite max-width still tries
-            // to expand to the constraint max because RenderFlex performs
-            // layout in two passes — first asking children for intrinsic
-            // size, then allocating. With an unconstrained max, the Row's
-            // reported width can exceed the visible child width.
-            // IntrinsicWidth forces the Row to its child's intrinsic width
-            // before RenderFlex runs, which pins the shrink-wrap.
-            child: IntrinsicWidth(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  widget.toolbarBuilder(
-                    overlayContext,
-                    _lastSelection,
-                    _lastPlainText,
-                  ),
-                ],
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                widget.toolbarBuilder(
+                  overlayContext,
+                  _lastSelection,
+                  _lastPlainText,
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
 
-    return Positioned.fill(
-      child: GestureDetector(
-        onTap: _hideToolbar,
-        behavior: HitTestBehavior.translucent,
-        child: CompositedTransformFollower(
+    // A loose-fit Stack so the CompositedTransformFollower shrink-wraps to
+    // the toolbar card. Under Positioned.fill (the old code) the Overlay
+    // theater laid the follower out with tight full-screen constraints, so
+    // RenderFollowerLayer sized to the full screen and
+    // followerAnchor.alongSize(size) computed against the SCREEN — painting
+    // the toolbar off-screen. Stack (StackFit.loose, the default) gives
+    // non-positioned children loose constraints, letting the follower size
+    // to its child so the anchor math resolves against the toolbar's own
+    // extent.
+    return Stack(
+      children: <Widget>[
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: _hideToolbar,
+            behavior: HitTestBehavior.translucent,
+          ),
+        ),
+        CompositedTransformFollower(
           link: _toolbarLink,
           targetAnchor: targetAnchor,
           followerAnchor: followerAnchor,
           offset: offset,
-          // CompositedTransformFollower enforces tight full-screen
-          // constraints on its child (documented RenderFollower behavior).
-          // The child must be allowed to shrink to its intrinsic size.
-          // OverflowBox(minWidth:0, maxWidth:inf, minHeight:0, maxHeight:inf)
-          // is the canonical Flutter idiom for this: it replaces the tight
-          // incoming constraints with fully-loose ones, letting the inner
-          // Align + Row shrink-wrap to the toolbarBuilder's child.
-          // UnconstrainedBox + ClipRect was attempted first but still
-          // leaked an 82px overflow because the Align inherited the
-          // parent's tight width before UnconstrainedBox could intercept
-          // (RenderConstraintsTransformBox reports against the *incoming*
-          // constraints, not the substituted ones).
-          child: OverflowBox(
-            minWidth: 0.0,
-            maxWidth: double.infinity,
-            minHeight: 0.0,
-            maxHeight: double.infinity,
-            alignment: Alignment.topLeft,
-            child: Align(
-              alignment: Alignment.topLeft,
-              widthFactor: 1.0,
-              heightFactor: 1.0,
-              child: toolbarCard,
-            ),
-          ),
+          child: toolbarCard,
         ),
-      ),
+      ],
     );
   }
 
@@ -397,15 +384,12 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
   /// updates share the exact same code path.
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      focusNode: _escapeFocusNode,
-      onKeyEvent: _handleEscapeKey,
-      child: CompositedTransformTarget(
-        link: _toolbarLink,
-        child: SelectionArea(
-          onSelectionChanged: _onSelectionAreaChanged,
-          child: widget.child,
-        ),
+    return CompositedTransformTarget(
+      link: _toolbarLink,
+      child: SelectionArea(
+        focusNode: _escapeFocusNode,
+        onSelectionChanged: _onSelectionAreaChanged,
+        child: widget.child,
       ),
     );
   }

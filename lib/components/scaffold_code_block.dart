@@ -22,10 +22,11 @@ import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
-/// Approximate monospace glyph advance width at `labelSmall` size. Used to
-/// compute the line-number gutter width from the digit count of the largest
-/// line number. Documented as an approximation — glyph metrics vary by font.
-const double _kMonospaceGlyphWidth = 8.0;
+/// Approximate monospace glyph advance width at the code body's monospace
+/// size (`bodyMedium`, ~0.6 × fontSize). Used to compute the line-number
+/// gutter width from the digit count of the largest line number. Documented
+/// as an approximation — glyph metrics vary by font.
+const double _kMonospaceGlyphWidth = 8.5;
 
 /// Opacity of the transient "new line" highlight background (12%).
 const double _kNewLineHighlightOpacity = 0.12;
@@ -262,16 +263,14 @@ class _ScaffoldCodeBlockState extends State<ScaffoldCodeBlock> {
       color: palette.textPrimary,
     );
 
+    // Gutter shares the code body's exact font metrics (family, size, and
+    // line height) so line numbers stay vertically aligned with their code
+    // lines; only the color differs.
     final TextStyle gutterTextStyle =
-        (textTheme.labelSmall ?? const TextStyle()).copyWith(
-      fontFamily: 'monospace',
-      color: palette.textSecondary,
-      height: 1.5,
-    );
+        codeTextStyle.copyWith(color: palette.textSecondary);
 
-    // Approximation: monospace glyph width at labelSmall ≈ 8px. Documented
-    // at the constant; the width scales with the largest line number's
-    // digit count so longer files get a wider gutter.
+    // Gutter width scales with the digit count of the largest line number so
+    // longer files get a wider gutter.
     final double gutterWidth =
         '${allLines.length}'.length * _kMonospaceGlyphWidth + dimens.space2;
 
