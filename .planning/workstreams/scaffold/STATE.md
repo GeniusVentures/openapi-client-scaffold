@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
 status: executing
-stopped_at: Phase 9 shipped — PR #9 (base develop), awaiting Codex review + merge
+stopped_at: Phase 10 discussed — CONTEXT.md written, grounded in GeniusWallet fl_chart evidence
 last_updated: "2026-08-21T00:00:00.000Z"
-last_activity: 2026-08-21 -- Phase 09 shipped as PR #9 (base develop)
+last_activity: 2026-08-21 -- Phase 10 context gathered (fl_chart engine, LineChart+touch, pure geometry, axis patterns from GeniusWallet)
 progress:
   total_phases: 4
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** Phase 09 — text-code-primitives
+**Current focus:** Phase 10 — chart-scrubber
 
 ## Current Position
 
-Phase: 09 (text-code-primitives) — SHIPPED
-Plan: 6 of 6 — all tasks merged; human UAT passed; shipped as PR #9
-Status: Phase 09 shipped — PR #9 open (base develop), awaiting review/merge
-Last activity: 2026-08-21 -- Phase 09 shipped (PR #9)
+Phase: 10 (chart-scrubber) — CONTEXT gathered
+Plan: TBD
+Status: Phase 10 context written — fl_chart engine confirmed via GeniusWallet, decisions D-01..D-07 recorded
+Last activity: 2026-08-21 -- Phase 10 discussed (fl_chart 1.2.0, LineChart+touch, pure geometry, axis patterns)
 
 ## v1.2 Milestone
 
@@ -103,7 +103,7 @@ Last activity: 2026-08-21 -- Phase 09 shipped (PR #9)
 
 ## Session Continuity
 
-**Last session:** 2026-08-20T16:26:56.203Z
-**Stopped at:** Phase 9 UI-SPEC approved
-**Resume file:** .planning/workstreams/scaffold/phases/09-text-code-primitives/09-UI-SPEC.md
-**Next action:** `/gsd:plan-phase 9 --ws scaffold` to plan Text & Code Primitives (ScaffoldStreamingRichText, ScaffoldCodeBlock, ScaffoldSelectionActions — WIDG-32..34, 37..39)
+**Last session:** 2026-08-21T14:52:00.000Z
+**Stopped at:** Phase 10 context gathered — fl_chart engine + LineChart + pure geometry confirmed via GeniusWallet
+**Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-CONTEXT.md
+**Next action:** `/gsd:plan-phase 10 --ws scaffold` to plan Chart & Scrubber (ScaffoldChart, ScaffoldChartScrubber — WIDG-35, 36)
