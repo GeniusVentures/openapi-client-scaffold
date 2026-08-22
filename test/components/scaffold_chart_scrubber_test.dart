@@ -53,9 +53,25 @@ List<int> _threePoints() => const <int>[1, 2, 3];
 
 /// Taps the scrubber to grant keyboard focus, then pumps a frame so the
 /// focus highlight settles before subsequent key events are dispatched.
+///
+/// NOTE: the tap lands on the inner chart's touch area, so fl_chart's
+/// touchCallback fires `onSelected` with the tapped spot (and may fire
+/// again on tap-up / pan-end). Tests that need to assert ONLY keyboard
+/// events should call [focusScrubberAndDrainEvents] below instead, which
+/// clears the event log after focus is granted.
 Future<void> _focusScrubber(WidgetTester tester) async {
   await tester.tap(find.byType(ScaffoldChartScrubber<int>));
   await tester.pump();
+}
+
+/// Focus the scrubber via tap, then drain any touch-side events so
+/// subsequent assertions see only keyboard-driven events.
+Future<void> _focusScrubberAndDrainEvents(
+  WidgetTester tester,
+  List<int?> events,
+) async {
+  await _focusScrubber(tester);
+  events.clear();
 }
 
 void main() {
@@ -69,7 +85,7 @@ void main() {
         selected: null,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
@@ -86,7 +102,7 @@ void main() {
         selected: 1,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
@@ -103,7 +119,7 @@ void main() {
         selected: 3,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
@@ -121,7 +137,7 @@ void main() {
         selected: null,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
       await tester.pump();
@@ -138,7 +154,7 @@ void main() {
         selected: 2,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
       await tester.pump();
@@ -155,7 +171,7 @@ void main() {
         selected: 2,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
@@ -172,7 +188,7 @@ void main() {
         selected: 2,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await tester.pump();
@@ -271,7 +287,7 @@ void main() {
         selected: null,
         onSelected: (int? v) => events.add(v),
       );
-      await _focusScrubber(tester);
+      await _focusScrubberAndDrainEvents(tester, events);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
@@ -304,7 +320,7 @@ void main() {
   });
 
   group('ScaffoldChartScrubber composition contract', () {
-    testWidgets('ScaffoldTouchTarget + MouseRegion + Listener present',
+    testWidgets('ScaffoldTouchTarget + MouseRegion + Shortcuts present',
         (WidgetTester tester) async {
       await _pumpScrubber(
         tester,
@@ -323,9 +339,16 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(ScaffoldChartScrubber<int>),
-          matching: find.byType(Listener),
+          matching: find.byType(Shortcuts),
         ),
-        findsWidgets,
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(ScaffoldChartScrubber<int>),
+          matching: find.byType(Actions),
+        ),
+        findsOneWidget,
       );
     });
 
