@@ -27,6 +27,18 @@ import '../utils/scaffold_chart_renderer.dart';
 import 'scaffold_motion.dart';
 import 'scaffold_surface.dart';
 
+/// Scrub behavior mode for [ScaffoldChart] and `ScaffoldChartScrubber`
+/// (D-08).
+enum ScrubMode {
+  /// The touched indicator dot snaps to the nearest data-point index
+  /// (WIDG-36 default).
+  snap,
+
+  /// The dot rides the line continuously at the pointer's chart-x; its y
+  /// is the linear interpolation between the bracketing samples.
+  smooth,
+}
+
 /// Neutral chart atom — generic over the consumer's series element type.
 ///
 /// The atom maps `List<T>` to `List<ChartPoint>` via the accessors, picks
@@ -43,6 +55,8 @@ class ScaffoldChart<T> extends StatelessWidget {
     this.onPointSelected,
     this.onScrubGestureStart,
     this.onScrubGestureEnd,
+    this.scrubMode = ScrubMode.snap,
+    this.onPositionChanged,
     this.plotHeight,
     this.lineColor,
     this.semanticsLabel,
@@ -84,6 +98,17 @@ class ScaffoldChart<T> extends StatelessWidget {
   /// Optional gesture-lifecycle callback fired when a scrub gesture ends
   /// (pan-end, pan-cancel, tap-up, or tap-cancel). See [onScrubGestureStart].
   final VoidCallback? onScrubGestureEnd;
+
+  /// Scrub behavior mode (D-08). Defaults to [ScrubMode.snap] — the WIDG-36
+  /// contract. [ScrubMode.smooth] makes the touched dot ride the line
+  /// continuously while `onPointSelected` still fires the nearest point.
+  final ScrubMode scrubMode;
+
+  /// Continuous scrub-position callback (D-08). Fires on hover/pan-move
+  /// with the pointer's continuous chart-x and the linearly interpolated y
+  /// between the bracketing samples. Only wired to the renderer when
+  /// [scrubMode] is [ScrubMode.smooth] AND this callback is non-null.
+  final void Function(double x, double y)? onPositionChanged;
 
   /// Optional explicit plot height. When null, the atom measures its
   /// LayoutBuilder's `maxHeight` and asserts it is bounded.
@@ -229,6 +254,11 @@ class ScaffoldChart<T> extends StatelessWidget {
                   },
             onScrubGestureStart: onScrubGestureStart,
             onScrubGestureEnd: onScrubGestureEnd,
+            onScrubPositionChanged:
+                scrubMode == ScrubMode.smooth && onPositionChanged != null
+                    ? onPositionChanged
+                    : null,
+            smoothSpots: scrubMode == ScrubMode.smooth ? visibleSpots : null,
           );
 
           // Framed charts get the plain-Row-of-Texts X-axis below the plot
