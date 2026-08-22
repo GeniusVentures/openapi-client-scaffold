@@ -1,5 +1,3 @@
-import 'dart:ui' show FontFeature;
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,14 +46,15 @@ Future<void> _pump(
   );
 }
 
-/// Default-chart convenience — a framed ScaffoldChart<int> over `_fivePoints`.
+/// Default-chart convenience — a framed `ScaffoldChart<int>` over
+/// `_fivePoints`.
 Widget _defaultChart({
   double? plotHeight,
   Color? lineColor,
   String? semanticsLabel,
   String Function(double)? xLabelFormatter,
   String Function(double, double)? yLabelFormatter,
-  ValueChanged<_TestPoint>? onPointSelected,
+  ValueChanged<_TestPoint?>? onPointSelected,
   List<_TestPoint>? series,
 }) {
   final List<_TestPoint> points = series ?? _fivePoints();
