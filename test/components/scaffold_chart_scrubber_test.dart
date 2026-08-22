@@ -634,9 +634,11 @@ void main() {
       expect(find.bySemanticsLabel('Chart'), findsOneWidget);
     });
 
-    testWidgets('Test 10: announceValue wires ScaffoldLiveRegion; null omits',
+    testWidgets(
+        'Test 10: announceValue wires ScaffoldLiveRegion value; null stays '
+        'silent (wrapper always present for tree-shape stability)',
         (WidgetTester tester) async {
-      // With announceValue — live region present.
+      // With announceValue — live region present and carrying the value.
       await _pumpScrubber(
         tester,
         series: _threePoints(),
@@ -650,13 +652,22 @@ void main() {
       expect(region.value, '42.0');
       expect(region.label, 'Selected point');
 
-      // Without announceValue — no live region in the tree.
+      // Without announceValue — the wrapper is STILL present (the widget
+      // type above the scrubber core must never toggle across selection /
+      // clear cycles, or the core's FocusNode is discarded and the focus
+      // ring blinks — Test 15). It announces nothing: value is null.
       await _pumpScrubber(
         tester,
         series: _threePoints(),
         selected: null,
       );
-      expect(find.byType(ScaffoldLiveRegion), findsNothing);
+      expect(find.byType(ScaffoldLiveRegion), findsOneWidget);
+      final ScaffoldLiveRegion silentRegion =
+          tester.widget<ScaffoldLiveRegion>(
+        find.byType(ScaffoldLiveRegion),
+      );
+      expect(silentRegion.value, isNull,
+          reason: 'null announceValue must announce nothing');
     });
 
     testWidgets('Test 11: keyboard focus triggers ScaffoldFocusOutline ring',

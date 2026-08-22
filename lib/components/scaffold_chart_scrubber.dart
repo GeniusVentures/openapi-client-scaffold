@@ -14,9 +14,10 @@
 /// can scrub accessibly."
 ///
 /// This file contains ZERO chart-library imports and zero domain knowledge.
-/// Composition only: the atom stacks `ScaffoldLiveRegion` (optional) →
-/// `Semantics` → `Shortcuts`/`Actions`/`Focus` → `ScaffoldFocusOutline` →
-/// `MouseRegion` → `ScaffoldTouchTarget` → `ScaffoldChart<T>`.
+/// Composition only: the atom stacks `ScaffoldLiveRegion` (always present,
+/// silent when `announceValue` is null) → `Semantics` →
+/// `Shortcuts`/`Actions`/`Focus` → `ScaffoldFocusOutline` → `MouseRegion` →
+/// `ScaffoldTouchTarget` → `ScaffoldChart<T>`.
 ///
 /// Stateless for selection state — truth lives in the consumer. The atom
 /// holds ONLY transient interaction state internally (a `FocusNode` shared
@@ -82,9 +83,12 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
   final String? scrubberSemanticsLabel;
 
   /// Optional consumer-supplied formatted value for the live region. When
-  /// non-null, the atom wraps the scrub area in a `ScaffoldLiveRegion` so
-  /// screen readers announce value changes; when null, no live-region
-  /// wrapper is added.
+  /// non-null, screen readers announce value changes; when null, the live
+  /// region announces nothing. The `ScaffoldLiveRegion` wrapper is always
+  /// present regardless of this value so the widget tree above the
+  /// scrubber core stays type-stable across selection/clear cycles (a
+  /// type change would drop the core's FocusNode and blink the focus
+  /// ring).
   final String? announceValue;
 
   /// Optional live-region label. Defaults to `'Selected point'`. Ignored
@@ -142,15 +146,18 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
       child: interactive,
     );
 
-    // Outermost layer: optional live-region announcement. The consumer
-    // supplies the formatted value string; the atom only wires the region.
-    final String? announce = announceValue;
-    if (announce == null) {
-      return labelled;
-    }
+    // Outermost layer: live-region announcement. The wrapper is ALWAYS
+    // present — even when announceValue is null — so the widget TYPE
+    // directly above _ScrubberCore never changes across selection/clear
+    // cycles. Returning bare `labelled` when announceValue was null (the
+    // previous shape) toggled Semantics <-> ScaffoldLiveRegion above the
+    // core on every selection change, which discarded the _ScrubberCore
+    // State (and its FocusNode) and made the focus ring blink off/on
+    // (UAT defect). Semantics(value: null) announces nothing, so a null
+    // announceValue stays silent.
     return ScaffoldLiveRegion(
       label: announceLabel ?? 'Selected point',
-      value: announce,
+      value: announceValue,
       child: labelled,
     );
   }
