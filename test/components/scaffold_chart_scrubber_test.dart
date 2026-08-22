@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_scaffold/components/scaffold_chart.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_scrubber.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
 import 'package:frontend_scaffold/components/scaffold_live_region.dart';
@@ -21,6 +22,8 @@ Future<void> _pumpScrubber(
   String? announceLabel,
   String? scrubberSemanticsLabel,
   double? plotHeight,
+  ScrubMode scrubMode = ScrubMode.snap,
+  void Function(double x, double y)? onPositionChanged,
 }) {
   return tester.pumpWidget(
     MaterialApp(
@@ -40,6 +43,8 @@ Future<void> _pumpScrubber(
               announceLabel: announceLabel,
               scrubberSemanticsLabel: scrubberSemanticsLabel,
               plotHeight: plotHeight ?? 200,
+              scrubMode: scrubMode,
+              onPositionChanged: onPositionChanged,
             ),
           ),
         ),
@@ -919,6 +924,160 @@ void main() {
       for (final Element el in textInScrubber.evaluate()) {
         expect(el.widget, isA<Text>());
       }
+    });
+  });
+
+  group('ScaffoldChartScrubber smooth mode (D-08)', () {
+    test('ScrubMode exposes snap (default) and smooth', () {
+      expect(
+        ScrubMode.values,
+        containsAll(<ScrubMode>[ScrubMode.snap, ScrubMode.smooth]),
+      );
+    });
+
+    testWidgets('default scrubMode (snap) never fires onPositionChanged on '
+        'hover', (WidgetTester tester) async {
+      // In snap mode the renderer's onScrubPositionChanged MUST be wired to
+      // null even when onPositionChanged is supplied — the callback is gated
+      // on scrubMode == ScrubMode.smooth (D-08 snap default preserves the
+      // 10-04 WIDG-36 contract).
+      final List<(double, double)> positions = <(double, double)>[];
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        onPositionChanged: (double x, double y) => positions.add((x, y)),
+      );
+
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+      await mouse.moveTo(
+        tester.getCenter(find.byType(ScaffoldChartScrubber<int>)),
+      );
+      await tester.pump();
+
+      expect(positions, isEmpty,
+          reason: 'snap mode must wire onScrubPositionChanged to null — '
+              'got ${positions.length} position events');
+    });
+
+    testWidgets('smooth mode fires onPositionChanged with continuous values',
+        (WidgetTester tester) async {
+      final List<(double, double)> positions = <(double, double)>[];
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        scrubMode: ScrubMode.smooth,
+        onPositionChanged: (double x, double y) => positions.add((x, y)),
+      );
+
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+      await mouse.moveTo(
+        tester.getCenter(find.byType(ScaffoldChartScrubber<int>)),
+      );
+      await tester.pump();
+
+      expect(positions, isNotEmpty,
+          reason: 'smooth-mode hover must fire onPositionChanged');
+      final (double chartX, double interpY) = positions.last;
+      // Points (1,2),(2,4),(3,6): center hovers near x=2 → interpolated y≈4.
+      expect(chartX, greaterThan(1.0),
+          reason: 'chartX must be within the series — got $chartX');
+      expect(chartX, lessThan(3.0),
+          reason: 'chartX must be within the series — got $chartX');
+      expect(interpY, closeTo(4.0, 3.0),
+          reason: 'interpolated y near x=2 must be ≈4 — got $interpY');
+    });
+
+    testWidgets('smooth mode still fires onPointSelected with nearest T',
+        (WidgetTester tester) async {
+      final List<int?> selected = <int?>[];
+      final List<(double, double)> positions = <(double, double)>[];
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        scrubMode: ScrubMode.smooth,
+        onPositionChanged: (double x, double y) => positions.add((x, y)),
+        onSelected: (int? v) => selected.add(v),
+      );
+
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+      await mouse.moveTo(
+        tester.getCenter(find.byType(ScaffoldChartScrubber<int>)),
+      );
+      await tester.pump();
+
+      expect(positions, isNotEmpty,
+          reason: 'smooth-mode hover must fire onPositionChanged');
+      expect(selected, isNotEmpty,
+          reason: 'smooth-mode hover must still fire onPointSelected');
+      expect(selected.last, isNotNull);
+      expect(_threePoints(), contains(selected.last),
+          reason: 'onPointSelected must carry a series element (nearest T), '
+              'not an interpolated value — got ${selected.last}');
+    });
+
+    testWidgets('keyboard navigation unchanged in smooth mode',
+        (WidgetTester tester) async {
+      final List<int?> selected = <int?>[];
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        scrubMode: ScrubMode.smooth,
+        onPositionChanged: (double x, double y) {},
+        onSelected: (int? v) => selected.add(v),
+      );
+
+      await _focusScrubberAndDrainEvents(tester, selected);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      expect(selected, <int?>[1],
+          reason: 'ArrowRight must select series.first in smooth mode');
+    });
+
+    testWidgets('hover-exit unchanged in smooth mode',
+        (WidgetTester tester) async {
+      final List<int?> selected = <int?>[];
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        scrubMode: ScrubMode.smooth,
+        onPositionChanged: (double x, double y) {},
+        onSelected: (int? v) => selected.add(v),
+      );
+
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+      await mouse.moveTo(
+        tester.getCenter(find.byType(ScaffoldChartScrubber<int>)),
+      );
+      await tester.pump();
+      // Leave the scrubber entirely → MouseRegion.onExit fires the D-05
+      // hover-exit clear (still gated on no active drag).
+      await mouse.moveTo(Offset.zero);
+      await tester.pump();
+
+      expect(selected, contains(null),
+          reason: 'hover-exit must clear selection in smooth mode');
     });
   });
 }
