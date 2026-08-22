@@ -749,6 +749,7 @@ void main() {
       // the SAME FocusNode at primary focus throughout — the ring paints
       // continuously. FAILS against the current type-toggling build — RED.
       String? announce;
+      StateSetter? setDemoState;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -757,6 +758,7 @@ void main() {
             body: Center(
               child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
+                  setDemoState = setState;
                   return SizedBox(
                     width: 400,
                     height: 300,
@@ -788,10 +790,7 @@ void main() {
       // Selection arrives → announceValue flips null -> '42.0'. Mirrors the
       // demo's _onSelected setState. The scrubber core must survive the
       // rebuild with its FocusNode intact.
-      final StateSetter setDemoState = tester.state<State<StatefulBuilder>>(
-        find.byType(StatefulBuilder),
-      ).setState as StateSetter;
-      setDemoState(() => announce = '42.0');
+      setDemoState!(() => announce = '42.0');
       await tester.pump();
       expect(
         FocusManager.instance.primaryFocus,
@@ -802,7 +801,7 @@ void main() {
       );
 
       // Selection clears → announceValue flips back to null. Same contract.
-      setDemoState(() => announce = null);
+      setDemoState!(() => announce = null);
       await tester.pump();
       expect(
         FocusManager.instance.primaryFocus,
