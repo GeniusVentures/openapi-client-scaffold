@@ -207,8 +207,13 @@ void main() {
     // every event's spot to the atom; and the atom's onSpotTouched toggled
     // via identical() on EVERY event — so a second hover hit on the
     // already-selected point cleared it, then the next hover hit re-selected
-    // it. Hover must NEVER toggle-clear. Selection clears ONLY via discrete
-    // tap on the selected point, Escape, or hover-exit.
+    // it.
+    //
+    // Final contract (user UAT, toggle removed entirely): hover, drag, and
+    // tap ALWAYS select — re-hitting the selected point by ANY pointer
+    // event is a no-op re-select. Selection clears ONLY via Escape or
+    // pointer-exit (D-05). The renderer's isDiscreteTap discrimination is
+    // retained at the seam but the atom no longer uses it to clear.
     testWidgets(
         'Test 13: hover onto a point selects it; hover to ANOTHER point '
         'updates selection; hover that RE-HITS the selected point must NOT '
@@ -285,17 +290,20 @@ void main() {
         Offset(3, 50),
         Offset(4, 40),
       ];
-      final Map<Offset, double> spotPixelX = <Offset, double>{};
+      final Map<double, double> valueToPixelX = <double, double>{};
       for (int px = 0; px <= chartSize.width.round(); px++) {
         await mouse.moveTo(Offset(chartOrigin.dx + px, midY));
         await tester.pump();
+        // NOTE: key by VALUE (o.dy), not by Offset identity — later steps
+        // re-hover the same spots while a selection is active, and the
+        // identity-keyed first pass would misrecord those re-hits.
         final Offset? sel = selection;
-        if (sel != null && !spotPixelX.containsKey(sel)) {
-          spotPixelX[sel] = chartOrigin.dx + px.toDouble();
+        if (sel != null && !valueToPixelX.containsKey(sel.dy)) {
+          valueToPixelX[sel.dy] = chartOrigin.dx + px.toDouble();
         }
       }
-      expect(spotPixelX.length, probeSeries.length,
-          reason: 'calibration sweep must reach every spot — $spotPixelX');
+      expect(valueToPixelX.length, probeSeries.length,
+          reason: 'calibration sweep must reach every spot — $valueToPixelX');
       // Leave no stale selection from the sweep.
       await mouse.moveTo(const Offset(-10000, -10000));
       await tester.pump();
@@ -303,7 +311,7 @@ void main() {
 
       final Offset spotA = probeSeries[1];
       final Offset spotB = probeSeries[3];
-      Offset pixelOf(Offset spot) => Offset(spotPixelX[spot]!, midY);
+      Offset pixelOf(Offset spot) => Offset(valueToPixelX[spot.dy]!, midY);
 
       // 1. Hover onto spot A — selection appears.
       await mouse.moveTo(pixelOf(spotA));
@@ -371,10 +379,18 @@ void main() {
     });
 
     testWidgets(
-        'Test 14: discrete TAP on the already-selected point still toggles '
-        'it off (tap toggle preserved, hover toggle removed)',
+        'Test 14: discrete TAP on the already-selected point must NOT clear '
+        '(tap-toggle removed — tap ALWAYS selects)',
         (WidgetTester tester) async {
+      // UAT verdict (toggle removed): the tap-to-clear behavior added in
+      // commit 90bcb9d reads as a bug ("If I click, it goes to no
+      // selection"). The 10-UI-SPEC never specified tap-to-clear — only
+      // PointerExit and Escape clear selection (D-05). New contract:
+      // tap/hover/drag ALWAYS select; re-tapping the selected point is a
+      // no-op re-select. This test asserts the NEW contract and FAILS
+      // against the current (toggle) implementation — RED.
       Offset? selection;
+      final List<Offset?> events = <Offset?>[];
 
       await tester.pumpWidget(
         MaterialApp(
@@ -398,6 +414,7 @@ void main() {
                       yAccessor: (Offset o) => o.dy,
                       selectedPoint: selection,
                       onPointSelected: (Offset? v) {
+                        events.add(v);
                         setState(() => selection = v);
                       },
                       plotHeight: 200,
@@ -450,15 +467,27 @@ void main() {
       expect(selection, isNotNull,
           reason: 'tapping the plot selects the nearest point');
       final Offset tapped = selection!;
-
-      // Tap the SAME spot again — discrete-tap toggle clears it.
-      await tester.tapAt(tapPoint);
-      await tester.pump();
-      expect(selection, isNull,
-          reason: 'tapping the selected point must toggle it off — '
-              'toggle survives ONLY for discrete taps');
       expect(tapped, middleSpot,
           reason: 'sanity: the mid-plot tap resolved to the middle spot');
+      events.clear();
+
+      // Tap the SAME spot again — under the new contract this must be a
+      // no-op re-select: NO null emission, selection retained.
+      await tester.tapAt(tapPoint);
+      await tester.pump();
+      expect(
+        selection,
+        isNotNull,
+        reason: 'tapping the selected point must NOT clear it — '
+            'tap-toggle is removed; clearing happens ONLY via Escape or '
+            'pointer-exit (D-05)',
+      );
+      expect(
+        events.where((Offset? e) => e == null),
+        isEmpty,
+        reason: 'no clear event may fire on a discrete tap — '
+            'the tap ALWAYS selects',
+      );
     });
   });
 
@@ -685,6 +714,91 @@ void main() {
         findsOneWidget,
         reason: 'Scrub area must paint the focus ring on tap-focus '
             '(UI-SPEC Interaction States row "Focus")',
+      );
+    });
+
+    testWidgets(
+        'Test 15: announceValue transitions null<->value must NOT drop '
+        'primary focus (focus ring must not blink)',
+        (WidgetTester tester) async {
+      // UAT defect: "the parent outline keeps blinking on and off like it's
+      // getting deselected when I click to 'no selection' and it briefly
+      // comes back when I click again." Root cause (scaffold_chart_scrubber
+      // build()): when announceValue is null the atom returns
+      // `Semantics(child: _ScrubberCore)`; when non-null it returns
+      // `ScaffoldLiveRegion(child: Semantics(child: _ScrubberCore))`. That
+      // toggles the runtimeType DIRECTLY ABOVE _ScrubberCore on every
+      // selection/clear → Flutter element-tree mismatch → _ScrubberCore
+      // State (and its FocusNode) is disposed and recreated → primary focus
+      // is dropped → the ScaffoldFocusOutline ring blinks OFF; the next
+      // tap's Listener.onPointerDown re-focuses the NEW node and the ring
+      // briefly returns.
+      //
+      // Contract: toggling announceValue across null<->non-null must keep
+      // the SAME FocusNode at primary focus throughout — the ring paints
+      // continuously. FAILS against the current type-toggling build — RED.
+      String? announce;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(extensions: scaffoldThemeExtensions),
+          home: Scaffold(
+            body: Center(
+              child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return SizedBox(
+                    width: 400,
+                    height: 300,
+                    child: ScaffoldChartScrubber<int>(
+                      series: _threePoints(),
+                      xAccessor: (int v) => v.toDouble(),
+                      yAccessor: (int v) => (v * 2).toDouble(),
+                      selectedPoint: null,
+                      onPointSelected: (int? _) {},
+                      announceValue: announce,
+                      plotHeight: 200,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Tap-to-focus with announceValue == null (the "no selection" demo
+      // state) — Listener.onPointerDown requests primary focus.
+      await tester.tap(find.byType(ScaffoldChartScrubber<int>));
+      await tester.pump();
+      final FocusNode nodeBefore = FocusManager.instance.primaryFocus!;
+      expect(nodeBefore, isNotNull,
+          reason: 'tap must grant the scrubber primary focus');
+
+      // Selection arrives → announceValue flips null -> '42.0'. Mirrors the
+      // demo's _onSelected setState. The scrubber core must survive the
+      // rebuild with its FocusNode intact.
+      final StateSetter setDemoState = tester.state<State<StatefulBuilder>>(
+        find.byType(StatefulBuilder),
+      ).setState as StateSetter;
+      setDemoState(() => announce = '42.0');
+      await tester.pump();
+      expect(
+        FocusManager.instance.primaryFocus,
+        same(nodeBefore),
+        reason: 'flipping announceValue null -> value must NOT drop primary '
+            'focus — the _ScrubberCore State (and its FocusNode) must '
+            'survive the rebuild (no tree-shape toggle above it)',
+      );
+
+      // Selection clears → announceValue flips back to null. Same contract.
+      setDemoState(() => announce = null);
+      await tester.pump();
+      expect(
+        FocusManager.instance.primaryFocus,
+        same(nodeBefore),
+        reason: 'flipping announceValue value -> null must NOT drop primary '
+            'focus — this is the exact "outline blinks off on clear" UAT '
+            'surface',
       );
     });
 
