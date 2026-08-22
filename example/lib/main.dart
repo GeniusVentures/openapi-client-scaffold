@@ -4,6 +4,8 @@ import 'package:frontend_scaffold/frontend_scaffold.dart';
 import 'demos/action_button_demo.dart';
 import 'demos/animations_demo.dart';
 import 'demos/bottom_drawer_demo.dart';
+import 'demos/chart_demo.dart';
+import 'demos/chart_scrubber_demo.dart';
 import 'demos/code_block_demo.dart';
 import 'demos/light_syntax_tokenizer_demo.dart';
 import 'demos/loading_demo.dart';
@@ -257,6 +259,16 @@ class HomePage extends StatelessWidget {
             title: 'Light syntax tokenizer',
             subtitle: 'Regex-based syntax highlighting (D-04 support part)',
             builder: (_) => const ScaffoldLightSyntaxTokenizerDemo(),
+          ),
+          _DemoTile(
+            title: 'Chart',
+            subtitle: 'Framed + axis-free + formatter + empty state',
+            builder: (_) => const ChartDemo(),
+          ),
+          _DemoTile(
+            title: 'Chart Scrubber',
+            subtitle: 'Scrub selection + keyboard + PointerExit + live region',
+            builder: (_) => const ChartScrubberDemo(),
           ),
         ],
       ),
