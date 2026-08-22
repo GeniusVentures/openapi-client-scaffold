@@ -100,7 +100,7 @@ Plans:
 
 Plans:
 - [x] 10-01-PLAN.md — Pure chart geometry support part (chartTickStep / chartAxisLabel / chartXLabelCount / chartYTickCount / chartUsesFrame / chartBandedBounds / chartVisibleExtremes) + tests (WIDG-35, 36 foundation; D-04)
-- [ ] 10-02-PLAN.md — fl_chart renderer support part (the ONLY fl_chart seam; pubspec adds fl_chart ^1.2.0) + tests (D-01, D-02, D-05, D-06, D-07)
+- [x] 10-02-PLAN.md — fl_chart renderer support part (the ONLY fl_chart seam; pubspec adds fl_chart ^1.2.0) + tests (D-01, D-02, D-05, D-06, D-07)
 - [ ] 10-03-PLAN.md — ScaffoldChart<T> atom (neutral series contract, framed/axis-free, X-axis as Row of Texts) + tests (WIDG-35; D-03, D-06)
 - [ ] 10-04-PLAN.md — ScaffoldChartScrubber<T> atom (keyboard a11y + focus outline + PointerExit + 48x48 + live-region hook) + tests (WIDG-36; D-05)
 - [ ] 10-05-PLAN.md — Barrel exports + chart_demo + chart_scrubber_demo + final gates + human UAT (WIDG-35, 36 closure)
