@@ -59,6 +59,14 @@ Both atoms are generic: they know nothing about prices, wallets, media, or any b
 
 - **D-07:** Grid shown on large charts only (`FlGridData` with theme-token colors); sparkline/compact charts hide grid (`FlGridData(show: false)`). Border always hidden (`FlBorderData(show: false)`). All colors from `ScaffoldPalette` tokens — no new tokens needed; existing `borderControl`/`textSecondary` equivalents cover chart chrome.
 
+### UAT-driven extensions (gray areas 5–6 — resolved 2026-08-22 from UAT evidence)
+
+- **D-08: Smooth scrub mode (opt-in on `ScaffoldChartScrubber`).** UAT proved spot-index snapping is visually broken: the full-height crosshair tracks the pointer continuously while the dot jumps between discrete samples. Decision (Option B, user-approved): the renderer seam gains continuous pointer-x plumbing and an interpolated-dot draw path (dot y = linear interpolation between bracketing samples at pointer x); `ScaffoldChartScrubber` exposes `scrubMode: ScrubMode.smooth` (default `ScrubMode.snap` — WIDG-36 contract unchanged) plus `onPositionChanged(double x, double y)` since the `T`-typed `onPointSelected` cannot carry an interpolated value. `onPointSelected` continues to fire with the nearest point in both modes. Rationale: the indicator lives inside fl_chart's coordinate space, so consumers cannot compose this themselves — the seam must extend.
+
+- **D-09: Range selection is a NEW composed atom, `ScaffoldChartRangeSelector<T>`.** Wraps `ScaffoldChart` (same pattern as `ScaffoldChartScrubber` — composition, zero rendering deps). Owns the drag-band overlay (paintable in widget space — no seam change needed) and exposes `selectedRange: (T start, T end)?` + `onRangeSelected`. The atom REPORTS the range only; what the consumer does with it (e.g. rescale via `viewMinX`/`viewMaxX`, filter, zoom) is consumer policy via the callback — user directive: "could involve a callback to the consumer on what to do with that, i.e. scale to that range only." Keyboard: focusable band handles or Shift+Arrow range extension (planner picks the minimal a11y-complete scheme). Theme tokens only.
+
+- **D-10: Gesture-conflict rule.** When a range selector wraps the chart, horizontal DRAG inside the plot = range selection; point scrubbing remains tap/hover (and keyboard). The scrubber's existing drag-scrub gesture yields to the range drag when both are present — the range selector disables/forwards the inner chart's pan-scrub while its own band drag is active. When no range selector is present, current scrub behavior is unchanged.
+
 ### Inherited Locked Patterns (Phases 6–9 — unchanged, apply to every Phase 10 atom)
 
 - **Theme tokens only:** `context.palette` / `context.dimens` ThemeExtension lookups; no hardcoded colors/dimens.
@@ -130,6 +138,7 @@ Both atoms are generic: they know nothing about prices, wallets, media, or any b
 - Bar/pie/scatter chart types — only LineChart is needed for v1.2 Insight Cards; other types can be added to the support part when a concrete consumer needs them
 - HTML template parity for chart atoms — reserved for a future version (Flutter only for v1.2, per PROJECT.md)
 - Built-in chart animations (enter/exit transitions) — reduced-motion behavior is required, but rich enter animations are a consumer concern
+- ~~Smooth-scrub interpolation and range selection~~ — PROMOTED to scope on 2026-08-22 UAT: D-08 (smooth scrub mode on ScaffoldChartScrubber) and D-09 (ScaffoldChartRangeSelector composed atom), planned as 10-06
 
 </deferred>
 
