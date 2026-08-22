@@ -201,4 +201,65 @@ void main() {
       expect(chartVisibleExtremes(const <ChartPoint>[]), isNull);
     });
   });
+
+  group('chartYBounds', () {
+    test('happy path — 8% padding over the visible window', () {
+      // Visible window selects the last 3 of 5 points; y range is 2..9.
+      // span = 7; pad = 7 * 0.08 = 0.56. Expect (2 - 0.56, 9 + 0.56).
+      final List<ChartPoint> data = <ChartPoint>[
+        (x: 0, y: 100),
+        (x: 1, y: 200),
+        (x: 2, y: 2),
+        (x: 3, y: 9),
+        (x: 4, y: 5),
+      ];
+      final (double lo, double hi) =
+          chartYBounds(data, viewMinX: 2, viewMaxX: 4);
+      expect(lo, closeTo(2.0 - 7.0 * 0.08, 1e-9));
+      expect(hi, closeTo(9.0 + 7.0 * 0.08, 1e-9));
+    });
+
+    test('flat series falls back to ±1% of value', () {
+      // Flat at y=100 → pad = 100 * 0.01 = 1.0 → (99, 101).
+      final List<ChartPoint> data = <ChartPoint>[
+        (x: 0, y: 100),
+        (x: 1, y: 100),
+        (x: 2, y: 100),
+      ];
+      final (double lo, double hi) = chartYBounds(data);
+      expect(lo, closeTo(99.0, 1e-9));
+      expect(hi, closeTo(101.0, 1e-9));
+    });
+
+    test('flat series at small magnitude falls back to ±0.01 absolute', () {
+      // Flat at y=0.005 → 0.01 * 0.005 = 5e-5 < 0.01, so pad = 0.01.
+      final List<ChartPoint> data = <ChartPoint>[
+        (x: 0, y: 0.005),
+        (x: 1, y: 0.005),
+      ];
+      final (double lo, double hi) = chartYBounds(data);
+      expect(lo, closeTo(0.005 - 0.01, 1e-12));
+      expect(hi, closeTo(0.005 + 0.01, 1e-12));
+    });
+
+    test('empty series returns (0.0, 1.0) placeholder', () {
+      final (double lo, double hi) = chartYBounds(const <ChartPoint>[]);
+      expect(lo, 0.0);
+      expect(hi, 1.0);
+    });
+
+    test('bad window degrades to the whole series', () {
+      // Window outside data range — falls back to whole-series min/max with
+      // 8% padding (lowest=1, highest=9, span=8, pad=0.64).
+      final List<ChartPoint> data = <ChartPoint>[
+        (x: 0, y: 1),
+        (x: 1, y: 5),
+        (x: 2, y: 9),
+      ];
+      final (double lo, double hi) =
+          chartYBounds(data, viewMinX: 100, viewMaxX: 200);
+      expect(lo, closeTo(1.0 - 8.0 * 0.08, 1e-9));
+      expect(hi, closeTo(9.0 + 8.0 * 0.08, 1e-9));
+    });
+  });
 }

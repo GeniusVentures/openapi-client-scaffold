@@ -167,6 +167,64 @@ bool chartUsesFrame(double plotHeight) => plotHeight >= kChartFrameMinHeight;
   return (lo - band * unitsPerPx, hi + band * unitsPerPx);
 }
 
+/// The chart's vertical window, as `(minY, maxY)` — computed over the points
+/// inside the CURRENT X view, never the whole fetched series.
+///
+/// Ported verbatim from GeniusWallet's `chartYBounds` — the site of the
+/// y-window bug that motivated this whole module. The bug was computing the
+/// window over the entire series while the X window showed only the last 50
+/// points, so a coin sitting 98% below its all-time high rendered the visible
+/// slice as a flat line pinned to the bottom of the card. The data was not
+/// flat; the scale was wrong.
+///
+/// The old padding was `* 0.999` / `* 1.001` — effectively none, so the line
+/// also ran edge to edge. 8% of the visible span on each side gives the curve
+/// somewhere to move while still filling ~86% of the height.
+///
+/// A genuinely flat slice — one point, or a stablecoin that has not moved —
+/// has zero span and cannot be scaled at all, so it falls back to ±1% of the
+/// value (or ±0.01 when the value's magnitude is too small to produce a
+/// positive 1% pad) and the line lands mid-card instead of dividing by zero.
+/// That case is not hypothetical: it is every chart between the first paint
+/// and the second live tick.
+///
+/// Empty series returns `(0.0, 1.0)` — a safe placeholder so callers never
+/// divide by zero.
+///
+/// Pan/zoom cannot empty the visible window when the caller passes the same
+/// `[viewMinX, viewMaxX]` pair it used to clip the spots, but a bad window
+/// degrades to the whole series rather than throwing out of `reduce`.
+(double, double) chartYBounds(
+  List<ChartPoint> data, {
+  double? viewMinX,
+  double? viewMaxX,
+}) {
+  if (data.isEmpty) {
+    return (0.0, 1.0);
+  }
+
+  final double lo = viewMinX ?? data.first.x;
+  final double hi = viewMaxX ?? data.last.x;
+
+  List<double> visible = data
+      .where((ChartPoint s) => s.x >= lo && s.x <= hi)
+      .map((ChartPoint s) => s.y)
+      .toList();
+  if (visible.isEmpty) {
+    visible = data.map((ChartPoint s) => s.y).toList();
+  }
+
+  final double lowest = visible.reduce(min);
+  final double highest = visible.reduce(max);
+  final double span = highest - lowest;
+
+  if (span <= 0) {
+    final double pad = max(highest.abs() * 0.01, 0.01);
+    return (lowest - pad, highest + pad);
+  }
+  return (lowest - span * 0.08, highest + span * 0.08);
+}
+
 /// The highest and lowest spot inside the visible `[viewMinX, viewMaxX]`
 /// window — never the whole fetched series, which the chart's window is
 /// only a slice of.
