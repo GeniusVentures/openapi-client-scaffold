@@ -100,7 +100,7 @@ void main() {
       final LineChartBarData barData = chart.data.lineBarsData.first;
 
       final List<TouchedSpotIndicatorData?> indicators =
-          chart.data.lineTouchData.getTouchedSpotIndicator!(
+          chart.data.lineTouchData.getTouchedSpotIndicator(
               barData, <int>[0]);
       expect(indicators, hasLength(1));
       final TouchedSpotIndicatorData indicator = indicators.first!;
@@ -129,13 +129,20 @@ void main() {
       ) as LineChart;
 
       final LineChartBarData barData = chart.data.lineBarsData.first;
-      final LineBarSpot spot =
-          LineBarSpot(barData, 3, const FlSpot(3, 35));
-      final LineTouchResponse response =
-          LineTouchResponse(<LineBarSpot>[spot]);
+      // LineBarSpot's spotIndex is derived from bar.spots.indexOf(spot),
+      // so the FlSpot passed must be IDENTICAL (equality) to an entry in
+      // bar.spots — use the existing entry at index 3.
+      final FlSpot flSpot = barData.spots[3];
+      final TouchLineBarSpot touchSpot =
+          TouchLineBarSpot(barData, 0, flSpot, 0.0);
+      final LineTouchResponse response = LineTouchResponse(
+        touchLocation: Offset.zero,
+        touchChartCoordinate: Offset.zero,
+        lineBarSpots: <TouchLineBarSpot>[touchSpot],
+      );
 
       chart.data.lineTouchData.touchCallback!(
-        FlTapDownEvent(),
+        FlTapDownEvent(TapDownDetails()),
         response,
       );
       expect(received, <int>[3]);
