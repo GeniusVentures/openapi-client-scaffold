@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
 status: executing
-stopped_at: Completed 10-04-PLAN.md (ScaffoldChartScrubber atom — WIDG-36)
+stopped_at: 10-05 Plan Task 3 awaiting human UAT (Tasks 1+2 complete — barrel exports + demos shipped; analyze + 408 tests + D-02 gates all green)
 last_updated: "2026-08-21T00:00:00.000Z"
-last_activity: 2026-08-21 -- 10-04 plan executed (ScaffoldChartScrubber<T> shipped, 15 widget tests passing, 408 total)
+last_activity: 2026-08-21 -- 10-05 Tasks 1+2 executed (barrel export 10b1856, demos 09abe71); awaiting human UAT for Task 3
 progress:
   total_phases: 4
   completed_phases: 2
@@ -26,9 +26,9 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 ## Current Position
 
 Phase: 10 (chart-scrubber)
-Plan: 04 complete, 05 next
-Status: Executing
-Last activity: 2026-08-21 -- 10-04 plan executed (ScaffoldChartScrubber<T> shipped, 15 widget tests passing, 408 total)
+Plan: 05 in flight — Tasks 1+2 complete, Task 3 (human UAT) awaiting approval
+Status: Paused at human-verify checkpoint
+Last activity: 2026-08-21 -- 10-05 Tasks 1+2 executed (barrel export 10b1856, demos 09abe71); awaiting human UAT for Task 3
 
 ## v1.2 Milestone
 
@@ -105,6 +105,6 @@ Last activity: 2026-08-21 -- 10-04 plan executed (ScaffoldChartScrubber<T> shipp
 ## Session Continuity
 
 **Last session:** 2026-08-21T00:00:00.000Z
-**Stopped at:** Completed 10-04-PLAN.md (ScaffoldChartScrubber atom — WIDG-36)
-**Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-04-SUMMARY.md
-**Next action:** `/gsd:execute-phase 10 --plan 05 --ws scaffold` to ship barrel exports + chart/chart_scrubber demos + final gates + human UAT (WIDG-35/36 closure)
+**Stopped at:** 10-05 Plan Task 3 awaiting human UAT (Tasks 1+2 complete — barrel exports + demos shipped; analyze + 408 tests + D-02 gates all green)
+**Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-05-PLAN.md (Task 3 checkpoint:human-verify)
+**Next action:** Human UAT of Chart + Chart Scrubber demos under dark + light palettes; on "approved" → continuation agent writes 10-05-SUMMARY.md, marks WIDG-35/36 complete, closes Phase 10
