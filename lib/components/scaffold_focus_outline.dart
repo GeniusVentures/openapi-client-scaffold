@@ -7,6 +7,13 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// either keyboard focus is active (traditional highlight mode) or
 /// [MediaQueryData.accessibleNavigation] is true — so the ring is visible in
 /// screen-reader (TalkBack/VoiceOver) mode, not only with a physical keyboard.
+///
+/// Set [showRingWhenFocused] to `true` to bypass the highlight-mode gate —
+/// the ring paints whenever the node has primary focus regardless of how
+/// focus arrived. Use this for interaction surfaces whose design contract
+/// requires a persistent focus indicator (e.g. the chart scrub area per the
+/// Phase 10 UI-SPEC Interaction States table). The default `false` preserves
+/// the Phase 6 keyboard-only ring behavior for all other atoms.
 class ScaffoldFocusOutline extends StatefulWidget {
   const ScaffoldFocusOutline({
     super.key,
@@ -15,6 +22,7 @@ class ScaffoldFocusOutline extends StatefulWidget {
     this.borderRadius,
     this.ringColor,
     this.ringWidth,
+    this.showRingWhenFocused = false,
   });
 
   final Widget? child;
@@ -31,6 +39,12 @@ class ScaffoldFocusOutline extends StatefulWidget {
 
   /// Ring stroke width; defaults to `dimens.focusRingWidth`.
   final double? ringWidth;
+
+  /// When `true`, the ring paints whenever the node has primary focus,
+  /// ignoring [FocusManager.highlightMode]. When `false` (default), the
+  /// ring paints only under traditional (keyboard) highlight mode or when
+  /// [MediaQueryData.accessibleNavigation] is true.
+  final bool showRingWhenFocused;
 
   @override
   State<ScaffoldFocusOutline> createState() => _ScaffoldFocusOutlineState();
@@ -110,7 +124,8 @@ class _ScaffoldFocusOutlineState extends State<ScaffoldFocusOutline> {
     final bool accessibleNavigation =
         MediaQuery.of(context).accessibleNavigation;
 
-    final bool showRing = _hasFocus && (keyboardFocus || accessibleNavigation);
+    final bool showRing = _hasFocus &&
+        (widget.showRingWhenFocused || keyboardFocus || accessibleNavigation);
 
     // Always return the same root widget type (Stack) whether or not the ring
     // is visible. Returning bare `child` when hidden and a Stack when shown

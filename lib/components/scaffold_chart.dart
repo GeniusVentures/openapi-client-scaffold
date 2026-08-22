@@ -41,6 +41,8 @@ class ScaffoldChart<T> extends StatelessWidget {
     required this.yAccessor,
     this.selectedPoint,
     this.onPointSelected,
+    this.onScrubGestureStart,
+    this.onScrubGestureEnd,
     this.plotHeight,
     this.lineColor,
     this.semanticsLabel,
@@ -69,6 +71,18 @@ class ScaffoldChart<T> extends StatelessWidget {
 
   /// Fires when the user touches a data point.
   final ValueChanged<T?>? onPointSelected;
+
+  /// Optional gesture-lifecycle callback fired when a scrub gesture starts
+  /// (pan-start or tap-down inside the chart's touch area). Scaffold-neutral
+  /// — consumers never see the chart engine's event types.
+  ///
+  /// Pairs with [onScrubGestureEnd]; the scrubber uses these to gate
+  /// hover-exit clearing while a drag is active.
+  final VoidCallback? onScrubGestureStart;
+
+  /// Optional gesture-lifecycle callback fired when a scrub gesture ends
+  /// (pan-end, pan-cancel, tap-up, or tap-cancel). See [onScrubGestureStart].
+  final VoidCallback? onScrubGestureEnd;
 
   /// Optional explicit plot height. When null, the atom measures its
   /// LayoutBuilder's `maxHeight` and asserts it is bounded.
@@ -205,6 +219,8 @@ class ScaffoldChart<T> extends StatelessWidget {
                     // the selection; tapping anything else selects it.
                     onPointSelected!(identical(tapped, selectedPoint) ? null : tapped);
                   },
+            onScrubGestureStart: onScrubGestureStart,
+            onScrubGestureEnd: onScrubGestureEnd,
           );
 
           // Framed charts get the plain-Row-of-Texts X-axis below the plot
