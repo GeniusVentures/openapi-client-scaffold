@@ -102,6 +102,7 @@ Reuse the existing `ScaffoldPalette` — do NOT introduce new tokens. Phase 10 m
 2. Below-bar area fill gradient (start color)
 3. Scrub dot fill color
 4. Up-trend override when consumer passes `trendColor: TrendColor.up`
+5. Range-selection band fill (12% alpha) and band edge rules (D-09, added 2026-08-22)
 
 **Accent is NEVER used for:** axis labels, grid lines, chart card fill, scrub vertical rule, border colors.
 
@@ -158,6 +159,22 @@ Atoms are domain-agnostic (locked constraint). Atoms ship with NO hardcoded copy
 | a11y announcement | On `selectedPoint` change, consumer may pass the formatted value to `ScaffoldLiveRegion(value: ...)`. Atom provides the hook; announcement content is consumer-supplied. |
 | Semantics | `Semantics(label: scrubberSemanticsLabel ?? 'Chart scrubber')` on the touch interaction area |
 | Keyboard | Scrub interaction area is keyboard-focusable. ArrowLeft/ArrowRight move selection to previous/next data point. Enter confirms selection (fires `onPointSelected`). Escape clears selection. |
+| Scrub modes (D-08) | `scrubMode: ScrubMode.snap` (default — WIDG-36 contract) or `ScrubMode.smooth`. In smooth mode the vertical rule AND dot track the pointer x continuously; the dot's y is the linear interpolation between the bracketing samples at pointer x (dot rides the line, never jumps). `onPointSelected` still fires with the nearest `T` in both modes; smooth mode additionally fires `onPositionChanged(double x, double interpolatedY)` for consumers rendering a continuous readout. |
+| Smooth-mode visuals | Same indicator chrome as snap (rule: `palette.borderControl` 1px; dot: radius 5, strokeWidth 4, strokeColor = line color at 26% alpha). No new tokens. Reduced-motion contract unchanged (indicator positioning is pointer-driven, not animated). |
+
+### ScaffoldChartRangeSelector (D-09 — new composed atom, UAT-driven)
+
+| Property | Contract |
+|----------|----------|
+| Composition | Wraps `ScaffoldChart` (or a `ScaffoldChartScrubber`-composed chart). Owns the drag-band overlay in widget space (Stack over the plot) — no fl_chart seam change needed for the band itself. |
+| Data contract | `selectedRange: (T start, T end)?` + `onRangeSelected: ValueChanged<(T, T)?>?` — range endpoints map to nearest series points, same accessor-equality mapping as the scrubber. |
+| Default behavior | REPORT ONLY. The atom never rescales, zooms, or filters on its own — the consumer decides via the callback (e.g. set `viewMinX`/`viewMaxX` on the next build to scale to the range). |
+| Band visuals | Fill: `palette.lightGreenPrimary` at 12% alpha over the selected x-span; edges: 1px `palette.lightGreenPrimary` vertical rules at both ends. (Accent-use extension approved for this atom — band fill/edges join the exclusive accent list.) Reduced motion: band appears/disappears instantly (it is drag-driven, not animated). |
+| Gesture rule (D-10) | With a range selector present, horizontal drag in the plot = range selection. Point scrub stays on tap/hover/keyboard; the inner chart's pan-scrub is suppressed while the range drag is active. Without a range selector, scrub behavior is unchanged. |
+| Clear | Escape clears the range; tapping outside an active band drag does not clear. Starting a new drag replaces the range. |
+| Semantics | `Semantics(label: rangeSemanticsLabel ?? 'Chart range selector')` on the band interaction area. |
+| Keyboard | Band area focusable. Shift+ArrowLeft/ArrowRight extends/shrinks the active range end by one series point; Enter confirms (fires `onRangeSelected`); Escape clears. ArrowLeft/Right without modifier still point-scrub when a scrubber is composed. |
+| Touch target | Band edge handles meet 48x48 via `ScaffoldTouchTarget`; focus ring via `ScaffoldFocusOutline` with `showRingWhenFocused: true` (same UAT-driven policy as the scrubber). |
 
 ---
 
