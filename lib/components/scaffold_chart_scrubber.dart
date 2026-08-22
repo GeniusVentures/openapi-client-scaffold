@@ -34,6 +34,12 @@ import 'scaffold_focus_outline.dart';
 import 'scaffold_live_region.dart';
 import 'scaffold_touch_target.dart';
 
+// Re-export the ScrubMode enum so consumers importing ONLY the scrubber can
+// still name the D-08 smooth-mode switch without a second import of the
+// chart atom. (The enum lives in scaffold_chart.dart — the base atom — to
+// avoid a chart -> scrubber -> chart circular import.)
+export 'scaffold_chart.dart' show ScrubMode;
+
 /// Point-selection composition atom — generic over the consumer's series
 /// element type, exactly mirroring `ScaffoldChart<T>`'s generic.
 ///
@@ -60,6 +66,8 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
     this.yLabelFormatter,
     this.viewMinX,
     this.viewMaxX,
+    this.scrubMode = ScrubMode.snap,
+    this.onPositionChanged,
   });
 
   /// The data series; passed through to `ScaffoldChart`.
@@ -116,6 +124,15 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
   /// Optional visible-window maximum X; passed through to `ScaffoldChart`.
   final double? viewMaxX;
 
+  /// Scrub behavior mode (D-08); passed through to `ScaffoldChart`.
+  /// Defaults to [ScrubMode.snap].
+  final ScrubMode scrubMode;
+
+  /// Continuous scrub-position callback (D-08); passed through to
+  /// `ScaffoldChart`. Fires on hover/pan-move with the pointer's continuous
+  /// chart-x and the linearly interpolated y between bracketing samples.
+  final void Function(double x, double y)? onPositionChanged;
+
   @override
   Widget build(BuildContext context) {
     // The interactive core is a private StatefulWidget that owns the
@@ -137,6 +154,8 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
       yLabelFormatter: yLabelFormatter,
       viewMinX: viewMinX,
       viewMaxX: viewMaxX,
+      scrubMode: scrubMode,
+      onPositionChanged: onPositionChanged,
     );
 
     // Scrub-area semantics — separate from the chart's own 'Chart' label so
@@ -185,6 +204,8 @@ class _ScrubberCore<T> extends StatefulWidget {
     this.yLabelFormatter,
     this.viewMinX,
     this.viewMaxX,
+    this.scrubMode = ScrubMode.snap,
+    this.onPositionChanged,
   });
 
   final List<T> series;
@@ -199,6 +220,8 @@ class _ScrubberCore<T> extends StatefulWidget {
   final String Function(double, double)? yLabelFormatter;
   final double? viewMinX;
   final double? viewMaxX;
+  final ScrubMode scrubMode;
+  final void Function(double x, double y)? onPositionChanged;
 
   @override
   State<_ScrubberCore<T>> createState() => _ScrubberCoreState<T>();
@@ -324,6 +347,8 @@ class _ScrubberCoreState<T> extends State<_ScrubberCore<T>> {
       yLabelFormatter: widget.yLabelFormatter,
       viewMinX: widget.viewMinX,
       viewMaxX: widget.viewMaxX,
+      scrubMode: widget.scrubMode,
+      onPositionChanged: widget.onPositionChanged,
     );
 
     return Shortcuts(

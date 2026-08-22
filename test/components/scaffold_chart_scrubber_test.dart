@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend_scaffold/components/scaffold_chart.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_scrubber.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
 import 'package:frontend_scaffold/components/scaffold_live_region.dart';
