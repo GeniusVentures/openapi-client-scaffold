@@ -99,7 +99,7 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — Pure chart geometry support part (chartTickStep / chartAxisLabel / chartXLabelCount / chartYTickCount / chartUsesFrame / chartBandedBounds / chartVisibleExtremes) + tests (WIDG-35, 36 foundation; D-04)
+- [x] 10-01-PLAN.md — Pure chart geometry support part (chartTickStep / chartAxisLabel / chartXLabelCount / chartYTickCount / chartUsesFrame / chartBandedBounds / chartVisibleExtremes) + tests (WIDG-35, 36 foundation; D-04)
 - [ ] 10-02-PLAN.md — fl_chart renderer support part (the ONLY fl_chart seam; pubspec adds fl_chart ^1.2.0) + tests (D-01, D-02, D-05, D-06, D-07)
 - [ ] 10-03-PLAN.md — ScaffoldChart<T> atom (neutral series contract, framed/axis-free, X-axis as Row of Texts) + tests (WIDG-35; D-03, D-06)
 - [ ] 10-04-PLAN.md — ScaffoldChartScrubber<T> atom (keyboard a11y + focus outline + PointerExit + 48x48 + live-region hook) + tests (WIDG-36; D-05)
@@ -125,7 +125,7 @@ Plans:
 | 7. Media & Integration Widgets | v1.1 | 4/4 | Complete | 2026-08-15 |
 | 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 6/6 | Complete | 2026-08-17 |
 | 9. Text & Code Primitives | v1.2 | 4/6 | In Progress|  |
-| 10. Chart & Scrubber | v1.2 | 0/5 | Planned | - |
+| 10. Chart & Scrubber | v1.2 | 1/5 | In Progress |  |
 | 11. Verification & Coverage Gate | v1.2 | 0/? | Not started | - |
 
 ## Out of scope (owned by consuming repos)
