@@ -65,8 +65,9 @@ class ScaffoldChart<T> extends StatelessWidget {
   ///
   /// The atom does NOT paint a persistent selection dot — visual selection
   /// is composed externally (Plan 04's ScaffoldChartScrubber). This value
-  /// is consulted only when deciding whether to fire `onPointSelected`
-  /// with the tapped point or with `null` (toggle behavior).
+  /// is consulted by the enclosing scrubber's keyboard navigation; pointer
+  /// hits always SELECT — they never clear (D-05: clearing happens only
+  /// via Escape or pointer-exit).
   final T? selectedPoint;
 
   /// Fires when the user touches a data point.
@@ -214,19 +215,17 @@ class ScaffoldChart<T> extends StatelessWidget {
                     if (spotIndex < 0 || spotIndex >= visibleItems.length) {
                       return;
                     }
-                    final T touched = visibleItems[spotIndex];
-                    // Toggle-clear applies ONLY to discrete taps (UAT
-                    // regression): fl_chart forwards hover-move events
-                    // through the same callback, so toggling on every hit
-                    // made a stationary mouse clear + re-select the hovered
-                    // point in a rebuild loop. Hover/pan hits always
-                    // SELECT; only a discrete tap on the already-selected
-                    // point clears it.
-                    if (isDiscreteTap && identical(touched, selectedPoint)) {
-                      onPointSelected!(null);
-                    } else {
-                      onPointSelected!(touched);
-                    }
+                    // Tap/hover/drag ALWAYS select (D-05 contract): the
+                    // 10-UI-SPEC never specified tap-to-clear — clearing
+                    // happens ONLY via Escape or pointer-exit. The UAT
+                    // verdict on the former discrete-tap toggle was that it
+                    // reads as a bug ("If I click, it goes to no
+                    // selection"), so a discrete tap on the already-selected
+                    // point is a no-op re-select. The renderer's
+                    // isDiscreteTap discrimination is retained at the seam
+                    // (correct plumbing) but the atom no longer uses it to
+                    // clear.
+                    onPointSelected!(visibleItems[spotIndex]);
                   },
             onScrubGestureStart: onScrubGestureStart,
             onScrubGestureEnd: onScrubGestureEnd,
