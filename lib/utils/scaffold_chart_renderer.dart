@@ -81,6 +81,16 @@ const double _kTouchedDotRingAlpha = 0.26;
 ///
 /// Returns `SizedBox.shrink()` if `spots` is empty — never constructs a
 /// `LineChart` with an empty series.
+///
+/// ## Gesture-lifecycle callbacks
+///
+/// [onScrubGestureStart] / [onScrubGestureEnd] forward fl_chart's
+/// gesture-lifecycle events so consumers can gate hover-exit behavior on
+/// whether a drag is currently active. The renderer fires
+/// `onScrubGestureStart` on `FlPanStartEvent` / `FlTapDownEvent` and
+/// `onScrubGestureEnd` on `FlPanEndEvent` / `FlPanCancelEvent` /
+/// `FlTapUpEvent` / `FlTapCancelEvent`. These are scaffold-neutral —
+/// consumers never see fl_chart types.
 Widget buildScaffoldLineChart({
   required List<ChartPoint> spots,
   required double plotHeight,
@@ -93,6 +103,8 @@ Widget buildScaffoldLineChart({
   required bool reducedMotion,
   required (double, double) yBounds,
   ValueChanged<int>? onSpotTouched,
+  VoidCallback? onScrubGestureStart,
+  VoidCallback? onScrubGestureEnd,
   double? viewMinX,
   double? viewMaxX,
   double? minX,
@@ -235,9 +247,28 @@ Widget buildScaffoldLineChart({
         );
 
   final LineTouchData lineTouchData = LineTouchData(
-    enabled: onSpotTouched != null,
+    // Enable touch handling whenever ANY touch callback is wired — spot
+    // touches, gesture lifecycle, or both. Otherwise the gesture-lifecycle
+    // plumbing would silently no-op when the consumer only wants drag
+    // notifications (no selection).
+    enabled: onSpotTouched != null ||
+        onScrubGestureStart != null ||
+        onScrubGestureEnd != null,
     handleBuiltInTouches: true,
     touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+      // Forward gesture lifecycle so consumers can distinguish "drag in
+      // progress" from "hover only" and gate their PointerExit behavior.
+      // fl_chart dispatches FlPanStartEvent/FlTapDownEvent at gesture start
+      // and FlPanEndEvent/FlPanCancelEvent/FlTapUpEvent/FlTapCancelEvent at
+      // gesture end — this mapping is fl_chart's documented contract.
+      if (event is FlPanStartEvent || event is FlTapDownEvent) {
+        onScrubGestureStart?.call();
+      } else if (event is FlPanEndEvent ||
+          event is FlPanCancelEvent ||
+          event is FlTapUpEvent ||
+          event is FlTapCancelEvent) {
+        onScrubGestureEnd?.call();
+      }
       final LineBarSpot? spot = response?.lineBarSpots?.firstOrNull;
       if (spot != null) {
         onSpotTouched?.call(spot.spotIndex);

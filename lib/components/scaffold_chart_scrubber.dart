@@ -114,8 +114,13 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Innermost layer: the composed chart.
-    final Widget chart = ScaffoldChart<T>(
+    // The interactive core is a private StatefulWidget that owns the
+    // FocusNode shared between key dispatch and the focus ring — see the
+    // file-level doc comment for the stateless-for-selection contract.
+    // The chart itself is built INSIDE the state so the state can wire
+    // its own _dragActive tracking callbacks into the chart's gesture
+    // lifecycle (Test 8b/8c — hover-exit must not clear during a drag).
+    final Widget interactive = _ScrubberCore<T>(
       series: series,
       xAccessor: xAccessor,
       yAccessor: yAccessor,
@@ -123,23 +128,11 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
       onPointSelected: onPointSelected,
       plotHeight: plotHeight,
       lineColor: lineColor,
-      semanticsLabel: chartSemanticsLabel,
+      chartSemanticsLabel: chartSemanticsLabel,
       xLabelFormatter: xLabelFormatter,
       yLabelFormatter: yLabelFormatter,
       viewMinX: viewMinX,
       viewMaxX: viewMaxX,
-    );
-
-    // The interactive core is a private StatefulWidget that owns the
-    // FocusNode shared between key dispatch and the focus ring — see the
-    // file-level doc comment for the stateless-for-selection contract.
-    final Widget interactive = _ScrubberCore<T>(
-      series: series,
-      xAccessor: xAccessor,
-      yAccessor: yAccessor,
-      selectedPoint: selectedPoint,
-      onPointSelected: onPointSelected,
-      child: chart,
     );
 
     // Scrub-area semantics — separate from the chart's own 'Chart' label so
@@ -164,10 +157,13 @@ class ScaffoldChartScrubber<T> extends StatelessWidget {
 }
 
 /// Private stateful core — owns the shared [FocusNode] used by both the
-/// key-dispatch [Focus] widget and the [ScaffoldFocusOutline] ring.
+/// key-dispatch [Focus] widget and the [ScaffoldFocusOutline] ring, and
+/// tracks the chart's gesture lifecycle so hover-exit can be gated on
+/// whether a drag is in progress (Test 8b/8c).
 ///
-/// Holds ONLY transient interaction state (the focus node). Selection truth
-/// stays with the consumer; this widget re-builds cleanly from its inputs.
+/// Holds ONLY transient interaction state (the focus node and the
+/// drag-active flag). Selection truth stays with the consumer; this
+/// widget re-builds cleanly from its inputs.
 class _ScrubberCore<T> extends StatefulWidget {
   const _ScrubberCore({
     required this.series,
@@ -175,7 +171,13 @@ class _ScrubberCore<T> extends StatefulWidget {
     required this.yAccessor,
     required this.selectedPoint,
     required this.onPointSelected,
-    required this.child,
+    this.plotHeight,
+    this.lineColor,
+    this.chartSemanticsLabel,
+    this.xLabelFormatter,
+    this.yLabelFormatter,
+    this.viewMinX,
+    this.viewMaxX,
   });
 
   final List<T> series;
@@ -183,7 +185,13 @@ class _ScrubberCore<T> extends StatefulWidget {
   final double Function(T) yAccessor;
   final T? selectedPoint;
   final ValueChanged<T?>? onPointSelected;
-  final Widget child;
+  final double? plotHeight;
+  final Color? lineColor;
+  final String? chartSemanticsLabel;
+  final String Function(double)? xLabelFormatter;
+  final String Function(double, double)? yLabelFormatter;
+  final double? viewMinX;
+  final double? viewMaxX;
 
   @override
   State<_ScrubberCore<T>> createState() => _ScrubberCoreState<T>();
@@ -192,6 +200,13 @@ class _ScrubberCore<T> extends StatefulWidget {
 class _ScrubberCoreState<T> extends State<_ScrubberCore<T>> {
   late final FocusNode _focusNode =
       FocusNode(debugLabel: 'ScaffoldChartScrubber');
+
+  /// Whether a scrub gesture (pan or tap) is currently active inside the
+  /// chart's touch area. Tracked via the chart's gesture-lifecycle
+  /// callbacks so the hover-exit handler can distinguish "pointer left
+  /// during a drag" (must NOT clear) from "pointer left with no drag"
+  /// (D-05 — must clear). See Test 8b/8c.
+  bool _dragActive = false;
 
   @override
   void dispose() {
@@ -258,13 +273,52 @@ class _ScrubberCoreState<T> extends State<_ScrubberCore<T>> {
     // — the D-05 hover-exit pattern. The framework delivers this as a
     // PointerExitEvent (the plan-spec wording for this hook is
     // "onPointerExit"); MouseRegion surfaces it via its `onExit` parameter.
-    // Fire unconditionally — even when selectedPoint is already null — so
-    // consumers can rely on it as a generic "hover ended" signal.
+    //
+    // UAT section 4 regression: MouseRegion.onExit fires for ANY pointer
+    // exit — including synthetic exits while a drag is active (the pointer
+    // crossing hit-test boundaries inside the chart). Clearing here raced
+    // with the drag's own spot selection and produced the "scrub flickers
+    // / oscillates with No selection" defect. Gate the clear on
+    // `_dragActive`: only hover-exit with NO in-flight gesture clears.
+    if (_dragActive) {
+      return;
+    }
+    // Fire unconditionally (post-gate) — even when selectedPoint is
+    // already null — so consumers can rely on it as a generic "hover
+    // ended" signal.
     widget.onPointSelected?.call(null);
+  }
+
+  void _handleScrubGestureStart() {
+    _dragActive = true;
+  }
+
+  void _handleScrubGestureEnd() {
+    _dragActive = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    // Build the inner chart here (not in the parent) so the state's
+    // _dragActive tracking callbacks can be wired into the chart's
+    // gesture lifecycle.
+    final Widget chart = ScaffoldChart<T>(
+      series: widget.series,
+      xAccessor: widget.xAccessor,
+      yAccessor: widget.yAccessor,
+      selectedPoint: widget.selectedPoint,
+      onPointSelected: widget.onPointSelected,
+      onScrubGestureStart: _handleScrubGestureStart,
+      onScrubGestureEnd: _handleScrubGestureEnd,
+      plotHeight: widget.plotHeight,
+      lineColor: widget.lineColor,
+      semanticsLabel: widget.chartSemanticsLabel,
+      xLabelFormatter: widget.xLabelFormatter,
+      yLabelFormatter: widget.yLabelFormatter,
+      viewMinX: widget.viewMinX,
+      viewMaxX: widget.viewMaxX,
+    );
+
     return Shortcuts(
       shortcuts: const <ShortcutActivator, Intent>{
         SingleActivator(LogicalKeyboardKey.arrowLeft): _PrevIntent(),
@@ -312,11 +366,18 @@ class _ScrubberCoreState<T> extends State<_ScrubberCore<T>> {
             autofocus: false,
             child: ScaffoldFocusOutline(
               focusNode: _focusNode,
+              // UAT section 5 / UI-SPEC Interaction States row "Focus": the
+              // scrub area MUST paint its focus ring on ANY primary focus,
+              // not only keyboard-highlight focus. Tap-to-focus leaves the
+              // FocusManager highlight mode in hover/touch, so the default
+              // ScaffoldFocusOutline gating would never paint. Other atoms
+              // (Phase 6 contract) keep the default keyboard-only behavior.
+              showRingWhenFocused: true,
               child: MouseRegion(
                 cursor: SystemMouseCursors.precise,
                 onExit: _handleMouseExit,
                 child: ScaffoldTouchTarget(
-                  child: widget.child,
+                  child: chart,
                 ),
               ),
             ),
