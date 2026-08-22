@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/utils/chart_geometry.dart';
@@ -20,7 +21,7 @@ List<ChartPoint> _spots() {
 
 Widget _buildFramed({
   required bool reducedMotion,
-  ValueChanged<int>? onSpotTouched,
+  ScaffoldSpotTouched? onSpotTouched,
 }) {
   return buildScaffoldLineChart(
     spots: _spots(),
@@ -122,10 +123,10 @@ void main() {
     });
 
     test('Test 6: touch callback forwards spotIndex to onSpotTouched', () {
-      final List<int> received = <int>[];
+      final List<(int, bool)> received = <(int, bool)>[];
       final LineChart chart = _buildFramed(
         reducedMotion: false,
-        onSpotTouched: received.add,
+        onSpotTouched: (int i, bool isTap) => received.add((i, isTap)),
       ) as LineChart;
 
       final LineChartBarData barData = chart.data.lineBarsData.first;
@@ -145,7 +146,36 @@ void main() {
         FlTapDownEvent(TapDownDetails()),
         response,
       );
-      expect(received, <int>[3]);
+      expect(received, <(int, bool)>[(3, true)]);
+    });
+
+    test('Test 6b: hover events report isDiscreteTap=false '
+        '(hover must never be treated as a toggle-tap)', () {
+      final List<(int, bool)> received = <(int, bool)>[];
+      final LineChart chart = _buildFramed(
+        reducedMotion: false,
+        onSpotTouched: (int i, bool isTap) => received.add((i, isTap)),
+      ) as LineChart;
+
+      final LineChartBarData barData = chart.data.lineBarsData.first;
+      final FlSpot flSpot = barData.spots[1];
+      final TouchLineBarSpot touchSpot =
+          TouchLineBarSpot(barData, 0, flSpot, 0.0);
+      final LineTouchResponse response = LineTouchResponse(
+        touchLocation: Offset.zero,
+        touchChartCoordinate: Offset.zero,
+        lineBarSpots: <TouchLineBarSpot>[touchSpot],
+      );
+
+      chart.data.lineTouchData.touchCallback!(
+        const FlPointerHoverEvent(PointerHoverEvent()),
+        response,
+      );
+      chart.data.lineTouchData.touchCallback!(
+        FlPanUpdateEvent(DragUpdateDetails(globalPosition: Offset.zero)),
+        response,
+      );
+      expect(received, <(int, bool)>[(1, false), (1, false)]);
     });
 
     test('Test 8: below-bar gradient stops + 26% alpha start color', () {
@@ -219,7 +249,7 @@ void main() {
     test('touch enabled when onSpotTouched is non-null', () {
       final LineChart chart = _buildFramed(
         reducedMotion: false,
-        onSpotTouched: (int _) {},
+        onSpotTouched: (int spotIndex, bool isTap) {},
       ) as LineChart;
       expect(chart.data.lineTouchData.enabled, isTrue);
     });

@@ -210,14 +210,23 @@ class ScaffoldChart<T> extends StatelessWidget {
             maxX: hi,
             onSpotTouched: onPointSelected == null
                 ? null
-                : (int spotIndex) {
+                : (int spotIndex, bool isDiscreteTap) {
                     if (spotIndex < 0 || spotIndex >= visibleItems.length) {
                       return;
                     }
-                    final T tapped = visibleItems[spotIndex];
-                    // Toggle: tapping the currently selected point clears
-                    // the selection; tapping anything else selects it.
-                    onPointSelected!(identical(tapped, selectedPoint) ? null : tapped);
+                    final T touched = visibleItems[spotIndex];
+                    // Toggle-clear applies ONLY to discrete taps (UAT
+                    // regression): fl_chart forwards hover-move events
+                    // through the same callback, so toggling on every hit
+                    // made a stationary mouse clear + re-select the hovered
+                    // point in a rebuild loop. Hover/pan hits always
+                    // SELECT; only a discrete tap on the already-selected
+                    // point clears it.
+                    if (isDiscreteTap && identical(touched, selectedPoint)) {
+                      onPointSelected!(null);
+                    } else {
+                      onPointSelected!(touched);
+                    }
                   },
             onScrubGestureStart: onScrubGestureStart,
             onScrubGestureEnd: onScrubGestureEnd,

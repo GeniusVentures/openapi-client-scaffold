@@ -62,6 +62,23 @@ const double _kGridLineAlpha = 0.06;
 /// Alpha of the touched-spot indicator ring color.
 const double _kTouchedDotRingAlpha = 0.26;
 
+/// Signature for the renderer's spot-touch callback.
+///
+/// [spotIndex] indexes into the `spots` list passed to
+/// [buildScaffoldLineChart]; [isDiscreteTap] is true only when the touch
+/// came from a discrete tap gesture (`FlTapDownEvent`) — hover moves
+/// (`FlPointerHoverEvent`) and pan gestures report false so the caller can
+/// apply a toggle-clear policy ONLY to taps (UAT regression: hover must
+/// never clear a selection).
+///
+/// Spot selection is forwarded ONLY for intent-carrying events — discrete
+/// tap-down, hover move, pan start/update, and long-press start/move.
+/// Gesture-END events (`FlTapUpEvent`, `FlPanEndEvent`, cancels) never
+/// forward a spot: their spot data would immediately undo a tap-toggle
+/// clear (the pointer is still over the same point at tap-up, so a
+/// forward would re-select what the tap just cleared).
+typedef ScaffoldSpotTouched = void Function(int spotIndex, bool isDiscreteTap);
+
 /// Builds a fully-configured `LineChart` widget from scaffold-neutral
 /// inputs.
 ///
@@ -102,7 +119,7 @@ Widget buildScaffoldLineChart({
   required TextStyle axisLabelStyle,
   required bool reducedMotion,
   required (double, double) yBounds,
-  ValueChanged<int>? onSpotTouched,
+  ScaffoldSpotTouched? onSpotTouched,
   VoidCallback? onScrubGestureStart,
   VoidCallback? onScrubGestureEnd,
   double? viewMinX,
@@ -271,7 +288,27 @@ Widget buildScaffoldLineChart({
       }
       final LineBarSpot? spot = response?.lineBarSpots?.firstOrNull;
       if (spot != null) {
-        onSpotTouched?.call(spot.spotIndex);
+        // Event-kind discrimination (UAT regression): fl_chart fires
+        // FlPointerHoverEvent through this callback on EVERY hover move
+        // (render_base_chart.handleEvent), and re-fires it for a stationary
+        // mouse whenever the chart rebuilds. Only FlTapDownEvent marks a
+        // discrete tap — the caller applies its toggle-clear policy solely
+        // to taps; hover/pan hits always carry isDiscreteTap=false.
+        //
+        // Gesture-END events (FlTapUpEvent / FlPanEndEvent / cancels)
+        // carry no new positional intent and are NOT forwarded — a tap-up
+        // forward would immediately re-select the point a tap-toggle just
+        // cleared (the pointer is still over it at tap-up).
+        final bool isSelectionIntent = event is FlTapDownEvent ||
+            event is FlPointerHoverEvent ||
+            event is FlPanDownEvent ||
+            event is FlPanStartEvent ||
+            event is FlPanUpdateEvent ||
+            event is FlLongPressStart ||
+            event is FlLongPressMoveUpdate;
+        if (isSelectionIntent) {
+          onSpotTouched?.call(spot.spotIndex, event is FlTapDownEvent);
+        }
       }
     },
     // Full-height crosshair: the line runs floor to ceiling instead of
