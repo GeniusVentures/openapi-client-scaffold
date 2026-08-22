@@ -223,6 +223,111 @@ void main() {
       expect(events, contains(null));
     });
 
+    testWidgets(
+        'Test 8b: PointerExit during an active drag does NOT clear selection',
+        (WidgetTester tester) async {
+      // UAT section 4 regression: with a finger/mouse drag in progress, the
+      // framework can deliver synthetic PointerExit events (e.g. as the
+      // pointer crosses hit-test boundaries inside the chart). The previous
+      // implementation unconditionally fired onPointSelected(null) on ANY
+      // exit, which raced with the drag's own spot selection and produced
+      // the "scrub flickers / oscillates with No selection" defect.
+      //
+      // Contract: while a drag is active, PointerExit MUST NOT clear.
+      // Selection clears only on hover-exit when NO drag is in progress
+      // (D-05 / GeniusWallet behavior — the selection persists at the
+      // final scrubbed point after the drag ends).
+      final List<int?> events = <int?>[];
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        onSelected: (int? v) => events.add(v),
+      );
+
+      // Use a touch pointer (not mouse) so the fl_chart internal gesture
+      // recognizer treats this as a pan — FlPanStartEvent fires on the
+      // touchCallback. We then inject a synthetic PointerExitEvent via the
+      // MouseRegion layer while the pan is still active.
+      final Offset center =
+          tester.getCenter(find.byType(ScaffoldChartScrubber<int>));
+      final TestGesture gesture = await tester.startGesture(center);
+      addTearDown(gesture.removePointer);
+      await tester.pump();
+      // Move inside the plot so fl_chart recognizes a pan and reports a
+      // spot — the touchCallback now fires with FlPanStartEvent + spot.
+      await gesture.moveBy(const Offset(20, 0));
+      await tester.pump();
+
+      // The drag itself selected a point; drain it so the assertion below
+      // only sees the post-exit state.
+      expect(events, isNotEmpty,
+          reason: 'Pan should have produced a selection event');
+      events.clear();
+
+      // Synthesize a PointerExitEvent against the MouseRegion while the
+      // pan is still active. The scrubber must NOT fire onPointSelected.
+      final TestGesture hoverExit = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await hoverExit.addPointer(location: center);
+      addTearDown(hoverExit.removePointer);
+      await hoverExit.moveTo(center);
+      await tester.pump();
+      await hoverExit.moveTo(const Offset(-10000, -10000));
+      await tester.pump();
+
+      expect(
+        events,
+        isNot(contains(null)),
+        reason: 'PointerExit during an active drag must not clear selection',
+      );
+    });
+
+    testWidgets(
+        'Test 8c: PointerExit AFTER drag end clears selection (hover-exit contract)',
+        (WidgetTester tester) async {
+      // Companion to Test 8b: the drag-gated clear is NOT a permanent
+      // suppression. Once the gesture has ended (FlPanEndEvent /
+      // FlPanCancelEvent / FlTapUpEvent), a subsequent hover-exit MUST
+      // still clear — otherwise D-05 hover-exit behavior is lost entirely.
+      final List<int?> events = <int?>[];
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        onSelected: (int? v) => events.add(v),
+      );
+
+      final Offset center =
+          tester.getCenter(find.byType(ScaffoldChartScrubber<int>));
+      final TestGesture gesture = await tester.startGesture(center);
+      addTearDown(gesture.removePointer);
+      await tester.pump();
+      await gesture.moveBy(const Offset(20, 0));
+      await tester.pump();
+      await gesture.up();
+      await tester.pump();
+
+      events.clear();
+
+      final TestGesture hoverExit = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await hoverExit.addPointer(location: center);
+      addTearDown(hoverExit.removePointer);
+      await hoverExit.moveTo(center);
+      await tester.pump();
+      await hoverExit.moveTo(const Offset(-10000, -10000));
+      await tester.pump();
+
+      expect(
+        events,
+        contains(null),
+        reason: 'Hover-exit with no active drag must still clear selection',
+      );
+    });
+
     testWidgets('Test 9: outer Semantics "Chart scrubber" wraps inner "Chart"',
         (WidgetTester tester) async {
       await _pumpScrubber(
@@ -276,6 +381,46 @@ void main() {
       await tester.pump();
 
       expect(find.byType(ScaffoldFocusOutline), findsOneWidget);
+    });
+
+    testWidgets(
+        'Test 11b: tap-focus paints the focus ring (UI-SPEC interaction-states)',
+        (WidgetTester tester) async {
+      // UAT section 5 regression: tapping the scrub area grants primary
+      // focus, but the FocusManager highlight mode stays in hover/touch —
+      // the previous ScaffoldFocusOutline gating (keyboard-only) meant the
+      // ring never painted. Per the Phase 10 UI-SPEC Interaction States
+      // table, the scrub area MUST show the 2px focusRingColor ring
+      // whenever it has primary focus, regardless of how focus arrived.
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        onSelected: (int? _) {},
+      );
+
+      // Tap-to-focus path — Listener.onPointerDown calls requestFocus
+      // without flipping the FocusManager to traditional highlight mode.
+      await tester.tap(find.byType(ScaffoldChartScrubber<int>));
+      await tester.pump();
+
+      // Highlight mode must NOT be traditional (otherwise this test is
+      // accidentally exercising the keyboard path, not the tap path).
+      expect(
+        FocusManager.instance.highlightMode,
+        isNot(FocusHighlightMode.traditional),
+      );
+
+      final Finder ringPaint = find.descendant(
+        of: find.byType(ScaffoldFocusOutline),
+        matching: find.byType(CustomPaint),
+      );
+      expect(
+        ringPaint,
+        findsOneWidget,
+        reason: 'Scrub area must paint the focus ring on tap-focus '
+            '(UI-SPEC Interaction States row "Focus")',
+      );
     });
 
     testWidgets('Test 12: empty series — keyboard no-ops, PointerExit fires',
