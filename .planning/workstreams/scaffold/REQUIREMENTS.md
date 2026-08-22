@@ -15,7 +15,7 @@ Seed analysis: `.planning/atoms-v1.2-additions.md` (7/19 Beautiful UI components
 - [ ] **WIDG-33**: `ScaffoldStreamingRichText` supports inline source/citation markers with expandable source slots and streaming cursor state
 - [ ] **WIDG-34**: `ScaffoldStreamingRichText` exposes response-action slots (copy, retry, rate, follow-up) and accessibility announcements that don't reread the whole answer per token
 - [x] **WIDG-35**: `ScaffoldChart` renders a series via a neutral data contract (`series`, `xAccessor`, `yAccessor`) with no domain knowledge
-- [ ] **WIDG-36**: `ScaffoldChartScrubber` provides point selection/scrubbing (`selectedPoint`, `onPointSelected`) composing with `ScaffoldChart`
+- [x] **WIDG-36**: `ScaffoldChartScrubber` provides point selection/scrubbing (`selectedPoint`, `onPointSelected`) composing with `ScaffoldChart`
 - [ ] **WIDG-37**: `ScaffoldCodeBlock` renders syntax-highlighted code spans with line numbers, language/filename header, and copy action
 - [ ] **WIDG-38**: `ScaffoldCodeBlock` supports horizontal scrolling, streamed line insertion, and reduced-motion behavior
 - [ ] **WIDG-39**: `ScaffoldSelectionActions` wraps selectable content and reports `onSelectionChanged(TextSelection, String)` with an anchored action toolbar
@@ -72,7 +72,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WIDG-33 | Phase 9 | Pending |
 | WIDG-34 | Phase 9 | Pending |
 | WIDG-35 | Phase 10 | Complete |
-| WIDG-36 | Phase 10 | Pending |
+| WIDG-36 | Phase 10 | Complete |
 | WIDG-37 | Phase 9 | Pending |
 | WIDG-38 | Phase 9 | Pending |
 | WIDG-39 | Phase 9 | Pending |

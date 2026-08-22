@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Atom Extensions
 status: executing
-stopped_at: Completed 10-03-PLAN.md (ScaffoldChart atom — WIDG-35)
+stopped_at: Completed 10-04-PLAN.md (ScaffoldChartScrubber atom — WIDG-36)
 last_updated: "2026-08-21T00:00:00.000Z"
-last_activity: 2026-08-21 -- 10-03 plan executed (ScaffoldChart<T> shipped, 10 widget tests + 5 chartYBounds tests passing, 393 total)
+last_activity: 2026-08-21 -- 10-04 plan executed (ScaffoldChartScrubber<T> shipped, 15 widget tests passing, 408 total)
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 17
-  completed_plans: 15
-  percent: 60
+  completed_plans: 16
+  percent: 65
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 ## Current Position
 
 Phase: 10 (chart-scrubber)
-Plan: 03 complete, 04 next
+Plan: 04 complete, 05 next
 Status: Executing
-Last activity: 2026-08-21 -- 10-03 plan executed (ScaffoldChart<T> shipped, 10 widget tests + 5 chartYBounds tests passing, 393 total)
+Last activity: 2026-08-21 -- 10-04 plan executed (ScaffoldChartScrubber<T> shipped, 15 widget tests passing, 408 total)
 
 ## v1.2 Milestone
 
@@ -72,6 +72,7 @@ Last activity: 2026-08-21 -- 10-03 plan executed (ScaffoldChart<T> shipped, 10 w
 - **Inherited from v1.0 (still locked):** neutral generic package (zero brand names); font choice lives in theme; image caching and localization are infrastructure not widgets; generated code is never committed (CI regenerates + diffs); templates use Jinja2 `StrictUndefined`
 - **v1.2 phase boundary: text/code primitives together, chart separate** — streaming rich text, code block, and selection actions all share text-selection/anchored-toolbar machinery, so they batch into Phase 9; chart + scrubber are a self-contained visualization pair in Phase 10 that does not depend on Phase 9 (owner decision encoded in roadmap 2026-08-17)
 - **v1.2 verification gate is its own phase** — WIDG-44 (per-atom tests/demos/barrel) and WIDG-45 (Beautiful UI coverage) execute as a final sweep over all atoms shipped in Phases 8-10, matching the v1.1 Phase 7 UAT/verification pattern
+- **10-04 Scrubber composition** — ScaffoldChartScrubber stacks Shortcuts+Actions+Focus with a private stateful core owning ONLY a FocusNode (transient interaction state carve-out); ScaffoldFocusOutline shares the same node so the ring lights exactly when keyboard focus is on the scrub area. Tap-to-focus uses Listener.onPointerDown (not GestureDetector.onTap) so focus lands before fl_chart's gesture arena resolves.
 
 ### Pending Todos
 
@@ -104,6 +105,6 @@ Last activity: 2026-08-21 -- 10-03 plan executed (ScaffoldChart<T> shipped, 10 w
 ## Session Continuity
 
 **Last session:** 2026-08-21T00:00:00.000Z
-**Stopped at:** Completed 10-03-PLAN.md (ScaffoldChart atom — WIDG-35)
-**Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-03-SUMMARY.md
-**Next action:** `/gsd:execute-phase 10 --plan 04 --ws scaffold` to ship the ScaffoldChartScrubber atom (WIDG-36)
+**Stopped at:** Completed 10-04-PLAN.md (ScaffoldChartScrubber atom — WIDG-36)
+**Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-04-SUMMARY.md
+**Next action:** `/gsd:execute-phase 10 --plan 05 --ws scaffold` to ship barrel exports + chart/chart_scrubber demos + final gates + human UAT (WIDG-35/36 closure)
