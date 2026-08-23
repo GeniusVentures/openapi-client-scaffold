@@ -80,6 +80,112 @@ cd example && flutter run -d macos    # or -d chrome
 widget family and the v1.2 atoms. The component gallery below shows a
 captured screenshot of each demo.
 
+## Component gallery
+
+### ActionButton
+![ActionButton demo](images/action_button.png)
+Enabled, disabled, and rotate-animation states.
+
+### StringButton
+![StringButton demo](images/string_button.png)
+Keypad-style button that emits its string value.
+
+### TextEntryFieldWidget
+![TextEntryFieldWidget demo](images/text_entry_field.png)
+M3 text field with scaffold styling.
+
+### Loading
+![Loading demo](images/loading.png)
+Loading indicators and skeleton states.
+
+### Toast
+![Toast demo](images/toast.png)
+Transient notification toasts.
+
+### BottomDrawer / ResponsiveDrawer
+![BottomDrawer / ResponsiveDrawer demo](images/bottom_drawer.png)
+Modal bottom drawer that becomes a side drawer on wide screens.
+
+### Animations
+![Animations demo](images/animations.png)
+ScaffoldAnimatedDisplay variants: fade, pulse, scale, shake, rotate.
+
+### AppScreenView / DesktopBodyContainer
+![AppScreenView / DesktopBodyContainer demo](images/page_chrome.png)
+Page-chrome scaffolding for app screens.
+
+### ResponsiveGrid
+![ResponsiveGrid demo](images/responsive_grid.png)
+Breakpoint-aware responsive grid layout.
+
+### Tracer
+![Tracer demo](images/tracer.png)
+Trace/debug overlay.
+
+### Kitchen Sink
+![Kitchen Sink demo](images/kitchen_sink.png)
+All atoms on one screen.
+
+### Media card
+![Media card demo](images/media_card.png)
+Media thumbnail + metadata card consuming ScaffoldBadge slots.
+
+### Media controls
+![Media controls demo](images/media_controls.png)
+Playback controls built from ScaffoldPressable + ScaffoldTouchTarget + ScaffoldSlider.
+
+### Wallet connect sheet
+![Wallet connect sheet demo](images/wallet_connect_sheet.png)
+Reown session presentation sheet.
+
+### Chip / ChipGroup
+![Chip / ChipGroup demo](images/chip.png)
+Pressable token atoms and chip-group selection.
+
+### Composer
+![Composer demo](images/composer.png)
+Text-entry area with action and badge slots.
+
+### Disclosure
+![Disclosure demo](images/disclosure.png)
+Generic expand/collapse row.
+
+### Trace list
+![Trace list demo](images/trace_list.png)
+Ordered list of disclosure items.
+
+### Streaming rich text
+![Streaming rich text demo](images/streaming_rich_text.png)
+Incremental rich text with citations and action slots.
+
+### Code block
+![Code block demo](images/code_block.png)
+Syntax-highlighted code with line numbers and copy.
+
+### Selection actions
+![Selection actions demo](images/selection_actions.png)
+Anchored toolbar over selectable content.
+
+### Markdown to spans
+![Markdown to spans demo](images/markdown_to_spans.png)
+Markdown source → typed span model.
+
+### Light syntax tokenizer
+![Light syntax tokenizer demo](images/light_syntax_tokenizer.png)
+Minimal syntax tokenizer for code block highlighting.
+
+### Chart
+![Chart demo](images/chart.png)
+Neutral-series chart via fl_chart.
+
+### Chart Scrubber
+![Chart Scrubber demo](images/chart_scrubber.png)
+Point-selection/scrubbing composing with the chart.
+
+### Chart Range Selector
+![Chart Range Selector demo](images/chart_range_selector.png)
+Drag-range selection + consumer-policy zoom.
+
 ## Develop
 
 ```bash
