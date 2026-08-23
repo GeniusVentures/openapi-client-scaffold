@@ -1,6 +1,8 @@
 ---
 phase: 09-text-code-primitives
 plan: 05
+status: complete
+completed: 2026-08-20
 subsystem: scaffold-text-code
 tags: [markdown, syntax-highlighting, copy-action, support-parts, D-03, D-04, D-07, D-08]
 requires:

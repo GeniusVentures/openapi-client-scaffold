@@ -1,6 +1,8 @@
 ---
 phase: 09-text-code-primitives
 plan: 02
+status: complete
+completed: 2026-08-20
 subsystem: components
 tags: [scaffold, code-block, syntax-highlighting, WIDG-37, WIDG-38]
 requires:

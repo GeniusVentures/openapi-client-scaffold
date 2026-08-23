@@ -1,6 +1,8 @@
 ---
 phase: 09-text-code-primitives
 plan: 01
+status: complete
+completed: 2026-08-20
 subsystem: components
 tags: [streaming, rich-text, citations, a11y, flutter]
 requirements: [WIDG-32, WIDG-33, WIDG-34]
