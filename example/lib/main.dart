@@ -5,6 +5,7 @@ import 'demos/action_button_demo.dart';
 import 'demos/animations_demo.dart';
 import 'demos/bottom_drawer_demo.dart';
 import 'demos/chart_demo.dart';
+import 'demos/chart_range_selector_demo.dart';
 import 'demos/chart_scrubber_demo.dart';
 import 'demos/code_block_demo.dart';
 import 'demos/light_syntax_tokenizer_demo.dart';
@@ -269,6 +270,11 @@ class HomePage extends StatelessWidget {
             title: 'Chart Scrubber',
             subtitle: 'Scrub selection + keyboard + PointerExit + live region',
             builder: (_) => const ChartScrubberDemo(),
+          ),
+          _DemoTile(
+            title: 'Chart Range Selector',
+            subtitle: 'Drag-range selection + consumer-policy zoom (D-09/D-10)',
+            builder: (_) => const ChartRangeSelectorDemo(),
           ),
         ],
       ),
