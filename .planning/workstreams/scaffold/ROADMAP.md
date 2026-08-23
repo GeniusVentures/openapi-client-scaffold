@@ -42,7 +42,7 @@ Full phase details, goals, and success criteria: [milestones/v1.1-ROADMAP.md](mi
 - [x] **Phase 8: Supporting Atoms, Table Cells & Light Palette** (6/6 plans, completed 2026-08-17) — ScaffoldChip/ChipGroup, ScaffoldDisclosure/TraceList, ScaffoldComposer, DataColumnConfig cellBuilder extension, light default palette
 - [ ] **Phase 9: Text & Code Primitives** — ScaffoldStreamingRichText (incremental render, citations, action slots, a11y), ScaffoldCodeBlock (syntax spans, line numbers, streamed lines), ScaffoldSelectionActions (anchored toolbar)
 - [x] **Phase 10: Chart & Scrubber** — ScaffoldChart (neutral series contract), ScaffoldChartScrubber (point selection composing with chart)
-- [ ] **Phase 11: Verification & Coverage Gate** — per-atom tests/demos/barrel sweep, Beautiful UI 19-component coverage check
+- [x] **Phase 11: Verification & Coverage Gate** — per-atom tests/demos/barrel sweep, Beautiful UI 19-component coverage check
 
 ## Phase Details
 
@@ -120,7 +120,7 @@ Plans:
 Plans:
 - [x] 11-01-PLAN.md — Delete skipped SelectionArea smoke test (D-06) + WIDG-44 sweep gate (zero-skip + analyzer + 454 tests + barrel export verification)
 - [x] 11-02-PLAN.md — Image-capture harness (example/test/capture_images_test.dart) + generate 26 PNGs into images/ (D-02)
-- [ ] 11-03-PLAN.md — README restructure: correct counts + Demo app expansion + 26-entry component gallery + 19-row WIDG-45 coverage table (D-01)
+- [x] 11-03-PLAN.md — README restructure: correct counts + Demo app expansion + 26-entry component gallery + 19-row WIDG-45 coverage table (D-01)
 
 ## Progress
 
@@ -132,7 +132,7 @@ Plans:
 | 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 6/6 | Complete | 2026-08-17 |
 | 9. Text & Code Primitives | v1.2 | 6/6 | Complete | 2026-08-20 |
 | 10. Chart & Scrubber | v1.2 | 6/6 | Complete | 2026-08-22 |
-| 11. Verification & Coverage Gate | v1.2 | 2/3 | In progress | - |
+| 11. Verification & Coverage Gate | v1.2 | 3/3 | Complete | 2026-08-23 |
 
 ## Out of scope (owned by consuming repos)
 
