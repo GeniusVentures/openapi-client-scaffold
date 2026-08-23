@@ -41,7 +41,7 @@ Full phase details, goals, and success criteria: [milestones/v1.1-ROADMAP.md](mi
 
 - [x] **Phase 8: Supporting Atoms, Table Cells & Light Palette** (6/6 plans, completed 2026-08-17) — ScaffoldChip/ChipGroup, ScaffoldDisclosure/TraceList, ScaffoldComposer, DataColumnConfig cellBuilder extension, light default palette
 - [ ] **Phase 9: Text & Code Primitives** — ScaffoldStreamingRichText (incremental render, citations, action slots, a11y), ScaffoldCodeBlock (syntax spans, line numbers, streamed lines), ScaffoldSelectionActions (anchored toolbar)
-- [ ] **Phase 10: Chart & Scrubber** — ScaffoldChart (neutral series contract), ScaffoldChartScrubber (point selection composing with chart)
+- [x] **Phase 10: Chart & Scrubber** — ScaffoldChart (neutral series contract), ScaffoldChartScrubber (point selection composing with chart)
 - [ ] **Phase 11: Verification & Coverage Gate** — per-atom tests/demos/barrel sweep, Beautiful UI 19-component coverage check
 
 ## Phase Details
@@ -96,14 +96,15 @@ Plans:
   1. `ScaffoldChart` renders a series supplied via a neutral data contract (`series`, `xAccessor`, `yAccessor`) with no domain knowledge in the widget
   2. `ScaffoldChartScrubber` composes with `ScaffoldChart` to expose `selectedPoint` and fire `onPointSelected` on tap/drag
   3. Chart + scrubber render correctly under both dark and light palettes with M3 theme tokens only
-**Plans**: 5 plans
+**Plans**: 6 plans
 
 Plans:
 - [x] 10-01-PLAN.md — Pure chart geometry support part (chartTickStep / chartAxisLabel / chartXLabelCount / chartYTickCount / chartUsesFrame / chartBandedBounds / chartVisibleExtremes) + tests (WIDG-35, 36 foundation; D-04)
 - [x] 10-02-PLAN.md — fl_chart renderer support part (the ONLY fl_chart seam; pubspec adds fl_chart ^1.2.0) + tests (D-01, D-02, D-05, D-06, D-07)
 - [x] 10-03-PLAN.md — ScaffoldChart<T> atom (neutral series contract, framed/axis-free, X-axis as Row of Texts) + tests (WIDG-35; D-03, D-06)
 - [x] 10-04-PLAN.md — ScaffoldChartScrubber<T> atom (keyboard a11y + focus outline + PointerExit + 48x48 + live-region hook) + tests (WIDG-36; D-05)
-- [ ] 10-05-PLAN.md — Barrel exports + chart_demo + chart_scrubber_demo + final gates + human UAT (WIDG-35, 36 closure)
+- [x] 10-05-PLAN.md — Barrel exports + chart_demo + chart_scrubber_demo + final gates + human UAT (WIDG-35, 36 closure)
+- [x] 10-06-PLAN.md — D-08 smooth scrub + D-09 ScaffoldChartRangeSelector drag-band atom + D-10 gesture rule + demos + human UAT (WIDG-36 extension)
 **UI hint**: yes
 
 ### Phase 11: Verification & Coverage Gate
@@ -125,7 +126,7 @@ Plans:
 | 7. Media & Integration Widgets | v1.1 | 4/4 | Complete | 2026-08-15 |
 | 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 6/6 | Complete | 2026-08-17 |
 | 9. Text & Code Primitives | v1.2 | 4/6 | In Progress|  |
-| 10. Chart & Scrubber | v1.2 | 3/5 | In Progress |  |
+| 10. Chart & Scrubber | v1.2 | 6/6 | Complete | 2026-08-22 |
 | 11. Verification & Coverage Gate | v1.2 | 0/? | Not started | - |
 
 ## Out of scope (owned by consuming repos)
