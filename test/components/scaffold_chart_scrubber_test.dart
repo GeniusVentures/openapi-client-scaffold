@@ -386,13 +386,11 @@ void main() {
         'Test 14: discrete TAP on the already-selected point must NOT clear '
         '(tap-toggle removed — tap ALWAYS selects)',
         (WidgetTester tester) async {
-      // UAT verdict (toggle removed): the tap-to-clear behavior added in
-      // commit 90bcb9d reads as a bug ("If I click, it goes to no
-      // selection"). The 10-UI-SPEC never specified tap-to-clear — only
-      // PointerExit and Escape clear selection (D-05). New contract:
-      // tap/hover/drag ALWAYS select; re-tapping the selected point is a
-      // no-op re-select. This test asserts the NEW contract and FAILS
-      // against the current (toggle) implementation — RED.
+      // Asserts the contract: tap/hover/drag ALWAYS select; re-tapping the
+      // selected point is a no-op re-select. The 10-UI-SPEC never specified
+      // tap-to-clear — only PointerExit and Escape clear selection (D-05).
+      // The UAT verdict on the former toggle behavior was that it reads as
+      // a bug ("If I click, it goes to no selection").
       Offset? selection;
       final List<Offset?> events = <Offset?>[];
 
@@ -738,20 +736,16 @@ void main() {
         (WidgetTester tester) async {
       // UAT defect: "the parent outline keeps blinking on and off like it's
       // getting deselected when I click to 'no selection' and it briefly
-      // comes back when I click again." Root cause (scaffold_chart_scrubber
-      // build()): when announceValue is null the atom returns
-      // `Semantics(child: _ScrubberCore)`; when non-null it returns
-      // `ScaffoldLiveRegion(child: Semantics(child: _ScrubberCore))`. That
-      // toggles the runtimeType DIRECTLY ABOVE _ScrubberCore on every
-      // selection/clear → Flutter element-tree mismatch → _ScrubberCore
-      // State (and its FocusNode) is disposed and recreated → primary focus
-      // is dropped → the ScaffoldFocusOutline ring blinks OFF; the next
-      // tap's Listener.onPointerDown re-focuses the NEW node and the ring
-      // briefly returns.
+      // comes back when I click again." Root cause (fixed): the atom used to
+      // toggle the runtimeType DIRECTLY ABOVE _ScrubberCore on every
+      // selection/clear (Semantics vs ScaffoldLiveRegion(Semantics)), which
+      // forced Flutter to dispose and recreate the _ScrubberCore State and
+      // its FocusNode — dropping primary focus and blinking the
+      // ScaffoldFocusOutline ring off until the next tap re-focused it.
       //
-      // Contract: toggling announceValue across null<->non-null must keep
-      // the SAME FocusNode at primary focus throughout — the ring paints
-      // continuously. FAILS against the current type-toggling build — RED.
+      // Asserts the contract: toggling announceValue across null<->non-null
+      // must keep the SAME FocusNode at primary focus throughout — the ring
+      // paints continuously.
       String? announce;
       StateSetter? setDemoState;
 
