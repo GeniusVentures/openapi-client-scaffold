@@ -42,7 +42,10 @@
 ///   `Stack` overlay whose pixel position mirrors fl_chart's
 ///   `getPixelX`/`getPixelY` linear mapping
 ///   (`axis_chart_painter.dart:497-535`);
-/// - the overlay clears on gesture end (pan/tap end or cancel).
+/// - the overlay clears on gesture end (pan/tap end or cancel) and on
+///   pointer exit ([FlPointerExitEvent] — reported to the callback as
+///   [kScrubPositionExitSentinel] so the wrapper can suppress the consumer
+///   notification).
 ///
 /// When the callback is null (SNAP mode — the WIDG-36 default), the
 /// returned widget is the bare `LineChart` with NO Stack wrapper and the
@@ -115,6 +118,13 @@ typedef ScaffoldScrubPositionChanged = void Function(
   double interpolatedY,
 );
 
+/// Sentinel chart-x reported on pointer EXIT ([FlPointerExitEvent]) so the
+/// smooth-mode wrapper can clear the interpolated-dot overlay. A pointer
+/// exit is not a gesture end, so without this signal the dot would stick
+/// after the mouse leaves the chart (CX-2). The wrapper suppresses the
+/// consumer callback for this value — exit carries no position intent.
+const double kScrubPositionExitSentinel = double.nan;
+
 /// Linearly interpolates the y value at [chartX] between the two
 /// bracketing samples in [spots]. Assumes [spots] is sorted by x.
 /// Clamps to the first/last sample y when [chartX] is outside the
@@ -182,7 +192,9 @@ double _interpolateYAtX(List<ChartPoint> spots, double chartX) {
 /// passes as `spots`, duplicated as a named parameter so the interpolation
 /// helper can access it without the renderer re-deriving visibility. When
 /// [onScrubPositionChanged] is non-null, [smoothSpots] MUST also be
-/// non-null.
+/// non-null. When the caller wants smooth visuals without a readout feed
+/// it wires an internal no-op here (CX-1: visuals must not be gated on the
+/// consumer's optional callback).
 Widget buildScaffoldLineChart({
   required List<ChartPoint> spots,
   required double plotHeight,
@@ -341,6 +353,18 @@ class _ScaffoldSmoothLineChartState extends State<_ScaffoldSmoothLineChart> {
     setState(() => _smoothDotPosition = pixel);
   }
 
+  /// Routes the renderer's continuous-position events: updates the overlay
+  /// on real positions and forwards them to the consumer — EXCEPT the
+  /// exit sentinel, which only clears the overlay (the caller's callback
+  /// may be an internal no-op when the consumer omitted onPositionChanged,
+  /// and exit carries no position intent either way).
+  void _onRendererPosition(double chartX, double interpolatedY) {
+    if (chartX.isNaN) {
+      return; // pointer exit — overlay already cleared by the renderer
+    }
+    widget.onScrubPositionChanged(chartX, interpolatedY);
+  }
+
   /// The inner chart's current laid-out size, falling back to the
   /// `plotWidth`/`plotHeight` contract parameters before first layout.
   Size _actualPlotSize() {
@@ -370,7 +394,7 @@ class _ScaffoldSmoothLineChartState extends State<_ScaffoldSmoothLineChart> {
         onSpotTouched: widget.onSpotTouched,
         onScrubGestureStart: widget.onScrubGestureStart,
         onScrubGestureEnd: widget.onScrubGestureEnd,
-        onScrubPositionChanged: widget.onScrubPositionChanged,
+        onScrubPositionChanged: _onRendererPosition,
         smoothSpots: widget.smoothSpots,
         onSmoothPositionPixel: _handleSmoothPixel,
         actualPlotSize: _actualPlotSize,
@@ -617,6 +641,13 @@ Widget _buildChart({
         if (isGestureEnd) {
           // Gesture end clears the interpolated-dot overlay.
           onSmoothPositionPixel?.call(null);
+        } else if (event is FlPointerExitEvent) {
+          // Pointer EXIT is not a gesture end (CX-2): without this branch
+          // the dot would stick after the mouse leaves the chart. Clear
+          // the overlay and signal exit via the NaN sentinel so the wrapper
+          // can suppress the consumer callback (exit carries no position).
+          onSmoothPositionPixel?.call(null);
+          onScrubPositionChanged(kScrubPositionExitSentinel, 0.0);
         } else if (event is FlPointerHoverEvent ||
             event is FlPanUpdateEvent ||
             event is FlLongPressMoveUpdate) {
