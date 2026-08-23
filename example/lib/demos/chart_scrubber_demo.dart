@@ -54,6 +54,11 @@ class _ChartScrubberDemoState extends State<ChartScrubberDemo> {
   /// selection — the atom skips the `ScaffoldLiveRegion` wrapper.
   String? _announce;
 
+  /// Continuous scrub position (chart-x, interpolated y) from the
+  /// smooth-mode scrubber's `onPositionChanged` (D-08). Null until the
+  /// pointer first enters the smooth chart.
+  (double, double)? _smoothPosition;
+
   void _onSelected(Offset? v) {
     setState(() {
       _selected = v;
@@ -100,6 +105,40 @@ class _ChartScrubberDemoState extends State<ChartScrubberDemo> {
             Text(
               'Tap or drag to scrub. Arrow keys navigate. Enter confirms. '
               'Escape or hover-exit clears.',
+              style: textTheme.labelSmall?.copyWith(color: palette.textSecondary),
+            ),
+            SizedBox(height: dimens.itemSpacing),
+
+            // --- Smooth scrub (D-08) ---
+            Text(
+              'Smooth scrub (D-08)',
+              style: textTheme.titleSmall?.copyWith(color: palette.textPrimary),
+            ),
+            SizedBox(height: dimens.space8),
+            Text(
+              _smoothPosition == null
+                  ? 'No position'
+                  : 'X: ${_smoothPosition!.$1.toStringAsFixed(0)}  '
+                      'Y: ${_smoothPosition!.$2.toStringAsFixed(2)}',
+              style: textTheme.bodyMedium?.copyWith(color: palette.textPrimary),
+            ),
+            SizedBox(height: dimens.space4),
+            SizedBox(
+              height: 280,
+              child: ScaffoldChartScrubber<Offset>(
+                series: _kSampleSeries,
+                xAccessor: (Offset o) => o.dx,
+                yAccessor: (Offset o) => o.dy,
+                scrubMode: ScrubMode.smooth,
+                onPositionChanged: (double x, double y) {
+                  setState(() => _smoothPosition = (x, y));
+                },
+              ),
+            ),
+            SizedBox(height: dimens.space4),
+            Text(
+              'Smooth mode: the dot rides the line continuously at the '
+              'pointer\'s chart-x (linearly interpolated y).',
               style: textTheme.labelSmall?.copyWith(color: palette.textSecondary),
             ),
           ],
