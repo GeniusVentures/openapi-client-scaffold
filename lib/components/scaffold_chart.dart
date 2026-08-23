@@ -27,6 +27,12 @@ import '../utils/scaffold_chart_renderer.dart';
 import 'scaffold_motion.dart';
 import 'scaffold_surface.dart';
 
+/// Fallback axis-label font size when the consumer's `ThemeData.textTheme`
+/// has `labelSmall: null` (legitimate for embedded surfaces). Matches the
+/// M3 default `labelSmall` size so the chart degrades to a visually
+/// identical label rather than crashing on a null-check.
+const double _kAxisLabelFallbackFontSize = 11.0;
+
 /// Scrub behavior mode for [ScaffoldChart] and `ScaffoldChartScrubber`
 /// (D-08).
 enum ScrubMode {
@@ -214,7 +220,12 @@ class ScaffoldChart<T> extends StatelessWidget {
           final Color borderControl = palette.borderGrey;
           final Color borderSubtle = palette.borderSubtle;
           final Color textSecondary = palette.textSecondary;
-          final TextStyle axisLabelStyle = textTheme.labelSmall!.copyWith(
+          // Safe fallback: a consumer constructing a stripped-down
+          // ThemeData(textTheme: TextTheme()) has labelSmall: null — degrade
+          // to the M3 default size rather than crashing on a null-check.
+          final TextStyle baseLabelStyle = textTheme.labelSmall ??
+              const TextStyle(fontSize: _kAxisLabelFallbackFontSize);
+          final TextStyle axisLabelStyle = baseLabelStyle.copyWith(
             color: textSecondary,
             fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
           );
