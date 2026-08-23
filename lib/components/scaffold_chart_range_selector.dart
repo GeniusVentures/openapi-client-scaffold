@@ -255,6 +255,14 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
   double _stackWidth = 0.0;
   double _stackHeight = 0.0;
 
+  /// The chart surface's `space8` inset, resolved once in `build` (where
+  /// the inherited-widget dependency is legitimate) and read at gesture
+  /// time. Resolving it at gesture time would call
+  /// `dependOnInheritedWidgetOfExactType` outside the build phase
+  /// (unsupported) and would mix old drag-start pixels with new padding
+  /// if the theme swapped mid-drag.
+  double _plotInset = 0.0;
+
   @override
   void dispose() {
     _focusNode.dispose();
@@ -281,8 +289,8 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
       return null;
     }
     final (double lo, double hi) = bounds;
-    final double plotLeft = context.dimens.space8;
-    final double plotWidth = _stackWidth - 2 * context.dimens.space8;
+    final double plotLeft = _plotInset;
+    final double plotWidth = _stackWidth - 2 * _plotInset;
     final bool useFrame = chartUsesFrame(widget.plotHeight ?? _stackHeight);
     final double usableWidth = plotWidth - (useFrame ? kChartAxisGutter : 0.0);
     final double span = hi - lo;
@@ -301,8 +309,8 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
       return null;
     }
     final (double lo, double hi) = bounds;
-    final double plotLeft = context.dimens.space8;
-    final double plotWidth = _stackWidth - 2 * context.dimens.space8;
+    final double plotLeft = _plotInset;
+    final double plotWidth = _stackWidth - 2 * _plotInset;
     final bool useFrame = chartUsesFrame(widget.plotHeight ?? _stackHeight);
     final double usableWidth = plotWidth - (useFrame ? kChartAxisGutter : 0.0);
     final double span = hi - lo;
@@ -571,6 +579,11 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
                   }
                   _stackWidth = constraints.maxWidth;
                   _stackHeight = constraints.maxHeight;
+                  // Resolve the surface inset once per build (where the
+                  // inherited-widget dependency is legitimate); the gesture
+                  // handlers read the cached value rather than re-entering
+                  // the theme outside the build phase.
+                  _plotInset = context.dimens.space8;
                   final ScaffoldPalette palette = context.palette;
                   final (double left, double right)? band = _resolveBand();
                   return Stack(
