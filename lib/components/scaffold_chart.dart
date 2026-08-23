@@ -112,8 +112,10 @@ class ScaffoldChart<T> extends StatelessWidget {
 
   /// Continuous scrub-position callback (D-08). Fires on hover/pan-move
   /// with the pointer's continuous chart-x and the linearly interpolated y
-  /// between the bracketing samples. Only wired to the renderer when
-  /// [scrubMode] is [ScrubMode.smooth] AND this callback is non-null.
+  /// between the bracketing samples. Optional: [ScrubMode.smooth] engages
+  /// the interpolated-dot visuals regardless of whether this callback is
+  /// supplied (the renderer uses an internal no-op to drive the overlay) —
+  /// the callback only feeds the consumer's readout.
   final void Function(double x, double y)? onPositionChanged;
 
   /// Optional explicit plot height. When null, the atom measures its
@@ -265,10 +267,13 @@ class ScaffoldChart<T> extends StatelessWidget {
                   },
             onScrubGestureStart: onScrubGestureStart,
             onScrubGestureEnd: onScrubGestureEnd,
-            onScrubPositionChanged:
-                scrubMode == ScrubMode.smooth && onPositionChanged != null
-                    ? onPositionChanged
-                    : null,
+            // Smooth VISUALS engage on scrubMode alone (CX-1): when the
+            // consumer omits onPositionChanged the renderer still enters
+            // smooth mode with an internal no-op — the callback is a
+            // readout feed, not the smooth-mode switch.
+            onScrubPositionChanged: scrubMode == ScrubMode.smooth
+                ? (onPositionChanged ?? (double _, double __) {})
+                : null,
             smoothSpots: scrubMode == ScrubMode.smooth ? visibleSpots : null,
           );
 
