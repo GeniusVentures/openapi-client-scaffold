@@ -272,6 +272,9 @@ class ScaffoldChart<T> extends StatelessWidget {
             // smooth mode with an internal no-op — the callback is a
             // readout feed, not the smooth-mode switch.
             onScrubPositionChanged: scrubMode == ScrubMode.smooth
+                // Two distinct params — wildcard `_` can't repeat in one
+                // parameter list.
+                // ignore: unnecessary_underscores
                 ? (onPositionChanged ?? (double _, double __) {})
                 : null,
             smoothSpots: scrubMode == ScrubMode.smooth ? visibleSpots : null,
