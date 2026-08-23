@@ -55,6 +55,18 @@ Future<void> _pumpScrubber(
 /// Deterministic 3-point series used by the keyboard tests.
 List<int> _threePoints() => const <int>[1, 2, 3];
 
+/// Finds the interpolated-dot overlay Container painted by the smooth-mode
+/// Stack overlay — identified by its circular [BoxDecoration], which no
+/// fl_chart-internal widget carries (fl_chart paints via CustomPainter).
+Finder _overlayDot() {
+  return find.byWidgetPredicate(
+    (Widget w) =>
+        w is Container &&
+        w.decoration is BoxDecoration &&
+        (w.decoration! as BoxDecoration).shape == BoxShape.circle,
+  );
+}
+
 /// Taps the scrubber to grant keyboard focus, then pumps a frame so the
 /// focus highlight settles before subsequent key events are dispatched.
 ///
@@ -930,9 +942,9 @@ void main() {
 
     testWidgets('default scrubMode (snap) never fires onPositionChanged on '
         'hover', (WidgetTester tester) async {
-      // In snap mode the renderer's onScrubPositionChanged MUST be wired to
-      // null even when onPositionChanged is supplied — the callback is gated
-      // on scrubMode == ScrubMode.smooth (D-08 snap default preserves the
+      // In snap mode the renderer's smooth seam MUST be off even when
+      // onPositionChanged is supplied — smooth mode is gated on
+      // scrubMode == ScrubMode.smooth alone (D-08 snap default preserves the
       // 10-04 WIDG-36 contract).
       final List<(double, double)> positions = <(double, double)>[];
       await _pumpScrubber(
@@ -953,7 +965,7 @@ void main() {
       await tester.pump();
 
       expect(positions, isEmpty,
-          reason: 'snap mode must wire onScrubPositionChanged to null — '
+          reason: 'snap mode must wire the smooth seam off — '
               'got ${positions.length} position events');
     });
 
@@ -1071,6 +1083,68 @@ void main() {
 
       expect(selected, contains(null),
           reason: 'hover-exit must clear selection in smooth mode');
+    });
+
+    testWidgets('CX-1: smooth visuals engage with NO onPositionChanged '
+        'callback (hover paints the interpolated dot)', (WidgetTester tester) async {
+      // Codex PR-10 finding: scrubMode = smooth with no onPositionChanged
+      // must still enter smooth mode — the optional consumer readout callback
+      // must not gate the visuals.
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        scrubMode: ScrubMode.smooth,
+      );
+
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+      await mouse.moveTo(
+        tester.getCenter(find.byType(ScaffoldChartScrubber<int>)),
+      );
+      await tester.pump();
+
+      expect(_overlayDot(), findsOneWidget,
+          reason: 'smooth mode must paint the interpolated dot even when no '
+              'onPositionChanged callback is supplied');
+
+      await mouse.moveTo(Offset.zero);
+      await tester.pump();
+    });
+
+    testWidgets('CX-2: hover-exit clears the smooth-mode overlay dot '
+        '(no stuck dot after the pointer leaves)', (WidgetTester tester) async {
+      // Codex PR-10 finding: moving the mouse out of the chart is a pointer
+      // exit, not a gesture end — the interpolated dot must clear with it.
+      await _pumpScrubber(
+        tester,
+        series: _threePoints(),
+        selected: null,
+        scrubMode: ScrubMode.smooth,
+        onPositionChanged: (double x, double y) {},
+      );
+
+      final TestGesture mouse = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+      await mouse.moveTo(
+        tester.getCenter(find.byType(ScaffoldChartScrubber<int>)),
+      );
+      await tester.pump();
+      expect(_overlayDot(), findsOneWidget,
+          reason: 'hover must paint the interpolated dot first');
+
+      // Leave the chart entirely — same pattern as the snap hover-exit test.
+      await mouse.moveTo(Offset.zero);
+      await tester.pump();
+
+      expect(_overlayDot(), findsNothing,
+          reason: 'pointer exit must clear the interpolated dot overlay');
     });
   });
 }
