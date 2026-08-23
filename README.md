@@ -76,14 +76,16 @@ regenerate. See [CONTRIBUTING.md](CONTRIBUTING.md).
 cd example && flutter run -d macos    # or -d chrome
 ```
 
-`example/` is a runnable gallery with one demo screen per widget family.
+`example/` is a runnable gallery with 26 demo screens covering every
+widget family and the v1.2 atoms. The component gallery below shows a
+captured screenshot of each demo.
 
 ## Develop
 
 ```bash
 flutter pub get
 dart analyze --fatal-infos    # must be clean
-flutter test                  # 214 tests
+flutter test                  # 454 tests
 ```
 
 ---
@@ -297,10 +299,11 @@ openapi-client-scaffold/            ← package `frontend_scaffold`
 │   ├── components/                 ← ~70 M3 widgets
 │   ├── theme/                      ← theme extensions, palette, dimens, elevation
 │   └── utils/                      ← breakpoints
-├── test/                           ← 214 widget + token tests
+├── test/                           ← 454 widget + token tests
 │   ├── components/
 │   └── theme/
 ├── example/                        ← runnable demo gallery
+├── images/                         ← per-demo screenshots (gallery above)
 ├── templates/                      ← Jinja2 templates (base, components, module, cpp)
 ├── tools/
 │   ├── scaffold_codegen/           ← Python build tooling
