@@ -53,10 +53,13 @@ Widget _buildAxisFree() {
   );
 }
 
-/// Shared smooth-mode spots list — a distinct reference from [_spots]'s
-/// (the builder asserts callback and spots list arrive together; the
-/// interpolation helper reads ONLY this list).
-final List<ChartPoint> _smoothSpots = _spots();
+/// Smooth-mode spots builder — returns a FRESH list per call so a future
+/// test that sorts, filters, or otherwise mutates the list cannot
+/// contaminate later tests in the same run. (A shared top-level `final`
+/// list would be silently mutable across tests.) The builder asserts
+/// callback and spots list arrive together; the interpolation helper reads
+/// ONLY this list, and it must be a distinct reference from [_spots]'s.
+List<ChartPoint> _smoothSpots() => _spots();
 
 Widget _buildSmooth({
   ScaffoldScrubPositionChanged? onScrubPositionChanged,
@@ -75,7 +78,7 @@ Widget _buildSmooth({
     yBounds: _bounds(),
     onSpotTouched: onSpotTouched,
     onScrubPositionChanged: onScrubPositionChanged,
-    smoothSpots: onScrubPositionChanged == null ? null : _smoothSpots,
+    smoothSpots: onScrubPositionChanged == null ? null : _smoothSpots(),
   );
 }
 
