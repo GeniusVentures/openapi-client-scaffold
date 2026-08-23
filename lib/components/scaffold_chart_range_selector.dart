@@ -22,8 +22,9 @@
 /// D-10 tap/hover pass-through contract.
 ///
 /// Keyboard: Shift+ArrowLeft/Right adjusts the range end by one series
-/// point; Enter confirms; Escape clears. Plain ArrowLeft/Right routes to
-/// the inner scrubber when one is composed.
+/// point; Enter confirms; Escape clears. Plain ArrowLeft/Right perform
+/// point navigation (firing `onPointSelected` exactly as
+/// `ScaffoldChartScrubber` does) when `onPointSelected` is wired.
 ///
 /// This file contains ZERO chart-library imports and zero domain
 /// knowledge. Composition only.
@@ -436,6 +437,43 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
     widget.onRangeSelected?.call(null);
   }
 
+  /// Plain-arrow point navigation (CX-3) — mirrors the scrubber's
+  /// `_handleNext`/`_handlePrev` contract exactly: from no selection,
+  /// ArrowRight selects the first point and ArrowLeft the last; otherwise
+  /// step one point, clamped at both ends. Fires NOTHING when
+  /// `onPointSelected` is unwired (the selector was composed for range
+  /// selection only) or the series is empty.
+  void _handlePrevPoint() {
+    if (widget.series.isEmpty || widget.onPointSelected == null) {
+      return;
+    }
+    final int idx = _selectedPointIndex();
+    final int next = idx < 0
+        ? widget.series.length - 1
+        : (idx - 1).clamp(0, widget.series.length - 1);
+    widget.onPointSelected!(widget.series[next]);
+  }
+
+  void _handleNextPoint() {
+    if (widget.series.isEmpty || widget.onPointSelected == null) {
+      return;
+    }
+    final int idx = _selectedPointIndex();
+    final int next =
+        idx < 0 ? 0 : (idx + 1).clamp(0, widget.series.length - 1);
+    widget.onPointSelected!(widget.series[next]);
+  }
+
+  /// Index of [ScaffoldChartRangeSelector.selectedPoint] in the series by
+  /// accessor-equality, or -1 when null / not found.
+  int _selectedPointIndex() {
+    final T? current = widget.selectedPoint;
+    if (current == null) {
+      return -1;
+    }
+    return _indexOf(current);
+  }
+
   void _onDragStart(DragStartDetails details) {
     // Anchor the band's LEFT edge at the raw pointer-down position (captured
     // by the outer Listener) rather than the recognizer's slop-shifted
@@ -516,6 +554,8 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
             _ExtendRangeIntent(),
         SingleActivator(LogicalKeyboardKey.arrowLeft, shift: true):
             _ShrinkRangeIntent(),
+        SingleActivator(LogicalKeyboardKey.arrowRight): _NextPointIntent(),
+        SingleActivator(LogicalKeyboardKey.arrowLeft): _PrevPointIntent(),
         SingleActivator(LogicalKeyboardKey.enter): _ConfirmRangeIntent(),
         SingleActivator(LogicalKeyboardKey.escape): _ClearRangeIntent(),
       },
@@ -530,6 +570,18 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
           _ShrinkRangeIntent: CallbackAction<_ShrinkRangeIntent>(
             onInvoke: (_ShrinkRangeIntent intent) {
               _handleShrinkRange();
+              return null;
+            },
+          ),
+          _NextPointIntent: CallbackAction<_NextPointIntent>(
+            onInvoke: (_NextPointIntent intent) {
+              _handleNextPoint();
+              return null;
+            },
+          ),
+          _PrevPointIntent: CallbackAction<_PrevPointIntent>(
+            onInvoke: (_PrevPointIntent intent) {
+              _handlePrevPoint();
               return null;
             },
           ),
@@ -702,6 +754,18 @@ final class _ExtendRangeIntent extends Intent {
 /// Intent for Shift+ArrowLeft — shrink the range end by one series point.
 final class _ShrinkRangeIntent extends Intent {
   const _ShrinkRangeIntent();
+}
+
+/// Intent for plain ArrowRight — move point selection to the next series
+/// point (CX-3; mirrors the scrubber's contract).
+final class _NextPointIntent extends Intent {
+  const _NextPointIntent();
+}
+
+/// Intent for plain ArrowLeft — move point selection to the previous
+/// series point (CX-3; mirrors the scrubber's contract).
+final class _PrevPointIntent extends Intent {
+  const _PrevPointIntent();
 }
 
 /// Intent for Enter — confirm the current range (re-fire).
