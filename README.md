@@ -83,107 +83,133 @@ captured screenshot of each demo.
 ## Component gallery
 
 ### ActionButton
-![ActionButton demo](images/action_button.png)
+![ActionButton demo — dark](images/action_button_dark.png)
+![ActionButton demo — light](images/action_button_light.png)
 Enabled, disabled, and rotate-animation states.
 
 ### StringButton
-![StringButton demo](images/string_button.png)
+![StringButton demo — dark](images/string_button_dark.png)
+![StringButton demo — light](images/string_button_light.png)
 Keypad-style button that emits its string value.
 
 ### TextEntryFieldWidget
-![TextEntryFieldWidget demo](images/text_entry_field.png)
+![TextEntryFieldWidget demo — dark](images/text_entry_field_dark.png)
+![TextEntryFieldWidget demo — light](images/text_entry_field_light.png)
 M3 text field with scaffold styling.
 
 ### Loading
-![Loading demo](images/loading.png)
+![Loading demo — dark](images/loading_dark.png)
+![Loading demo — light](images/loading_light.png)
 Loading indicators and skeleton states.
 
 ### Toast
-![Toast demo](images/toast.png)
+![Toast demo — dark](images/toast_dark.png)
+![Toast demo — light](images/toast_light.png)
 Transient notification toasts.
 
 ### BottomDrawer / ResponsiveDrawer
-![BottomDrawer / ResponsiveDrawer demo](images/bottom_drawer.png)
+![BottomDrawer / ResponsiveDrawer demo — dark](images/bottom_drawer_dark.png)
+![BottomDrawer / ResponsiveDrawer demo — light](images/bottom_drawer_light.png)
 Modal bottom drawer that becomes a side drawer on wide screens.
 
 ### Animations
-![Animations demo](images/animations.png)
+![Animations demo — dark](images/animations_dark.png)
+![Animations demo — light](images/animations_light.png)
 ScaffoldAnimatedDisplay variants: fade, pulse, scale, shake, rotate.
 
 ### AppScreenView / DesktopBodyContainer
-![AppScreenView / DesktopBodyContainer demo](images/page_chrome.png)
+![AppScreenView / DesktopBodyContainer demo — dark](images/page_chrome_dark.png)
+![AppScreenView / DesktopBodyContainer demo — light](images/page_chrome_light.png)
 Page-chrome scaffolding for app screens.
 
 ### ResponsiveGrid
-![ResponsiveGrid demo](images/responsive_grid.png)
+![ResponsiveGrid demo — dark](images/responsive_grid_dark.png)
+![ResponsiveGrid demo — light](images/responsive_grid_light.png)
 Breakpoint-aware responsive grid layout.
 
 ### Tracer
-![Tracer demo](images/tracer.png)
+![Tracer demo — dark](images/tracer_dark.png)
+![Tracer demo — light](images/tracer_light.png)
 Trace/debug overlay.
 
 ### Kitchen Sink
-![Kitchen Sink demo](images/kitchen_sink.png)
+![Kitchen Sink demo — dark](images/kitchen_sink_dark.png)
+![Kitchen Sink demo — light](images/kitchen_sink_light.png)
 All atoms on one screen.
 
 ### Media card
-![Media card demo](images/media_card.png)
+![Media card demo — dark](images/media_card_dark.png)
+![Media card demo — light](images/media_card_light.png)
 Media thumbnail + metadata card consuming ScaffoldBadge slots.
 
 ### Media controls
-![Media controls demo](images/media_controls.png)
+![Media controls demo — dark](images/media_controls_dark.png)
+![Media controls demo — light](images/media_controls_light.png)
 Playback controls built from ScaffoldPressable + ScaffoldTouchTarget + ScaffoldSlider.
 
 ### Wallet connect sheet
-![Wallet connect sheet demo](images/wallet_connect_sheet.png)
+![Wallet connect sheet demo — dark](images/wallet_connect_sheet_dark.png)
+![Wallet connect sheet demo — light](images/wallet_connect_sheet_light.png)
 Reown session presentation sheet.
 
 ### Chip / ChipGroup
-![Chip / ChipGroup demo](images/chip.png)
+![Chip / ChipGroup demo — dark](images/chip_dark.png)
+![Chip / ChipGroup demo — light](images/chip_light.png)
 Pressable token atoms and chip-group selection.
 
 ### Composer
-![Composer demo](images/composer.png)
+![Composer demo — dark](images/composer_dark.png)
+![Composer demo — light](images/composer_light.png)
 Text-entry area with action and badge slots.
 
 ### Disclosure
-![Disclosure demo](images/disclosure.png)
+![Disclosure demo — dark](images/disclosure_dark.png)
+![Disclosure demo — light](images/disclosure_light.png)
 Generic expand/collapse row.
 
 ### Trace list
-![Trace list demo](images/trace_list.png)
+![Trace list demo — dark](images/trace_list_dark.png)
+![Trace list demo — light](images/trace_list_light.png)
 Ordered list of disclosure items.
 
 ### Streaming rich text
-![Streaming rich text demo](images/streaming_rich_text.png)
+![Streaming rich text demo — dark](images/streaming_rich_text_dark.png)
+![Streaming rich text demo — light](images/streaming_rich_text_light.png)
 Incremental rich text with citations and action slots.
 
 ### Code block
-![Code block demo](images/code_block.png)
+![Code block demo — dark](images/code_block_dark.png)
+![Code block demo — light](images/code_block_light.png)
 Syntax-highlighted code with line numbers and copy.
 
 ### Selection actions
-![Selection actions demo](images/selection_actions.png)
+![Selection actions demo — dark](images/selection_actions_dark.png)
+![Selection actions demo — light](images/selection_actions_light.png)
 Anchored toolbar over selectable content.
 
 ### Markdown to spans
-![Markdown to spans demo](images/markdown_to_spans.png)
+![Markdown to spans demo — dark](images/markdown_to_spans_dark.png)
+![Markdown to spans demo — light](images/markdown_to_spans_light.png)
 Markdown source → typed span model.
 
 ### Light syntax tokenizer
-![Light syntax tokenizer demo](images/light_syntax_tokenizer.png)
+![Light syntax tokenizer demo — dark](images/light_syntax_tokenizer_dark.png)
+![Light syntax tokenizer demo — light](images/light_syntax_tokenizer_light.png)
 Minimal syntax tokenizer for code block highlighting.
 
 ### Chart
-![Chart demo](images/chart.png)
+![Chart demo — dark](images/chart_dark.png)
+![Chart demo — light](images/chart_light.png)
 Neutral-series chart via fl_chart.
 
 ### Chart Scrubber
-![Chart Scrubber demo](images/chart_scrubber.png)
+![Chart Scrubber demo — dark](images/chart_scrubber_dark.png)
+![Chart Scrubber demo — light](images/chart_scrubber_light.png)
 Point-selection/scrubbing composing with the chart.
 
 ### Chart Range Selector
-![Chart Range Selector demo](images/chart_range_selector.png)
+![Chart Range Selector demo — dark](images/chart_range_selector_dark.png)
+![Chart Range Selector demo — light](images/chart_range_selector_light.png)
 Drag-range selection + consumer-policy zoom.
 
 ## Coverage
