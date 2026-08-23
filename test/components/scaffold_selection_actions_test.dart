@@ -331,49 +331,6 @@ void main() {
     expect(find.text('toolbar'), findsOneWidget);
   });
 
-  // Test 11 — SMOKE: real SelectionArea path via longPress + drag.
-  //
-  // This is the ONLY long-press smoke test in this file (D-07 test
-  // strategy). It asserts onSelectionChanged fires at least once with ANY
-  // payload — payload assertions live in Tests 1-10 via the deterministic
-  // hook. If this test proves framework-flaky in CI, mark it `skip: true`
-  // with a comment linking the flake — do NOT add retries.
-  //
-  // SKIPPED 2026-08-20: flutter_test's gesture pipeline does not reliably
-  // drive SelectionArea.onSelectionChanged for widgets nested inside
-  // Center+Scaffold under the default 800x600 test viewport. The
-  // long-press+drag reaches the SelectableText but SelectionArea's internal
-  // SelectionRegistrar does not promote the drag into a selection event
-  // deterministically. Coverage of the SelectionArea wiring is preserved
-  // via debugSimulateSelection (the deterministic hook) in Tests 1-10;
-  // this smoke test is retained as a skip:true marker for manual QA.
-  testWidgets('smoke: long-press + drag on SelectableText fires '
-      'onSelectionChanged at least once', (tester) async {
-    int calls = 0;
-    await _pump(
-      tester,
-      ScaffoldSelectionActions(
-        toolbarBuilder: _defaultToolbarBuilder,
-        onSelectionChanged: (sel, text) => calls++,
-        child: const SelectableText('hello world'),
-      ),
-    );
-
-    final Finder text = find.text('hello world');
-    final Offset center = tester.getCenter(text);
-    // flutter_test has no longPressOn — start a long-press gesture, drag
-    // across the text, then release. This drives the real SelectionArea
-    // selection path end-to-end.
-    final TestGesture gesture = await tester.startGesture(center);
-    await tester.pump(const Duration(milliseconds: 500));
-    await gesture.moveBy(const Offset(40, 0));
-    await gesture.up();
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 200));
-
-    expect(calls, greaterThanOrEqualTo(1));
-  }, skip: true); // Framework-flaky — see comment above.
-
   // Test 18 — the toolbar paints on-screen, centered above the selection.
   testWidgets('toolbar paints on-screen, centered above the selection',
       (tester) async {
