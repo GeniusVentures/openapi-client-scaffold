@@ -238,6 +238,18 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
   /// the touch slop from where the user actually pressed.
   Offset? _downPosition;
 
+  /// True when at least one `DragUpdateDetails` arrived between drag-start
+  /// and drag-end. The tap-vs-drag discriminator: a tap is force-accepted
+  /// by the gesture arena and never fires `_onDragUpdate`, so it leaves
+  /// this false. A drag that returns to its start pixel still sets this
+  /// true (the user moved), so it is reported as a real drag even though
+  /// start.dx == current.dx at release. Comparing pixel coordinates for
+  /// exact equality is unreliable (pointer quantization on some platforms
+  /// reports the up-coordinate as exactly the down-coordinate after a small
+  /// out-and-back drag) — the bool flag matches what the gesture arena
+  /// actually decided.
+  bool _sawDragUpdate = false;
+
   /// Stack width/height captured during layout — the overlay's coordinate
   /// space, used to map drag pixels to chart-x and back.
   double _stackWidth = 0.0;
@@ -427,27 +439,36 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
     setState(() {
       _dragStart = start;
       _dragCurrent = details.localPosition;
+      _sawDragUpdate = false;
     });
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
-    setState(() => _dragCurrent = details.localPosition);
+    setState(() {
+      _dragCurrent = details.localPosition;
+      _sawDragUpdate = true;
+    });
   }
 
   void _onDragEnd(DragEndDetails details) {
     final Offset? start = _dragStart;
     final Offset? current = _dragCurrent;
+    final bool sawDragUpdate = _sawDragUpdate;
     setState(() {
       _dragStart = null;
       _dragCurrent = null;
+      _sawDragUpdate = false;
     });
     _downPosition = null;
     // A tap (pointer down + up with no horizontal movement) is force-accepted
-    // by the gesture arena sweep, which fires onHorizontalDragStart/End with
-    // a zero-width band (start.dx == current.dx). That is NOT a range drag —
-    // the tap passes through to point-scrub (D-10). Report only a real
-    // horizontal drag.
-    if (start == null || current == null || start.dx == current.dx) {
+    // by the gesture arena sweep, which fires onHorizontalDragStart/End
+    // without any DragUpdateDetails. That is NOT a range drag — the tap
+    // passes through to point-scrub (D-10). Discriminate via the update
+    // flag, NOT pixel equality: a drag that returns to its start pixel
+    // (start.dx == current.dx at release) is still a real drag, and on
+    // some platforms pointer quantization reports the up-coordinate as
+    // exactly the down-coordinate after a small out-and-back drag.
+    if (start == null || current == null || !sawDragUpdate) {
       return;
     }
     // If the pixel→chart mapping fails (degenerate X window, collapsed
