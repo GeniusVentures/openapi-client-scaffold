@@ -186,6 +186,36 @@ Point-selection/scrubbing composing with the chart.
 ![Chart Range Selector demo](images/chart_range_selector.png)
 Drag-range selection + consumer-policy zoom.
 
+## Coverage
+
+Every component in the Beautiful UI yardstick is composable from
+shipped scaffold atoms. Of the 19 components, **7 are ready** (existing
+atoms compose them with no new primitives), **8 are thin** (compose
+from existing atoms plus a small amount of consumer wiring), and **4
+are primitive-enabled** (unlocked by the new v1.2 primitives).
+
+| # | Beautiful UI Component | Coverage Tier | Shipped Scaffold Atoms That Compose It |
+|---|------------------------|---------------|----------------------------------------|
+| 1 | Loading State | Compose (8-thin) | `ScaffoldSkeleton` + `ScaffoldAnimatedDisplay*` (7 variants) + `ScaffoldFormattedValueDuration` + `ScaffoldSurface` |
+| 2 | Thinking | Compose (8-thin) | `ScaffoldSurface` + `ScaffoldStatusIndicator` + `ScaffoldAnimatedDisplay*` + `ScaffoldDisclosure` (v1.2) + `ScaffoldTraceList` (v1.2) |
+| 3 | Streaming Text | Add primitive (4-primitive) | `ScaffoldStreamingRichText` (v1.2) + `ScaffoldStreamingCopyButton` + `ScaffoldLiveRegion` (a11y announcements) |
+| 4 | Approval Card | Ready (7-ready) | `ScaffoldCard` + `ScaffoldSelectionIndicatorRadio` + `TextEntryFieldWidget` + `ActionButton` |
+| 5 | Tool Chips | Compose (8-thin) | `ScaffoldChip` (v1.2) + `ScaffoldChipGroup` (v1.2) + `ScaffoldBadge` + `ScaffoldStatusIndicator` + `ScaffoldPressable` |
+| 6 | Task Rows | Ready (7-ready) | `ScaffoldStatusIndicator` + `ScaffoldFormattedValue*` + `ScaffoldAnimatedDisplay*` + `ScaffoldSurface` |
+| 7 | Chat | Compose (8-thin) | `ScaffoldCard` + `ScaffoldAnimatedDisplay*` + `ScaffoldStateView` + `TextEntryFieldWidget` + `ScaffoldComposer` (v1.2) + `ScaffoldStreamingRichText` + `ScaffoldTraceList` |
+| 8 | Prompt Bar | Compose (8-thin) | `TextEntryFieldWidget` + `ActionButton` + `ScaffoldBadge` + `ScaffoldPressable` + `ScaffoldComposer` (v1.2) + `ScaffoldChip` (v1.2) |
+| 9 | Recommendation Card | Ready (7-ready) | `ScaffoldCard` + `ScaffoldFormattedValuePercentage` + `ScaffoldStatusIndicator` + `ActionButton` |
+| 10 | Context Cards | Ready (7-ready) | `ScaffoldCard` + `ScaffoldBadge` + `ScaffoldFormattedValueNumber` + `ScaffoldImagePlaceholder*` (4 variants) |
+| 11 | Diff Table | Compose (8-thin) | `templates/components/data_table.dart.jinja2` + `DataColumnConfig.cellBuilder` (v1.2 Phase 8 extension) |
+| 12 | Records Table | Compose (8-thin) | `data_table.dart.jinja2` + `cellBuilder` + `ScaffoldChip` (tags) + `ScaffoldStatusIndicator` (status cells) |
+| 13 | Filter Table | Compose (8-thin) | `data_table.dart.jinja2` + `ScaffoldChipGroup` (v1.2) + consumer Cubit deriving visible rows |
+| 14 | Sidebar Nav | Ready (7-ready) | `templates/components/navigation.dart.jinja2` (Material drawer + nested groups + badges) + `ScaffoldSearchBar` |
+| 15 | Search | Ready (7-ready) | `ScaffoldSearchBar` (live callbacks, grouped results, loading, filter actions) + `ScaffoldStateView` (empty state) |
+| 16 | Insight Cards | Add primitive (4-primitive) | `ScaffoldChart` (v1.2) + `ScaffoldChartScrubber` (v1.2) + `ScaffoldChartRangeSelector` (v1.2) + `ScaffoldCard` |
+| 17 | Code Block | Add primitive (4-primitive) | `ScaffoldCodeBlock` (v1.2) + `ScaffoldOverflowFade` + `ScaffoldSurface` |
+| 18 | Fine-tune Card | Ready (7-ready) | `ScaffoldCard` + `ScaffoldNumericInput` + `ScaffoldColorSwatch` + `ScaffoldSelectionIndicatorToggle` + `StringButton` |
+| 19 | Selection Actions | Add primitive (4-primitive) | `ScaffoldSelectionActions` (v1.2) + `ScaffoldSelectionCopyAction` + `ScaffoldComposer` |
+
 ## Develop
 
 ```bash
