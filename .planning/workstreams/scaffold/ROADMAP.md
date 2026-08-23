@@ -118,8 +118,8 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 11-01-PLAN.md — Delete skipped SelectionArea smoke test (D-06) + WIDG-44 sweep gate (zero-skip + analyzer + 454 tests + barrel export verification)
-- [ ] 11-02-PLAN.md — Image-capture harness (example/test/capture_images_test.dart) + generate 26 PNGs into images/ (D-02)
+- [x] 11-01-PLAN.md — Delete skipped SelectionArea smoke test (D-06) + WIDG-44 sweep gate (zero-skip + analyzer + 454 tests + barrel export verification)
+- [x] 11-02-PLAN.md — Image-capture harness (example/test/capture_images_test.dart) + generate 26 PNGs into images/ (D-02)
 - [ ] 11-03-PLAN.md — README restructure: correct counts + Demo app expansion + 26-entry component gallery + 19-row WIDG-45 coverage table (D-01)
 
 ## Progress
@@ -132,7 +132,7 @@ Plans:
 | 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 6/6 | Complete | 2026-08-17 |
 | 9. Text & Code Primitives | v1.2 | 6/6 | Complete | 2026-08-20 |
 | 10. Chart & Scrubber | v1.2 | 6/6 | Complete | 2026-08-22 |
-| 11. Verification & Coverage Gate | v1.2 | 0/3 | Not started | - |
+| 11. Verification & Coverage Gate | v1.2 | 2/3 | In progress | - |
 
 ## Out of scope (owned by consuming repos)
 
