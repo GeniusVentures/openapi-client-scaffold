@@ -332,6 +332,12 @@ class _ScaffoldSmoothLineChartState extends State<_ScaffoldSmoothLineChart> {
   final GlobalKey _chartKey = GlobalKey();
 
   void _handleSmoothPixel(Offset? pixel) {
+    // Skip the setState when nothing actually changed — on gesture end
+    // with no active smooth scrub _smoothDotPosition is already null, and
+    // rebuilding the wrapper would be wasted work.
+    if (pixel == _smoothDotPosition) {
+      return;
+    }
     setState(() => _smoothDotPosition = pixel);
   }
 
