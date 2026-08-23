@@ -499,8 +499,35 @@ void main() {
       await tester.pump();
 
       expect(ranges, isEmpty,
-          reason: 'plain arrows route to the inner scrubber, not range '
-              'selection');
+          reason: 'plain arrows route to point navigation (onPointSelected), '
+              'not range selection');
+    });
+
+    testWidgets('CX-3: plain ArrowLeft/Right navigate points '
+        '(documented pass-through — fires onPointSelected)',
+        (WidgetTester tester) async {
+      // Codex PR-10 finding: the file-level doc comment promises plain
+      // ArrowLeft/Right route to point scrub, but no scrubber is composed
+      // and no plain-arrow shortcuts existed — keyboard users could adjust
+      // a range but not navigate its points.
+      final List<int?> points = <int?>[];
+      final List<(int, int)?> ranges = <(int, int)?>[];
+      await _pumpRangeSelector(
+        tester,
+        series: _fivePoints(),
+        selectedRange: (20, 30),
+        onRangeSelected: ((int, int)? r) => ranges.add(r),
+        onPointSelected: (int? v) => points.add(v),
+      );
+      await _focusSelector(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      expect(points, <int?>[10],
+          reason: 'ArrowRight from no selection must select series.first');
+      expect(ranges, isEmpty,
+          reason: 'plain arrows must not mutate the range');
     });
   });
 
