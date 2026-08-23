@@ -23,13 +23,26 @@ const double _kXOriginSeconds = 1692000000.0;
 /// X-axis sample step (one hour between points).
 const double _kXStepSeconds = 3600.0;
 
+/// Y-wave base value (the value the wave oscillates around before the
+/// offset is applied).
+const double _kYBaseValue = 100.0;
+
+/// Y-wave peak-to-mid amplitude.
+const double _kYAmplitude = 50.0;
+
+/// Y-wave offset applied after the triangle wave, shifting the visible
+/// range downward so the line sits in the lower half of the plot.
+const double _kYOffset = 25.0;
+
 /// Demo series — same shape as the ScaffoldChart/Scrubber demos'.
 final List<Offset> _kSampleSeries = List<Offset>.generate(
   _kSampleCount,
   (int i) {
     final double x = _kXOriginSeconds + i * _kXStepSeconds;
     final double phase = (i % 8) / 8.0;
-    final double y = 100.0 + 50.0 * (phase < 0.5 ? phase * 2 : (1.0 - phase) * 2) - 25.0;
+    final double y = _kYBaseValue +
+        _kYAmplitude * (phase < 0.5 ? phase * 2 : (1.0 - phase) * 2) -
+        _kYOffset;
     return Offset(x, y);
   },
   growable: false,
