@@ -24,6 +24,7 @@ export 'components/scaffold_card.dart';
 export 'components/scaffold_card_cubit.dart';
 export 'components/scaffold_card_state.dart';
 export 'components/scaffold_chart.dart';
+export 'components/scaffold_chart_range_selector.dart';
 export 'components/scaffold_chart_scrubber.dart';
 export 'components/scaffold_chip.dart';
 export 'components/scaffold_chip_group.dart';
