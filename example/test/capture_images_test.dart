@@ -1,8 +1,10 @@
 /// Reproducible demo-image capture harness for the frontend_scaffold package.
 ///
 /// Pumps each of the 26 demo `StatelessWidget`s registered in
-/// `example/lib/main.dart` and writes one PNG per demo into the package-root
-/// `images/` directory (`../images/<name>.png` relative to `example/`).
+/// `example/lib/main.dart` under BOTH dark and light themes and writes two
+/// PNGs per demo into the package-root `images/` directory
+/// (`../images/<name>_dark.png` and `../images/<name>_light.png` relative to
+/// `example/`).
 ///
 /// Run from `example/`:
 ///
@@ -22,8 +24,10 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend_scaffold/theme/scaffold_theme.dart';
+import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
+import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 
 // Demo imports — mirrors example/lib/main.dart lines 4-29 (same order).
 import 'package:frontend_scaffold_example/demos/action_button_demo.dart';
@@ -58,15 +62,36 @@ const double kCaptureHeight = 600;
 const double kCapturePixelRatio = 2.0;
 const Duration kAnimationSettleTime = Duration(seconds: 1);
 
-/// Pumps [child] inside the canonical MaterialApp + Scaffold + Center wrapper
-/// used by every widget test in this package (see
-/// `test/components/scaffold_chip_test.dart:11-18`). Uses
-/// [scaffoldThemeExtensions] so captured pixels match the rendering the
-/// library's widget tests assert against.
-Future<void> _pump(WidgetTester tester, Widget child) {
+/// Builds a [ThemeData] matching the demo app's `_buildTheme` in
+/// `example/lib/main.dart:72-85` — dark uses [ScaffoldPalette.defaultPalette],
+/// light uses [ScaffoldPalette.lightPalette]. Both share
+/// [ScaffoldDimens.defaultDimens] and derive their ColorScheme from the
+/// palette's `lightGreenPrimary` seed.
+ThemeData _buildCaptureTheme(Brightness brightness) {
+  final ScaffoldPalette palette = brightness == Brightness.light
+      ? ScaffoldPalette.lightPalette
+      : ScaffoldPalette.defaultPalette;
+  return ThemeData(
+    useMaterial3: true,
+    brightness: brightness,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: palette.lightGreenPrimary,
+      brightness: brightness,
+    ),
+    extensions: <ThemeExtension<dynamic>>[
+      palette,
+      ScaffoldDimens.defaultDimens,
+    ],
+  );
+}
+
+/// Pumps [child] inside a MaterialApp + Scaffold + Center wrapper with the
+/// theme for the given [brightness]. Mirrors the demo app's theme setup so
+/// captured pixels match what users see when running the demo.
+Future<void> _pump(WidgetTester tester, Widget child, Brightness brightness) {
   return tester.pumpWidget(
     MaterialApp(
-      theme: ThemeData(extensions: scaffoldThemeExtensions),
+      theme: _buildCaptureTheme(brightness),
       home: Scaffold(body: Center(child: child)),
     ),
   );
@@ -89,8 +114,9 @@ Future<void> _pump(WidgetTester tester, Widget child) {
 Future<void> _captureWidget(
   WidgetTester tester,
   Widget widget,
-  String filename,
-) async {
+  String filename, {
+  required Brightness brightness,
+}) async {
   await _pump(
     tester,
     SizedBox(
@@ -101,6 +127,7 @@ Future<void> _captureWidget(
         child: widget,
       ),
     ),
+    brightness,
   );
   // Settle bounded work (single-shot animations, layout, streamed timers).
   // Infinite animations simply re-render at the 1s mark — the captured pixels
@@ -114,7 +141,7 @@ Future<void> _captureWidget(
     return boundary.toImage(pixelRatio: kCapturePixelRatio);
   });
   if (image == null) {
-    debugPrint('capture failed: $filename — toImage returned null');
+    debugPrint('capture failed: $filename (${brightness.name}) — toImage returned null');
     return;
   }
 
@@ -122,7 +149,7 @@ Future<void> _captureWidget(
     () => image.toByteData(format: ui.ImageByteFormat.png),
   );
   if (bytes == null) {
-    debugPrint('capture failed: $filename — toByteData returned null');
+    debugPrint('capture failed: $filename (${brightness.name}) — toByteData returned null');
     return;
   }
   await tester.runAsync(() async {
@@ -141,55 +168,124 @@ Future<void> _captureWidget(
   }
 }
 
+/// Captures [widget] under both dark and light themes, writing
+/// `<filename>_dark.png` and `<filename>_light.png`.
+Future<void> _captureBothThemes(
+  WidgetTester tester,
+  Widget widget,
+  String filename,
+) async {
+  await _captureWidget(tester, widget, '${filename}_dark',
+      brightness: Brightness.dark);
+  await _captureWidget(tester, widget, '${filename}_light',
+      brightness: Brightness.light);
+}
+
+/// Loads Roboto fonts from the Flutter SDK's bundled material_fonts directory
+/// so captured images render real glyphs instead of the Ahem test font's
+/// placeholder squares. The Ahem font is the flutter_test default — it renders
+/// every character as a solid rectangle, which is fine for golden-file
+/// comparison but useless for human-viewable demo images.
+///
+/// Loads Regular, Medium, and Bold weights. Call once in `setUpAll` before
+/// any capture runs.
+Future<void> _loadRealFonts() async {
+  // Platform.resolvedExecutable in a flutter_test context points to the Dart
+  // VM binary at <flutter>/bin/cache/dart-sdk/bin/dart. Walk up to find the
+  // Flutter root by looking for the material_fonts directory.
+  Directory dir = File(Platform.resolvedExecutable).parent;
+  String? fontDir;
+  for (int i = 0; i < 6; i++) {
+    final String candidate = '${dir.path}/bin/cache/artifacts/material_fonts';
+    if (Directory(candidate).existsSync()) {
+      fontDir = candidate;
+      break;
+    }
+    dir = dir.parent;
+  }
+  if (fontDir == null) {
+    debugPrint('could not locate material_fonts directory — skipping font load');
+    return;
+  }
+
+  // Register under all family names the widget library uses. 'Roboto' covers
+  // text_entry_field_widget.dart; 'monospace' covers scaffold_code_block.dart
+  // and scaffold_streaming_rich_text.dart. Roboto isn't monospace but at
+  // least renders real glyphs instead of Ahem's placeholder squares.
+  final Map<String, List<String>> fontFiles = <String, List<String>>{
+    'Roboto-Regular.ttf': <String>['Roboto', 'monospace'],
+    'Roboto-Medium.ttf': <String>['Roboto Medium'],
+    'Roboto-Bold.ttf': <String>['Roboto Bold'],
+  };
+
+  for (final MapEntry<String, List<String>> entry in fontFiles.entries) {
+    final File file = File('$fontDir/${entry.key}');
+    if (!file.existsSync()) {
+      debugPrint('font not found: ${file.path} — skipping');
+      continue;
+    }
+    final ByteData bytes = ByteData.view(file.readAsBytesSync().buffer);
+    for (final String family in entry.value) {
+      final FontLoader loader = FontLoader(family)
+        ..addFont(Future<ByteData>.value(bytes));
+      await loader.load();
+    }
+  }
+}
+
 void main() {
+  setUpAll(() async {
+    await _loadRealFonts();
+  });
+
   testWidgets('capture all demo screens', (WidgetTester tester) async {
     // Order mirrors the _DemoTile registry in example/lib/main.dart.
-    await _captureWidget(tester, const ActionButtonDemo(), 'action_button');
-    await _captureWidget(tester, const StringButtonDemo(), 'string_button');
-    await _captureWidget(tester, const TextEntryFieldDemo(), 'text_entry_field');
-    await _captureWidget(tester, const LoadingDemo(), 'loading');
-    await _captureWidget(tester, const ToastDemo(), 'toast');
-    await _captureWidget(tester, const BottomDrawerDemo(), 'bottom_drawer');
-    await _captureWidget(tester, const AnimationsDemo(), 'animations');
-    await _captureWidget(tester, const PageChromeDemo(), 'page_chrome');
-    await _captureWidget(tester, const ResponsiveGridDemo(), 'responsive_grid');
-    await _captureWidget(tester, const TracerDemo(), 'tracer');
-    await _captureWidget(tester, const KitchenSinkDemo(), 'kitchen_sink');
-    await _captureWidget(tester, const MediaCardDemo(), 'media_card');
-    await _captureWidget(tester, const MediaControlsDemo(), 'media_controls');
-    await _captureWidget(
+    await _captureBothThemes(tester, const ActionButtonDemo(), 'action_button');
+    await _captureBothThemes(tester, const StringButtonDemo(), 'string_button');
+    await _captureBothThemes(tester, const TextEntryFieldDemo(), 'text_entry_field');
+    await _captureBothThemes(tester, const LoadingDemo(), 'loading');
+    await _captureBothThemes(tester, const ToastDemo(), 'toast');
+    await _captureBothThemes(tester, const BottomDrawerDemo(), 'bottom_drawer');
+    await _captureBothThemes(tester, const AnimationsDemo(), 'animations');
+    await _captureBothThemes(tester, const PageChromeDemo(), 'page_chrome');
+    await _captureBothThemes(tester, const ResponsiveGridDemo(), 'responsive_grid');
+    await _captureBothThemes(tester, const TracerDemo(), 'tracer');
+    await _captureBothThemes(tester, const KitchenSinkDemo(), 'kitchen_sink');
+    await _captureBothThemes(tester, const MediaCardDemo(), 'media_card');
+    await _captureBothThemes(tester, const MediaControlsDemo(), 'media_controls');
+    await _captureBothThemes(
       tester,
       const WalletConnectSheetDemo(),
       'wallet_connect_sheet',
     );
-    await _captureWidget(tester, const ScaffoldChipDemo(), 'chip');
-    await _captureWidget(tester, const ScaffoldComposerDemo(), 'composer');
-    await _captureWidget(tester, const ScaffoldDisclosureDemo(), 'disclosure');
-    await _captureWidget(tester, const ScaffoldTraceListDemo(), 'trace_list');
-    await _captureWidget(
+    await _captureBothThemes(tester, const ScaffoldChipDemo(), 'chip');
+    await _captureBothThemes(tester, const ScaffoldComposerDemo(), 'composer');
+    await _captureBothThemes(tester, const ScaffoldDisclosureDemo(), 'disclosure');
+    await _captureBothThemes(tester, const ScaffoldTraceListDemo(), 'trace_list');
+    await _captureBothThemes(
       tester,
       const ScaffoldStreamingRichTextDemo(),
       'streaming_rich_text',
     );
-    await _captureWidget(tester, const ScaffoldCodeBlockDemo(), 'code_block');
-    await _captureWidget(
+    await _captureBothThemes(tester, const ScaffoldCodeBlockDemo(), 'code_block');
+    await _captureBothThemes(
       tester,
       const ScaffoldSelectionActionsDemo(),
       'selection_actions',
     );
-    await _captureWidget(
+    await _captureBothThemes(
       tester,
       const ScaffoldMarkdownToSpansDemo(),
       'markdown_to_spans',
     );
-    await _captureWidget(
+    await _captureBothThemes(
       tester,
       const ScaffoldLightSyntaxTokenizerDemo(),
       'light_syntax_tokenizer',
     );
-    await _captureWidget(tester, const ChartDemo(), 'chart');
-    await _captureWidget(tester, const ChartScrubberDemo(), 'chart_scrubber');
-    await _captureWidget(
+    await _captureBothThemes(tester, const ChartDemo(), 'chart');
+    await _captureBothThemes(tester, const ChartScrubberDemo(), 'chart_scrubber');
+    await _captureBothThemes(
       tester,
       const ChartRangeSelectorDemo(),
       'chart_range_selector',
