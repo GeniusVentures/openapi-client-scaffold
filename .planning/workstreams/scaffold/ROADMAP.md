@@ -125,7 +125,7 @@ Plans:
 | 6. Core UI Foundation | v1.1 | 6/6 | Complete | 2026-08-14 |
 | 7. Media & Integration Widgets | v1.1 | 4/4 | Complete | 2026-08-15 |
 | 8. Supporting Atoms, Table Cells & Light Palette | v1.2 | 6/6 | Complete | 2026-08-17 |
-| 9. Text & Code Primitives | v1.2 | 4/6 | In Progress|  |
+| 9. Text & Code Primitives | v1.2 | 6/6 | Complete | 2026-08-20 |
 | 10. Chart & Scrubber | v1.2 | 6/6 | Complete | 2026-08-22 |
 | 11. Verification & Coverage Gate | v1.2 | 0/? | Not started | - |
 

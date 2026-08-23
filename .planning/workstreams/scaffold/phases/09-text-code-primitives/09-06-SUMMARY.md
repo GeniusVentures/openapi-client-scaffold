@@ -1,6 +1,8 @@
 ---
 phase: 09-text-code-primitives
 plan: 06
+status: complete
+completed: 2026-08-20
 subsystem: scaffold-text-code
 tags: [barrel-exports, demo-registration, quality-gates, WIDG-32..34, WIDG-37..39, D-07]
 requires:

@@ -1,6 +1,8 @@
 ---
 phase: 09-text-code-primitives
 plan: 04
+status: complete
+completed: 2026-08-20
 subsystem: example-demos
 tags: [demo, example-app, streaming-rich-text, code-block, selection-actions]
 dependency_graph:
