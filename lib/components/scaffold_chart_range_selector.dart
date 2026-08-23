@@ -100,6 +100,11 @@ class ScaffoldChartRangeSelector<T> extends StatelessWidget {
   /// Fires when a range selection is made (drag release, Shift+Arrow
   /// adjustment, Enter confirm) or cleared (Escape). Carries `(startT,
   /// endT)` ordered so startT.x <= endT.x, or null on clear.
+  ///
+  /// null is fired ONLY on an explicit clear (Escape). A band drag whose
+  /// pixel→chart mapping fails (degenerate X window, collapsed layout
+  /// mid-gesture, empty series) fires NOTHING — the consumer's existing
+  /// range is preserved rather than silently cleared.
   final ValueChanged<(T, T)?>? onRangeSelected;
 
   /// Optional semantics label for the range interaction area. Defaults to
@@ -445,7 +450,16 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
     if (start == null || current == null || start.dx == current.dx) {
       return;
     }
-    widget.onRangeSelected?.call(_mapPixelsToRange(start, current));
+    // If the pixel→chart mapping fails (degenerate X window, collapsed
+    // layout mid-gesture, series emptied between drag start and end) the
+    // drag cannot be interpreted. Do NOT fire onRangeSelected(null) — that
+    // is the "clear the range" signal and would silently drop the user's
+    // existing selection. Only fire when a real range was produced.
+    final (T, T)? mapped = _mapPixelsToRange(start, current);
+    if (mapped == null) {
+      return;
+    }
+    widget.onRangeSelected?.call(mapped);
   }
 
   @override
