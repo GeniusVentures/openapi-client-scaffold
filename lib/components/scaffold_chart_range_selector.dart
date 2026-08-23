@@ -554,6 +554,13 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
             _focusNode.requestFocus();
             _downPosition = event.localPosition;
           },
+          // Clear the captured down position on pointer cancel so the
+          // field's lifecycle is explicit (down → cancel → null). The next
+          // pointer-down always overwrites it before use, so this is not a
+          // bug fix — it makes the invariant visible.
+          onPointerCancel: (PointerCancelEvent event) {
+            _downPosition = null;
+          },
           behavior: HitTestBehavior.translucent,
           child: Focus(
             focusNode: _focusNode,
