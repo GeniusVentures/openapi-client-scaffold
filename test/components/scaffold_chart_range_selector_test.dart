@@ -315,6 +315,52 @@ void main() {
       expect(ranges.last, (30, 50),
           reason: 'a new drag must replace the active range');
     });
+
+    testWidgets(
+        'Test 29: degenerate X window (viewMinX == viewMaxX) — failed drag '
+        'fires nothing, preserving the consumer\'s existing range',
+        (WidgetTester tester) async {
+      // WR-01 regression: _mapPixelsToRange returns null when the X window
+      // is degenerate (span <= 0). The previous implementation forwarded
+      // that null to onRangeSelected, silently clearing the user's existing
+      // range. The contract is that null fires ONLY on Escape — a failed
+      // drag must fire NOTHING.
+      final List<(int, int)?> ranges = <(int, int)?>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(extensions: scaffoldThemeExtensions),
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 400,
+                height: 300,
+                child: ScaffoldChartRangeSelector<int>(
+                  series: _fivePoints(),
+                  xAccessor: (int v) => v.toDouble(),
+                  yAccessor: (int v) => (v * 2).toDouble(),
+                  selectedRange: (10, 20),
+                  onRangeSelected: ((int, int)? r) => ranges.add(r),
+                  plotHeight: 300,
+                  // Degenerate window: span == 0, so _chartXOfPixel returns
+                  // null for every pixel.
+                  viewMinX: 30.0,
+                  viewMaxX: 30.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final Offset center =
+          tester.getCenter(find.byType(ScaffoldChart<int>));
+      await _dragBand(tester, center, center + const Offset(100, 0));
+
+      expect(ranges, isEmpty,
+          reason: 'a drag whose pixel→chart mapping fails must NOT fire '
+              'onRangeSelected — null is the clear signal and is reserved '
+              'for Escape');
+    });
   });
 
   group('ScaffoldChartRangeSelector keyboard', () {
