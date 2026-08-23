@@ -558,6 +558,17 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
               showRingWhenFocused: true,
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
+                  // Resize mid-drag: the in-flight _dragStart was anchored
+                  // against the OLD width, so the band and the final mapped
+                  // range would be computed against mismatched geometries.
+                  // Cancel the band so the next drag starts clean.
+                  if (_dragStart != null &&
+                      (constraints.maxWidth != _stackWidth ||
+                          constraints.maxHeight != _stackHeight)) {
+                    _dragStart = null;
+                    _dragCurrent = null;
+                    _sawDragUpdate = false;
+                  }
                   _stackWidth = constraints.maxWidth;
                   _stackHeight = constraints.maxHeight;
                   final ScaffoldPalette palette = context.palette;
