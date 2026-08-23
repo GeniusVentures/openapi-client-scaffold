@@ -361,6 +361,51 @@ void main() {
               'onRangeSelected — null is the clear signal and is reserved '
               'for Escape');
     });
+
+    testWidgets(
+        'Test 30: drag out and back to the start pixel fires onRangeSelected '
+        '(tap-vs-drag via update flag, not pixel equality)',
+        (WidgetTester tester) async {
+      // WR-02 regression: a drag that returns to its start pixel has
+      // start.dx == current.dx at release. The previous float-equality
+      // discriminator swallowed this as a tap. The fix tracks whether any
+      // DragUpdateDetails arrived between start and end; an out-and-back
+      // drag IS a real drag and must fire onRangeSelected (degenerate but
+      // real — both endpoints map to the same nearest point).
+      final List<(int, int)?> ranges = <(int, int)?>[];
+      int? selected;
+      await _pumpRangeSelector(
+        tester,
+        series: _fivePoints(),
+        onRangeSelected: ((int, int)? r) => ranges.add(r),
+        onPointSelected: (int? v) => selected = v,
+      );
+
+      final Map<double, double> valueToPixelX =
+          await _calibrateValueToPixelX(tester, () => selected);
+      final double midY =
+          tester.getCenter(find.byType(ScaffoldChart<int>)).dy;
+      final Offset startPixel = Offset(valueToPixelX[30]!, midY);
+
+      final TestGesture gesture = await tester.startGesture(startPixel);
+      addTearDown(gesture.removePointer);
+      await tester.pump();
+      // Step over the touch slop so the recognizer accepts.
+      await gesture.moveBy(const Offset(_kDragSlopStep, 0.0));
+      await tester.pump();
+      // Move further out, then back to the exact start pixel.
+      await gesture.moveBy(const Offset(60.0, 0.0));
+      await tester.pump();
+      await gesture.moveBy(const Offset(-60.0 - _kDragSlopStep, 0.0));
+      await tester.pump();
+      await gesture.up();
+      await tester.pump();
+
+      expect(ranges, isNotEmpty,
+          reason: 'a drag that returns to its start pixel is still a real '
+              'drag and must fire onRangeSelected — float equality on '
+              'pixel coordinates is not a valid tap-vs-drag discriminator');
+    });
   });
 
   group('ScaffoldChartRangeSelector keyboard', () {
