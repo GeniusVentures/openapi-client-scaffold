@@ -83,6 +83,13 @@ const double kChartFillFadeStop = 0.62;
   for (final double m in multipliers) {
     final double step = m * mag;
     final List<double> vals = <double>[];
+    // The step * 1e-9 slack is a RELATIVE epsilon: it scales with the step,
+    // so at normal axis steps it absorbs the representation error that would
+    // otherwise drop the topmost tick (e.g. hi=0.3 vs step=0.1 accumulation).
+    // For pathologically small steps (step ~ 1e-12) the slack (~ 1e-24) is
+    // far below double-precision resolution at hi's magnitude and contributes
+    // nothing — harmless today because no caller drives such steps, but the
+    // slack's magnitude does NOT do what the constant implies at that scale.
     double v = (lo / step).ceil() * step;
     for (; v <= hi + step * 1e-9; v += step) {
       vals.add(v);
