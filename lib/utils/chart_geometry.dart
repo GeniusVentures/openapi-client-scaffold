@@ -163,7 +163,9 @@ bool chartUsesFrame(double plotHeight) => plotHeight >= kChartFrameMinHeight;
   if (available <= 0) {
     return bounds;
   }
-  final double unitsPerPx = (hi - lo) / max(1, available);
+  // The early return above guarantees available > 0 here — the division is
+  // safe without a further max(1, …) clamp.
+  final double unitsPerPx = (hi - lo) / available;
   return (lo - band * unitsPerPx, hi + band * unitsPerPx);
 }
 
