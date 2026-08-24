@@ -533,8 +533,14 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
       });
     }
 
-    // Request keyboard focus so Escape is deliverable.
-    _escapeFocusNode.requestFocus();
+    // Request keyboard focus so Escape is deliverable. Gated: only grab
+    // focus when no pointer is mid-selection (i.e. keyboard or
+    // debug-simulated path) AND we don't already own focus. Unconditional
+    // requestFocus would yank focus out of a consumer-controlled field
+    // when the toolbar appears via keyboard while focus was elsewhere.
+    if (_pointerSelectingCount == 0 && !_escapeFocusNode.hasFocus) {
+      _escapeFocusNode.requestFocus();
+    }
   }
 
   Widget _buildToolbarOverlay(BuildContext overlayContext) {
