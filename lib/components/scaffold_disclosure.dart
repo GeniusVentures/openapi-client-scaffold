@@ -124,7 +124,15 @@ class _ScaffoldDisclosureState extends State<ScaffoldDisclosure> {
                 left: dimens.space6,
                 top: dimens.space4,
               ),
-              child: widget.body,
+              // Bare Text bodies resolve DefaultTextStyle → M3 onSurface,
+              // not palette.textPrimary. Wrap so body text is readable.
+              child: DefaultTextStyle(
+                style:
+                    (Theme.of(context).textTheme.bodyMedium ??
+                            const TextStyle())
+                        .copyWith(color: palette.textSecondary),
+                child: widget.body,
+              ),
             )
           : const SizedBox.shrink(),
     );

@@ -92,9 +92,19 @@ class ScaffoldTraceList extends StatelessWidget {
 
   Widget _buildItem(BuildContext context, TraceItem item) {
     final dimens = context.dimens;
+    final palette = context.palette;
+    // Bare Text bodies (common in consumer TraceItems) resolve DefaultTextStyle
+    // which falls through to M3 ColorScheme.onSurface — not palette.textPrimary.
+    // Wrap in DefaultTextStyle so the body text is readable without requiring
+    // an explicit style on every body widget.
+    final Widget styledBody = DefaultTextStyle(
+      style: (Theme.of(context).textTheme.bodyMedium ?? const TextStyle())
+          .copyWith(color: palette.textPrimary),
+      child: item.body,
+    );
     final Widget disclosure = ScaffoldDisclosure(
       title: item.title,
-      body: item.body,
+      body: styledBody,
       initiallyExpanded: item.initiallyExpanded,
     );
 

@@ -26,8 +26,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_scaffold/components/scaffold_badge.dart';
+import 'package:frontend_scaffold/components/scaffold_disclosure.dart';
+import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 // Demo imports — mirrors example/lib/main.dart lines 4-29 (same order).
 import 'package:frontend_scaffold_example/demos/action_button_demo.dart';
@@ -55,7 +59,6 @@ import 'package:frontend_scaffold_example/demos/text_entry_field_demo.dart';
 import 'package:frontend_scaffold_example/demos/toast_demo.dart';
 import 'package:frontend_scaffold_example/demos/trace_list_demo.dart';
 import 'package:frontend_scaffold_example/demos/tracer_demo.dart';
-import 'package:frontend_scaffold_example/demos/wallet_connect_sheet_demo.dart';
 
 const double kCaptureWidth = 800;
 const double kCaptureHeight = 600;
@@ -97,6 +100,11 @@ Future<void> _pump(WidgetTester tester, Widget child, Brightness brightness) {
   );
 }
 
+/// Optional callback invoked after the initial pump + settle but BEFORE
+/// rasterization. Use to drive interactive state (expand disclosures, tap
+/// charts, etc.) that a static capture would miss.
+typedef PrepareCapture = Future<void> Function(WidgetTester tester);
+
 /// Renders [widget] to a [kCaptureWidth]x[kCaptureHeight] offscreen surface at
 /// [kCapturePixelRatio] pixel ratio and writes the resulting PNG to
 /// `../images/<filename>.png` (package-root `images/`).
@@ -116,6 +124,7 @@ Future<void> _captureWidget(
   Widget widget,
   String filename, {
   required Brightness brightness,
+  PrepareCapture? prepare,
 }) async {
   await _pump(
     tester,
@@ -133,6 +142,14 @@ Future<void> _captureWidget(
   // Infinite animations simply re-render at the 1s mark — the captured pixels
   // show whatever frame is current.
   await tester.pump(kAnimationSettleTime);
+
+  // Drive interactive state (expand disclosures, simulate chart taps, etc.)
+  // before rasterization so the capture shows the widget in its "active"
+  // state rather than its default empty/collapsed state.
+  if (prepare != null) {
+    await prepare(tester);
+    await tester.pump(kAnimationSettleTime);
+  }
 
   final ui.Image? image = await tester.runAsync(() async {
     final RenderRepaintBoundary boundary = tester.renderObject(
@@ -173,12 +190,13 @@ Future<void> _captureWidget(
 Future<void> _captureBothThemes(
   WidgetTester tester,
   Widget widget,
-  String filename,
-) async {
+  String filename, {
+  PrepareCapture? prepare,
+}) async {
   await _captureWidget(tester, widget, '${filename}_dark',
-      brightness: Brightness.dark);
+      brightness: Brightness.dark, prepare: prepare);
   await _captureWidget(tester, widget, '${filename}_light',
-      brightness: Brightness.light);
+      brightness: Brightness.light, prepare: prepare);
 }
 
 /// Loads Roboto fonts from the Flutter SDK's bundled material_fonts directory
@@ -187,8 +205,8 @@ Future<void> _captureBothThemes(
 /// every character as a solid rectangle, which is fine for golden-file
 /// comparison but useless for human-viewable demo images.
 ///
-/// Loads Regular, Medium, and Bold weights. Call once in `setUpAll` before
-/// any capture runs.
+/// Loads Regular, Medium, and Bold weights plus MaterialIcons (icon font).
+/// Call once in `setUpAll` before any capture runs.
 Future<void> _loadRealFonts() async {
   // Platform.resolvedExecutable in a flutter_test context points to the Dart
   // VM binary at <flutter>/bin/cache/dart-sdk/bin/dart. Walk up to find the
@@ -216,6 +234,7 @@ Future<void> _loadRealFonts() async {
     'Roboto-Regular.ttf': <String>['Roboto', 'monospace'],
     'Roboto-Medium.ttf': <String>['Roboto Medium'],
     'Roboto-Bold.ttf': <String>['Roboto Bold'],
+    'MaterialIcons-Regular.otf': <String>['MaterialIcons'],
   };
 
   for (final MapEntry<String, List<String>> entry in fontFiles.entries) {
@@ -231,6 +250,211 @@ Future<void> _loadRealFonts() async {
       await loader.load();
     }
   }
+}
+
+/// Expands all collapsed [ScaffoldDisclosure] widgets by tapping their
+/// header rows. Skips already-expanded disclosures (tapping would collapse
+/// them). Detects expansion by checking whether the AnimatedSize child is
+/// SizedBox.shrink (collapsed) vs Padding (expanded).
+Future<void> _expandAllDisclosures(WidgetTester tester) async {
+  final Iterable<Element> disclosures =
+      find.byType(ScaffoldDisclosure).evaluate();
+  for (final Element element in disclosures) {
+    // Walk the subtree to find the AnimatedSize child. If it's a
+    // SizedBox.shrink the disclosure is collapsed; if Padding it's expanded.
+    bool isExpanded = false;
+    void visitor(Element el) {
+      if (el.widget is AnimatedSize) {
+        final AnimatedSize animatedSize = el.widget as AnimatedSize;
+        if (animatedSize.child is Padding) {
+          isExpanded = true;
+        }
+      }
+      el.visitChildren(visitor);
+    }
+    element.visitChildren(visitor);
+    if (isExpanded) {
+      continue;
+    }
+    // Find the ScaffoldPressable header inside this disclosure and tap it.
+    ScaffoldPressable? pressable;
+    void pressableVisitor(Element el) {
+      if (el.widget is ScaffoldPressable && pressable == null) {
+        pressable = el.widget as ScaffoldPressable;
+      }
+      el.visitChildren(pressableVisitor);
+    }
+    element.visitChildren(pressableVisitor);
+    if (pressable != null) {
+      await tester.tap(find.byWidget(pressable!));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
+}
+
+/// Simulates a tap near the center of the chart to trigger a selection.
+/// The scrubber's Listener.onPointerDown → onPointSelected path fires.
+Future<void> _tapChartCenter(WidgetTester tester) async {
+  await tester.tapAt(const Offset(400, 350));
+}
+
+/// Simulates a horizontal drag across the chart to select a range.
+/// Drag from 25% to 75% of the capture width, at the chart's vertical center.
+Future<void> _dragChartRange(WidgetTester tester) async {
+  await tester.dragFrom(const Offset(200, 350), const Offset(400, 0));
+}
+
+/// Captures the WalletConnectSheet by building the sheet's inner content
+/// directly (bypassing the button-triggered demo). Builds a BottomDrawer
+/// with the same children the sheet would show, inside a MaterialApp +
+/// Scaffold so theme and palette resolve correctly.
+Future<void> _captureWalletSheet(
+  WidgetTester tester,
+  Brightness brightness,
+) async {
+  const String networkName = 'Ethereum';
+
+  await _pump(
+    tester,
+    SizedBox(
+      width: kCaptureWidth,
+      height: kCaptureHeight,
+      child: RepaintBoundary(
+        key: const ValueKey<String>('capture'),
+        child: Builder(
+          builder: (BuildContext context) {
+            final TextTheme textTheme = Theme.of(context).textTheme;
+            final dimens = context.dimens;
+            final palette = context.palette;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // Simulated sheet card — mirrors the desktop dialog layout.
+                Container(
+                  width: 400,
+                  padding: EdgeInsets.all(dimens.itemSpacing),
+                  decoration: BoxDecoration(
+                    color: palette.deepBlueTertiary,
+                    borderRadius: BorderRadius.circular(dimens.radiusMd),
+                    border: Border.all(color: palette.borderSubtle),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        'Wallet',
+                        style: textTheme.titleMedium
+                            ?.copyWith(color: palette.textPrimary),
+                      ),
+                      SizedBox(height: dimens.itemSpacing),
+                      Text(
+                        '0xABCD…EF12',
+                        style: textTheme.bodyLarge
+                            ?.copyWith(color: palette.textPrimary),
+                      ),
+                      SizedBox(height: dimens.space4),
+                      const ScaffoldBadge(
+                        variant: BadgeVariant.text,
+                        text: networkName,
+                      ),
+                      SizedBox(height: dimens.itemSpacing),
+                      Divider(height: 1, color: palette.borderSubtle),
+                      SizedBox(height: dimens.space4),
+                      Center(
+                        child: Text(
+                          'Disconnect',
+                          style: textTheme.labelLarge
+                              ?.copyWith(color: palette.textPrimary),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: dimens.itemSpacing),
+                // Disconnected state below for comparison.
+                Container(
+                  width: 400,
+                  padding: EdgeInsets.all(dimens.itemSpacing),
+                  decoration: BoxDecoration(
+                    color: palette.deepBlueTertiary,
+                    borderRadius: BorderRadius.circular(dimens.radiusMd),
+                    border: Border.all(color: palette.borderSubtle),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        'Connect Wallet',
+                        style: textTheme.titleMedium
+                            ?.copyWith(color: palette.textPrimary),
+                      ),
+                      SizedBox(height: dimens.itemSpacing),
+                      Container(
+                        width: 200,
+                        height: 200,
+                        color: palette.borderSubtle,
+                        child: Center(
+                          child: Text(
+                            'QR placeholder\nwc:demo@2?relay-protocol=irn',
+                            textAlign: TextAlign.center,
+                            style: textTheme.bodySmall
+                                ?.copyWith(color: palette.textSecondary),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: dimens.space8),
+                      Center(
+                        child: Text(
+                          'Connect',
+                          style: textTheme.labelLarge
+                              ?.copyWith(color: palette.textPrimary),
+                        ),
+                      ),
+                      SizedBox(height: dimens.space8),
+                      Text(
+                        'Scan the QR code with your wallet to connect.',
+                        style: textTheme.bodyMedium
+                            ?.copyWith(color: palette.textSecondary),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    ),
+    brightness,
+  );
+  await tester.pump(kAnimationSettleTime);
+
+  final ui.Image? image = await tester.runAsync(() async {
+    final RenderRepaintBoundary boundary = tester.renderObject(
+      find.byKey(const ValueKey<String>('capture')),
+    );
+    return boundary.toImage(pixelRatio: kCapturePixelRatio);
+  });
+  if (image == null) {
+    debugPrint('capture failed: wallet_connect_sheet (${brightness.name})');
+    return;
+  }
+  final ByteData? bytes = await tester.runAsync<ByteData?>(
+    () => image.toByteData(format: ui.ImageByteFormat.png),
+  );
+  if (bytes == null) {
+    debugPrint('capture failed: wallet_connect_sheet (${brightness.name})');
+    return;
+  }
+  await tester.runAsync(() async {
+    await File('../images/wallet_connect_sheet_${brightness.name}.png')
+        .create(recursive: true)
+        .then((File f) => f.writeAsBytes(bytes.buffer.asUint8List()));
+  });
+  while (tester.takeException() != null) {}
 }
 
 void main() {
@@ -253,15 +477,16 @@ void main() {
     await _captureBothThemes(tester, const KitchenSinkDemo(), 'kitchen_sink');
     await _captureBothThemes(tester, const MediaCardDemo(), 'media_card');
     await _captureBothThemes(tester, const MediaControlsDemo(), 'media_controls');
-    await _captureBothThemes(
-      tester,
-      const WalletConnectSheetDemo(),
-      'wallet_connect_sheet',
-    );
+    // WalletConnectSheet demo is button-triggered — capture the sheet content
+    // directly instead of the button page.
+    await _captureWalletSheet(tester, Brightness.dark);
+    await _captureWalletSheet(tester, Brightness.light);
     await _captureBothThemes(tester, const ScaffoldChipDemo(), 'chip');
     await _captureBothThemes(tester, const ScaffoldComposerDemo(), 'composer');
-    await _captureBothThemes(tester, const ScaffoldDisclosureDemo(), 'disclosure');
-    await _captureBothThemes(tester, const ScaffoldTraceListDemo(), 'trace_list');
+    await _captureBothThemes(tester, const ScaffoldDisclosureDemo(), 'disclosure',
+        prepare: _expandAllDisclosures);
+    await _captureBothThemes(tester, const ScaffoldTraceListDemo(), 'trace_list',
+        prepare: _expandAllDisclosures);
     await _captureBothThemes(
       tester,
       const ScaffoldStreamingRichTextDemo(),
@@ -284,11 +509,13 @@ void main() {
       'light_syntax_tokenizer',
     );
     await _captureBothThemes(tester, const ChartDemo(), 'chart');
-    await _captureBothThemes(tester, const ChartScrubberDemo(), 'chart_scrubber');
+    await _captureBothThemes(tester, const ChartScrubberDemo(), 'chart_scrubber',
+        prepare: _tapChartCenter);
     await _captureBothThemes(
       tester,
       const ChartRangeSelectorDemo(),
       'chart_range_selector',
+      prepare: _dragChartRange,
     );
   });
 }

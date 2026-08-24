@@ -656,13 +656,23 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
   /// updates share the exact same code path.
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: _onPointerDown,
-      child: SelectionArea(
-        key: _selectionRegionKey,
-        focusNode: _escapeFocusNode,
-        onSelectionChanged: _onSelectionAreaChanged,
-        child: widget.child,
+    // Bare Text children (common in consumer code) resolve DefaultTextStyle
+    // which falls through to M3 ColorScheme.onSurface — not the scaffold
+    // palette's textPrimary. Wrap in DefaultTextStyle so consumer text is
+    // readable without requiring an explicit style on every Text widget.
+    final TextStyle fallbackStyle =
+        (Theme.of(context).textTheme.bodyMedium ?? const TextStyle())
+            .copyWith(color: context.palette.textPrimary);
+    return DefaultTextStyle(
+      style: fallbackStyle,
+      child: Listener(
+        onPointerDown: _onPointerDown,
+        child: SelectionArea(
+          key: _selectionRegionKey,
+          focusNode: _escapeFocusNode,
+          onSelectionChanged: _onSelectionAreaChanged,
+          child: widget.child,
+        ),
       ),
     );
   }
