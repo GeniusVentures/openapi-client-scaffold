@@ -170,9 +170,9 @@ Future<void> _captureWidget(
     return;
   }
   await tester.runAsync(() async {
-    await File('../images/$filename.png')
-        .create(recursive: true)
-        .then((File f) => f.writeAsBytes(bytes.buffer.asUint8List()));
+    final File f =
+        await File('../images/$filename.png').create(recursive: true);
+    await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
 
   // The capture harness is a WRITER, not an assertion. Drain any pending
@@ -450,9 +450,10 @@ Future<void> _captureWalletSheet(
     return;
   }
   await tester.runAsync(() async {
-    await File('../images/wallet_connect_sheet_${brightness.name}.png')
-        .create(recursive: true)
-        .then((File f) => f.writeAsBytes(bytes.buffer.asUint8List()));
+    final File f = await File(
+      '../images/wallet_connect_sheet_${brightness.name}.png',
+    ).create(recursive: true);
+    await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
   while (tester.takeException() != null) {}
 }
