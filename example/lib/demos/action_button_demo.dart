@@ -13,9 +13,10 @@ class ActionButtonDemo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('ActionButton needs bounded width — each is wrapped '
+            Text('ActionButton needs bounded width — each is wrapped '
                 'in a SizedBox to give the internal LayoutBuilder real '
-                'constraints.'),
+                'constraints.',
+                style: TextStyle(color: context.palette.textPrimary)),
             SizedBox(height: context.dimens.itemSpacing),
             Row(
               children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 class DesktopBodyContainer extends StatelessWidget {
   final Widget child;
@@ -16,17 +17,20 @@ class DesktopBodyContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return SizedBox(
         width: width,
         height: height,
         child: Column(children: [
           Text(title ?? '',
-              style:
-                  const TextStyle(fontSize: 48, fontWeight: FontWeight.w500)),
+              style: TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w500,
+                  color: palette.textPrimary)),
           const SizedBox(
             height: 20,
           ),
-          Text(subText ?? ''),
+          Text(subText ?? '', style: TextStyle(color: palette.textSecondary)),
           const SizedBox(
             height: 20,
           ),

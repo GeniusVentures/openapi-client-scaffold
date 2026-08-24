@@ -71,13 +71,22 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
 
   ThemeData _buildTheme(Brightness brightness) {
     final ScaffoldPalette palette = _paletteFor(brightness);
+    // Align the ColorScheme's onX slots with the palette's text colors so
+    // M3 composites (SwitchListTile, ListTile, ElevatedButton text, etc.)
+    // resolve palette.textPrimary/textSecondary instead of fromSeed's
+    // brightness-derived onSurface (#DEE4DF on dark), which reads as dim
+    // grey against the palette's near-black surface.
+    final ColorScheme colorScheme = ColorScheme.fromSeed(
+      seedColor: palette.lightGreenPrimary,
+      brightness: brightness,
+    ).copyWith(
+      onSurface: palette.textPrimary,
+      onSurfaceVariant: palette.textSecondary,
+    );
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: palette.lightGreenPrimary,
-        brightness: brightness,
-      ),
+      colorScheme: colorScheme,
       extensions: <ThemeExtension<dynamic>>[
         palette,
         ScaffoldDimens.defaultDimens,

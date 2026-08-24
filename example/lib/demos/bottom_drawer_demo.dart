@@ -43,10 +43,11 @@ class BottomDrawerDemo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'ResponsiveDrawer picks modal bottom sheet on narrow screens '
               'and a right-side dialog on wide screens. Resize the window '
               'to see the switch (breakpoint: 800px).',
+              style: TextStyle(color: context.palette.textPrimary),
             ),
             SizedBox(height: context.dimens.itemSpacing),
             ElevatedButton(
