@@ -114,6 +114,13 @@ class ScaffoldSelectionActions extends StatefulWidget {
   /// [BuildContext], the last reported [TextSelection], and the last
   /// selected plain-text. Returning a `SizedBox.shrink()` causes the atom
   /// to skip inserting the overlay entirely (no empty card).
+  ///
+  /// NOTE: the builder is invoked synchronously by the atom to decide
+  /// whether the overlay should be inserted at all; the returned widget is
+  /// then reused as the overlay's child. Builders MUST be pure — no
+  /// side effects, no analytics, no controller allocation — and the
+  /// returned widget MUST NOT rely on `initState`/`dispose` symmetry
+  /// for the probe invocation.
   final Widget Function(BuildContext, TextSelection, String) toolbarBuilder;
 
   /// Fired on every selection change in the wrapped subtree. When the
@@ -172,6 +179,12 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
   TextSelection _lastSelection = const TextSelection.collapsed(offset: -1);
   String _lastPlainText = '';
   bool _toolbarVisible = false;
+
+  // The toolbar child built by the last _insertOrRefreshToolbar probe. The
+  // overlay builder reuses this cached widget so widget.toolbarBuilder is
+  // invoked ONCE per refresh, not twice (probe + overlay build). Cleared
+  // when the toolbar is hidden.
+  Widget? _toolbarChild;
 
   // Global anchor points for the current selection, captured when the
   // toolbar is shown. primaryAnchor is the top-center of the selection rect;
@@ -478,8 +491,12 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
       // Consumer returned SizedBox.shrink() — do not insert the overlay at all.
       _toolbarEntry?.remove();
       _toolbarEntry = null;
+      _toolbarChild = null;
       return;
     }
+    // Cache the probe so the overlay builder reuses this exact widget
+    // instead of invoking widget.toolbarBuilder a second time.
+    _toolbarChild = probe;
 
     // Capture the ACTIVE SELECTION's global anchor points (see
     // _computeAnchors). Recomputed again at overlay build time so the
@@ -549,11 +566,12 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                widget.toolbarBuilder(
-                  overlayContext,
-                  _lastSelection,
-                  _lastPlainText,
-                ),
+                // Reuse the cached probe built in _insertOrRefreshToolbar
+                // so the consumer's toolbarBuilder runs once per refresh,
+                // not twice. If somehow null (entry inserted before any
+                // probe), fall back to a shrink — the overlay is removed
+                // on the next refresh anyway.
+                _toolbarChild ?? const SizedBox.shrink(),
               ],
             ),
           ),
@@ -636,6 +654,7 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
     });
     _toolbarEntry?.remove();
     _toolbarEntry = null;
+    _toolbarChild = null;
     _anchors = null;
   }
 
