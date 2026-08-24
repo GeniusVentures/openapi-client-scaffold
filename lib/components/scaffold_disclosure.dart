@@ -118,23 +118,26 @@ class _ScaffoldDisclosureState extends State<ScaffoldDisclosure> {
     final Widget bodyReveal = AnimatedSize(
       duration: reducedMotion ? Duration.zero : ScaffoldMotionDurations.medium,
       curve: ScaffoldMotionCurves.standard,
-      child: _effectiveExpanded
-          ? Padding(
-              padding: EdgeInsets.only(
-                left: dimens.space6,
-                top: dimens.space4,
-              ),
-              // Bare Text bodies resolve DefaultTextStyle → M3 onSurface,
-              // not palette.textPrimary. Wrap so body text is readable.
-              child: DefaultTextStyle(
-                style:
-                    (Theme.of(context).textTheme.bodyMedium ??
-                            const TextStyle())
-                        .copyWith(color: palette.textSecondary),
+      // Keep a single stable child type so AnimatedSize keeps the same
+      // render object across the transition and the collapse animates
+      // smoothly instead of snapping (Padding -> SizedBox.shrink would
+      // swap the render object mid-animation).
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: dimens.space6,
+          top: _effectiveExpanded ? dimens.space4 : 0,
+        ),
+        // Bare Text bodies resolve DefaultTextStyle → M3 onSurface,
+        // not palette.textPrimary. Wrap so body text is readable.
+        child: _effectiveExpanded
+            ? DefaultTextStyle(
+                style: (Theme.of(context).textTheme.bodyMedium ??
+                        const TextStyle())
+                    .copyWith(color: palette.textSecondary),
                 child: widget.body,
-              ),
-            )
-          : const SizedBox.shrink(),
+              )
+            : const SizedBox.shrink(),
+      ),
     );
 
     return Semantics(
