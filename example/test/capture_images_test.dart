@@ -264,20 +264,26 @@ Future<void> _loadRealFonts() async {
 
 /// Expands all collapsed [ScaffoldDisclosure] widgets by tapping their
 /// header rows. Skips already-expanded disclosures (tapping would collapse
-/// them). Detects expansion by checking whether the AnimatedSize child is
-/// SizedBox.shrink (collapsed) vs Padding (expanded).
+/// them). Detects expansion by walking to the AnimatedSize's Padding child
+/// and checking whether ITS child is SizedBox.shrink (collapsed) vs any
+/// other widget (expanded) — the WR-03 fix keeps the Padding wrapper stable
+/// and swaps only the inner content.
 Future<void> _expandAllDisclosures(WidgetTester tester) async {
   final Iterable<Element> disclosures =
       find.byType(ScaffoldDisclosure).evaluate();
   for (final Element element in disclosures) {
-    // Walk the subtree to find the AnimatedSize child. If it's a
-    // SizedBox.shrink the disclosure is collapsed; if Padding it's expanded.
+    // Walk the subtree to find the AnimatedSize child. It's always a Padding
+    // (WR-03 stable-wrapper fix); expansion is determined by the Padding's
+    // inner child: SizedBox.shrink = collapsed, anything else = expanded.
     bool isExpanded = false;
     void visitor(Element el) {
       if (el.widget is AnimatedSize) {
         final AnimatedSize animatedSize = el.widget as AnimatedSize;
         if (animatedSize.child is Padding) {
-          isExpanded = true;
+          final Padding padding = animatedSize.child as Padding;
+          if (padding.child is! SizedBox) {
+            isExpanded = true;
+          }
         }
       }
       el.visitChildren(visitor);
