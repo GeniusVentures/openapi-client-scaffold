@@ -13,6 +13,7 @@ class _AnimationsDemoState extends State<AnimationsDemo> {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle primary = TextStyle(color: context.palette.textPrimary);
     return Scaffold(
       appBar: AppBar(title: const Text('Animations')),
       body: Padding(
@@ -20,8 +21,8 @@ class _AnimationsDemoState extends State<AnimationsDemo> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Both animations auto-run once on mount. The replay '
-                'button rekeys the widgets to re-trigger.'),
+            Text('Both animations auto-run once on mount. The replay '
+                'button rekeys the widgets to re-trigger.', style: primary),
             SizedBox(height: context.dimens.itemSpacing),
             Row(
               children: [
@@ -32,7 +33,7 @@ class _AnimationsDemoState extends State<AnimationsDemo> {
                       height: 60,
                       child: CheckmarkAnimation(key: ValueKey(_tick)),
                     ),
-                    const Text('CheckmarkAnimation'),
+                    Text('CheckmarkAnimation', style: primary),
                   ],
                 ),
                 SizedBox(width: context.dimens.itemSpacing * 2),
@@ -43,7 +44,7 @@ class _AnimationsDemoState extends State<AnimationsDemo> {
                       height: 60,
                       child: XAnimation(key: ValueKey(_tick)),
                     ),
-                    const Text('XAnimation'),
+                    Text('XAnimation', style: primary),
                   ],
                 ),
               ],

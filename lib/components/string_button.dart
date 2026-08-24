@@ -18,6 +18,7 @@ class StringButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dimens = context.dimens;
+    final palette = context.palette;
     return MaterialButton(
       color: color,
       minWidth: minWidth,
@@ -32,6 +33,7 @@ class StringButton extends StatelessWidget {
         value,
         style: TextStyle(
           fontSize: 30 * MediaQuery.of(context).textScaler.scale(1.0),
+          color: palette.textPrimary,
         ),
       ),
     );
