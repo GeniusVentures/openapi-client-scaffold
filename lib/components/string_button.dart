@@ -33,7 +33,11 @@ class StringButton extends StatelessWidget {
         value,
         style: TextStyle(
           fontSize: 30 * MediaQuery.of(context).textScaler.scale(1.0),
-          color: palette.textPrimary,
+          // Only default the label to the palette text color on the
+          // un-filled button. When a consumer supplies a fill [color],
+          // keep MaterialButton's contrast-derived foreground — forcing
+          // textPrimary would render white-on-white for light fills.
+          color: color == null ? palette.textPrimary : null,
         ),
       ),
     );

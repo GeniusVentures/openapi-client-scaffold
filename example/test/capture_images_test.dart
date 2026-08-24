@@ -254,13 +254,20 @@ Future<void> _captureWidget(
     await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
 
-  // The capture harness is a WRITER, not an assertion. Drain any pending
-  // rendering exceptions (e.g. the chart X-axis legend row overflows by 16px
-  // at the fixed 800px surface width — a pre-existing ScaffoldChart layout
-  // quirk at this size, not a harness bug) so they don't bubble up and fail
-  // the test. Pixels are already on disk; layout warnings are out of scope.
-  while (tester.takeException() != null) {
-    // discard
+  // The capture harness is a WRITER, but it must not silently swallow real
+  // rendering failures — a broken capture would otherwise commit while the
+  // test still reports green. Only the known ScaffoldChart X-axis legend
+  // overflow (a pre-existing layout quirk at the fixed 800px surface width,
+  // not a harness bug) is tolerated; any other exception re-fails the test
+  // after the PNG is on disk so the failure is attributable to its capture.
+  Object? exception = tester.takeException();
+  while (exception != null) {
+    if (exception.toString().contains('overflowed')) {
+      debugPrint('capture tolerated known overflow: $filename');
+    } else {
+      throw exception;
+    }
+    exception = tester.takeException();
   }
 }
 
