@@ -27,8 +27,8 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 Phase: 11 (verification-coverage-gate)
 Plan: 03 complete — all 3 plans merged, all 7 phase-gate checks green
-Status: Shipped — PR #11 (draft → develop)
-Last activity: 2026-08-23 -- Phase 11 code review + verification complete
+Status: v1.2 milestone complete — PR #11 (draft → develop), tag v1.2
+Last activity: 2026-08-24 -- v1.2 archived
 
 ## v1.2 Milestone
 
@@ -108,3 +108,18 @@ Last activity: 2026-08-23 -- Phase 11 code review + verification complete
 **Stopped at:** 10-05 Plan Task 3 awaiting human UAT (Tasks 1+2 complete — barrel exports + demos shipped; analyze + 408 tests + D-02 gates all green)
 **Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-05-PLAN.md (Task 3 checkpoint:human-verify)
 **Next action:** Human UAT of Chart + Chart Scrubber demos under dark + light palettes; on "approved" → continuation agent writes 10-05-SUMMARY.md, marks WIDG-35/36 complete, closes Phase 10
+
+## Deferred Items
+
+Items acknowledged and deferred at milestone close on 2026-08-24:
+
+| Category | Item | Status |
+|----------|------|--------|
+| quick_task | 260818-oe8-cmakelists-txt-source-a-source-b-templat | missing (stale marker, no backing artifact) |
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-08-24)
+
+**Core value:** single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates
+**Current focus:** Planning next milestone (run /gsd:new-milestone)
