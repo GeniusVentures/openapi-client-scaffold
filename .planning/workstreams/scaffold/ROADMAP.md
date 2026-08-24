@@ -37,12 +37,12 @@ Full phase details, goals, and success criteria: [milestones/v1.1-ROADMAP.md](mi
 
 </details>
 
-### v1.2 Atom Extensions (Phases 8-11) — IN PROGRESS
+### v1.2 Atom Extensions (Phases 8-11) — COMPLETE
 
 - [x] **Phase 8: Supporting Atoms, Table Cells & Light Palette** (6/6 plans, completed 2026-08-17) — ScaffoldChip/ChipGroup, ScaffoldDisclosure/TraceList, ScaffoldComposer, DataColumnConfig cellBuilder extension, light default palette
-- [ ] **Phase 9: Text & Code Primitives** — ScaffoldStreamingRichText (incremental render, citations, action slots, a11y), ScaffoldCodeBlock (syntax spans, line numbers, streamed lines), ScaffoldSelectionActions (anchored toolbar)
-- [x] **Phase 10: Chart & Scrubber** — ScaffoldChart (neutral series contract), ScaffoldChartScrubber (point selection composing with chart)
-- [x] **Phase 11: Verification & Coverage Gate** — per-atom tests/demos/barrel sweep, Beautiful UI 19-component coverage check
+- [x] **Phase 9: Text & Code Primitives** (6/6 plans, completed 2026-08-20) — ScaffoldStreamingRichText (incremental render, citations, action slots, a11y), ScaffoldCodeBlock (syntax spans, line numbers, streamed lines), ScaffoldSelectionActions (anchored toolbar)
+- [x] **Phase 10: Chart & Scrubber** (6/6 plans, completed 2026-08-22) — ScaffoldChart (neutral series contract), ScaffoldChartScrubber (point selection composing with chart)
+- [x] **Phase 11: Verification & Coverage Gate** (3/3 plans, completed 2026-08-23) — per-atom tests/demos/barrel sweep, Beautiful UI 19-component coverage check
 
 ## Phase Details
 
