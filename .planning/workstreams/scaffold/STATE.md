@@ -27,7 +27,7 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 Phase: 11 (verification-coverage-gate)
 Plan: 03 complete — all 3 plans merged, all 7 phase-gate checks green
-Status: Code review passed (5 warnings fixed), verification 3/3, pending ship
+Status: Shipped — PR #11 (draft → develop)
 Last activity: 2026-08-23 -- Phase 11 code review + verification complete
 
 ## v1.2 Milestone
