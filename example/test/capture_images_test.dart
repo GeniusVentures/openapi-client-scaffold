@@ -211,19 +211,29 @@ Future<void> _loadRealFonts() async {
   // Platform.resolvedExecutable in a flutter_test context points to the Dart
   // VM binary at <flutter>/bin/cache/dart-sdk/bin/dart. Walk up to find the
   // Flutter root by looking for the material_fonts directory.
-  Directory dir = File(Platform.resolvedExecutable).parent;
+  Directory? dir = File(Platform.resolvedExecutable).parent;
   String? fontDir;
-  for (int i = 0; i < 6; i++) {
+  while (dir != null) {
     final String candidate = '${dir.path}/bin/cache/artifacts/material_fonts';
     if (Directory(candidate).existsSync()) {
       fontDir = candidate;
       break;
     }
-    dir = dir.parent;
+    final Directory parent = dir.parent;
+    if (parent.path == dir.path) {
+      // Reached filesystem root without finding material_fonts.
+      break;
+    }
+    dir = parent;
   }
   if (fontDir == null) {
-    debugPrint('could not locate material_fonts directory — skipping font load');
-    return;
+    // Fail loudly for a WRITER harness whose entire output is a set of PNGs.
+    // Silently falling back to Ahem would cause all captured images to
+    // regress to placeholder squares without an explicit failure.
+    throw StateError(
+      'capture_images_test: could not locate material_fonts directory; '
+      'real fonts are required for human-viewable demo images',
+    );
   }
 
   // Register under all family names the widget library uses. 'Roboto' covers
