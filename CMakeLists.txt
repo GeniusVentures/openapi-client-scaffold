@@ -202,7 +202,15 @@ endif()
 #      cmake --build . --target generate_all_components
 # --------------------------------------------------------
 set(_comp_templates_dir "${_scaffold_templates_dir}/components")
-set(_widgets_output_dir "${GENERATED_DIR}/widgets")
+# WIDGETS_OUTPUT_DIR lets consumers redirect composable-widget output into an
+# app's source tree (e.g. apps/admin/lib/widgets) while keeping GENERATED_DIR
+# for the OpenAPI client and template-render output.  Empty = legacy default.
+set(WIDGETS_OUTPUT_DIR "" CACHE STRING
+    "Output directory for generated composable widgets (default: ${GENERATED_DIR}/widgets)")
+if(WIDGETS_OUTPUT_DIR STREQUAL "")
+    set(WIDGETS_OUTPUT_DIR "${GENERATED_DIR}/widgets")
+endif()
+set(_widgets_output_dir "${WIDGETS_OUTPUT_DIR}")
 
 if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
     set(_component_names
