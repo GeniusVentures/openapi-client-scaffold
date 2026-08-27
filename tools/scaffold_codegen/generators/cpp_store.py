@@ -50,8 +50,10 @@ VARS_SUFFIX = "_vars.json"
 def render_store(env, surface: str, store_stem: str, vars_: dict) -> None:
     """Render one composite-widget store's full template set.
 
-    Template names resolve against the multi-directory loader (shared
-    ``cpp/`` first, then each surface's ``cpp/``); outputs land under
+    Template names resolve against this surface's environment (shared
+    ``cpp/`` first, then ONLY this surface's ``cpp/`` — never another
+    surface's directory, so a cross-surface template-name collision
+    cannot render the wrong template); outputs land under
     ``frontend/generated/<surface>/`` split by surface (D-13). The mapping
     below is the locked contract — do not invent output names.
 
@@ -94,11 +96,14 @@ def render_store(env, surface: str, store_stem: str, vars_: dict) -> None:
 def main() -> int:
     """Render every surface's stores plus the once-only shared FFI header.
 
-    Builds one environment whose loader spans the shared ``cpp/`` directory
-    and every existing surface ``cpp/`` directory, renders
-    ``ffi_common.hpp.jinja2`` once with an empty context (D-07-01a), then
-    discovers each surface's ``*_vars.json`` manifests and renders their
-    template sets. Store names are never hardcoded — discovery is the glob.
+    Renders ``ffi_common.hpp.jinja2`` once with an empty context from a
+    shared-only environment (D-07-01a), then discovers each surface's
+    ``*_vars.json`` manifests and renders their template sets from a
+    per-surface environment whose loader spans ONLY the shared ``cpp/``
+    directory plus that surface's ``cpp/`` directory — a bare template
+    name can never resolve into another surface's tree, so cross-surface
+    name collisions cannot render the wrong template (D-13/D-14). Store
+    names are never hardcoded — discovery is the glob.
 
     Returns
     -------
@@ -106,21 +111,19 @@ def main() -> int:
         0 on success; a non-zero exit propagates from the failing render
         via an exception (StrictUndefined makes missing variables fatal).
     """
-    template_dirs = [str(SHARED_CPP)] + [
-        str(PARENT_TEMPLATES / surface / "cpp")
-        for surface in SURFACES
-        if (PARENT_TEMPLATES / surface / "cpp").is_dir()
-    ]
-    env = create_environment(template_dirs)
-
     # Widget-independent shared header: rendered ONCE, empty context (D-07-01a).
+    shared_env = create_environment([str(SHARED_CPP)])
     ffi_common_output = PARENT_GENERATED / "shared" / "cpp" / "ffi_common.hpp"
-    render_template(env, "ffi_common.hpp.jinja2", str(ffi_common_output), {})
+    render_template(shared_env, "ffi_common.hpp.jinja2", str(ffi_common_output), {})
     print(f"rendered {ffi_common_output.relative_to(REPO_ROOT.parent)}")
 
     for surface in SURFACES:
         surface_cpp = PARENT_TEMPLATES / surface / "cpp"
-        for vars_path in sorted(surface_cpp.glob(f"*{VARS_SUFFIX}")):
+        manifests = sorted(surface_cpp.glob(f"*{VARS_SUFFIX}")) if surface_cpp.is_dir() else []
+        if not manifests:
+            continue
+        env = create_environment([str(SHARED_CPP), str(surface_cpp)])
+        for vars_path in manifests:
             store_stem = vars_path.name[: -len(VARS_SUFFIX)]
             vars_ = json.loads(vars_path.read_text(encoding="utf-8"))
             render_store(env, surface, store_stem, vars_)
