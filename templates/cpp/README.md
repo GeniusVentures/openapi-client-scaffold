@@ -1,15 +1,20 @@
 # frontend/scaffold/templates/cpp
 
-Placeholder for C++ Cubit-style interface templates (SUB-02, D5-04).
+**DEPRECATED — legacy placeholder (Phase 7, D-14).**
 
-Phase 5 only pre-stages this directory — no C++ template content is authored here yet.
+C++ Cubit-style interface template authoring has moved to the **parent repo**
+at `frontend/templates/<surface>/cpp/` (surface-organized: `admin/`, `pos/`,
+`storefront/`, `shared/`). The templates serve multiple workstreams
+(frontend-templates, touch-pos, and future consumers), so they live in the
+parent repo rather than this submodule (D-11/D-14). See the parent repo's
+`frontend/templates/README.md` for the authoritative layout.
 
-Authoring the actual template content is **out of scope for this repo**: it is
-owned by the consuming repo (see "Out of scope" in
-``.planning/workstreams/scaffold/ROADMAP.md``). This directory exists to satisfy
-SUB-02 and to reserve the loader path.
+This directory is retained only as a legacy placeholder to keep the loader
+path reserved (SUB-02, D5-04) — do not author template content here.
 
-The Jinja2 generation rules these templates will follow are specified in the
-consumer's own docs (``docs/Genius_Tube_PTDS_v1.0.md`` §54, ADR-008) — those
-live in the genius-tube repo, not here, so the path is intentionally not
-relative.
+The shared base contracts (`i_widget_store.hpp.jinja2`,
+`i_widget_importer.hpp.jinja2`, `ffi_common.hpp.jinja2`) live at
+`frontend/templates/shared/cpp/` in the parent repo; rendered output lands at
+`frontend/generated/<surface>/cpp/`. Rendering still goes through this
+scaffold's engine (`tools/scaffold_codegen/engine.py`, Jinja2 with
+`StrictUndefined`).
