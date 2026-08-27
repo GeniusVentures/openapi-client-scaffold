@@ -7,6 +7,7 @@ generated file.
 
     python3 -m scaffold_codegen.generators.animated_display
     python3 -m scaffold_codegen.generators.composites
+    python3 -m scaffold_codegen.generators.cpp_store
     python3 -m scaffold_codegen.generators.formatted_value
     python3 -m scaffold_codegen.generators.image_placeholder
     python3 -m scaffold_codegen.generators.selection_indicator
