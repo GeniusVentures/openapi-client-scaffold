@@ -91,6 +91,28 @@ set(FRONTEND_TARGET "flutter" CACHE STRING
     "Frontend codegen target (flutter, html)")
 set(API_SPECS_DIR "" CACHE STRING
     "Path to api-specs/ containing *_openapi.json; empty = <scaffold-parent>/api-specs")
+set(FLUTTER_TEMPLATE_STYLE "" CACHE STRING
+    "Flutter template output style: Cubit or HtmlCss (empty = legacy FRONTEND_TARGET resolution)")
+set_property(CACHE FLUTTER_TEMPLATE_STYLE PROPERTY STRINGS Cubit HtmlCss)
+
+# Effective style: FLUTTER_TEMPLATE_STYLE wins (case-insensitive); empty falls
+# back to the deprecated FRONTEND_TARGET alias (html -> HtmlCss,
+# flutter/default -> Cubit).  Validated against an allowlist BEFORE any gate
+# reads it, so a malformed value can never reach a COMMAND line (cache values
+# with ';' expand as CMake lists; the style is only read inside if() conditions).
+if(FLUTTER_TEMPLATE_STYLE)
+    string(TOUPPER "${FLUTTER_TEMPLATE_STYLE}" _effective_style)
+elseif(FRONTEND_TARGET STREQUAL "html")
+    set(_effective_style "HTMLCSS")
+    message(DEPRECATION
+        "DEPRECATION: FRONTEND_TARGET='html' is deprecated; "
+        "pass -DFLUTTER_TEMPLATE_STYLE=HtmlCss instead")
+else()
+    set(_effective_style "CUBIT")
+endif()
+if(NOT _effective_style MATCHES "^(CUBIT|HTMLCSS)$")
+    message(FATAL_ERROR "FLUTTER_TEMPLATE_STYLE must be 'Cubit' or 'HtmlCss' (got '${FLUTTER_TEMPLATE_STYLE}')")
+endif()
 
 if(PYTHON3_EXECUTABLE)
     set(_scaffold_templates_dir "${CMAKE_CURRENT_SOURCE_DIR}/templates")
@@ -194,8 +216,8 @@ endif()
 #    loop below: the Flutter widget plus its HydratedMixin Cubit and plain
 #    Dart state class (06-03, BLOC-01/BLOC-02).  The state component's state
 #    template is the Q2 special case: state_view_state.dart (NOT
-#    state_state.dart).  The FRONTEND_TARGET option gates Flutter output
-#    (Phase 4 will add "html" alternative).
+#    state_state.dart).  The effective style gates Flutter output (default
+#    Cubit; HtmlCss renders the §7 leg instead).
 #    Per-component named targets enable selective rebuild:
 #      cmake --build . --target generate_component_data_table
 #    Aggregate target builds all 6 (18 files):
@@ -212,7 +234,7 @@ if(WIDGETS_OUTPUT_DIR STREQUAL "")
 endif()
 set(_widgets_output_dir "${WIDGETS_OUTPUT_DIR}")
 
-if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
+if(PYTHON3_EXECUTABLE AND _effective_style STREQUAL "CUBIT")
     set(_component_names
         data_table
         form_dialog
@@ -329,14 +351,14 @@ endif()
 # --------------------------------------------------------
 # 7. HTML target -- per-component stamp targets for HTML + CSS output.
 #    Each M3 component .jinja2 template renders to a semantic HTML5
-#    fragment and companion CSS file when FRONTEND_TARGET=html.
+#    fragment and companion CSS file when the effective style is HtmlCss.
 #    Per-component named targets enable selective rebuild:
 #      cmake --build . --target generate_component_data_table_html
 #      cmake --build . --target generate_component_state_html
 #    Aggregate target builds all 6 + m3_tokens.css:
 #      cmake --build . --target generate_all_components_html
 # --------------------------------------------------------
-if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
+if(PYTHON3_EXECUTABLE AND _effective_style STREQUAL "HTMLCSS")
     set(_styles_output_dir "${GENERATED_DIR}/styles")
     set(_html_output_dir "${GENERATED_DIR}/html")
 
