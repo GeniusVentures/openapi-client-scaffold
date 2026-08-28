@@ -74,10 +74,3 @@ easy to violate:
 - Widget filenames are mostly `scaffold_`-prefixed; a set of older ones
   (`action_button.dart`, `media_card.dart`, `wallet_connect_sheet.dart`, …) are not.
   Leave the legacy names alone — renaming breaks consumer imports.
-
-## Known broken
-
-The `FRONTEND_TARGET=html` CMake targets fail under `StrictUndefined`: the
-`*.html.jinja2` templates want `has_header` / `result_groups`, which the shared
-`*_vars.json` fixtures (Dart-oriented) do not define. Pre-existing; the
-`flutter` target is fine.
