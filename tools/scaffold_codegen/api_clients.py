@@ -5,13 +5,13 @@ scaffold_codegen.api_clients
 Generates typed API clients from OpenAPI specs using openapi-generator-cli.
 Supports multiple generator targets: dart-dio, typescript-axios, javascript, etc.
 
-Reads specs from ../api-specs/*_openapi.json (parent project).
+Reads specs from the directory passed via the required --api-specs-dir flag.
 Generates into generated/{language}/{domain}/ (gitignored, never committed).
 
 Usage:
-    python3 -m scaffold_codegen.api_clients                     # all generators, all specs
-    python3 -m scaffold_codegen.api_clients -g typescript-axios # specific generator
-    python3 -m scaffold_codegen.api_clients -g dart-dio -s gsm  # specific generator + spec
+    python3 -m scaffold_codegen.api_clients --api-specs-dir <dir>  # all generators, all specs
+    python3 -m scaffold_codegen.api_clients --api-specs-dir <dir> -g typescript-axios  # one generator
+    python3 -m scaffold_codegen.api_clients --api-specs-dir <dir> -g dart-dio -s gsm  # generator + spec
 
 Requires ``tools/`` on ``PYTHONPATH`` (or an editable install of this package).
 """
@@ -65,7 +65,7 @@ def find_openapi_generator():
     return None
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Generate typed API clients from OpenAPI specs"
     )
@@ -80,16 +80,13 @@ def main():
     )
     parser.add_argument(
         "--api-specs-dir",
-        default=None,
-        help="Directory containing *_openapi.json specs (overrides default parent-project api-specs/)"
+        required=True,
+        help="Directory containing *_openapi.json specs (required)"
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    scaffold_root = REPO_ROOT  # frontend/ submodule root
-    project_root = scaffold_root.parent  # parent project root
-
-    spec_dir = Path(args.api_specs_dir) if args.api_specs_dir else (project_root / "api-specs")
-    output_base = scaffold_root / "generated"
+    spec_dir = Path(args.api_specs_dir)
+    output_base = REPO_ROOT / "generated"
 
     openapi_gen = find_openapi_generator()
     if openapi_gen is None:
@@ -99,7 +96,10 @@ def main():
 
     if not spec_dir.is_dir():
         print(f"ERROR: Spec directory not found at {spec_dir}", file=sys.stderr)
-        print("Create api-specs/ in the parent project with *_openapi.json files.", file=sys.stderr)
+        print(
+            "Pass --api-specs-dir pointing at a directory containing *_openapi.json files.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     generators_to_run = [args.generator] if args.generator else list(GENERATORS.keys())
