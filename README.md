@@ -289,7 +289,8 @@ Override any of these before `add_subdirectory` to point at your own files:
 | `ENGINE_SCRIPT` | `scaffold/tools/scaffold_codegen/engine.py` | Jinja2 template engine |
 | `DESIGN_TOKENS` | `scaffold/design_tokens.json` | M3 tokens single source of truth |
 | `GENERATED_DIR` | `${CMAKE_BINARY_DIR}/generated` | Output root for rendered files |
-| `FRONTEND_TARGET` | `flutter` | Codegen target — `flutter` or `html` |
+| `FRONTEND_TARGET` | `flutter` | Deprecated alias — codegen target `flutter` or `html`; superseded by `FLUTTER_TEMPLATE_STYLE` (still honored when the style is empty) |
+| `FLUTTER_TEMPLATE_STYLE` | *(empty — resolves to Cubit)* | Output style — Cubit or HtmlCss (validated; case-insensitive). Empty resolves via legacy `FRONTEND_TARGET`: flutter/default -> Cubit, html -> HtmlCss |
 | `TEMPLATES_DIR` | *(unset)* | Opt-in: consumer project's own M3 identity templates |
 
 Example — your project overrides the output directory:
@@ -358,7 +359,7 @@ All rendering pulls from `design_tokens.json` — a Material Design 3 token set
 in the `--md-sys-*` CSS custom property convention. Zero hardcoded hex/rgba
 values in any template.
 
-## Flutter Component Output (FRONTEND_TARGET=flutter)
+## Flutter Component Output (FLUTTER_TEMPLATE_STYLE=Cubit)
 
 Each of the 6 M3 components renders a 3-file triple:
 
@@ -386,7 +387,7 @@ This package itself depends only on `flutter_bloc`.
 A `consumer_test` package at `{GENERATED_DIR}/consumer_test/` imports all
 18 generated files and gates the output with `flutter analyze --fatal-infos`.
 
-## HTML Component Output (FRONTEND_TARGET=html)
+## HTML Component Output (FLUTTER_TEMPLATE_STYLE=HtmlCss)
 
 ```
 {GENERATED_DIR}/
