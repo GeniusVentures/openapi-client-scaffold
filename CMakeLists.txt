@@ -29,9 +29,11 @@ set(_scaffold_python_env ${CMAKE_COMMAND} -E env "PYTHONPATH=${_scaffold_pythonp
 
 # --------------------------------------------------------
 # 1. Generate typed API clients from OpenAPI specs
-#    Reads ../api-specs/*_openapi.json (parent project)
-#    Optional API_SPECS_DIR cache var overrides the default parent-project
-#    api-specs/ resolution (mirror of TEMPLATES_DIR pattern). List form so
+#    The generator requires --api-specs-dir (required=True since DEC-01) —
+#    api_clients has no parent-relative default. API_SPECS_DIR forwards the
+#    caller's specs directory; an empty cache value yields an empty flag, so
+#    invoking frontend_generate_api then fails with an argparse usage error
+#    by design (scaffold-standalone configure stays green). List form so
 #    the flag expands to TWO argv tokens — a single space-embedded string
 #    reaches argparse as one token and fails (same bug class as 1762a45).
 if(API_SPECS_DIR)
@@ -90,7 +92,8 @@ set(GENERATED_DIR "${CMAKE_BINARY_DIR}/generated" CACHE STRING
 set(FRONTEND_TARGET "flutter" CACHE STRING
     "Frontend codegen target (flutter, html)")
 set(API_SPECS_DIR "" CACHE STRING
-    "Path to api-specs/ containing *_openapi.json; empty = <scaffold-parent>/api-specs")
+    "Path to api-specs/ containing *_openapi.json (required by api_clients; empty = "
+    "frontend_generate_api invocation fails with a usage error)")
 set(FLUTTER_TEMPLATE_STYLE "" CACHE STRING
     "Flutter template output style: Cubit or HtmlCss (empty = legacy FRONTEND_TARGET resolution)")
 set_property(CACHE FLUTTER_TEMPLATE_STYLE PROPERTY STRINGS Cubit HtmlCss)
