@@ -368,6 +368,8 @@ if(PYTHON3_EXECUTABLE AND _effective_style STREQUAL "HTMLCSS")
 
     add_custom_command(
         OUTPUT ${_tokens_stamp}
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
         COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/scaffold_codegen/m3_tokens_css.py
             --tokens ${DESIGN_TOKENS}
             --output ${_tokens_output}
@@ -401,6 +403,8 @@ if(PYTHON3_EXECUTABLE AND _effective_style STREQUAL "HTMLCSS")
         # HTML fragment
         add_custom_command(
             OUTPUT ${_stamp_html} ${_output_html}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template "components/${_comp}.html.jinja2"
                 --tokens ${DESIGN_TOKENS}
@@ -416,6 +420,8 @@ if(PYTHON3_EXECUTABLE AND _effective_style STREQUAL "HTMLCSS")
         # CSS stylesheet
         add_custom_command(
             OUTPUT ${_stamp_css} ${_output_css}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template "components/${_comp}.css.jinja2"
                 --tokens ${DESIGN_TOKENS}
