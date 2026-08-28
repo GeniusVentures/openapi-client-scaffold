@@ -1,6 +1,12 @@
 {
-  "_comment": "Fixture variables for standalone rendering of card.dart.jinja2. widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem used to derive the cubit/state import paths; card_variant seeds the default variant (elevated/outlined/filled).",
+  "_comment": "Fixture variables for standalone rendering of card.dart.jinja2 AND card.html.jinja2 (serves both output legs). widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem used to derive the cubit/state import paths; card_variant seeds the default variant (elevated/outlined/filled). The html-only keys (has_header/header_title, has_body/body_content, has_actions/action_labels) drive the card.html.jinja2 branches; action_labels takes the multi-button path so the singular action_label stays unset, matching the v1.0 oracle render.",
   "widget_class_name": "ScaffoldCard",
   "file_stem": "scaffold_card",
-  "card_variant": "elevated"
+  "card_variant": "elevated",
+  "has_header": true,
+  "header_title": "Card Title",
+  "has_body": true,
+  "body_content": "text",
+  "has_actions": true,
+  "action_labels": ["Cancel", "Save"]
 }

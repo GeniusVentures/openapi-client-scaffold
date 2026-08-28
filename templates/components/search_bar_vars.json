@@ -1,6 +1,30 @@
 {
-  "_comment": "Fixture variables for standalone rendering of search_bar.dart.jinja2. widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem used to derive the cubit/state import paths.",
+  "_comment": "Fixture variables for standalone rendering of search_bar.dart.jinja2 AND search_bar.html.jinja2 (serves both output legs). widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem used to derive the cubit/state import paths; hint_text is the search input placeholder. The html-only key result_groups drives the grouped results panel; items may omit subtitle (the template guards with 'subtitle' in item) — values transcribed from the v1.0 oracle render.",
   "widget_class_name": "ScaffoldSearchBar",
   "file_stem": "scaffold_search_bar",
-  "hint_text": "Search..."
+  "hint_text": "Search...",
+  "result_groups": [
+    {
+      "group_label": "Users",
+      "items": [
+        {"id": "user-001", "title": "Alice Johnson", "subtitle": "alice@example.com", "icon": "person"},
+        {"id": "user-002", "title": "Bob Smith", "subtitle": "bob@example.com", "icon": "person"}
+      ]
+    },
+    {
+      "group_label": "Orders",
+      "items": [
+        {"id": "order-101", "title": "Order #101", "subtitle": "Status: Preparing", "icon": "receipt"},
+        {"id": "order-102", "title": "Order #102", "subtitle": "Status: Delivered", "icon": "receipt"}
+      ]
+    },
+    {
+      "group_label": "Menu Items",
+      "items": [
+        {"id": "menu-001", "title": "Margherita Pizza", "icon": "restaurant_menu"},
+        {"id": "menu-002", "title": "Caesar Salad", "icon": "restaurant_menu"},
+        {"id": "menu-003", "title": "Chocolate Cake", "icon": "restaurant_menu"}
+      ]
+    }
+  ]
 }
