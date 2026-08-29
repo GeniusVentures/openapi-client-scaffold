@@ -399,11 +399,9 @@ A `consumer_test` package at `{GENERATED_DIR}/consumer_test/` imports all
     └── ... (one HTML + CSS pair per component)
 ```
 
-> **Known issue:** the HTML component targets currently fail under
-> `StrictUndefined`. The `*.html.jinja2` templates reference variables
-> (`has_header`, `result_groups`, …) that the shared `*_vars.json` fixtures do
-> not define — those fixtures carry the Dart-oriented variable set. The
-> `flutter` target is unaffected.
+> Both legs render all six component fixtures under `StrictUndefined`; the
+> pytest regression `tools/tests/test_html_template_renders.py` guards
+> fixture/template drift.
 
 ## API Client Generation
 
