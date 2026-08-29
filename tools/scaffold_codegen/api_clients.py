@@ -117,6 +117,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.exit(1)
 
     total_count = 0
+    failed: list[str] = []
     for gen_name in generators_to_run:
         gen_config = GENERATORS[gen_name]
         gen_output_dir = output_base / gen_config["output_dir"]
@@ -143,14 +144,25 @@ def main(argv: list[str] | None = None) -> int:
             result = subprocess.run(cmd, capture_output=True, text=True)
 
             if result.returncode != 0:
-                print(f"  WARNING: Generation failed for {domain}: {result.stderr.strip()}")
+                print(
+                    f"  ERROR: Generation failed for {domain}: {result.stderr.strip()}",
+                    file=sys.stderr,
+                )
+                failed.append(f"{gen_name}/{domain}")
                 continue
 
             total_count += 1
             print(f"  ✓ {gen_name}/{domain}")
 
     print(f"\nGenerated {total_count} client(s).")
+    if failed:
+        print(
+            f"ERROR: {len(failed)} client(s) failed to generate: {', '.join(failed)}",
+            file=sys.stderr,
+        )
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
