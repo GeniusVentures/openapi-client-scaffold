@@ -32,6 +32,8 @@ import json
 import sys
 from pathlib import Path
 
+import jinja2
+
 from scaffold_codegen.engine import create_environment, render_template
 
 #: Product surfaces owning template directories (D-12).
@@ -110,7 +112,10 @@ def main(argv: list[str] | None = None) -> int:
     Returns
     -------
     int
-        0 on success; a non-zero exit propagates from the failing render
+        0 on success; 1 on a missing/misconfigured template tree (no
+        ``shared/cpp/``, missing ``ffi_common.hpp.jinja2``) or a malformed
+        ``*_vars.json`` manifest — each reported as a clean one-line stderr
+        error naming the offending path. A failing render itself propagates
         via an exception (StrictUndefined makes missing variables fatal).
     """
     parser = argparse.ArgumentParser(
@@ -138,9 +143,13 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     # Widget-independent shared header: rendered ONCE, empty context (D-07-01a).
-    shared_env = create_environment([str(shared_cpp)])
     ffi_common_output = generated_dir / "shared" / "cpp" / "ffi_common.hpp"
-    render_template(shared_env, "ffi_common.hpp.jinja2", str(ffi_common_output), {})
+    try:
+        shared_env = create_environment([str(shared_cpp)])
+        render_template(shared_env, "ffi_common.hpp.jinja2", str(ffi_common_output), {})
+    except (ValueError, jinja2.TemplateNotFound) as exc:
+        sys.stderr.write(f"ERROR: {exc}\n")
+        return 1
     print(f"rendered {ffi_common_output.relative_to(generated_dir)}")
 
     for surface in SURFACES:
@@ -151,7 +160,11 @@ def main(argv: list[str] | None = None) -> int:
         env = create_environment([str(shared_cpp), str(surface_cpp)])
         for vars_path in manifests:
             store_stem = vars_path.name[: -len(VARS_SUFFIX)]
-            vars_ = json.loads(vars_path.read_text(encoding="utf-8"))
+            try:
+                vars_ = json.loads(vars_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                sys.stderr.write(f"ERROR: invalid JSON in manifest {vars_path}: {exc}\n")
+                return 1
             render_store(env, surface, store_stem, vars_, generated_dir)
 
     return 0
