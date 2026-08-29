@@ -4,10 +4,10 @@ Tests for the html component leg render — BLD-01 regression guard.
 
 BLD-01 requires the v1.0 HTML/CSS output path to remain available and
 functional as an alternative style. Every
-``templates/components/<comp>.html.jinja2`` must render with its sibling
-``<comp>_vars.json`` fixture under ``StrictUndefined`` — a fixture missing a
-template-referenced variable must fail loudly (T-08-04 mitigation), never
-emit silently-wrong html.
+``templates/components/<comp>.html.jinja2`` and ``<comp>.css.jinja2`` must
+render with its sibling ``<comp>_vars.json`` fixture under ``StrictUndefined``
+— a fixture missing a template-referenced variable must fail loudly
+(T-08-04 mitigation), never emit silently-wrong html or css.
 
 The context is built exactly as ``scaffold_codegen.engine.main()`` builds it
 for the CMake html leg: design tokens load FIRST into
@@ -75,15 +75,21 @@ def _assert_contains(path: Path, needle: str) -> None:
     assert needle in text, f"{needle!r} not found in {path}:\n{text}"
 
 
+@pytest.mark.parametrize("kind", ["html", "css"])
 @pytest.mark.parametrize("component", COMPONENTS)
-def test_component_html_fixture_renders(component: str, tmp_path: Path) -> None:
-    """Each ``<comp>.html.jinja2`` renders with its sibling ``<comp>_vars.json``.
+def test_component_fixture_renders(component: str, kind: str, tmp_path: Path) -> None:
+    """Each ``<comp>.html.jinja2`` and ``<comp>.css.jinja2`` renders with its
+    sibling ``<comp>_vars.json``.
 
-    Proves the BLD-01 html leg is renderable end-to-end: the fixture provides
-    every variable the template references, so ``StrictUndefined`` raises
-    nothing and the output carries the component's structural marker plus the
-    shared stylesheet link. A fixture that drops or renames a key fails this
-    test loudly with a ``jinja2.UndefinedError`` naming the variable.
+    Proves the BLD-01 HtmlCss leg is renderable end-to-end: the fixture
+    provides every variable the template references, so ``StrictUndefined``
+    raises nothing and the html output carries the component's structural
+    marker plus the shared stylesheet link (the css leg emits no marker —
+    render success under ``StrictUndefined`` is its guard). A fixture that
+    drops or renames a key evaluated on the rendered branch fails this test
+    loudly with a ``jinja2.UndefinedError`` naming the variable;
+    ``state``'s branch-gated keys are exercised for every variant by
+    ``test_state_variants_render`` below.
     """
     env = create_environment([str(COMPONENTS_DIR)])
 
@@ -95,8 +101,39 @@ def test_component_html_fixture_renders(component: str, tmp_path: Path) -> None:
     context: dict = {"tokens": json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))}
     context.update(fixture)
 
-    output = tmp_path / f"{component}.html"
-    render_template(env, f"{component}.html.jinja2", str(output), context)
+    output = tmp_path / f"{component}.{kind}"
+    render_template(env, f"{component}.{kind}.jinja2", str(output), context)
 
-    _assert_contains(output, MARKERS[component])
-    _assert_contains(output, SHARED_STYLESHEET)
+    if kind == "html":
+        _assert_contains(output, MARKERS[component])
+        _assert_contains(output, SHARED_STYLESHEET)
+
+
+@pytest.mark.parametrize("state_type", ["empty", "loading", "error"])
+def test_state_variants_render(state_type: str, tmp_path: Path) -> None:
+    """Every ``state_type`` variant renders ``state.html.jinja2`` and
+    ``state.css.jinja2`` under ``StrictUndefined``.
+
+    The component test above exercises only the branch ``state_vars.json``
+    pins (``empty``); Jinja never evaluates untaken branches, so the
+    branch-gated keys (``error_title``, ``error_message``,
+    ``skeleton_item_count``, ``skeleton_item_height``) are load-bearing only
+    here. Dropping one from the fixture fails this test loudly with a
+    ``jinja2.UndefinedError`` naming the variable.
+    """
+    env = create_environment([str(COMPONENTS_DIR)])
+
+    # Fresh json.loads == deep copy: the pinned state_type is overridden per
+    # parametrized variant without mutating the fixture on disk.
+    fixture = json.loads(
+        (COMPONENTS_DIR / "state_vars.json").read_text(encoding="utf-8")
+    )
+    fixture["state_type"] = state_type
+
+    # Mirror engine.py main(): tokens first, vars merged on top.
+    context: dict = {"tokens": json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))}
+    context.update(fixture)
+
+    for kind in ("html", "css"):
+        output = tmp_path / f"state_{state_type}.{kind}"
+        render_template(env, f"state.{kind}.jinja2", str(output), context)
