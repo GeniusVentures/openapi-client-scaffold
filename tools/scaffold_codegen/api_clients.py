@@ -17,6 +17,7 @@ Requires ``tools/`` on ``PYTHONPATH`` (or an editable install of this package).
 """
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -102,6 +103,18 @@ def main(argv: list[str] | None = None) -> int:
         )
         sys.exit(1)
 
+    # Optional shared-model mappings: <spec-dir>/common/client-mappings.json
+    # tells this tool which schemas are supplied by a shared client package
+    # instead of generated per domain, keyed by generator name:
+    #   {"dart-dio": {"type_mappings": {"Money": "Money"},
+    #                 "import_mappings": {"Money": "package:common_api/src/model/money.dart"}}}
+    # Keys are OpenAPI schema names; values follow openapi-generator's
+    # --type-mappings/--import-mappings syntax. Absent file = no mappings.
+    client_mappings_path = spec_dir / "common" / "client-mappings.json"
+    client_mappings = {}
+    if client_mappings_path.is_file():
+        client_mappings = json.loads(client_mappings_path.read_text())
+
     generators_to_run = [args.generator] if args.generator else list(GENERATORS.keys())
 
     print(f"Using openapi-generator-cli: {openapi_gen}")
@@ -140,6 +153,15 @@ def main(argv: list[str] | None = None) -> int:
             ]
             for prop in gen_config["additional_properties"]:
                 cmd.extend(["--additional-properties", prop])
+
+            gen_mappings = client_mappings.get(gen_name, {})
+            for mapping_key, flag in (
+                ("type_mappings", "--type-mappings"),
+                ("import_mappings", "--import-mappings"),
+            ):
+                pairs = gen_mappings.get(mapping_key, {})
+                if pairs:
+                    cmd.extend([flag, ",".join(f"{k}={v}" for k, v in pairs.items())])
 
             result = subprocess.run(cmd, capture_output=True, text=True)
 
