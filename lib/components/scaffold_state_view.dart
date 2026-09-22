@@ -49,7 +49,7 @@ class ScaffoldStateView extends StatefulWidget {
     this.instanceId = '',
     this.state = 'empty',
     this.loadingWidget,
-    this.emptyIcon = Icons.inbox_outlined,
+    this.emptyIcon = Icons.inbox,
     this.emptyHeadline = 'Nothing here',
     this.emptyBody = 'No items to display.',
     this.emptyAction,

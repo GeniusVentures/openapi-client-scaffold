@@ -1,20 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Widget Library
-current_phase: 7
-current_phase_name: Media & Integration Widgets
-status: planning
-stopped_at: Phase 6 planned — 6 plans written and checker-verified (no blockers)
-last_updated: "2026-08-15T04:47:45.333Z"
-last_activity: 2026-08-14
-last_activity_desc: Phase 6 complete, transitioned to Phase 7
+milestone: v1.2
+milestone_name: Atom Extensions
+status: executing
+stopped_at: Phase 11 complete — code review passed (5 warnings fixed), verification 3/3, pending ship
+last_updated: "2026-08-23T22:30:00.000Z"
+last_activity: 2026-08-23 -- Phase 11 code review + verification complete
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-workstream: scaffold
+  total_phases: 4
+  completed_phases: 4
+  total_plans: 21
+  completed_plans: 21
+  percent: 100
 ---
 
 # Project State
@@ -24,16 +21,29 @@ workstream: scaffold
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.1 Widget Library — ship the Core UI Foundation (28 widget atoms + ScaffoldMotion) in Phase 6, then Media & Integration widgets in Phase 7
+**Current focus:** Phase 11 — verification & coverage gate (complete, pending ship)
 
 ## Current Position
 
-Phase: 7 — Media & Integration Widgets
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
+Phase: 11 (verification-coverage-gate)
+Plan: 03 complete — all 3 plans merged, all 7 phase-gate checks green
+Status: v1.2 milestone complete — PR #11 (draft → develop), tag v1.2
+Last activity: 2026-08-24 -- v1.2 archived
 
-## v1.1 Milestone
+## v1.2 Milestone
+
+**Goal:** Extend the scaffold's generic atom library so the primitives support arbitrary composable widgets — streaming text, charts, code, selection-driven actions, chips, disclosures, composers, and extensible table cells — verified against the 19-component Beautiful UI set as the coverage yardstick.
+
+**Phase map:**
+
+- Phase 8 — Supporting Atoms, Table Cells & Light Palette: ScaffoldChip/ChipGroup, ScaffoldDisclosure/TraceList, ScaffoldComposer, DataColumnConfig cellBuilder, light default palette (WIDG-40..43, 46)
+- Phase 9 — Text & Code Primitives: ScaffoldStreamingRichText (incremental render, citations, action slots, a11y), ScaffoldCodeBlock (syntax spans, line numbers, streamed lines), ScaffoldSelectionActions (WIDG-32..34, 37..39)
+- Phase 10 — Chart & Scrubber: ScaffoldChart (neutral series contract), ScaffoldChartScrubber (WIDG-35, 36)
+- Phase 11 — Verification & Coverage Gate: per-atom tests/demos/barrel sweep + Beautiful UI 19-component coverage check (WIDG-44, 45)
+
+**Coverage:** 16/16 v1.2 requirements mapped. No orphans.
+
+## v1.1 Milestone (archive)
 
 **Goal:** Ship the Core UI Foundation — 28 generic widget atoms consumed by every Genius Network app, plus 3 Jinja2-template-generated composites (ScaffoldCard, ScaffoldStateView, ScaffoldSearchBar) — then media and integration widgets in Phase 7.
 
@@ -60,12 +70,20 @@ Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
 - **Phase 7 consolidates what was Phases 7-8** — MediaCard, MediaControls, and WalletConnectSheet all depend on Phase 6 atoms and can execute together in one phase.
 - **All v1.1 widgets consume only `Theme.of(context)`** — no Riverpod, no GeniusTheme, no app-specific logic; exported via the `frontend_scaffold` barrel
 - **Inherited from v1.0 (still locked):** neutral generic package (zero brand names); font choice lives in theme; image caching and localization are infrastructure not widgets; generated code is never committed (CI regenerates + diffs); templates use Jinja2 `StrictUndefined`
+- **v1.2 phase boundary: text/code primitives together, chart separate** — streaming rich text, code block, and selection actions all share text-selection/anchored-toolbar machinery, so they batch into Phase 9; chart + scrubber are a self-contained visualization pair in Phase 10 that does not depend on Phase 9 (owner decision encoded in roadmap 2026-08-17)
+- **v1.2 verification gate is its own phase** — WIDG-44 (per-atom tests/demos/barrel) and WIDG-45 (Beautiful UI coverage) execute as a final sweep over all atoms shipped in Phases 8-10, matching the v1.1 Phase 7 UAT/verification pattern
+- **10-04 Scrubber composition** — ScaffoldChartScrubber stacks Shortcuts+Actions+Focus with a private stateful core owning ONLY a FocusNode (transient interaction state carve-out); ScaffoldFocusOutline shares the same node so the ring lights exactly when keyboard focus is on the scrub area. Tap-to-focus uses Listener.onPointerDown (not GestureDetector.onTap) so focus lands before fl_chart's gesture arena resolves.
 
 ### Pending Todos
 
-- `/gsd:plan-phase 6` — write plans for Core UI Foundation (28 atoms + composites across 4 waves)
-- (Follow-up, out of v1.1 scope) light default palette to complement the dark-seeded ScaffoldPalette defaults — carried from v1.0
-- (Future, post-v1.1) navigation component widgets, DataTable, FormDialog from their existing templates
+- [x] `/gsd:plan-phase 6` — wrote plans for Core UI Foundation (28 atoms + composites across 4 waves); executed + verified 28/28
+- [x] `/gsd:plan-phase 7` — wrote plans for Media & Integration Widgets (4 plans, 2 waves: MediaCard, MediaControls, WalletConnectSheet, barrel+demos+gate); checker passed 7/7 decisions
+- [ ] `/gsd:plan-phase 8` — Supporting Atoms, Table Cells & Light Palette
+- [ ] `/gsd:plan-phase 9` — Text & Code Primitives
+- [ ] `/gsd:plan-phase 10` — Chart & Scrubber (10-01 executed 2026-08-21 — pure geometry support part shipped)
+- [ ] `/gsd:plan-phase 11` — Verification & Coverage Gate
+- (Future, post-v1.2) navigation component widgets, DataTable, FormDialog from their existing templates (TMPL-01..03)
+- (Future, post-v1.2) HTML template parity with the Flutter atom library (HTML-01)
 
 ### Consumer demand reference (from CONSUMERS.md)
 
@@ -75,11 +93,33 @@ Last activity: 2026-08-14 — Phase 6 complete, transitioned to Phase 7
 
 ### Blockers/Concerns
 
-- None active. Reown (`reown_appkit` / `reown_walletkit`) version coordination with GeniusWallet is a Phase 7 planning concern, not a blocker.
+- None active.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260820-fix | Source A parent template-dir flag: list expansion + self-reference guard (cherry-picked to develop 1762a45) | 2026-08-20 | 9037950 | — |
+| 260818-oe8 | CMakeLists Source A/B stamp targets missing make_directory | 2026-08-19 | 7c598a7 | [260818-oe8](./quick/260818-oe8-cmakelists-txt-source-a-source-b-templat/) |
 
 ## Session Continuity
 
-**Last session:** 2026-08-11
-**Stopped at:** Phase 6 planned — 6 plans written and checker-verified (no blockers)
-**Resume file:** .planning/workstreams/scaffold/phases/06-core-ui-foundation/06-01-PLAN.md
-**Next action:** `/gsd:execute-phase 6 --ws scaffold` to build the 28 atoms + ScaffoldMotion across 6 sequential execution waves
+**Last session:** 2026-08-21T00:00:00.000Z
+**Stopped at:** 10-05 Plan Task 3 awaiting human UAT (Tasks 1+2 complete — barrel exports + demos shipped; analyze + 408 tests + D-02 gates all green)
+**Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-05-PLAN.md (Task 3 checkpoint:human-verify)
+**Next action:** Human UAT of Chart + Chart Scrubber demos under dark + light palettes; on "approved" → continuation agent writes 10-05-SUMMARY.md, marks WIDG-35/36 complete, closes Phase 10
+
+## Deferred Items
+
+Items acknowledged and deferred at milestone close on 2026-08-24:
+
+| Category | Item | Status |
+|----------|------|--------|
+| quick_task | 260818-oe8-cmakelists-txt-source-a-source-b-templat | missing (stale marker, no backing artifact) |
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-08-24)
+
+**Core value:** single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates
+**Current focus:** Planning next milestone (run /gsd:new-milestone)

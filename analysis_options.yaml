@@ -1,0 +1,17 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# Kept in sync with example/analysis_options.yaml. Template-derived files under
+# lib/ (see templates/components/*.jinja2) are deliberately NOT excluded — fix
+# lint findings in the template and regenerate, never by hand-editing lib/.
+# generated/ IS excluded: gitignored OpenAPI codegen output (its own nested
+# packages carry no package_config), never part of this package's API.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - generated/**
+
+linter:
+  rules:
+    prefer_single_quotes: true

@@ -4,14 +4,29 @@ import 'package:frontend_scaffold/frontend_scaffold.dart';
 import 'demos/action_button_demo.dart';
 import 'demos/animations_demo.dart';
 import 'demos/bottom_drawer_demo.dart';
+import 'demos/chart_demo.dart';
+import 'demos/chart_range_selector_demo.dart';
+import 'demos/chart_scrubber_demo.dart';
+import 'demos/code_block_demo.dart';
+import 'demos/light_syntax_tokenizer_demo.dart';
 import 'demos/loading_demo.dart';
+import 'demos/markdown_to_spans_demo.dart';
+import 'demos/media_card_demo.dart';
+import 'demos/media_controls_demo.dart';
 import 'demos/page_chrome_demo.dart';
 import 'demos/responsive_grid_demo.dart';
+import 'demos/selection_actions_demo.dart';
+import 'demos/streaming_rich_text_demo.dart';
 import 'demos/string_button_demo.dart';
 import 'demos/text_entry_field_demo.dart';
 import 'demos/toast_demo.dart';
 import 'demos/tracer_demo.dart';
+import 'demos/wallet_connect_sheet_demo.dart';
 import 'demos/kitchen_sink_demo.dart';
+import 'demos/chip_demo.dart';
+import 'demos/composer_demo.dart';
+import 'demos/disclosure_demo.dart';
+import 'demos/trace_list_demo.dart';
 
 void main() {
   runApp(const ScaffoldExampleApp());
@@ -56,13 +71,22 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
 
   ThemeData _buildTheme(Brightness brightness) {
     final ScaffoldPalette palette = _paletteFor(brightness);
+    // Align the ColorScheme's onX slots with the palette's text colors so
+    // M3 composites (SwitchListTile, ListTile, ElevatedButton text, etc.)
+    // resolve palette.textPrimary/textSecondary instead of fromSeed's
+    // brightness-derived onSurface (#DEE4DF on dark), which reads as dim
+    // grey against the palette's near-black surface.
+    final ColorScheme colorScheme = ColorScheme.fromSeed(
+      seedColor: palette.lightGreenPrimary,
+      brightness: brightness,
+    ).copyWith(
+      onSurface: palette.textPrimary,
+      onSurfaceVariant: palette.textSecondary,
+    );
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: palette.lightGreenPrimary,
-        brightness: brightness,
-      ),
+      colorScheme: colorScheme,
       extensions: <ThemeExtension<dynamic>>[
         palette,
         ScaffoldDimens.defaultDimens,
@@ -185,6 +209,81 @@ class HomePage extends StatelessWidget {
             title: 'Kitchen Sink — Core UI Foundation',
             subtitle: 'All 28 atoms + ScaffoldMotion + 3 generated composites',
             builder: (_) => const KitchenSinkDemo(),
+          ),
+          _DemoTile(
+            title: 'Media card',
+            subtitle: 'Aspect ratios, typed badge slots, metadataRow',
+            builder: (_) => const MediaCardDemo(),
+          ),
+          _DemoTile(
+            title: 'Media controls',
+            subtitle: 'Play/pause, seekbar with buffered, mute, fullscreen',
+            builder: (_) => const MediaControlsDemo(),
+          ),
+          _DemoTile(
+            title: 'Wallet connect sheet',
+            subtitle: 'Reown session sheet — disconnected + connected states',
+            builder: (_) => const WalletConnectSheetDemo(),
+          ),
+          _DemoTile(
+            title: 'Chip / ChipGroup',
+            subtitle: 'Pill pressable atom + selection group',
+            builder: (_) => const ScaffoldChipDemo(),
+          ),
+          _DemoTile(
+            title: 'Composer',
+            subtitle: 'Text composition area with badge/action slots',
+            builder: (_) => const ScaffoldComposerDemo(),
+          ),
+          _DemoTile(
+            title: 'Disclosure',
+            subtitle: 'Expand/collapse row with AnimatedSize + reduced-motion',
+            builder: (_) => const ScaffoldDisclosureDemo(),
+          ),
+          _DemoTile(
+            title: 'Trace list',
+            subtitle: 'Ordered disclosure items + optional group header',
+            builder: (_) => const ScaffoldTraceListDemo(),
+          ),
+          _DemoTile(
+            title: 'Streaming rich text',
+            subtitle: 'Incremental typed-span rendering + citations + action slots',
+            builder: (_) => const ScaffoldStreamingRichTextDemo(),
+          ),
+          _DemoTile(
+            title: 'Code block',
+            subtitle: 'Syntax-highlighted code + line numbers + copy + streamed lines',
+            builder: (_) => const ScaffoldCodeBlockDemo(),
+          ),
+          _DemoTile(
+            title: 'Selection actions',
+            subtitle: 'Anchored toolbar on text selection (consumer-built actions)',
+            builder: (_) => const ScaffoldSelectionActionsDemo(),
+          ),
+          _DemoTile(
+            title: 'Markdown to spans',
+            subtitle: 'Markdown parser -> typed-span mapper (D-03 support part)',
+            builder: (_) => const ScaffoldMarkdownToSpansDemo(),
+          ),
+          _DemoTile(
+            title: 'Light syntax tokenizer',
+            subtitle: 'Regex-based syntax highlighting (D-04 support part)',
+            builder: (_) => const ScaffoldLightSyntaxTokenizerDemo(),
+          ),
+          _DemoTile(
+            title: 'Chart',
+            subtitle: 'Framed + axis-free + formatter + empty state',
+            builder: (_) => const ChartDemo(),
+          ),
+          _DemoTile(
+            title: 'Chart Scrubber',
+            subtitle: 'Scrub selection + keyboard + PointerExit + live region',
+            builder: (_) => const ChartScrubberDemo(),
+          ),
+          _DemoTile(
+            title: 'Chart Range Selector',
+            subtitle: 'Drag-range selection + consumer-policy zoom (D-09/D-10)',
+            builder: (_) => const ChartRangeSelectorDemo(),
           ),
         ],
       ),
