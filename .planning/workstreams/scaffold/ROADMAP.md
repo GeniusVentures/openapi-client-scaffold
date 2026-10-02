@@ -17,6 +17,7 @@ orchestration history (parent-side CMake/pipeline plans) and continues to own Ph
 - ✅ **v1.0 Scaffold Shared Source** — Phase 5 (shipped 2026-08-09): submodule established as the single shared widget/template source; `frontend_scaffold` package at v0.3.0
 - ✅ **v1.1 Widget Library** — Phases 6-7 (shipped 2026-08-17): 28 widget atoms + ScaffoldMotion + 3 template-generated composites (Phase 6), then media and integration widgets (Phase 7). See [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
 - ✅ **v1.2 Atom Extensions** — Phases 8-11 (shipped 2026-08-24): composition atoms, text/code primitives, chart + scrubber, verification & coverage gate. See [milestones/v1.2-ROADMAP.md](milestones/v1.2-ROADMAP.md)
+- 🚧 **v1.3 POS-General Interaction Primitives** — queued (created 2026-10-01): SCF-POS-01..18, gated by SCF-POS-18. Phase breakdown defined at kickoff.
 
 ## Phases
 
@@ -48,6 +49,24 @@ Full phase details, goals, and success criteria: [milestones/v1.1-ROADMAP.md](mi
 Full phase details, goals, and success criteria: [milestones/v1.2-ROADMAP.md](milestones/v1.2-ROADMAP.md)
 
 </details>
+
+## Planned Milestone: v1.3 — POS-General Interaction Primitives (queued)
+
+**Created:** 2026-10-01 · **Status:** queued — phase breakdown defined at kickoff (discuss/plan)
+
+**Goal:** Extend the pinned scaffold inventory (28 atoms + composites) with the POS-general interaction primitives the touch-pos operating surface consumes, so touch-pos builds on the scaffold instead of growing a second design system.
+
+**Requirements:** SCF-POS-01..18 (18 IDs) — see [REQUIREMENTS.md](REQUIREMENTS.md). **Gate:** SCF-POS-18 (test/demo/a11y bar for every new primitive).
+
+**Constraints:**
+
+- Extend/expose the pinned inventory — no parallel widget system for POS surfaces.
+- Generic/neutral: no app-specific strings, APIs, or business models (SCF-POS-18).
+- Offline primitives are visual/status only (SCF-POS-16); offline business behavior stays consumer-owned.
+
+**Decisions to ratify at discuss-phase:** DEC-TOA-02, DEC-TOA-03 (parent-repo ingest decisions, currently proposed).
+**Sequencing:** independent — may start immediately (CN-15 #1). Consumers: touch-pos v2.0 (SCF-POS-16 feeds Phase 22); frontend-templates v3.0 Phase 10 overlaps on generator/CMake/FFI needs (CN-15 #2).
+**Provenance:** genius-ai-boss fulfillment+commercial-POS ingest follow-through (2026-10-01; 18 of 302 IDs) — parent `.planning/intel/MERGE-PLAN.md` §1.7 is the routing record.
 
 ## Progress
 

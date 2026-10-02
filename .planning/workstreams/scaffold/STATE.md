@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Atom Extensions
-status: executing
-stopped_at: Phase 11 complete — code review passed (5 warnings fixed), verification 3/3, pending ship
-last_updated: "2026-08-23T22:30:00.000Z"
-last_activity: 2026-08-23 -- Phase 11 code review + verification complete
+milestone: v1.3
+milestone_name: POS-General Interaction Primitives
+status: ready_to_plan
+stopped_at: v1.3 queued — SCF-POS-01..18 staged in REQUIREMENTS.md; phase breakdown TBD at kickoff
+last_updated: "2026-10-01T00:00:00.000Z"
+last_activity: 2026-10-01 -- v1.3 milestone queued (ingest follow-through)
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 21
-  completed_plans: 21
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** Phase 11 — verification & coverage gate (complete, pending ship)
+**Current focus:** v1.3 POS-General Interaction Primitives — queued (requirements staged, phases TBD at kickoff)
 
 ## Current Position
 
-Phase: 11 (verification-coverage-gate)
-Plan: 03 complete — all 3 plans merged, all 7 phase-gate checks green
-Status: v1.2 milestone complete — PR #11 (draft → develop), tag v1.2
-Last activity: 2026-08-24 -- v1.2 archived
+Phase: — (v1.3 not yet phased)
+Plan: —
+Status: v1.3 queued — SCF-POS-01..18 staged in REQUIREMENTS.md; discuss/plan the phase breakdown to start
+Last activity: 2026-10-01 -- v1.3 milestone queued (genius-ai-boss ingest follow-through; parent MERGE-PLAN §1.7)
 
 ## v1.2 Milestone
 

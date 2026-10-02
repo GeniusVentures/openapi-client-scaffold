@@ -1,19 +1,19 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Atom Extensions
-status: Awaiting next milestone
-last_updated: "2026-08-24T19:10:42.627Z"
-last_activity: 2026-08-24 — Milestone v1.2 completed and archived
+milestone: v1.3
+milestone_name: POS-General Interaction Primitives
+status: ready_to_plan
+last_updated: "2026-10-01T00:00:00.000Z"
+last_activity: 2026-10-01 — Milestone v1.3 queued (SCF-POS-01..18, ingest follow-through)
 ---
 
 ## Current Position
 
-Phase: Milestone v1.2 complete
+Phase: — (v1.3 not yet phased)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-08-24 — Milestone v1.2 completed and archived
+Status: v1.3 queued — requirements staged, phase breakdown TBD at kickoff
+Last activity: 2026-10-01 — Milestone v1.3 queued (SCF-POS-01..18, genius-ai-boss ingest follow-through)
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Kick off v1.3: discuss + plan the phase breakdown (run from this submodule with `--ws scaffold`)
