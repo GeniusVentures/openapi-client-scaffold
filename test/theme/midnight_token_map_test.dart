@@ -517,4 +517,347 @@ void main() {
     expect(typography.inputStyle.fontWeight, FontWeight.w400);
     expect(typography.monoFontFamily, 'JetBrainsMono');
   });
+
+  group('midnight gradients match the source token map', () {
+    for (final row in _gradientRows) {
+      final read = _gradientFields[row.field]!;
+      test('dark ${row.field} (${row.note})', () {
+        expect(read(Midnight.darkGradients), row.dark);
+      });
+      test('light ${row.field} (${row.note})', () {
+        expect(read(Midnight.lightGradients), row.light);
+      });
+    }
+
+    test('canvas stops are 0.0, 0.4, 1.0 in both modes', () {
+      expect(Midnight.darkGradients.canvas.stops, [0.0, 0.4, 1.0]);
+      expect(Midnight.lightGradients.canvas.stops, [0.0, 0.4, 1.0]);
+    });
+
+    test('the glow exists in dark and is absent in light', () {
+      expect(Midnight.darkGradients.canvasGlow, isA<RadialGradient>());
+      expect(Midnight.lightGradients.canvasGlow, isNull);
+    });
+  });
+
+  group('midnight elevation matches the source token map', () {
+    for (final row in _elevationRows) {
+      final read = _elevationFields[row.field]!;
+      test('dark ${row.field}', () {
+        expect(read(Midnight.darkElevation), row.dark);
+      });
+      test('light ${row.field}', () {
+        expect(read(Midnight.lightElevation), row.light);
+      });
+    }
+  });
+
+  group('midnight text theme matches the source token map', () {
+    for (final row in _textRows) {
+      test(row.slot, () {
+        final style = _textSlots[row.slot]!(Midnight.textTheme)!;
+        expect(style.fontSize, row.size);
+        expect(style.height, closeTo(row.lineHeight / row.size, 1e-9));
+        expect(style.fontWeight, row.weight);
+        expect(style.letterSpacing, row.letterSpacing);
+        expect(style.fontFamily, isNull);
+        expect(style.fontFeatures, isNull);
+      });
+    }
+
+    test('the five slots the source leaves out stay null', () {
+      const TextTheme theme = Midnight.textTheme;
+      expect(theme.displaySmall, isNull);
+      expect(theme.headlineSmall, isNull);
+      expect(theme.titleSmall, isNull);
+      expect(theme.labelLarge, isNull);
+      expect(theme.labelSmall, isNull);
+    });
+  });
+
+  group('midnight type scale matches the source token map', () {
+    for (final row in _numericRows) {
+      test(row.slot, () {
+        final style = _numericSlots[row.slot]!(Midnight.typeScale);
+        expect(style.fontSize, row.size);
+        expect(style.height, closeTo(row.lineHeight / row.size, 1e-9));
+        expect(style.fontWeight, row.weight);
+        expect(style.letterSpacing, row.letterSpacing);
+        expect(style.fontFeatures, [const FontFeature.tabularFigures()]);
+      });
+    }
+
+    test('sans font family', () {
+      expect(Midnight.typeScale.sansFontFamily, 'Inter');
+    });
+  });
+
+  group('midnight scale matches the source token map', () {
+    for (final entry in _scaleValues.entries) {
+      test(entry.key, () {
+        expect(_scaleFields[entry.key]!(Midnight.scale), entry.value);
+      });
+    }
+  });
+
+  test('the rows cover every gradient, shadow, type and scale key', () {
+    final preset = _tokens()['preset'] as Map<String, dynamic>;
+    Map<String, dynamic> section(String name) =>
+        preset[name] as Map<String, dynamic>;
+
+    final gradients = section('gradients');
+    final gradientNames = _gradientRows.map((r) => r.field).toList();
+    expect(gradientNames, (gradients['dark'] as Map).keys.toList());
+    expect(
+      gradientNames.where((n) => n != 'canvasGlow').toList(),
+      (gradients['light'] as Map).keys.toList(),
+    );
+    expect(_gradientFields.keys.toList(), gradientNames);
+
+    final shadows = section('shadows');
+    final shadowNames = _elevationRows.map((r) => r.field).toList();
+    expect(shadowNames, (shadows['dark'] as Map).keys.toList());
+    expect(shadowNames, (shadows['light'] as Map).keys.toList());
+    expect(_elevationFields.keys.toList(), shadowNames);
+
+    final textNames = section('textTheme').keys.toList();
+    expect(_textRows.map((r) => r.slot).toList(), textNames);
+    expect(_textSlots.keys.toList(), textNames);
+
+    final typeScale = section('typeScale');
+    final numericNames = (typeScale['numeric'] as Map).keys.toList();
+    expect(_numericRows.map((r) => r.slot).toList(), numericNames);
+    expect(_numericSlots.keys.toList(), numericNames);
+    expect((typeScale['fontFamilies'] as Map).keys.toList(), [
+      'sansFontFamily',
+    ]);
+
+    final scaleNames = section('scale').keys.toList();
+    expect(_scaleValues.keys.toList(), scaleNames);
+    expect(_scaleFields.keys.toList(), scaleNames);
+  });
 }
+
+class _GradientRow {
+  const _GradientRow(this.field, this.dark, this.light, this.note);
+
+  final String field;
+  final Gradient? dark;
+  final Gradient? light;
+  final String note;
+}
+
+const LinearGradient _ctaFill = LinearGradient(
+  begin: Alignment.centerLeft,
+  end: Alignment.centerRight,
+  colors: [Color(0xFF0AD89C), Color(0xFF0AAEE6)],
+);
+
+const LinearGradient _ctaBorder = LinearGradient(
+  begin: Alignment.centerLeft,
+  end: Alignment.centerRight,
+  colors: [Color(0xFF14C8FF), Color(0xFF5BFFD0)],
+);
+
+const List<_GradientRow> _gradientRows = [
+  _GradientRow('accentFill', _ctaFill, _ctaFill, 'brandCta'),
+  _GradientRow('accentBorder', _ctaBorder, _ctaBorder, 'brandBorder'),
+  _GradientRow(
+    'heroWash',
+    LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFF0B0D12), Color(0xFF0C0E14)],
+    ),
+    LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFFDCE0E6), Color(0xFFFFFFFF)],
+    ),
+    'surfaceBase to surfaceElevated',
+  ),
+  _GradientRow(
+    'canvas',
+    LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFF14171E), Color(0xFF0B0D12), Color(0xFF07090D)],
+      stops: [0.0, 0.4, 1.0],
+    ),
+    LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFFE3E6EB), Color(0xFFDCE0E6), Color(0xFFD3D7DE)],
+      stops: [0.0, 0.4, 1.0],
+    ),
+    'canvas',
+  ),
+  _GradientRow(
+    'surfaceSheen',
+    LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFF0C0E14), Color(0xFF0C0E14)],
+    ),
+    LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFFFFFFFF), Color(0xFFF5F7FA)],
+    ),
+    'flat in dark on purpose',
+  ),
+  _GradientRow(
+    'canvasGlow',
+    RadialGradient(
+      center: Alignment(0.0, -0.9),
+      radius: 1.0,
+      colors: [Color(0x1FFFFFFF), Color(0x00FFFFFF)],
+      stops: [0.0, 0.6],
+    ),
+    null,
+    'canvasTopLight, dark only',
+  ),
+];
+
+final Map<String, Gradient? Function(MidnightGradients)> _gradientFields = {
+  'accentFill': (g) => g.accentFill,
+  'accentBorder': (g) => g.accentBorder,
+  'heroWash': (g) => g.heroWash,
+  'canvas': (g) => g.canvas,
+  'surfaceSheen': (g) => g.surfaceSheen,
+  'canvasGlow': (g) => g.canvasGlow,
+};
+
+class _ElevationRow {
+  const _ElevationRow(this.field, this.dark, this.light);
+
+  final String field;
+  final List<BoxShadow> dark;
+  final List<BoxShadow> light;
+}
+
+const List<BoxShadow> _glowAccent = [
+  BoxShadow(color: Color(0x2E14C8FF), blurRadius: 24.0),
+];
+
+const List<BoxShadow> _glowAccentPair = [
+  BoxShadow(
+    color: Color(0x2614C8FF),
+    blurRadius: 28.0,
+    offset: Offset(-6.0, 8.0),
+  ),
+  BoxShadow(
+    color: Color(0x262BF5B4),
+    blurRadius: 28.0,
+    offset: Offset(6.0, 8.0),
+  ),
+];
+
+const List<_ElevationRow> _elevationRows = [
+  _ElevationRow(
+    'dialog',
+    [
+      BoxShadow(
+        color: Color(0x73000000),
+        blurRadius: 32.0,
+        offset: Offset(0.0, 8.0),
+      ),
+    ],
+    [
+      BoxShadow(
+        color: Color(0x33000000),
+        blurRadius: 32.0,
+        offset: Offset(0.0, 8.0),
+      ),
+    ],
+  ),
+  _ElevationRow('glowAccent', _glowAccent, _glowAccent),
+  _ElevationRow('glowAccentPair', _glowAccentPair, _glowAccentPair),
+];
+
+final Map<String, List<BoxShadow> Function(MidnightElevation)>
+_elevationFields = {
+  'dialog': (e) => e.dialog,
+  'glowAccent': (e) => e.glowAccent,
+  'glowAccentPair': (e) => e.glowAccentPair,
+};
+
+class _TextRow {
+  const _TextRow(
+    this.slot,
+    this.size,
+    this.lineHeight,
+    this.weight, [
+    this.letterSpacing,
+  ]);
+
+  final String slot;
+  final double size;
+  final double lineHeight;
+  final FontWeight weight;
+  final double? letterSpacing;
+}
+
+const List<_TextRow> _textRows = [
+  _TextRow('displayLarge', 32.0, 40.0, FontWeight.w700, -0.4),
+  _TextRow('displayMedium', 28.0, 36.0, FontWeight.w700, -0.4),
+  _TextRow('headlineLarge', 24.0, 32.0, FontWeight.w600, -0.4),
+  _TextRow('headlineMedium', 20.0, 28.0, FontWeight.w600),
+  _TextRow('titleLarge', 18.0, 24.0, FontWeight.w600),
+  _TextRow('titleMedium', 16.0, 22.0, FontWeight.w500),
+  _TextRow('bodyLarge', 16.0, 24.0, FontWeight.w400),
+  _TextRow('bodyMedium', 16.0, 24.0, FontWeight.w400),
+  _TextRow('bodySmall', 14.0, 20.0, FontWeight.w400),
+  _TextRow('labelMedium', 13.0, 18.0, FontWeight.w500),
+];
+
+final Map<String, TextStyle? Function(TextTheme)> _textSlots = {
+  'displayLarge': (t) => t.displayLarge,
+  'displayMedium': (t) => t.displayMedium,
+  'headlineLarge': (t) => t.headlineLarge,
+  'headlineMedium': (t) => t.headlineMedium,
+  'titleLarge': (t) => t.titleLarge,
+  'titleMedium': (t) => t.titleMedium,
+  'bodyLarge': (t) => t.bodyLarge,
+  'bodyMedium': (t) => t.bodyMedium,
+  'bodySmall': (t) => t.bodySmall,
+  'labelMedium': (t) => t.labelMedium,
+};
+
+const List<_TextRow> _numericRows = [
+  _TextRow('numericDisplay', 32.0, 40.0, FontWeight.w700, -0.4),
+  _TextRow('numericHeadline', 24.0, 32.0, FontWeight.w600),
+  _TextRow('numericBody', 14.0, 20.0, FontWeight.w500),
+];
+
+final Map<String, TextStyle Function(MidnightTypeScale)> _numericSlots = {
+  'numericDisplay': (s) => s.numericDisplay,
+  'numericHeadline': (s) => s.numericHeadline,
+  'numericBody': (s) => s.numericBody,
+};
+
+const Map<String, double> _scaleValues = {
+  'space10': 20.0,
+  'space16': 32.0,
+  'space20': 40.0,
+  'space24': 48.0,
+  'space32': 64.0,
+  'radiusXs': 4.0,
+  'radiusSm': 8.0,
+  'radiusBase': 10.0,
+  'radius2xl': 16.0,
+  'radiusXl': 24.0,
+};
+
+final Map<String, double Function(MidnightScale)> _scaleFields = {
+  'space10': (s) => s.space10,
+  'space16': (s) => s.space16,
+  'space20': (s) => s.space20,
+  'space24': (s) => s.space24,
+  'space32': (s) => s.space32,
+  'radiusXs': (s) => s.radiusXs,
+  'radiusSm': (s) => s.radiusSm,
+  'radiusBase': (s) => s.radiusBase,
+  'radius2xl': (s) => s.radius2xl,
+  'radiusXl': (s) => s.radiusXl,
+};
