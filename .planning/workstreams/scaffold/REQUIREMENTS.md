@@ -37,12 +37,12 @@
 ### Accessibility and defaults
 
 - [ ] **A11Y-01**: Default palettes pass WCAG AA in light and dark. The known failures to fix are the light focus ring, `gray500` and light `statusSuccess`. The captures are re-baselined in a dedicated commit.
-- [ ] **A11Y-02**: The light-mode text field and drawer contrast bug is fixed in its own commit, with re-baselined captures.
+- [ ] **A11Y-02**: The light-mode text field and drawer contrast bug is fixed in its own commit, followed by its own capture re-baseline commit.
 - [ ] **A11Y-03**: An automated contrast test covers the default and midnight palettes in both modes.
 
 ### Release gates
 
-- [ ] **GATE-01**: The capture harness gate re-runs the harness and diffs `images/`. Captures change only in the re-baseline commits named in A11Y-01 and A11Y-02.
+- [ ] **GATE-01**: The capture harness gate re-runs the harness and diffs `images/`. Captures change only in the Phase 14 capture re-baseline commits listed in 14-COLOR-CHANGES.md.
 - [ ] **GATE-02**: GeniusCognitiveSystem builds and passes its tests against the v1.4 develop head. Its team is told about the default color changes from A11Y-01.
 
 ## Future Requirements

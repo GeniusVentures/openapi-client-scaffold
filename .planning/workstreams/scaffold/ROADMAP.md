@@ -55,7 +55,7 @@ Full phase details, goals, and success criteria: [milestones/v1.2-ROADMAP.md](mi
 
 - [x] **Phase 12: Token Pipeline** - Dart default palette and dimens generate byte-identically from `design_tokens.json`, with a drift check and LF output (completed 2026-10-16)
 - [x] **Phase 13: Theme Fields** - Shadows, typography, motion, gradients and accent tokens become themeable with defaults equal to today (completed 2026-10-16)
-- [ ] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, as two re-baselined commits
+- [ ] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, each fix followed by its own capture re-baseline commit
 - [ ] **Phase 15: Midnight Preset** - Opt-in `midnight` theme (light and dark) in one call, with an example-app switcher and a contrast test over all palettes
 - [ ] **Phase 16: Component Restyles** - Components take the midnight look where tokens alone cannot reach it, with default rendering unchanged
 - [ ] **Phase 17: Release Gates** - Captures change only in the sanctioned re-baseline commits and GeniusCognitiveSystem builds and passes against develop
@@ -115,11 +115,20 @@ Plans:
 
   1. An automated contrast check over the default palettes passes in light and dark, including the three known failures: the light focus ring, `gray500`, and light `statusSuccess`.
   2. In the default light theme, text typed into the text field and the drawer title, close icon and divider are readable (dark on light), fixed in a commit separate from the palette fix.
-  3. After each of the two fixes, re-running the harness changes only the captures those fixes affect, and those images are re-baselined in that same commit; no other capture moves.
+  3. After each of the two fixes, re-running the harness changes only the captures those fixes affect, and those images are re-baselined in a dedicated capture commit that directly follows the fix commit; no other capture moves.
   4. Both fixes are token-value changes: the regenerated Dart matches the token file and the drift check is clean.
   5. Every default color that changed is recorded with its old and new value, so the GeniusCognitiveSystem notice in Phase 17 can be written from that record.
 
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+
+- [ ] 14-01-PLAN.md — (wave 1) same-machine capture baseline commit; harness shows typed text and the open drawer, then its own capture commit
+- [ ] 14-02-PLAN.md — (wave 2) WCAG contrast helper and palette contrast test; A11Y-01 token fix commit, then its own capture commit
+- [ ] 14-03-PLAN.md — (wave 3) A11Y-02 light text field and drawer foreground tokens, fix commit, then its own two-PNG capture commit
+- [ ] 14-04-PLAN.md — (wave 4) accent call sites move to color roles (new accentSecondaryOnSurface, accentTextOnSurface); refactor commit, no pixel change
+- [ ] 14-05-PLAN.md — (wave 5) light accent role values (3:1 non-text, 4.5:1 text) and light fallback, fix commit, then its own light capture commit; dark unchanged
+- [ ] 14-06-PLAN.md — (wave 6) 14-COLOR-CHANGES.md record, CONTRIBUTING contrast rule, phase gate with residual accent check and GCS harness
 
 ### Phase 15: Midnight Preset
 
@@ -153,12 +162,12 @@ Plans:
 
 ### Phase 17: Release Gates
 
-**Goal**: v1.4 is shown to be non-breaking: default captures changed only in the two sanctioned re-baseline commits, and GeniusCognitiveSystem builds and passes against develop.
+**Goal**: v1.4 is shown to be non-breaking: default captures changed only in the sanctioned Phase 14 capture re-baseline commits, and GeniusCognitiveSystem builds and passes against develop.
 **Depends on**: Phase 16
 **Requirements**: GATE-01, GATE-02
 **Success Criteria** (what must be TRUE):
 
-  1. Re-running the capture harness on the v1.4 develop head and diffing `images/` shows differences only from the A11Y-01 and A11Y-02 re-baseline commits; history shows no other commit touched an existing capture.
+  1. Re-running the capture harness on the v1.4 develop head and diffing `images/` shows differences only from the Phase 14 capture re-baseline commits listed in 14-COLOR-CHANGES.md; history shows no other commit touched an existing capture.
   2. GeniusCognitiveSystem builds and passes its tests against the v1.4 develop head of the scaffold.
   3. The GeniusCognitiveSystem team has a written notice listing each changed default color with its old and new value.
   4. At the same head, `dart analyze --fatal-infos`, `flutter test`, `ruff check`, `pytest` and the generator `--check` all pass.
@@ -167,7 +176,7 @@ Plans:
 
 ### v1.4 sequencing notes
 
-- **Order is refactor, then behavior.** Phase 12 is refactor only. Phases 13 and 15-16 change behavior only through new or opt-in values. Phase 14 is the one place default output is allowed to change, and only in two separate re-baseline commits (A11Y-01, A11Y-02). This follows the CLAUDE.md rule of never mixing a structural change and a behavior change in one diff.
+- **Order is refactor, then behavior.** Phase 12 is refactor only. Phases 13 and 15-16 change behavior only through new or opt-in values. Phase 14 is the one place default output is allowed to change, and only in dedicated capture re-baseline commits that each follow their fix commit (listed in 14-COLOR-CHANGES.md). This follows the CLAUDE.md rule of never mixing a structural change and a behavior change in one diff.
 - **A11Y-01 and A11Y-02 supersede "defaults are frozen".** research/ARCHITECTURE.md Anti-Pattern 5 and open decision (a) in research/SUMMARY.md recommended gating only the preset. The v1.4 requirements decided otherwise: the defaults are fixed, and the re-baselines are the sanctioned exceptions that GATE-01 allows.
 - **A11Y-03 spans two phases.** Phase 14 needs a contrast check over the default palettes to prove A11Y-01. Phase 15 extends that same test to midnight, which completes A11Y-03.
 - **Preset-only items ship with the preset.** The `ThemeData` builder and the preset-only parts of the restyle list (R7 dividers, R14 `ThemeData` assembly, R15 `ColorScheme` outline and error choices) need no widget code. They are part of the one-call preset in Phase 15 (PRE-01, PRE-02). Phase 16 covers the restyles that change component code.
