@@ -40,7 +40,9 @@ TEMPLATE_NAMES = {
     "params": "theme/const_params.dart.jinja2",
 }
 
-BEGIN_MARKER = "    // GENERATED from design_tokens.json {id}. Do not edit."
+DEFAULTS_SOURCE = "design_tokens.json"
+
+BEGIN_MARKER = "    // GENERATED from {source} {id}. Do not edit."
 END_MARKER = "    // END GENERATED {id}"
 
 #: (file name in LIB_THEME_DIR, token path, literal kind, style). Row order is splice order.
@@ -228,8 +230,8 @@ def _region_entries(tokens: dict, path: tuple[str, ...]) -> dict:
     return node
 
 
-def _splice(text: str, file_name: str, rid: str, body: str) -> str:
-    begin = BEGIN_MARKER.format(id=rid)
+def _splice(text: str, file_name: str, source: str, rid: str, body: str) -> str:
+    begin = BEGIN_MARKER.format(source=source, id=rid)
     end = END_MARKER.format(id=rid)
     lines = text.split("\n")
     begins = [i for i, line in enumerate(lines) if line == begin]
@@ -241,20 +243,27 @@ def _splice(text: str, file_name: str, rid: str, body: str) -> str:
     return "\n".join(lines[: begins[0] + 1] + body.split("\n")[:-1] + lines[ends[0] :])
 
 
-def render_files(
-    tokens_path: Path = DESIGN_TOKENS, theme_dir: Path = LIB_THEME_DIR
+def render_regions(
+    tokens_path: Path,
+    theme_dir: Path,
+    regions: tuple[tuple[str, tuple[str, ...], str, str], ...],
+    source: str,
 ) -> dict[Path, str]:
-    """Return the full regenerated text of every target file, keyed by path."""
+    """Return the full regenerated text of every file named in ``regions``, keyed by path.
+
+    A region's file name is relative to ``theme_dir`` and may contain a subdirectory. ``source``
+    is the token file name written into the begin markers.
+    """
     tokens = load_tokens(tokens_path)
     environment = create_environment([str(TEMPLATES_DIR)])
     templates = {style: environment.get_template(name) for style, name in TEMPLATE_NAMES.items()}
 
-    file_names = list(dict.fromkeys(row[0] for row in REGIONS))
+    file_names = list(dict.fromkeys(row[0] for row in regions))
     rendered: dict[Path, str] = {}
     for file_name in file_names:
         target = theme_dir / file_name
         text = target.read_bytes().decode("utf-8").replace("\r\n", "\n")
-        for row_file, path, kind, style in REGIONS:
+        for row_file, path, kind, style in regions:
             if row_file != file_name:
                 continue
             rid = region_id(path)
@@ -269,9 +278,16 @@ def render_files(
                 if literal is not None and style == "params" and _NEEDS_CONST_RE.match(literal):
                     literal = f"const {literal}"
                 args.append({"name": name, "literal": literal})
-            text = _splice(text, file_name, rid, templates[style].render(args=args))
+            text = _splice(text, file_name, source, rid, templates[style].render(args=args))
         rendered[target] = text
     return rendered
+
+
+def render_files(
+    tokens_path: Path = DESIGN_TOKENS, theme_dir: Path = LIB_THEME_DIR
+) -> dict[Path, str]:
+    """Return the full regenerated text of every default target file, keyed by path."""
+    return render_regions(tokens_path, theme_dir, REGIONS, DEFAULTS_SOURCE)
 
 
 def _display(path: Path) -> str:
@@ -281,13 +297,8 @@ def _display(path: Path) -> str:
         return str(path)
 
 
-def run(check: bool, tokens_path: Path = DESIGN_TOKENS, theme_dir: Path = LIB_THEME_DIR) -> int:
-    try:
-        rendered = render_files(tokens_path, theme_dir)
-    except ThemeTokenError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 1
-
+def write_rendered(rendered: dict[Path, str], check: bool, regenerate_command: str) -> int:
+    """Write the rendered files, or with ``check`` report drift. Return the exit code."""
     drifted = []
     for path, content in rendered.items():
         data = content.encode("utf-8")
@@ -298,17 +309,23 @@ def run(check: bool, tokens_path: Path = DESIGN_TOKENS, theme_dir: Path = LIB_TH
             continue
         if changed:
             path.write_text(content, encoding="utf-8", newline="\n")
-        print(f"{'rendered' if changed else 'unchanged'} lib/theme/{path.name}")
+        print(f"{'rendered' if changed else 'unchanged'} {_display(path)}")
 
     if drifted:
         for path in drifted:
             print(f"drift: {_display(path)}", file=sys.stderr)
-        print(
-            "regenerate with: python -m scaffold_codegen.generators.theme_defaults",
-            file=sys.stderr,
-        )
+        print(f"regenerate with: {regenerate_command}", file=sys.stderr)
         return 1
     return 0
+
+
+def run(check: bool, tokens_path: Path = DESIGN_TOKENS, theme_dir: Path = LIB_THEME_DIR) -> int:
+    try:
+        rendered = render_files(tokens_path, theme_dir)
+    except ThemeTokenError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return write_rendered(rendered, check, "python -m scaffold_codegen.generators.theme_defaults")
 
 
 def main(argv: list[str] | None = None) -> int:
