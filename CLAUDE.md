@@ -39,6 +39,17 @@ or `scaffold_{card,state_view,search_bar}*`.
 > gitignored under `generated/`), but **not** for the widget families above,
 > which are deliberately committed. CI does not currently run the diff.
 
+## Workflow: GSD is mandatory
+
+All work in this repo runs through GSD. No ad-hoc implementation.
+
+- Pass `--ws scaffold` to every GSD command. The root `.planning/STATE.md` may be stale; trust the workstream state.
+- Check state with `/gsd-progress --ws scaffold`.
+- Feature work: `/gsd-discuss-phase` (optional) -> `/gsd-plan-phase` -> `/gsd-execute-phase` -> `/gsd-verify-work`.
+- Small fixes: `/gsd-quick` or `/gsd-fast`. Never edit code outside a GSD command.
+- New scope enters as a roadmap phase or milestone first (`/gsd-phase`, `/gsd-new-milestone`).
+- Base branch is `develop`; `main` only receives develop via PR.
+
 ## Where the conventions live
 
 `.planning/` is a ~9,700-line GSD workflow record — larger than the code, and
