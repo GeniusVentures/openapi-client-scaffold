@@ -14,28 +14,18 @@ class TextEntryFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
     final dimens = context.dimens;
+    final typography = context.typography;
+    final colorRoles = context.colorRoles;
 
     return TextFormField(
-      style: const TextStyle(
-        fontFamily: 'Roboto',
-        fontSize: 14.0,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.0,
-        color: Colors.white,
-      ),
+      style: typography.inputStyle.copyWith(color: colorRoles.inputForeground),
       decoration: InputDecoration(
           hintText: logic.hintText,
-          hintStyle: TextStyle(
-            fontFamily: 'Roboto',
-            fontSize: 14.0,
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.0,
-            color: palette.gray500,
-          ),
+          hintStyle: typography.inputStyle.copyWith(color: palette.gray500),
           prefixIcon: null,
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: palette.lightGreenPrimary,
+              color: colorRoles.accentOnSurface,
               width: 1.0,
             ),
             borderRadius:
@@ -43,7 +33,7 @@ class TextEntryFieldWidget extends StatelessWidget {
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: palette.borderGrey,
+              color: colorRoles.borderControl,
               width: 1.0,
             ),
             borderRadius:
