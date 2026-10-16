@@ -85,11 +85,12 @@ from the `scaffold` namespace of `design_tokens.json`.
   generator.
 - Fallbacks: each extension has a `context.<name>` getter (`shadows`, `motion`,
   `typography`, `gradients`, `colorRoles`) that returns the registered extension
-  or a default. `shadows` and `colorRoles` use the light instance when
-  `ThemeData.brightness` is light. With no `ScaffoldColorRoles` registered,
-  `context.colorRoles` derives them: `accent` and `accentOnSurface` come from
-  the resolved palette's `lightGreenPrimary` and `borderControl` from its
-  `borderGrey`.
+  or a default. `shadows` uses the light instance when `ThemeData.brightness`
+  is light. With no `ScaffoldColorRoles` registered, `context.colorRoles` calls
+  `ScaffoldColorRoles.fallbackForPalette` with the resolved palette and picks
+  the light or dark roles from that palette's surfaces, not from
+  `ThemeData.brightness`. A light theme with no registered palette therefore
+  still gets readable roles for the dark default surfaces.
   `scaffoldThemeExtensions` deliberately still lists only the palette and
   dimens, so an app that registers nothing new renders as before.
 - Compatibility: `ScaffoldElevation.card` and the static motion duration and

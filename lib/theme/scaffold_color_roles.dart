@@ -5,7 +5,7 @@ import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 /// Material 3 theme extension holding the role colors frontend_scaffold
 /// widgets use beyond [ScaffoldPalette]. Register on [ThemeData.extensions]
 /// like the palette to restyle them. Without one, `context.colorRoles` derives
-/// them with [fallbackFor], so existing apps draw the same colors as before.
+/// them with [fallbackForPalette] from the resolved palette's surfaces.
 class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   /// Accent fill.
   final Color accent;
