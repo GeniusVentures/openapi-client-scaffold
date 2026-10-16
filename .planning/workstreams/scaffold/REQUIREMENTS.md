@@ -8,12 +8,14 @@
 ## v1.4 Requirements
 
 ### Token pipeline
-- [ ] **TOK-01**: `design_tokens.json` gains an additive `scaffold` namespace holding every value behind `ScaffoldPalette` (light and dark) and `ScaffoldDimens`. Existing M3 keys are unchanged.
-- [ ] **TOK-02**: The Python/Jinja2 codegen generates the default values in `scaffold_palette.dart` and `scaffold_dimens.dart` from `design_tokens.json`. At the refactor commit, the output is byte-identical to the hand-written code.
-- [ ] **TOK-03**: A drift check (pytest plus a `--check` mode) fails when the committed Dart or CSS differs from what regeneration produces.
-- [ ] **TOK-04**: All codegen writes LF line endings, and `.gitattributes` pins LF for generated files.
+
+- [x] **TOK-01**: `design_tokens.json` gains an additive `scaffold` namespace holding every value behind `ScaffoldPalette` (light and dark) and `ScaffoldDimens`. Existing M3 keys are unchanged.
+- [x] **TOK-02**: The Python/Jinja2 codegen generates the default values in `scaffold_palette.dart` and `scaffold_dimens.dart` from `design_tokens.json`. At the refactor commit, the output is byte-identical to the hand-written code.
+- [x] **TOK-03**: A drift check (pytest plus a `--check` mode) fails when the committed Dart or CSS differs from what regeneration produces.
+- [x] **TOK-04**: All codegen writes LF line endings, and `.gitattributes` pins LF for generated files.
 
 ### Theme fields
+
 - [ ] **THM-01**: Shadows are themeable through a new `ThemeExtension`, with light and dark values whose defaults match today's output.
 - [ ] **THM-02**: Typography is themeable through a new `ThemeExtension`, with defaults matching today's output.
 - [ ] **THM-03**: Motion durations and curves come from tokens, with defaults equal to `ScaffoldMotion` today.
@@ -23,26 +25,32 @@
 - [ ] **THM-07**: The hard-coded white in the text field and drawers is replaced with tokens. At this commit, the defaults reproduce today's output.
 
 ### Midnight preset
+
 - [ ] **PRE-01**: A consumer can opt into `midnight` (light and dark) with one call, from a preset generated from its own token file in `lib/`.
 - [ ] **PRE-02**: The preset reproduces the wallet token map (colors, spacing, radius, type, motion, shadows, gradients) documented in research/FEATURES.md, with no brand names in `lib/` or `example/`.
 - [ ] **PRE-03**: The example app can switch between the default and midnight presets in both modes.
 
 ### Restyles
+
 - [ ] **RST-01**: Components whose wallet look can't be reached with tokens alone are restyled behind the preset. The candidates are the 15 restyles in research/FEATURES.md. The defaults keep today's look.
 
 ### Accessibility and defaults
+
 - [ ] **A11Y-01**: Default palettes pass WCAG AA in light and dark. The known failures to fix are the light focus ring, `gray500` and light `statusSuccess`. The captures are re-baselined in a dedicated commit.
 - [ ] **A11Y-02**: The light-mode text field and drawer contrast bug is fixed in its own commit, with re-baselined captures.
 - [ ] **A11Y-03**: An automated contrast test covers the default and midnight palettes in both modes.
 
 ### Release gates
+
 - [ ] **GATE-01**: The capture harness gate re-runs the harness and diffs `images/`. Captures change only in the re-baseline commits named in A11Y-01 and A11Y-02.
 - [ ] **GATE-02**: GeniusCognitiveSystem builds and passes its tests against the v1.4 develop head. Its team is told about the default color changes from A11Y-01.
 
 ## Future Requirements
+
 - GeniusWallet adopting the scaffold and the preset (separate work in the wallet repo).
 
 ## Out of Scope
+
 - Style Dictionary or the DTCG token format: needs Node 22 and a migration, and nothing consumes it.
 - build_runner codegen: its Dart floor is above the repo's ^3.10.
 - Driving Dart generation from the CMake `DESIGN_TOKENS` override: that override stays CSS-only.
@@ -51,10 +59,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TOK-01 | Phase 12 | Pending |
-| TOK-02 | Phase 12 | Pending |
-| TOK-03 | Phase 12 | Pending |
-| TOK-04 | Phase 12 | Pending |
+| TOK-01 | Phase 12 | Complete |
+| TOK-02 | Phase 12 | Complete |
+| TOK-03 | Phase 12 | Complete |
+| TOK-04 | Phase 12 | Complete |
 | THM-01 | Phase 13 | Pending |
 | THM-02 | Phase 13 | Pending |
 | THM-03 | Phase 13 | Pending |
