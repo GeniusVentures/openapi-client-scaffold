@@ -6,7 +6,7 @@ Suggested subject: frontend_scaffold v1.4: some default colors changed to pass W
 
 To: GeniusCognitiveSystem team
 
-Tested against: scaffold `develop` at `9840f09`, 2026-10-16. (Plan 17-03 updates this line to the final gate head.)
+Tested against: scaffold `develop` at `f6b99d3`, 2026-10-16: 0 of 12 codegen failures, pub get exit 0, 0 app-code analyze issues, 60 tests passing.
 
 ## Summary
 
