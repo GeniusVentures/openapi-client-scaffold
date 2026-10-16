@@ -106,6 +106,12 @@ from the `scaffold` namespace of `design_tokens.json`.
   snapshot. Changing an M3 key changes it. Regenerate it in the same commit with
   `python -m scaffold_codegen.m3_tokens_css --tokens design_tokens.json --output tools/tests/fixtures/m3_tokens.css`,
   and call it out as consumer-visible.
+- Contrast: `test/theme/palette_contrast_test.dart` classifies every
+  `scaffold.palette` and `scaffold.colorRoles` token as a surface, text (4.5:1 on
+  every surface of its mode), non-text (3:1), decorative, or excluded with a
+  reason. Translucent colors are composited over the surface first. A new token
+  without a classification fails the test. A value change that fails it needs a
+  different value, not a lower threshold.
 
 ### Drift check
 
