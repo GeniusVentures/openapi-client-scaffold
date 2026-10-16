@@ -90,9 +90,11 @@ class ScaffoldChip extends StatelessWidget {
       children: rowChildren,
     );
 
+    final BorderRadiusGeometry radius =
+        BorderRadius.circular(dimens.radiusPill);
     final Widget surface = ScaffoldSurface(
       color: palette.deepBlueCardColor,
-      borderRadius: BorderRadius.circular(dimens.radiusPill),
+      borderRadius: radius,
       border: selected
           ? Border.all(
               color: context.colorRoles.accentOnSurface,
@@ -110,6 +112,7 @@ class ScaffoldChip extends StatelessWidget {
       onPressed: onPressed,
       disabled: disabled,
       semanticLabel: semanticLabel,
+      borderRadius: radius,
       child: surface,
     );
 

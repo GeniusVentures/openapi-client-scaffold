@@ -166,6 +166,7 @@ class MediaCard extends StatelessWidget {
         onPressed: onTap,
         disabled: disabled,
         semanticLabel: semanticLabel,
+        borderRadius: radius,
         child: surface,
       );
     }

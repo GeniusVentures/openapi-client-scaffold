@@ -1,9 +1,13 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_chip.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
+import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -41,6 +45,8 @@ Container _chipContainer(WidgetTester tester) {
     ),
   );
 }
+
+void _noop() {}
 
 void main() {
   // Test 1 — default chip renders label with labelMedium + deepBlueCardColor fill.
@@ -236,4 +242,61 @@ void main() {
     expect(find.byType(ScaffoldChip), findsOneWidget);
     expect(find.text('Chip'), findsOneWidget);
   });
+
+  testWidgets(
+    'midnight: hovering ScaffoldChip clips the hover treatment to its radius',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: midnightTheme(Brightness.dark),
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 240,
+                child: ScaffoldChip(label: 'x', onPressed: _noop),
+              ),
+            ),
+          ),
+        ),
+      );
+      final pressable = tester.widget<ScaffoldPressable>(
+        find.byType(ScaffoldPressable),
+      );
+      expect(
+        pressable.borderRadius,
+        BorderRadius.circular(Midnight.dimens.radiusPill),
+      );
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: Offset.zero);
+      await gesture.moveTo(tester.getCenter(find.byType(ScaffoldPressable)));
+      await tester.pumpAndSettle();
+
+      final box =
+          tester
+                  .widget<DecoratedBox>(
+                    find.descendant(
+                      of: find.byType(ScaffoldPressable),
+                      matching: find.byWidgetPredicate(
+                        (w) =>
+                            w is DecoratedBox &&
+                            w.decoration is BoxDecoration &&
+                            (w.decoration as BoxDecoration).color ==
+                                Midnight.darkColorRoles.hoverFill,
+                      ),
+                    ),
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(
+        box.borderRadius,
+        BorderRadius.circular(Midnight.dimens.radiusPill),
+      );
+      expect(
+        (box.border! as Border).top.color,
+        Midnight.darkColorRoles.hoverEdge,
+      );
+    },
+  );
 }

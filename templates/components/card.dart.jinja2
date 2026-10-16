@@ -222,6 +222,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
             return ScaffoldPressable(
               onPressed: widget.onTap,
               disabled: widget.disabled,
+              borderRadius: radius,
               child: surface,
             );
           }

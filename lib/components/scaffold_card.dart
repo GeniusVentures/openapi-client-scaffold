@@ -222,6 +222,7 @@ class _ScaffoldCardState extends State<ScaffoldCard> {
             return ScaffoldPressable(
               onPressed: widget.onTap,
               disabled: widget.disabled,
+              borderRadius: radius,
               child: surface,
             );
           }

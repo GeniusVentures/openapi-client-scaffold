@@ -58,6 +58,9 @@ class ScaffoldSelectableSurface extends StatelessWidget {
       );
     }
 
+    final BorderRadiusGeometry radius = BorderRadius.circular(
+      dimens.borderRadiusCard,
+    );
     content = AnimatedContainer(
       duration: context.motion.medium,
       curve: context.motion.standard,
@@ -66,7 +69,7 @@ class ScaffoldSelectableSurface extends StatelessWidget {
         border: selected
             ? Border.all(color: context.colorRoles.accentOnSurface, width: 1)
             : null,
-        borderRadius: BorderRadius.circular(dimens.borderRadiusCard),
+        borderRadius: radius,
       ),
       child: content,
     );
@@ -75,6 +78,7 @@ class ScaffoldSelectableSurface extends StatelessWidget {
       onPressed: onTap,
       onLongPress: onLongPress,
       disabled: disabled,
+      borderRadius: radius,
       child: content,
     );
 

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/media_card.dart';
@@ -7,6 +8,8 @@ import 'package:frontend_scaffold/components/scaffold_badge.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -51,6 +54,8 @@ Positioned _positionedFor(WidgetTester tester, ScaffoldBadge badge) {
     ),
   );
 }
+
+void _noop() {}
 
 void main() {
   testWidgets('aspectRatio 16/9 produces AspectRatio widget with that ratio',
@@ -271,4 +276,58 @@ void main() {
         tester.widget<ScaffoldSurface>(find.byType(ScaffoldSurface));
     expect(surface.color, ScaffoldPalette.defaultPalette.deepBlueCardColor);
   });
+
+  testWidgets(
+    'midnight: hovering MediaCard clips the hover treatment to its radius',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: midnightTheme(Brightness.dark),
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(width: 240, child: MediaCard(onTap: _noop)),
+            ),
+          ),
+        ),
+      );
+      final pressable = tester.widget<ScaffoldPressable>(
+        find.byType(ScaffoldPressable),
+      );
+      expect(
+        pressable.borderRadius,
+        BorderRadius.circular(Midnight.dimens.borderRadiusCard),
+      );
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: Offset.zero);
+      await gesture.moveTo(tester.getCenter(find.byType(ScaffoldPressable)));
+      await tester.pumpAndSettle();
+
+      final box =
+          tester
+                  .widget<DecoratedBox>(
+                    find.descendant(
+                      of: find.byType(ScaffoldPressable),
+                      matching: find.byWidgetPredicate(
+                        (w) =>
+                            w is DecoratedBox &&
+                            w.decoration is BoxDecoration &&
+                            (w.decoration as BoxDecoration).color ==
+                                Midnight.darkColorRoles.hoverFill,
+                      ),
+                    ),
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(
+        box.borderRadius,
+        BorderRadius.circular(Midnight.dimens.borderRadiusCard),
+      );
+      expect(
+        (box.border! as Border).top.color,
+        Midnight.darkColorRoles.hoverEdge,
+      );
+    },
+  );
 }
