@@ -36,25 +36,65 @@ Generated families and their drivers:
 | `scaffold_image_placeholder_*.dart` | `scaffold_codegen.generators.image_placeholder` |
 | `scaffold_selection_indicator_*.dart` | `scaffold_codegen.generators.selection_indicator` |
 | `scaffold_card*`, `scaffold_state_view*`, `scaffold_search_bar*` | `scaffold_codegen.generators.composites` |
-| `lib/theme/scaffold_palette.dart`, `lib/theme/scaffold_dimens.dart` (only the lines between the `// GENERATED` and `// END GENERATED` markers) | `scaffold_codegen.generators.theme_defaults` |
+| `lib/theme/scaffold_{palette,dimens,shadows,motion_theme,typography,gradients,color_roles}.dart` (only the lines between the `// GENERATED` and `// END GENERATED` markers) | `scaffold_codegen.generators.theme_defaults` |
 
 To change one: edit `templates/components/<name>.jinja2` (and its `_vars.json`
 if you are adding a variable), then regenerate and commit both.
 
 ### Theme tokens
 
-The defaults of `ScaffoldPalette` and `ScaffoldDimens` are generated from the
-`scaffold` namespace of `design_tokens.json`.
+The defaults of `ScaffoldPalette`, `ScaffoldDimens` and the five theme
+extensions (shadows, motion, typography, gradients, color roles) are generated
+from the `scaffold` namespace of `design_tokens.json`.
 
 - Source: `scaffold.palette.dark` feeds `ScaffoldPalette.defaultPalette`,
   `scaffold.palette.light` feeds `lightPalette`, and `scaffold.dimens` feeds
   `ScaffoldDimens.defaultDimens`. Keys are field names in constructor order.
+  The other token paths map to Dart targets like this:
+  - `scaffold.shadows.dark` feeds the `ScaffoldShadows` constructor defaults
+    (`defaultShadows`), and `scaffold.shadows.light` feeds `lightShadows`.
+  - `scaffold.motion.durations` and `scaffold.motion.curves` feed
+    `ScaffoldMotionTheme`.
+  - `scaffold.typography.textStyles` and `scaffold.typography.fontFamilies` feed
+    `ScaffoldTypography`.
+  - `scaffold.gradients` feeds `ScaffoldGradients`.
+  - `scaffold.colorRoles.dark` feeds the `ScaffoldColorRoles` defaults
+    (`defaultColorRoles`), and `scaffold.colorRoles.light` feeds `lightColorRoles`.
+- Region styles: `REGIONS` in `tools/scaffold_codegen/generators/theme_defaults.py`
+  is the full list. An `args` region holds the arguments of a const constructor
+  call (`name: value,`). A `params` region holds constructor parameter defaults
+  (`this.name = value,`), so every parameter of the new extensions is optional
+  and `const X()` is the default instance.
 - Formats: colors are uppercase `"0xAARRGGBB"` strings, or
   `{"value": "0xAARRGGBB", "dartRef": "ScaffoldColors.<name>"}` where the Dart
   source references a `ScaffoldColors` constant. `value` must equal what the
   reference resolves to; `test/theme/scaffold_tokens_parity_test.dart` checks
   this. Numbers are emitted with the digits written (`20.0`, `0.40`), and
   integers are rejected for double fields.
+- Formats of the new groups:
+  - shadows: a list of `{color, blurRadius, offset}`, with `offset` a
+    two-number list.
+  - durations: integer milliseconds.
+  - curves: `Curves.<name>`, or a four-number list for a `Cubic`.
+  - text styles: an object with a subset of `fontFamily`, `fontSize`,
+    `fontWeight` (100 to 900) and `letterSpacing`.
+  - font family names: letters, digits, space, underscore and hyphen.
+  - gradients: `null` only. A non-null gradient needs an encoder first.
+
+  Every string format is validated by full match, and anything else fails the
+  generator.
+- Fallbacks: each extension has a `context.<name>` getter (`shadows`, `motion`,
+  `typography`, `gradients`, `colorRoles`) that returns the registered extension
+  or a default. `shadows` and `colorRoles` use the light instance when
+  `ThemeData.brightness` is light. With no `ScaffoldColorRoles` registered,
+  `context.colorRoles` derives them: `accent` and `accentOnSurface` come from
+  the resolved palette's `lightGreenPrimary` and `borderControl` from its
+  `borderGrey`.
+  `scaffoldThemeExtensions` deliberately still lists only the palette and
+  dimens, so an app that registers nothing new renders as before.
+- Compatibility: `ScaffoldElevation.card` and the static motion duration and
+  curve classes stay as public constants, and tests pin them equal to the
+  generated defaults. Widgets read the theme instead of these constants.
 - Flow: edit the token, run `python -m scaffold_codegen.generators.theme_defaults`,
   commit both. `--check` exits 1 on drift and writes nothing.
 - The M3 keys `color`, `typography`, `shape` and `elevation` are a frozen

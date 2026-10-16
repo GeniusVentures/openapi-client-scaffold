@@ -52,7 +52,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 | Directory | Contents |
 |---|---|
 | `lib/components/` | ~70 widgets — surfaces, pressables, badges, skeletons, sliders, drag/drop, search bar, state views, toasts, animations, media |
-| `lib/theme/` | `scaffold_theme` (extensions), `scaffold_palette`, `scaffold_colors`, `scaffold_dimens`, `scaffold_elevation` |
+| `lib/theme/` | `scaffold_theme` (extensions), `scaffold_palette`, `scaffold_colors`, `scaffold_dimens`, `scaffold_elevation`, `scaffold_shadows`, `scaffold_motion_theme`, `scaffold_typography`, `scaffold_gradients`, `scaffold_color_roles` |
 | `lib/utils/` | `breakpoints` |
 
 Some widget families are **generated** from Jinja2 templates rather than
@@ -65,7 +65,7 @@ hand-written — one file per variant, no runtime enum/switch spanning variants:
 | `ScaffoldImagePlaceholder*` | loading, missing, empty, failed | `generators.image_placeholder` |
 | `ScaffoldSelectionIndicator*` | radio, checkbox, toggle | `generators.selection_indicator` |
 | `ScaffoldCard` / `ScaffoldStateView` / `ScaffoldSearchBar` | + `_cubit` / `_state` companions | `generators.composites` |
-| `ScaffoldPalette` / `ScaffoldDimens` defaults | dark and light palette, dimens | `generators.theme_defaults` |
+| `ScaffoldPalette`, `ScaffoldDimens` and the five theme extensions (shadows, motion, typography, gradients, color roles) defaults | dark and light palette, dimens, shadows, motion, typography, gradients, color roles | `generators.theme_defaults` |
 
 **These files are committed, but the template is the source of truth.** Never
 hand-edit a generated file — change `templates/components/*.jinja2`, or
