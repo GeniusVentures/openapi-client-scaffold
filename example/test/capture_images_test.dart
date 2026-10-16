@@ -8,6 +8,11 @@
 /// example a baseline outside the repo; the default stays the package-root
 /// `images/`.
 ///
+/// The midnight run also writes `restyles_dark.png` and `restyles_light.png`,
+/// which show what the midnight restyles change: cards, hover, a focused field,
+/// selection indicators and a formatted number. The default run never renders
+/// them.
+///
 /// Run from `example/`:
 ///
 /// ```bash
@@ -30,10 +35,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/bottom_drawer/bottom_drawer.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
+import 'package:frontend_scaffold/components/scaffold_card.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_range_selector.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_scrubber.dart';
 import 'package:frontend_scaffold/components/scaffold_disclosure.dart';
+import 'package:frontend_scaffold/components/scaffold_formatted_value_number.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
+import 'package:frontend_scaffold/components/scaffold_selection_indicator_checkbox.dart';
+import 'package:frontend_scaffold/components/scaffold_selection_indicator_radio.dart';
+import 'package:frontend_scaffold/components/scaffold_selection_indicator_toggle.dart';
+import 'package:frontend_scaffold/components/scaffold_surface.dart';
+import 'package:frontend_scaffold/components/text_entry_field_widget.dart';
+import 'package:frontend_scaffold/components/text_form_field_logic.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart';
 import 'package:frontend_scaffold/components/toast/toast_widget.dart';
 import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
@@ -772,7 +785,126 @@ void main() {
 
   testWidgets('capture midnight demo screens', (WidgetTester tester) async {
     await _captureAllDemos(tester, _midnightProfile);
+    await _captureRestyles(tester);
   });
+}
+
+const ValueKey<String> _restylesHoverKey = ValueKey<String>('restyles-hover');
+const ValueKey<String> _restylesFieldKey = ValueKey<String>('restyles-field');
+
+TestGesture? _restylesPointer;
+
+Future<void> _removeRestylesPointer() async {
+  final TestGesture? pointer = _restylesPointer;
+  _restylesPointer = null;
+  await pointer?.removePointer();
+}
+
+/// Focuses the field and hovers the tappable card with a mouse pointer.
+Future<void> _prepareRestyles(WidgetTester tester) async {
+  await _removeRestylesPointer();
+  await tester.tap(find.byKey(_restylesFieldKey));
+  await tester.pump();
+  final TestGesture pointer =
+      await tester.createGesture(kind: ui.PointerDeviceKind.mouse);
+  await pointer.addPointer(location: Offset.zero);
+  await pointer.moveTo(tester.getCenter(find.byKey(_restylesHoverKey)));
+  await tester.pump();
+  _restylesPointer = pointer;
+}
+
+/// Midnight only: the default profile never renders this capture.
+Future<void> _captureRestyles(WidgetTester tester) async {
+  await _captureBothThemes(
+    tester,
+    const _RestylesCapture(),
+    'restyles',
+    _midnightProfile,
+    prepare: _prepareRestyles,
+  );
+  await _removeRestylesPointer();
+}
+
+/// Components the midnight restyles change, in one 800x600 frame.
+class _RestylesCapture extends StatelessWidget {
+  const _RestylesCapture();
+
+  @override
+  Widget build(BuildContext context) {
+    final double gap = context.dimens.itemSpacing;
+    // Own Scaffold, as each demo has, for the page color and the text style.
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.all(gap),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                const Expanded(
+                  child: ScaffoldCard(
+                    variant: 'elevated',
+                    body: Text('Elevated card'),
+                  ),
+                ),
+                SizedBox(width: gap),
+                const Expanded(
+                  child: ScaffoldCard(
+                    variant: 'outlined',
+                    body: Text('Outlined card'),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: gap),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: ScaffoldCard(
+                    key: _restylesHoverKey,
+                    variant: 'elevated',
+                    onTap: () {},
+                    body: const Text('Tappable card'),
+                  ),
+                ),
+                SizedBox(width: gap),
+                const Expanded(
+                  child: ScaffoldSurface(
+                    elevation: 2,
+                    padding: EdgeInsets.all(16),
+                    child: Text('Surface'),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: gap),
+            Builder(
+              builder: (BuildContext innerContext) => TextEntryFieldWidget(
+                key: _restylesFieldKey,
+                logic: TextFormFieldLogic(innerContext, hintText: 'Enter a name'),
+              ),
+            ),
+            SizedBox(height: gap),
+            Row(
+              children: <Widget>[
+                ScaffoldSelectionIndicatorCheckbox(value: true, onChanged: (_) {}),
+                ScaffoldSelectionIndicatorCheckbox(value: false, onChanged: (_) {}),
+                ScaffoldSelectionIndicatorCheckbox(
+                  tristate: true,
+                  onChanged: (_) {},
+                ),
+                ScaffoldSelectionIndicatorRadio(value: true, onChanged: (_) {}),
+                ScaffoldSelectionIndicatorToggle(value: true, onChanged: (_) {}),
+              ],
+            ),
+            SizedBox(height: gap),
+            const ScaffoldFormattedValueNumber(value: 1234567.89),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// Types into the first text field, then unfocuses so the capture shows the
