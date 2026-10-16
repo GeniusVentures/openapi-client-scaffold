@@ -58,7 +58,7 @@ Full phase details, goals, and success criteria: [milestones/v1.2-ROADMAP.md](mi
 - [x] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, each fix followed by its own capture re-baseline commit (completed 2026-10-16)
 - [x] **Phase 15: Midnight Preset** - Opt-in `midnight` theme (light and dark) in one call, with an example-app switcher and a contrast test over all palettes (completed 2026-10-16)
 - [x] **Phase 16: Component Restyles** - Components take the midnight look where tokens alone cannot reach it, with default rendering unchanged (completed 2026-10-16)
-- [ ] **Phase 17: Release Gates** - Captures change only in the sanctioned re-baseline commits and GeniusCognitiveSystem builds and passes against develop
+- [x] **Phase 17: Release Gates** - Captures change only in the sanctioned re-baseline commits and GeniusCognitiveSystem builds and passes against develop (completed 2026-10-16)
 
 ## Phase Details
 
@@ -197,9 +197,9 @@ Plans:
 
 Plans:
 
-- [ ] 17-01-PLAN.md — (wave 1) tracer: capture history gate (manifest of the 14 sanctioned v1.4 capture commits, rules, pytest in CI with full history) and the local render check (GATE-01)
-- [ ] 17-02-PLAN.md — (wave 2) portable GCS harness in tools/consumer_check, run at develop against the session harness; draft GCS notice, not sent (GATE-02)
-- [ ] 17-03-PLAN.md — (wave 3) gate and harness docs; every release gate at one head in 17-GATES.md; milestone wrap to 20/20 requirements
+- [x] 17-01-PLAN.md — (wave 1) tracer: capture history gate (manifest of the 14 sanctioned v1.4 capture commits, rules, pytest in CI with full history) and the local render check (GATE-01)
+- [x] 17-02-PLAN.md — (wave 2) portable GCS harness in tools/consumer_check, run at develop against the session harness; draft GCS notice, not sent (GATE-02)
+- [x] 17-03-PLAN.md — (wave 3) gate and harness docs; every release gate at one head in 17-GATES.md; milestone wrap to 20/20 requirements
 
 ### v1.4 sequencing notes
 
@@ -239,12 +239,12 @@ Plans:
 | 9. Text & Code Primitives | v1.2 | 6/6 | Complete | 2026-08-20 |
 | 10. Chart & Scrubber | v1.2 | 6/6 | Complete | 2026-08-22 |
 | 11. Verification & Coverage Gate | v1.2 | 3/3 | Complete | 2026-08-23 |
-| 12. Token Pipeline | v1.4 | 0/3 | Planned | - |
-| 13. Theme Fields | v1.4 | 0/5 | Planned | - |
-| 14. Default Accessibility Fixes | v1.4 | 0/TBD | Not started | - |
-| 15. Midnight Preset | v1.4 | 0/TBD | Not started | - |
-| 16. Component Restyles | v1.4 | 0/TBD | Not started | - |
-| 17. Release Gates | v1.4 | 0/TBD | Not started | - |
+| 12. Token Pipeline | v1.4 | 3/3 | Complete | 2026-10-16 |
+| 13. Theme Fields | v1.4 | 5/5 | Complete | 2026-10-16 |
+| 14. Default Accessibility Fixes | v1.4 | 6/6 | Complete | 2026-10-16 |
+| 15. Midnight Preset | v1.4 | 7/7 | Complete | 2026-10-16 |
+| 16. Component Restyles | v1.4 | 8/8 | Complete | 2026-10-16 |
+| 17. Release Gates | v1.4 | 3/3 | Complete | 2026-10-16 |
 
 ## Out of scope (owned by consuming repos)
 

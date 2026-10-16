@@ -42,8 +42,8 @@
 
 ### Release gates
 
-- [ ] **GATE-01**: The capture harness gate re-runs the harness and diffs `images/`. Captures change only in the Phase 14 capture re-baseline commits listed in 14-COLOR-CHANGES.md.
-- [ ] **GATE-02**: GeniusCognitiveSystem builds and passes its tests against the v1.4 develop head. Its team is told about the default color changes from A11Y-01.
+- [x] **GATE-01**: The capture harness gate re-runs the harness and diffs `images/`. Captures change only in the Phase 14 capture re-baseline commits listed in 14-COLOR-CHANGES.md.
+- [x] **GATE-02**: GeniusCognitiveSystem builds and passes its tests against the v1.4 develop head. Its team is told about the default color changes from A11Y-01.
 
 ## Future Requirements
 
@@ -77,8 +77,8 @@
 | PRE-03 | Phase 15 | Complete |
 | A11Y-03 | Phase 15 | Complete |
 | RST-01 | Phase 16 | Complete |
-| GATE-01 | Phase 17 | Pending |
-| GATE-02 | Phase 17 | Pending |
+| GATE-01 | Phase 17 | Complete |
+| GATE-02 | Phase 17 | Complete |
 
 **Coverage:** 20/20 v1.4 requirements mapped, each to exactly one phase. No orphans.
 

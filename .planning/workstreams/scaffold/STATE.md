@@ -4,11 +4,11 @@ milestone: v1.4
 milestone_name: Design Tokens & Midnight Preset
 current_phase: 17
 current_phase_name: Release Gates
-status: executing
-stopped_at: v1.4 roadmap created (Phases 12-17); nothing planned or executed yet
+status: complete
+stopped_at: Phase 17 complete; v1.4 ready to archive
 last_updated: "2026-10-16T21:08:08.407Z"
 last_activity: 2026-10-16
-last_activity_desc: Phase 12 execution started
+last_activity_desc: Phase 17 complete; v1.4 ready to archive with /gsd-complete-milestone
 progress:
   total_phases: 6
   completed_phases: 5
@@ -24,16 +24,16 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** Phase 17 — Release Gates
+**Current focus:** v1.4 closed, ready for `/gsd-complete-milestone --ws scaffold`
 
 ## Current Position
 
-Phase: 17 (Release Gates) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 17
-Last activity: 2026-10-16 — Phase 17 execution started
+Phase: 17 (Release Gates) — COMPLETE
+Plan: 3 of 3
+Status: Phase 17 complete, v1.4 ready to archive
+Last activity: 2026-10-16 — Phase 17 complete
 
-Progress: [..........] 0% (0/6 phases)
+Progress: [##########] 100% (6/6 phases)
 
 ## v1.4 Milestone
 
@@ -102,10 +102,14 @@ Progress: [..........] 0% (0/6 phases)
 - **A11Y fixes supersede "defaults frozen".** Owner requirements A11Y-01/02 override research Anti-Pattern 5 and open decision (a).
 - **Preset-only items ship in Phase 15.** `ThemeData` builder and the no-widget-code restyles (R7, R14, R15) belong to the one-call preset; Phase 16 holds only component-code restyles.
 - **v1.3 is queued behind v1.4** and gets its phase numbers at kickoff.
+- **Capture gate (Phase 17).** An existing capture changes only in a PNG-only commit listed in `tools/capture_rebaselines.json`; pytest checks this in CI with full history. The byte-for-byte render check is local only, because rasterization differs across machines. Gate record: `phases/17-release-gates/17-GATES.md`.
 
 ### Pending Todos
 
-- [ ] `/gsd-plan-phase 12 --ws scaffold` — Token Pipeline (next)
+- [ ] Owner: send `phases/17-release-gates/17-GCS-NOTICE.md` to the GCS team (draft, not sent)
+- [ ] Owner: open the develop to main PR and merge it with a merge commit (squash or rebase breaks the capture gate)
+- [ ] Owner: run `/gsd-complete-milestone --ws scaffold`
+- [ ] Owner: then kick off v1.3
 
 - [x] `/gsd:plan-phase 6` — wrote plans for Core UI Foundation (28 atoms + composites across 4 waves); executed + verified 28/28
 - [x] `/gsd:plan-phase 7` — wrote plans for Media & Integration Widgets (4 plans, 2 waves: MediaCard, MediaControls, WalletConnectSheet, barrel+demos+gate); checker passed 7/7 decisions
@@ -135,10 +139,10 @@ Progress: [..........] 0% (0/6 phases)
 
 ## Session Continuity
 
-**Last session:** 2026-10-16T12:47:22.000Z
-**Stopped at:** v1.4 roadmap created (Phases 12-17); nothing planned or executed yet
+**Last session:** 2026-10-16
+**Stopped at:** Phase 17 complete; v1.4 ready to archive
 **Resume file:** None
-**Next action:** `/gsd-plan-phase 12 --ws scaffold` (optionally `/gsd-discuss-phase 12 --ws scaffold` first; research flag: byte-identical `dart format` output and `0xFF` vs `0xff` casing)
+**Next action:** `/gsd-complete-milestone --ws scaffold`
 
 ## Deferred Items
 
@@ -153,4 +157,4 @@ Items acknowledged and deferred at milestone close on 2026-08-24:
 See: .planning/PROJECT.md (updated 2026-08-24)
 
 **Core value:** single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates
-**Current focus:** v1.4 Design Tokens & Midnight Preset, Phase 12 ready to plan
+**Current focus:** v1.4 Design Tokens & Midnight Preset closed, ready for `/gsd-complete-milestone --ws scaffold`
