@@ -72,6 +72,11 @@ void main() {
     test('const ScaffoldShadows() is the default', () {
       expect(const ScaffoldShadows().card, ScaffoldShadows.defaultShadows.card);
     });
+
+    test('elevated is null in both modes', () {
+      expect(ScaffoldShadows.defaultShadows.elevated, isNull);
+      expect(ScaffoldShadows.lightShadows.elevated, isNull);
+    });
   });
 
   group('copyWith and lerp', () {
@@ -86,6 +91,21 @@ void main() {
     test('lerp endpoints', () {
       expect(a.lerp(b, 0.0).card, a.card);
       expect(a.lerp(b, 1.0).card, b.card);
+    });
+
+    test('elevated: copyWith keeps it and lerp of two nulls stays null', () {
+      final withElevated = a.copyWith(elevated: _custom);
+      expect(withElevated.elevated, _custom);
+      expect(withElevated.copyWith().elevated, _custom);
+      expect(a.lerp(a, 0.5).elevated, isNull);
+    });
+
+    test('elevated: lerp of two lists interpolates', () {
+      const other = ScaffoldShadows(
+        elevated: [BoxShadow(color: Color(0xFF123456), blurRadius: 5.0)],
+      );
+      final mid = a.copyWith(elevated: _custom).lerp(other, 0.5).elevated!;
+      expect(mid.single.blurRadius, 4.0);
     });
 
     test('lerp with a non-ScaffoldShadows returns this', () {

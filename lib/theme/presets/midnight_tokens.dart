@@ -125,6 +125,7 @@ abstract final class Midnight {
   static const ScaffoldShadows darkShadows = ScaffoldShadows(
     // GENERATED from tokens/midnight.json scaffold.shadows.dark. Do not edit.
     card: [BoxShadow(color: Color(0x59000000), blurRadius: 16.0, offset: Offset(0.0, 4.0))],
+    elevated: [BoxShadow(color: Color(0x59000000), blurRadius: 16.0, offset: Offset(0.0, 4.0))],
     // END GENERATED scaffold.shadows.dark
   );
 
@@ -132,6 +133,7 @@ abstract final class Midnight {
   static const ScaffoldShadows lightShadows = ScaffoldShadows(
     // GENERATED from tokens/midnight.json scaffold.shadows.light. Do not edit.
     card: [BoxShadow(color: Color(0x1F000000), blurRadius: 16.0, offset: Offset(0.0, 4.0))],
+    elevated: [BoxShadow(color: Color(0x1F000000), blurRadius: 16.0, offset: Offset(0.0, 4.0))],
     // END GENERATED scaffold.shadows.light
   );
 

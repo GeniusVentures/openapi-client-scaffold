@@ -107,10 +107,30 @@
               4.0
             ]
           }
+        ],
+        "elevated": [
+          {
+            "color": "0x59000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
         ]
       },
       "light": {
         "card": [
+          {
+            "color": "0x1F000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
+        ],
+        "elevated": [
           {
             "color": "0x1F000000",
             "blurRadius": 16.0,

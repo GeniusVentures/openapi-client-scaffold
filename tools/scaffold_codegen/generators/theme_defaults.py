@@ -8,7 +8,8 @@ matching file in ``lib/theme/``. An ``args`` region holds ``name: literal,``
 lines inside a const constructor call
 (``templates/theme/const_args.dart.jinja2``); a ``params`` region holds
 ``this.name = literal,`` lines inside a constructor parameter list
-(``templates/theme/const_params.dart.jinja2``). Everything outside the markers is
+(``templates/theme/const_params.dart.jinja2``); a ``null`` token in a params region renders
+``this.name,`` for a nullable field, and an args region rejects it. Everything outside the markers is
 left as written. Target files: scaffold_palette.dart, scaffold_dimens.dart,
 scaffold_shadows.dart, scaffold_motion_theme.dart, scaffold_typography.dart,
 scaffold_color_roles.dart, scaffold_gradients.dart.
@@ -354,7 +355,7 @@ def render_regions(
             for name, value in _region_entries(tokens, path).items():
                 if not _NAME_RE.fullmatch(name):
                     raise ThemeTokenError(f"{rid}: invalid entry name {name!r}")
-                literal = encode(f"{rid}.{name}", value)
+                literal = None if value is None else encode(f"{rid}.{name}", value)
                 if literal is None and style == "args":
                     raise ThemeTokenError(f"{rid}.{name}: an args region needs a literal")
                 if literal is not None and style == "params" and _NEEDS_CONST_RE.match(literal):

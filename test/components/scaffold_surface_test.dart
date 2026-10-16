@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 Future<void> _pump(WidgetTester tester, Widget child) {
@@ -63,6 +64,78 @@ void main() {
       ),
     );
     expect(material.elevation, 4);
+  });
+
+  testWidgets('default theme: elevation uses Material and no BoxShadow', (
+    tester,
+  ) async {
+    await _pump(tester, const ScaffoldSurface(elevation: 4));
+
+    final decoration =
+        tester.widget<Container>(_surfaceContainer()).decoration!
+            as BoxDecoration;
+    expect(decoration.boxShadow, isNull);
+    final material = tester.widget<Material>(
+      find.descendant(
+        of: find.byType(ScaffoldSurface),
+        matching: find.byType(Material),
+      ),
+    );
+    expect(material.elevation, 4);
+  });
+
+  testWidgets('a registered elevated shadow replaces Material elevation', (
+    tester,
+  ) async {
+    const shadow = [BoxShadow(color: Color(0xFF123456), blurRadius: 7.0)];
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          extensions: [
+            ...scaffoldThemeExtensions,
+            const ScaffoldShadows(elevated: shadow),
+          ],
+        ),
+        home: const Scaffold(
+          body: Center(child: ScaffoldSurface(elevation: 4)),
+        ),
+      ),
+    );
+
+    final decoration =
+        tester.widget<Container>(_surfaceContainer()).decoration!
+            as BoxDecoration;
+    expect(decoration.boxShadow, shadow);
+    expect(
+      find.descendant(
+        of: find.byType(ScaffoldSurface),
+        matching: find.byType(Material),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('a registered elevated shadow is ignored at zero elevation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          extensions: [
+            ...scaffoldThemeExtensions,
+            const ScaffoldShadows(
+              elevated: [BoxShadow(color: Color(0xFF123456), blurRadius: 7.0)],
+            ),
+          ],
+        ),
+        home: const Scaffold(body: Center(child: ScaffoldSurface())),
+      ),
+    );
+
+    final decoration =
+        tester.widget<Container>(_surfaceContainer()).decoration!
+            as BoxDecoration;
+    expect(decoration.boxShadow, isNull);
   });
 
   testWidgets('renders the child', (tester) async {

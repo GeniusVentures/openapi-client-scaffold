@@ -300,7 +300,10 @@ def test_shadow_token_change_regenerates_only_dark_line(workdir: tuple[Path, Pat
 def test_scaffold_group_order_keeps_existing_keys_first() -> None:
     scaffold = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]
     assert list(scaffold)[:3] == ["_comment", "palette", "dimens"]
-    assert scaffold["shadows"]["dark"] == scaffold["shadows"]["light"]
+    shadows = scaffold["shadows"]
+    assert shadows["dark"]["card"] == shadows["light"]["card"]
+    assert shadows["dark"]["elevated"] is None
+    assert "elevated" not in shadows["light"]
 
 
 MOTION_FILE = "scaffold_motion_theme.dart"
@@ -651,3 +654,34 @@ def test_gradients_region_in_args_style_rejects_null(
     )
     assert run(check=True, tokens_path=tokens, theme_dir=theme) == 1
     assert "scaffold.gradients.edgeFade" in capsys.readouterr().err
+
+
+_NULL_TARGET = (
+    "    // GENERATED from tokens.json scaffold.group. Do not edit.\n"
+    "    // END GENERATED scaffold.group\n"
+)
+
+
+def _null_token_files(tmp_path: Path) -> tuple[Path, Path]:
+    tokens = tmp_path / "tokens.json"
+    tokens.write_text(json.dumps({"scaffold": {"group": {"unset": None}}}), encoding="utf-8")
+    theme = tmp_path / "theme"
+    theme.mkdir()
+    (theme / "target.dart").write_text(_NULL_TARGET, encoding="utf-8")
+    return tokens, theme
+
+
+@pytest.mark.parametrize("kind", ["shadows", "color", "double", "textStyle"])
+def test_params_region_renders_null_for_every_literal_kind(tmp_path: Path, kind: str) -> None:
+    tokens, theme = _null_token_files(tmp_path)
+    regions = (("target.dart", ("scaffold", "group"), kind, "params"),)
+    rendered = theme_defaults.render_regions(tokens, theme, regions, "tokens.json")
+    assert "    this.unset,\n" in rendered[theme / "target.dart"]
+
+
+@pytest.mark.parametrize("kind", ["shadows", "color", "double", "textStyle"])
+def test_args_region_rejects_null_for_every_literal_kind(tmp_path: Path, kind: str) -> None:
+    tokens, theme = _null_token_files(tmp_path)
+    regions = (("target.dart", ("scaffold", "group"), kind, "args"),)
+    with pytest.raises(ThemeTokenError, match=r"scaffold\.group\.unset"):
+        theme_defaults.render_regions(tokens, theme, regions, "tokens.json")

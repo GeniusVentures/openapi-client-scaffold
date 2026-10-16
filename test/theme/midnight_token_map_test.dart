@@ -497,6 +497,10 @@ void main() {
         expect(card.single.blurRadius, 16.0);
         expect(card.single.offset, const Offset(0.0, 4.0));
       });
+
+      test('${entry.key} elevated equals card', () {
+        expect(entry.value.$1.elevated, entry.value.$1.card);
+      });
     }
   });
 

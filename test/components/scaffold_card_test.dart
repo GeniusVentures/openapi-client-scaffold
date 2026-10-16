@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_card.dart';
 import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -21,7 +24,67 @@ Future<void> _pump(WidgetTester tester, Widget child) {
   );
 }
 
+Future<void> _pumpMidnight(WidgetTester tester, Brightness brightness) {
+  return tester.pumpWidget(
+    MaterialApp(
+      theme: midnightTheme(brightness),
+      home: const Scaffold(
+        body: Center(
+          child: ScaffoldCard(variant: 'elevated', body: Text('x')),
+        ),
+      ),
+    ),
+  );
+}
+
 void main() {
+  testWidgets('default theme: elevated card keeps Material elevation', (
+    tester,
+  ) async {
+    await _pump(tester, const ScaffoldCard(variant: 'elevated'));
+
+    final material = tester.widget<Material>(
+      find.descendant(
+        of: find.byType(ScaffoldSurface),
+        matching: find.byType(Material),
+      ),
+    );
+    expect(material.elevation, 4.0);
+  });
+
+  for (final entry in {
+    Brightness.dark: Midnight.darkShadows,
+    Brightness.light: Midnight.lightShadows,
+  }.entries) {
+    testWidgets('midnight ${entry.key.name}: elevated card draws a BoxShadow '
+        'and no Material elevation', (tester) async {
+      await _pumpMidnight(tester, entry.key);
+
+      final decorations = tester
+          .widgetList<Container>(
+            find.descendant(
+              of: find.byType(ScaffoldSurface),
+              matching: find.byType(Container),
+            ),
+          )
+          .map((c) => c.decoration)
+          .whereType<BoxDecoration>();
+      expect(
+        decorations.any((d) => listEquals(d.boxShadow, entry.value.elevated)),
+        isTrue,
+      );
+      final elevatedMaterials = tester
+          .widgetList<Material>(
+            find.descendant(
+              of: find.byType(ScaffoldSurface),
+              matching: find.byType(Material),
+            ),
+          )
+          .where((m) => m.elevation > 0);
+      expect(elevatedMaterials, isEmpty);
+    });
+  }
+
   testWidgets('elevated variant renders ScaffoldSurface with elevation 4 + '
       'deepBlueCardColor', (tester) async {
     await _pump(tester, const ScaffoldCard(variant: 'elevated'));
