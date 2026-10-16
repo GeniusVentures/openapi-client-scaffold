@@ -18,6 +18,7 @@ from scaffold_codegen.generators.theme_defaults import (
     ThemeTokenError,
     dart_color,
     dart_double,
+    dart_shadows,
     render_files,
     run,
 )
@@ -210,3 +211,88 @@ def test_palette_regions_hold_22_entries_and_dimens_21() -> None:
     assert len(scaffold["palette"]["dark"]) == 22
     assert len(scaffold["palette"]["light"]) == 22
     assert len(scaffold["dimens"]) == 21
+
+
+SHADOWS_FILE = "scaffold_shadows.dart"
+
+
+def _shadow(**overrides: object) -> dict[str, object]:
+    entry: dict[str, object] = {
+        "color": "0x59000000",
+        "blurRadius": Decimal("16.0"),
+        "offset": [Decimal("0.0"), Decimal("4.0")],
+    }
+    entry.update(overrides)
+    return entry
+
+
+def test_dart_shadows_single_entry() -> None:
+    assert dart_shadows("x", [_shadow()]) == (
+        "[BoxShadow(color: Color(0x59000000), blurRadius: 16.0, offset: Offset(0.0, 4.0))]"
+    )
+
+
+def test_dart_shadows_joins_entries_and_allows_empty() -> None:
+    two = dart_shadows("x", [_shadow(), _shadow(blurRadius=Decimal("2.5"))])
+    assert two.count("BoxShadow(") == 2
+    assert "), BoxShadow(" in two
+    assert two.startswith("[") and two.endswith("]")
+    assert dart_shadows("x", []) == "[]"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "x",
+        {"card": 1},
+        [_shadow(extra=1)],
+        [{"color": "0x59000000", "blurRadius": Decimal("1.0")}],
+        [_shadow(color="0x59abcdef")],
+        [_shadow(color="0x590000")],
+        [_shadow(color={"value": "0x59000000", "dartRef": "ScaffoldColors.gray500"})],
+        [_shadow(blurRadius=16)],
+        [_shadow(offset=[Decimal("0.0")])],
+        [_shadow(offset=[Decimal("0.0"), Decimal("1.0"), Decimal("2.0")])],
+        [_shadow(offset=[0, Decimal("4.0")])],
+        [_shadow(offset="0,4")],
+        ["not a dict"],
+    ],
+)
+def test_dart_shadows_rejects_invalid(value: object) -> None:
+    with pytest.raises(ThemeTokenError):
+        dart_shadows("x", value)
+
+
+def test_committed_shadows_file_matches_render() -> None:
+    rendered = render_files()[LIB_THEME_DIR / SHADOWS_FILE]
+    committed = (LIB_THEME_DIR / SHADOWS_FILE).read_bytes()
+    assert committed == rendered.encode("utf-8")
+    assert "    this.card = const [BoxShadow(" in rendered
+
+
+def test_shadow_token_change_regenerates_only_dark_line(workdir: tuple[Path, Path]) -> None:
+    tokens, theme = workdir
+    text = tokens.read_text(encoding="utf-8")
+    dark_start = text.index('"shadows"')
+    edited = text[:dark_start] + text[dark_start:].replace(
+        '"blurRadius": 16.0', '"blurRadius": 20.0', 1
+    )
+    assert edited != text
+    tokens.write_text(edited, encoding="utf-8")
+    before = (theme / SHADOWS_FILE).read_text(encoding="utf-8").splitlines()
+
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 1
+    assert run(check=False, tokens_path=tokens, theme_dir=theme) == 0
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 0
+
+    after = (theme / SHADOWS_FILE).read_text(encoding="utf-8").splitlines()
+    changed = [(a, b) for a, b in zip(before, after, strict=True) if a != b]
+    assert len(changed) == 1
+    assert changed[0][0].startswith("    this.card = ")
+    assert "blurRadius: 20.0" in changed[0][1]
+
+
+def test_scaffold_group_order_keeps_existing_keys_first() -> None:
+    scaffold = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]
+    assert list(scaffold)[:3] == ["_comment", "palette", "dimens"]
+    assert scaffold["shadows"]["dark"] == scaffold["shadows"]["light"]

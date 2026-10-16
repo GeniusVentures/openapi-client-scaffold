@@ -118,7 +118,7 @@
     }
   },
   "scaffold": {
-    "_comment": "Scaffold theme defaults for ScaffoldPalette and ScaffoldDimens. Rendered into the GENERATED regions of lib/theme/*.dart by scaffold_codegen.generators.theme_defaults. Values are emitted verbatim as Dart literals. Only this repo file feeds Dart generation; a CMake DESIGN_TOKENS override never does.",
+    "_comment": "Defaults of every scaffold theme extension (palette, dimens, shadows, motion, typography). Rendered into the GENERATED regions of lib/theme/*.dart by scaffold_codegen.generators.theme_defaults. Values are emitted verbatim as Dart literals. Only this repo file feeds Dart generation; a CMake DESIGN_TOKENS override never does.",
     "palette": {
       "dark": {
         "deepBlueCardColor": { "value": "0xFF0A121F", "dartRef": "ScaffoldColors.deepBlueCardColor" },
@@ -191,6 +191,18 @@
       "dragHandleSize": 24.0,
       "minTouchTarget": 48.0,
       "touchTargetPadding": 12.0
+    },
+    "shadows": {
+      "dark": {
+        "card": [
+          { "color": "0x59000000", "blurRadius": 16.0, "offset": [0.0, 4.0] }
+        ]
+      },
+      "light": {
+        "card": [
+          { "color": "0x59000000", "blurRadius": 16.0, "offset": [0.0, 4.0] }
+        ]
+      }
     }
   }
 }

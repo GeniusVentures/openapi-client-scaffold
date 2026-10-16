@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
 
 /// Lookup helpers for the frontend_scaffold Material 3 theme extensions.
 extension ScaffoldThemeX on BuildContext {
@@ -14,6 +15,17 @@ extension ScaffoldThemeX on BuildContext {
   /// [ScaffoldDimens.defaultDimens] when the host app did not register one.
   ScaffoldDimens get dimens =>
       Theme.of(this).extension<ScaffoldDimens>() ?? ScaffoldDimens.defaultDimens;
+
+  /// Resolves the registered [ScaffoldShadows], falling back to
+  /// [ScaffoldShadows.lightShadows] or [ScaffoldShadows.defaultShadows]
+  /// according to [ThemeData.brightness] when the host app did not register one.
+  ScaffoldShadows get shadows {
+    final theme = Theme.of(this);
+    return theme.extension<ScaffoldShadows>() ??
+        (theme.brightness == Brightness.light
+            ? ScaffoldShadows.lightShadows
+            : ScaffoldShadows.defaultShadows);
+  }
 }
 
 /// Convenience list of the frontend_scaffold theme extensions to spread into

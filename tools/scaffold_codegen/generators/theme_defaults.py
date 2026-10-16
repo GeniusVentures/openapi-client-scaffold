@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Generate the default ScaffoldPalette / ScaffoldDimens values from design_tokens.json.
+"""Generate the default values of the scaffold theme extensions from design_tokens.json.
 
 The ``scaffold`` namespace of the repo token file is the source of truth. Each
-region listed in ``REGIONS`` is rendered through
-``templates/theme/const_args.dart.jinja2`` and spliced between the
-``GENERATED`` / ``END GENERATED`` marker comments inside the matching const
-constructor call in ``lib/theme/``. Everything outside the markers is left as
-written.
+region listed in ``REGIONS`` is rendered through a template chosen by its style
+and spliced between the ``GENERATED`` / ``END GENERATED`` marker comments in the
+matching file in ``lib/theme/``. An ``args`` region holds ``name: literal,``
+lines inside a const constructor call
+(``templates/theme/const_args.dart.jinja2``); a ``params`` region holds
+``this.name = literal,`` lines inside a constructor parameter list
+(``templates/theme/const_params.dart.jinja2``). Everything outside the markers is
+left as written. Target files: scaffold_palette.dart, scaffold_dimens.dart,
+scaffold_shadows.dart.
 
 The CLI always reads the repo ``design_tokens.json``; a CMake ``DESIGN_TOKENS``
 override never feeds committed Dart.
@@ -24,27 +28,35 @@ import decimal
 import json
 import re
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from scaffold_codegen import DESIGN_TOKENS, LIB_THEME_DIR, REPO_ROOT, TEMPLATES_DIR
 from scaffold_codegen.engine import create_environment
 
-TEMPLATE_NAME = "theme/const_args.dart.jinja2"
+TEMPLATE_NAMES = {
+    "args": "theme/const_args.dart.jinja2",
+    "params": "theme/const_params.dart.jinja2",
+}
 
 BEGIN_MARKER = "    // GENERATED from design_tokens.json {id}. Do not edit."
 END_MARKER = "    // END GENERATED {id}"
 
-#: (file name in LIB_THEME_DIR, token path, literal kind). Row order is splice order.
-REGIONS: tuple[tuple[str, tuple[str, ...], str], ...] = (
-    ("scaffold_palette.dart", ("scaffold", "palette", "dark"), "color"),
-    ("scaffold_palette.dart", ("scaffold", "palette", "light"), "color"),
-    ("scaffold_dimens.dart", ("scaffold", "dimens"), "double"),
+#: (file name in LIB_THEME_DIR, token path, literal kind, style). Row order is splice order.
+REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
+    ("scaffold_palette.dart", ("scaffold", "palette", "dark"), "color", "args"),
+    ("scaffold_palette.dart", ("scaffold", "palette", "light"), "color", "args"),
+    ("scaffold_dimens.dart", ("scaffold", "dimens"), "double", "args"),
+    ("scaffold_shadows.dart", ("scaffold", "shadows", "dark"), "shadows", "params"),
+    ("scaffold_shadows.dart", ("scaffold", "shadows", "light"), "shadows", "args"),
 )
 
 _DOUBLE_RE = re.compile(r"-?\d+\.\d+")
 _NAME_RE = re.compile(r"[a-z][A-Za-z0-9]*")
 _ARGB_RE = re.compile(r"0x[0-9A-F]{8}")
 _DART_REF_RE = re.compile(r"ScaffoldColors\.[a-z][A-Za-z0-9]*")
+# A list literal or constructor call is only a constant default value with an explicit `const`.
+_NEEDS_CONST_RE = re.compile(r"\[|[A-Z][A-Za-z0-9]*\(")
 
 
 class ThemeTokenError(ValueError):
@@ -94,9 +106,37 @@ def dart_color(name: str, value: object) -> str:
     )
 
 
-_LITERAL_ENCODERS = {
+_SHADOW_KEYS = {"color", "blurRadius", "offset"}
+
+
+def dart_shadows(name: str, value: object) -> str:
+    """Return a Dart ``List<BoxShadow>`` literal for a list of shadow objects."""
+    if not isinstance(value, list):
+        raise ThemeTokenError(f"{name}: expected a list of shadow objects, got {value!r}")
+    entries = []
+    for index, entry in enumerate(value):
+        label = f"{name}[{index}]"
+        if not isinstance(entry, dict) or set(entry) != _SHADOW_KEYS:
+            raise ThemeTokenError(f"{label}: expected exactly the keys {sorted(_SHADOW_KEYS)}, got {entry!r}")
+        color = entry["color"]
+        if not (isinstance(color, str) and _ARGB_RE.fullmatch(color)):
+            raise ThemeTokenError(f"{label}.color: expected an uppercase 0xAARRGGBB string, got {color!r}")
+        offset = entry["offset"]
+        if not (isinstance(offset, list) and len(offset) == 2):
+            raise ThemeTokenError(f"{label}.offset: expected a list of two numbers, got {offset!r}")
+        blur = dart_double(f"{label}.blurRadius", entry["blurRadius"])
+        dx = dart_double(f"{label}.offset", offset[0])
+        dy = dart_double(f"{label}.offset", offset[1])
+        entries.append(
+            f"BoxShadow(color: Color({color}), blurRadius: {blur}, offset: Offset({dx}, {dy}))"
+        )
+    return "[" + ", ".join(entries) + "]"
+
+
+_LITERAL_ENCODERS: dict[str, Callable[[str, object], str | None]] = {
     "double": dart_double,
     "color": dart_color,
+    "shadows": dart_shadows,
 }
 
 
@@ -129,14 +169,15 @@ def render_files(
 ) -> dict[Path, str]:
     """Return the full regenerated text of every target file, keyed by path."""
     tokens = load_tokens(tokens_path)
-    template = create_environment([str(TEMPLATES_DIR)]).get_template(TEMPLATE_NAME)
+    environment = create_environment([str(TEMPLATES_DIR)])
+    templates = {style: environment.get_template(name) for style, name in TEMPLATE_NAMES.items()}
 
     file_names = list(dict.fromkeys(row[0] for row in REGIONS))
     rendered: dict[Path, str] = {}
     for file_name in file_names:
         target = theme_dir / file_name
         text = target.read_bytes().decode("utf-8").replace("\r\n", "\n")
-        for row_file, path, kind in REGIONS:
+        for row_file, path, kind, style in REGIONS:
             if row_file != file_name:
                 continue
             rid = region_id(path)
@@ -145,8 +186,13 @@ def render_files(
             for name, value in _region_entries(tokens, path).items():
                 if not _NAME_RE.fullmatch(name):
                     raise ThemeTokenError(f"{rid}: invalid entry name {name!r}")
-                args.append({"name": name, "literal": encode(f"{rid}.{name}", value)})
-            text = _splice(text, file_name, rid, template.render(args=args))
+                literal = encode(f"{rid}.{name}", value)
+                if literal is None and style == "args":
+                    raise ThemeTokenError(f"{rid}.{name}: an args region needs a literal")
+                if literal is not None and style == "params" and _NEEDS_CONST_RE.match(literal):
+                    literal = f"const {literal}"
+                args.append({"name": name, "literal": literal})
+            text = _splice(text, file_name, rid, templates[style].render(args=args))
         rendered[target] = text
     return rendered
 

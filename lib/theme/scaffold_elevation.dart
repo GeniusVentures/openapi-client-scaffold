@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Elevation tokens for frontend_scaffold surfaces. Dark-mode defaults;
-/// host apps that need appearance-aware shadows can substitute their own
-/// values.
+/// Elevation constants for frontend_scaffold surfaces, kept for compatibility.
+///
+/// Widgets read their shadows through `context.shadows` ([ScaffoldShadows]),
+/// which host apps can override. `ScaffoldShadows.defaultShadows.card` equals
+/// [card].
 class ScaffoldElevation {
   ScaffoldElevation._();
 
