@@ -17,6 +17,9 @@ CLI
 ---
     --tokens  PATH    Required.  Path to design_tokens.json.
     --output  PATH    Required.  Path for the generated .css file.
+    --check           Optional.  Compare the generated CSS with the existing
+                      --output file; exit 1 if missing or different.  Writes
+                      nothing.
 """
 from __future__ import annotations
 
@@ -248,6 +251,14 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help="Path for the generated m3_tokens.css file",
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help=(
+            "compare the generated CSS with the existing --output file and "
+            "exit 1 if it is missing or differs; writes nothing"
+        ),
+    )
     args = parser.parse_args(argv)
 
     # --- Load and parse tokens JSON ----------------------------------------
@@ -272,8 +283,23 @@ def main(argv: list[str] | None = None) -> int:
     # --- Generate CSS -----------------------------------------------------
     css = generate_css(tokens_data)
 
-    # --- Write output -----------------------------------------------------
     output_path = Path(args.output)
+
+    # --- Check mode: compare only, never write ----------------------------
+    if args.check:
+        try:
+            current = output_path.read_bytes()
+        except FileNotFoundError:
+            current = None
+        if current != css.encode("utf-8"):
+            sys.stderr.write(
+                f"ERROR: {args.output} is out of date with {args.tokens}; "
+                "regenerate without --check\n"
+            )
+            return 1
+        return 0
+
+    # --- Write output -----------------------------------------------------
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(css, encoding="utf-8", newline="\n")

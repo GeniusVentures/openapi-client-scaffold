@@ -1,0 +1,71 @@
+/* Auto-generated from design_tokens.json by scaffold_codegen.m3_tokens_css -- do not edit by hand. */
+
+:root {
+    --md-sys-color-error: #B3261E;
+    --md-sys-color-on-error: #FFFFFF;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-on-secondary: #FFFFFF;
+    --md-sys-color-on-surface: #1C1B1F;
+    --md-sys-color-outline: #79747E;
+    --md-sys-color-primary: #6750A4;
+    --md-sys-color-secondary: #625B71;
+    --md-sys-color-surface: #FFFBFE;
+    --md-sys-color-surface-variant: #E7E0EC;
+    --md-sys-color-tertiary: #7D5260;
+
+    --md-sys-typography-body-letter-spacing: 0.25px;
+    --md-sys-typography-body-line-height: 20px;
+    --md-sys-typography-body-size: 14px;
+    --md-sys-typography-body-weight: 400;
+    --md-sys-typography-display-letter-spacing: -0.25px;
+    --md-sys-typography-display-line-height: 64px;
+    --md-sys-typography-display-size: 57px;
+    --md-sys-typography-display-weight: 400;
+    --md-sys-typography-headline-letter-spacing: 0px;
+    --md-sys-typography-headline-line-height: 40px;
+    --md-sys-typography-headline-size: 32px;
+    --md-sys-typography-headline-weight: 400;
+    --md-sys-typography-label-letter-spacing: 0.5px;
+    --md-sys-typography-label-line-height: 16px;
+    --md-sys-typography-label-size: 11px;
+    --md-sys-typography-label-weight: 500;
+    --md-sys-typography-title-letter-spacing: 0px;
+    --md-sys-typography-title-line-height: 28px;
+    --md-sys-typography-title-size: 22px;
+    --md-sys-typography-title-weight: 500;
+
+    --md-sys-shape-extra-large: 28px;
+    --md-sys-shape-extra-small: 4px;
+    --md-sys-shape-large: 16px;
+    --md-sys-shape-medium: 12px;
+    --md-sys-shape-small: 8px;
+
+    --md-sys-elevation-level0: none;
+    --md-sys-elevation-level0-tint: 0.0;
+    --md-sys-elevation-level1: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
+    --md-sys-elevation-level1-tint: 0.05;
+    --md-sys-elevation-level2: 0 1px 2px 0 rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+    --md-sys-elevation-level2-tint: 0.08;
+    --md-sys-elevation-level3: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15);
+    --md-sys-elevation-level3-tint: 0.11;
+    --md-sys-elevation-level4: 0 2px 3px 0 rgba(0,0,0,0.3), 0 6px 10px 4px rgba(0,0,0,0.15);
+    --md-sys-elevation-level4-tint: 0.12;
+    --md-sys-elevation-level5: 0 4px 4px 0 rgba(0,0,0,0.3), 0 8px 12px 6px rgba(0,0,0,0.15);
+    --md-sys-elevation-level5-tint: 0.14;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --md-sys-color-error: #F2B8B5;
+        --md-sys-color-on-error: #601410;
+        --md-sys-color-on-primary: #381E72;
+        --md-sys-color-on-secondary: #332D41;
+        --md-sys-color-on-surface: #E6E1E5;
+        --md-sys-color-outline: #938F99;
+        --md-sys-color-primary: #D0BCFF;
+        --md-sys-color-secondary: #CCC2DC;
+        --md-sys-color-surface: #1C1B1F;
+        --md-sys-color-surface-variant: #49454F;
+        --md-sys-color-tertiary: #EFB8C8;
+    }
+}
