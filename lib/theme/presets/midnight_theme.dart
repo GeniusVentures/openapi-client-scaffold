@@ -23,11 +23,19 @@ ThemeData midnightTheme(Brightness brightness) {
 
 const List<ThemeExtension<dynamic>> _darkExtensions = [
   Midnight.darkPalette,
+  Midnight.dimens,
   Midnight.darkColorRoles,
+  Midnight.darkShadows,
+  Midnight.motion,
+  Midnight.typography,
 ];
 const List<ThemeExtension<dynamic>> _lightExtensions = [
   Midnight.lightPalette,
+  Midnight.dimens,
   Midnight.lightColorRoles,
+  Midnight.lightShadows,
+  Midnight.motion,
+  Midnight.typography,
 ];
 
 /// The scaffold theme extensions of the midnight preset for [brightness].

@@ -49,19 +49,25 @@ final _themes = <_Theme>[
     ScaffoldColorRoles.lightColorRoles,
     checksFallback: true,
   ),
-  const _Theme(
+  _Theme(
     'midnight dark',
     Midnight.darkPalette,
     Brightness.dark,
     Midnight.darkColorRoles,
-    extraSurfaces: {},
+    extraSurfaces: {
+      'surfaceBase': Midnight.darkColors.surfaceBase,
+      'surfaceSheet': Midnight.darkColors.surfaceSheet,
+    },
   ),
-  const _Theme(
+  _Theme(
     'midnight light',
     Midnight.lightPalette,
     Brightness.light,
     Midnight.lightColorRoles,
-    extraSurfaces: {},
+    extraSurfaces: {
+      'surfaceBase': Midnight.lightColors.surfaceBase,
+      'surfaceSheet': Midnight.lightColors.surfaceSheet,
+    },
   ),
 ];
 
@@ -168,6 +174,49 @@ const _rolesClasses = <String, _Entry>{
   ),
 };
 
+const _presetAccentFill = _Entry(
+  _Role.excluded,
+  'fill or gradient stop; its foreground pair is checked in 15-04',
+);
+const _presetForegroundOnFill = _Entry(
+  _Role.excluded,
+  'foreground on a fill, checked as a pair in 15-04',
+);
+
+const _presetColorClasses = <String, _Entry>{
+  'surfaceBase': _surface,
+  'surfaceSheet': _surface,
+  'accentBadgeText': _text,
+  'surfaceSunken': _Entry(
+    _Role.excluded,
+    'recessed track or well that holds no text in the preset',
+  ),
+  'scrim': _Entry(_Role.excluded, 'modal barrier'),
+  'accentPrimary': _presetAccentFill,
+  'accentPrimaryStrong': _presetAccentFill,
+  'accentSecondary': _presetAccentFill,
+  'accentSecondaryStrong': _presetAccentFill,
+  'accentSecondaryBright': _presetAccentFill,
+  'accentTertiary': _presetAccentFill,
+  'textOnAccent': _presetForegroundOnFill,
+  'textOnError': _presetForegroundOnFill,
+  'textTertiary': _Entry(
+    _Role.excluded,
+    'disabled label, exempt under WCAG 1.4.3',
+  ),
+  'borderStrong': _Entry(_Role.excluded, 'decorative hairline'),
+  'borderControlOnAccent': _Entry(
+    _Role.excluded,
+    'edge on a translucent accent track, no consumer yet',
+  ),
+  'statusWarning': _Entry(_Role.excluded, 'warning fill'),
+  'selection': _Entry(_Role.excluded, 'text selection highlight'),
+};
+
+final Map<String, Color Function(MidnightColors)> _presetTextGetters = {
+  'accentBadgeText': (c) => c.accentBadgeText,
+};
+
 final Map<String, Color Function(ScaffoldPalette)> _paletteGetters = {
   'surfaceElevated': (p) => p.surfaceElevated,
   'deepBlueCardColor': (p) => p.deepBlueCardColor,
@@ -188,6 +237,16 @@ Map<String, dynamic> _scaffoldTokens([String file = 'design_tokens.json']) {
   final decoded =
       jsonDecode(File(file).readAsStringSync()) as Map<String, dynamic>;
   return decoded['scaffold'] as Map<String, dynamic>;
+}
+
+Set<String> _presetColorKeys(String mode) {
+  final decoded =
+      jsonDecode(File('tokens/midnight.json').readAsStringSync())
+          as Map<String, dynamic>;
+  final colors =
+      (decoded['preset'] as Map<String, dynamic>)['colors']
+          as Map<String, dynamic>;
+  return (colors[mode] as Map<String, dynamic>).keys.toSet();
 }
 
 Set<String> _keys(Map<String, dynamic> tokens, String group, String mode) =>
@@ -249,8 +308,17 @@ void main() {
           _keys(midnight, 'colorRoles', mode),
           reason: 'midnight scaffold.colorRoles.$mode',
         );
+        expect(
+          _presetColorClasses.keys.toSet(),
+          _presetColorKeys(mode),
+          reason: 'midnight preset.colors.$mode',
+        );
       }
-      for (final entry in {..._paletteClasses, ..._rolesClasses}.entries) {
+      for (final entry in {
+        ..._paletteClasses,
+        ..._rolesClasses,
+        ..._presetColorClasses,
+      }.entries) {
         expect(entry.value.reason, isNotEmpty, reason: entry.key);
       }
     },
@@ -341,6 +409,29 @@ void main() {
             );
             _expectPair(_roleColor(roles, name), surface.value, min);
           });
+        }
+      }
+    }
+
+    if (theme.name.startsWith('midnight')) {
+      final colors = theme.brightness == Brightness.dark
+          ? Midnight.darkColors
+          : Midnight.lightColors;
+      for (final entry in _presetColorClasses.entries) {
+        if (entry.value.role != _Role.text) {
+          continue;
+        }
+        for (final surface in _surfacesOf(theme).entries) {
+          test(
+            '${theme.name}: ${entry.key} (preset) on ${surface.key} >= $kWcagText',
+            () {
+              _expectPair(
+                _presetTextGetters[entry.key]!(colors),
+                surface.value,
+                kWcagText,
+              );
+            },
+          );
         }
       }
     }

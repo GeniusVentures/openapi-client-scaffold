@@ -72,6 +72,124 @@
         "sheetForeground": "0xFF10131A",
         "sheetDivider": "0x1F10131A"
       }
+    },
+    "dimens": {
+      "horizontalPadding": 20.0,
+      "horizontalDesktopPadding": 40.0,
+      "verticalDesktopPadding": 40.0,
+      "itemSpacing": 16.0,
+      "borderRadiusCard": 15.0,
+      "borderRadiusButton": 48.0,
+      "appBarHeight": 68.0,
+      "space2": 4.0,
+      "space3": 6.0,
+      "space4": 8.0,
+      "space6": 12.0,
+      "space8": 16.0,
+      "space12": 24.0,
+      "radiusMd": 12.0,
+      "radiusPill": 48.0,
+      "focusRingWidth": 2.0,
+      "skeletonCornerRadius": 4.0,
+      "disabledOverlayOpacity": 0.40,
+      "dragHandleSize": 24.0,
+      "minTouchTarget": 48.0,
+      "touchTargetPadding": 12.0
+    },
+    "shadows": {
+      "dark": {
+        "card": [
+          {
+            "color": "0x59000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
+        ]
+      },
+      "light": {
+        "card": [
+          {
+            "color": "0x1F000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
+        ]
+      }
+    },
+    "motion": {
+      "durations": {
+        "short": 120,
+        "medium": 200,
+        "long": 320
+      },
+      "curves": {
+        "standard": "Curves.easeOutCubic",
+        "decelerate": "Curves.easeOut",
+        "emphasized": "Curves.easeOutExpo"
+      }
+    },
+    "typography": {
+      "textStyles": {
+        "inputStyle": {
+          "fontFamily": "Inter",
+          "fontSize": 16.0,
+          "fontWeight": 400,
+          "letterSpacing": 0.0
+        }
+      },
+      "fontFamilies": {
+        "monoFontFamily": "JetBrainsMono"
+      }
+    }
+  },
+  "preset": {
+    "colors": {
+      "dark": {
+        "surfaceBase": "0xFF0B0D12",
+        "surfaceSheet": "0xFF171A21",
+        "surfaceSunken": "0xFF06080C",
+        "scrim": "0x99000000",
+        "accentPrimary": "0xFF14C8FF",
+        "accentPrimaryStrong": "0xFF0AAEE6",
+        "accentSecondary": "0xFF2BF5B4",
+        "accentSecondaryStrong": "0xFF0AD89C",
+        "accentSecondaryBright": "0xFF5BFFD0",
+        "accentTertiary": "0xFFC28FFF",
+        "accentBadgeText": "0xFF0AB2EB",
+        "textOnAccent": "0xFF000B18",
+        "textOnError": "0xFF000B18",
+        "textTertiary": "0xFF35363D",
+        "borderStrong": "0x3DFFFFFF",
+        "borderControlOnAccent": "0x94FFFFFF",
+        "statusWarning": "0xFFFFC42E",
+        "selection": "0xFF8A8F9D"
+      },
+      "light": {
+        "surfaceBase": "0xFFDCE0E6",
+        "surfaceSheet": "0xFFEFF2F6",
+        "surfaceSunken": "0xFFCFD4DB",
+        "scrim": "0x99000000",
+        "accentPrimary": "0xFF14C8FF",
+        "accentPrimaryStrong": "0xFF0AAEE6",
+        "accentSecondary": "0xFF2BF5B4",
+        "accentSecondaryStrong": "0xFF0AD89C",
+        "accentSecondaryBright": "0xFF5BFFD0",
+        "accentTertiary": "0xFFC28FFF",
+        "accentBadgeText": "0xFF0A6480",
+        "textOnAccent": "0xFF000B18",
+        "textOnError": "0xFFFFFFFF",
+        "textTertiary": "0xFF35363D",
+        "borderStrong": "0x3D10131A",
+        "borderControlOnAccent": "0x8510131A",
+        "statusWarning": "0xFFFFC42E",
+        "selection": "0xFF8A8F9D"
+      }
     }
   }
 }
