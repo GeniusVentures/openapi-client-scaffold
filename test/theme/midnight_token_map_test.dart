@@ -619,6 +619,15 @@ void main() {
     expect(typography.monoFontFamily, 'JetBrainsMono');
   });
 
+  test('midnight numericStyle is tabular figures and nothing else', () {
+    final TextStyle numeric = Midnight.typography.numericStyle!;
+    expect(numeric.fontFeatures, const [FontFeature.tabularFigures()]);
+    expect(
+      numeric,
+      const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
+    );
+  });
+
   test('midnight shapes', () {
     const ScaffoldShapes shapes = Midnight.shapes;
     expect(shapes.inputFocusedBorderWidth, 2.0);

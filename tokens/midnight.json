@@ -195,7 +195,8 @@
           "fontSize": 16.0,
           "fontWeight": 400,
           "letterSpacing": 0.0
-        }
+        },
+        "numericStyle": { "tabularFigures": true }
       },
       "fontFamilies": {
         "monoFontFamily": "JetBrainsMono"

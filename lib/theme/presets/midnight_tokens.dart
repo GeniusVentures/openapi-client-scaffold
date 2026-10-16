@@ -190,6 +190,7 @@ abstract final class Midnight {
   static const ScaffoldTypography typography = ScaffoldTypography(
     // GENERATED from tokens/midnight.json scaffold.typography.textStyles. Do not edit.
     inputStyle: TextStyle(fontFamily: 'Inter', fontSize: 16.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    numericStyle: TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
     // END GENERATED scaffold.typography.textStyles
     // GENERATED from tokens/midnight.json scaffold.typography.fontFamilies. Do not edit.
     monoFontFamily: 'JetBrainsMono',

@@ -95,6 +95,32 @@ void main() {
     });
   });
 
+  group('numericStyle', () {
+    const tabular = TextStyle(fontFeatures: [FontFeature.tabularFigures()]);
+    const withNumeric = ScaffoldTypography(numericStyle: tabular);
+
+    test('is null in the defaults', () {
+      expect(ScaffoldTypography.defaultTypography.numericStyle, isNull);
+    });
+
+    test('copyWith sets it and keeps it', () {
+      expect(a.copyWith(numericStyle: tabular).numericStyle, tabular);
+      expect(
+        withNumeric.copyWith(monoFontFamily: 'Courier').numericStyle,
+        tabular,
+      );
+    });
+
+    test('lerp keeps null and interpolates two styles', () {
+      expect(a.lerp(b, 0.5).numericStyle, isNull);
+      const other = ScaffoldTypography(
+        numericStyle: TextStyle(fontSize: 20.0),
+      );
+      const start = ScaffoldTypography(numericStyle: TextStyle(fontSize: 10.0));
+      expect(start.lerp(other, 0.5).numericStyle?.fontSize, 15.0);
+    });
+  });
+
   group('context.typography', () {
     testWidgets('unregistered gives defaultTypography', (tester) async {
       final context = await _pumpContext(tester, ThemeData.dark());

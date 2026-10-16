@@ -11,12 +11,17 @@ class ScaffoldTypography extends ThemeExtension<ScaffoldTypography> {
   /// widget applies its own color.
   final TextStyle inputStyle;
 
+  /// Merged onto formatted numbers; null leaves their style as is. Its font
+  /// features replace the base style's.
+  final TextStyle? numericStyle;
+
   /// Font family for code blocks and inline code.
   final String monoFontFamily;
 
   const ScaffoldTypography({
     // GENERATED from design_tokens.json scaffold.typography.textStyles. Do not edit.
     this.inputStyle = const TextStyle(fontFamily: 'Roboto', fontSize: 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
+    this.numericStyle,
     // END GENERATED scaffold.typography.textStyles
     // GENERATED from design_tokens.json scaffold.typography.fontFamilies. Do not edit.
     this.monoFontFamily = 'monospace',
@@ -28,9 +33,14 @@ class ScaffoldTypography extends ThemeExtension<ScaffoldTypography> {
 
   /// Returns a copy of this typography with the given fields replaced.
   @override
-  ScaffoldTypography copyWith({TextStyle? inputStyle, String? monoFontFamily}) {
+  ScaffoldTypography copyWith({
+    TextStyle? inputStyle,
+    TextStyle? numericStyle,
+    String? monoFontFamily,
+  }) {
     return ScaffoldTypography(
       inputStyle: inputStyle ?? this.inputStyle,
+      numericStyle: numericStyle ?? this.numericStyle,
       monoFontFamily: monoFontFamily ?? this.monoFontFamily,
     );
   }
@@ -43,6 +53,7 @@ class ScaffoldTypography extends ThemeExtension<ScaffoldTypography> {
     }
     return ScaffoldTypography(
       inputStyle: TextStyle.lerp(inputStyle, other.inputStyle, t) ?? inputStyle,
+      numericStyle: TextStyle.lerp(numericStyle, other.numericStyle, t),
       monoFontFamily: t < 0.5 ? monoFontFamily : other.monoFontFamily,
     );
   }
