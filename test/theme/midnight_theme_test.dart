@@ -101,6 +101,112 @@ void main() {
     }
   });
 
+  group('midnightTheme widget smoke', () {
+    for (final brightness in Brightness.values) {
+      testWidgets('${brightness.name}: Material widgets pump cleanly', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(const Size(1200, 1600));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: midnightTheme(brightness),
+            home: DefaultTabController(
+              length: 2,
+              child: Scaffold(
+                appBar: AppBar(title: const Text('Title')),
+                bottomNavigationBar: BottomNavigationBar(
+                  currentIndex: 0,
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.settings),
+                      label: 'Settings',
+                    ),
+                  ],
+                ),
+                body: Row(
+                  children: [
+                    NavigationRail(
+                      selectedIndex: 0,
+                      destinations: const [
+                        NavigationRailDestination(
+                          icon: Icon(Icons.home),
+                          label: Text('Home'),
+                        ),
+                        NavigationRailDestination(
+                          icon: Icon(Icons.settings),
+                          label: Text('Settings'),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Elevated'),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text('Text'),
+                          ),
+                          OutlinedButton(
+                            onPressed: () {},
+                            child: const Text('Outlined'),
+                          ),
+                          FilledButton(
+                            onPressed: () {},
+                            child: const Text('Filled'),
+                          ),
+                          const TextField(
+                            decoration: InputDecoration(labelText: 'Label'),
+                          ),
+                          Checkbox(value: true, onChanged: (_) {}),
+                          const LinearProgressIndicator(value: 0.5),
+                          const Divider(),
+                          const TabBar(
+                            tabs: [
+                              Tab(text: 'One'),
+                              Tab(text: 'Two'),
+                            ],
+                          ),
+                          SearchBar(hintText: 'Search'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('${brightness.name}: DatePickerDialog pumps cleanly', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(const Size(1200, 1600));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: midnightTheme(brightness),
+            home: DatePickerDialog(
+              initialDate: DateTime(2026, 10, 16),
+              firstDate: DateTime(2020),
+              lastDate: DateTime(2030),
+            ),
+          ),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+  });
+
   group('midnightTheme registers every scaffold extension', () {
     for (final brightness in Brightness.values) {
       final isDark = brightness == Brightness.dark;
