@@ -9,7 +9,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// at `dimens.skeletonCornerRadius`. When motion is enabled, a
 /// [LinearGradient] shimmer (sweeping `palette.skeletonShimmerColor` between
 /// two `palette.skeletonBaseColor` edges) slides across the box at
-/// [ScaffoldMotionDurations.medium]. When [ScaffoldMotion.reducedMotion] is
+/// [ScaffoldMotionTheme.medium]. When [ScaffoldMotion.reducedMotion] is
 /// true, the sweep is replaced by a static opacity pulse (0.6 -> 1.0) — no
 /// horizontal motion.
 ///
@@ -48,11 +48,20 @@ class _ScaffoldSkeletonState extends State<ScaffoldSkeleton>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: ScaffoldMotionDurations.medium,
-    )..repeat(reverse: true);
+    _controller = AnimationController(vsync: this);
     _pulseOpacity = Tween<double>(begin: 0.6, end: 1.0).animate(_controller);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Theme is not readable in initState, so the period is set here. This
+    // runs before the first build and again when the registered motion changes.
+    final Duration period = context.motion.medium;
+    if (_controller.duration != period) {
+      _controller.duration = period;
+      _controller.repeat(reverse: true);
+    }
   }
 
   @override

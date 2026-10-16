@@ -179,10 +179,10 @@ class _ScaffoldCodeBlockState extends State<ScaffoldCodeBlock> {
       }
     });
     if (widget.highlightNewLines && !reducedMotion) {
-      // Remove the highlight after ScaffoldMotionDurations.long so the line
+      // Remove the highlight after the theme's long motion so the line
       // fades back to the default background. A natural fade-out via removal
       // is acceptable per the plan — no explicit reverse animation.
-      Timer(ScaffoldMotionDurations.long, () {
+      Timer(context.motion.long, () {
         if (!mounted) {
           return;
         }
@@ -206,7 +206,7 @@ class _ScaffoldCodeBlockState extends State<ScaffoldCodeBlock> {
     setState(() => _isCopied = true);
     _copiedTimer?.cancel();
     _copiedTimer = Timer(
-      reducedMotion ? Duration.zero : ScaffoldMotionDurations.medium,
+      reducedMotion ? Duration.zero : context.motion.medium,
       () {
         if (mounted) {
           setState(() => _isCopied = false);
@@ -258,7 +258,7 @@ class _ScaffoldCodeBlockState extends State<ScaffoldCodeBlock> {
 
     final TextStyle codeTextStyle =
         (textTheme.bodyMedium ?? const TextStyle()).copyWith(
-      fontFamily: 'monospace',
+      fontFamily: context.typography.monoFontFamily,
       height: 1.5,
       color: palette.textPrimary,
     );
@@ -352,7 +352,7 @@ class _ScaffoldCodeBlockState extends State<ScaffoldCodeBlock> {
             child: AnimatedSwitcher(
               duration: reducedMotion
                   ? Duration.zero
-                  : ScaffoldMotionDurations.medium,
+                  : context.motion.medium,
               child: Icon(
                 _isCopied ? Icons.check : Icons.copy,
                 key: ValueKey<bool>(_isCopied),
@@ -467,8 +467,8 @@ class _ScaffoldCodeBlockState extends State<ScaffoldCodeBlock> {
         key: ValueKey<int>(index),
         tween: Tween<double>(begin: 0.0, end: 1.0),
         duration:
-            reducedMotion ? Duration.zero : ScaffoldMotionDurations.short,
-        curve: ScaffoldMotionCurves.decelerate,
+            reducedMotion ? Duration.zero : context.motion.short,
+        curve: context.motion.decelerate,
         builder: (BuildContext context, double opacity, Widget? child) =>
             Opacity(opacity: opacity, child: child),
         child: row,

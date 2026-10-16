@@ -188,6 +188,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
           final palette = context.palette;
           final dimens = context.dimens;
           final textTheme = Theme.of(context).textTheme;
+          final String monoFontFamily = context.typography.monoFontFamily;
           final bool reducedMotion =
               ScaffoldMotion.of(context).reducedMotion;
 
@@ -222,7 +223,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
                 ScaffoldCodeInlineSpan(:final String code) => TextSpan(
                     text: code,
                     style: textTheme.bodyMedium
-                        ?.copyWith(fontFamily: 'monospace'),
+                        ?.copyWith(fontFamily: monoFontFamily),
                   ),
                 ScaffoldLinkSpan(:final String text, :final Uri uri) =>
                     _buildLinkSpan(text, uri, textTheme, palette),
@@ -293,8 +294,8 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
                 AnimatedSize(
                   duration: reducedMotion
                       ? Duration.zero
-                      : ScaffoldMotionDurations.medium,
-                  curve: ScaffoldMotionCurves.standard,
+                      : context.motion.medium,
+                  curve: context.motion.standard,
                   child: Padding(
                     padding: EdgeInsets.only(top: dimens.space8),
                     child: Container(
