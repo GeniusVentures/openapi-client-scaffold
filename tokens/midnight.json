@@ -64,7 +64,10 @@
         "surfaceEdge": "0x1FFFFFFF",
         "hoverFill": "0x1414C8FF",
         "hoverEdge": "0x3D14C8FF",
-        "scrim": "0x99000000"
+        "scrim": "0x99000000",
+        "checkboxFill": "0xFF0AAEE6",
+        "checkboxMark": "0xFF000B18",
+        "checkboxEdge": "0xFF0AAEE6"
       },
       "light": {
         "accent": "0xFF0AAEE6",
@@ -78,7 +81,10 @@
         "surfaceEdge": "0x1F10131A",
         "hoverFill": "0x1414C8FF",
         "hoverEdge": "0x3D14C8FF",
-        "scrim": "0x99000000"
+        "scrim": "0x99000000",
+        "checkboxFill": "0xFF0AAEE6",
+        "checkboxMark": "0xFF000B18",
+        "checkboxEdge": "0xFF0A6885"
       }
     },
     "dimens": {
@@ -191,7 +197,9 @@
     },
     "shapes": {
       "inputFocusedBorderWidth": 2.0,
-      "sheetRadius": 24.0
+      "sheetRadius": 24.0,
+      "checkboxRadius": 4.0,
+      "checkboxBorderWidth": 1.5
     }
   },
   "preset": {

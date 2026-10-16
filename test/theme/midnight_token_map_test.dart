@@ -196,6 +196,9 @@ final Map<String, Color? Function(ScaffoldColorRoles)> _roleFields = {
   'hoverFill': (c) => c.hoverFill,
   'hoverEdge': (c) => c.hoverEdge,
   'scrim': (c) => c.scrim,
+  'checkboxFill': (c) => c.checkboxFill,
+  'checkboxMark': (c) => c.checkboxMark,
+  'checkboxEdge': (c) => c.checkboxEdge,
 };
 
 const List<_PaletteRow> _roleRows = [
@@ -265,6 +268,24 @@ const List<_PaletteRow> _roleRows = [
     Color(0x99000000),
     Color(0x99000000),
     'modal barrier; equals MidnightColors.scrim',
+  ),
+  _PaletteRow(
+    'checkboxFill',
+    Color(0xFF0AAEE6),
+    Color(0xFF0AAEE6),
+    'checked fill; equals MidnightColors.accentPrimaryStrong',
+  ),
+  _PaletteRow(
+    'checkboxMark',
+    Color(0xFF000B18),
+    Color(0xFF000B18),
+    'checked mark; equals MidnightColors.textOnAccent (the source white tick is 2.56:1)',
+  ),
+  _PaletteRow(
+    'checkboxEdge',
+    Color(0xFF0AAEE6),
+    Color(0xFF0A6885),
+    'checkbox edge; equals the midnight accentOnSurface',
   ),
 ];
 
@@ -581,6 +602,35 @@ void main() {
     const ScaffoldShapes shapes = Midnight.shapes;
     expect(shapes.inputFocusedBorderWidth, 2.0);
     expect(shapes.sheetRadius, Midnight.scale.radiusXl);
+    expect(shapes.checkboxRadius, Midnight.scale.radiusXs);
+    expect(shapes.checkboxBorderWidth, 1.5);
+  });
+
+  test('midnight checkbox roles equal the preset and the other roles', () {
+    expect(
+      Midnight.darkColorRoles.checkboxFill,
+      Midnight.darkColors.accentPrimaryStrong,
+    );
+    expect(
+      Midnight.lightColorRoles.checkboxFill,
+      Midnight.lightColors.accentPrimaryStrong,
+    );
+    expect(
+      Midnight.darkColorRoles.checkboxMark,
+      Midnight.darkColors.textOnAccent,
+    );
+    expect(
+      Midnight.lightColorRoles.checkboxMark,
+      Midnight.lightColors.textOnAccent,
+    );
+    expect(
+      Midnight.darkColorRoles.checkboxEdge,
+      Midnight.darkColorRoles.accentOnSurface,
+    );
+    expect(
+      Midnight.lightColorRoles.checkboxEdge,
+      Midnight.lightColorRoles.accentOnSurface,
+    );
   });
 
   test('midnight scrim equals the preset scrim in both modes', () {

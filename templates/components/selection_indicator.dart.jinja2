@@ -16,9 +16,12 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// {% if variant == "radio" %}Renders a 20px circle outline that fills with a
 /// 12px `colorRoles.accentOnSurface` dot when checked, wrapped in a 48px
 /// [ScaffoldTouchTarget].{% elif variant == "checkbox" %}Renders a 20px
-/// rounded-rect outline that fills with `colorRoles.accentOnSurface` and shows a
-/// check (or dash when indeterminate), wrapped in a 48px
-/// [ScaffoldTouchTarget].{% elif variant == "toggle" %}Renders a 40x24 pill
+/// rounded-rect outline that fills and shows a check (or dash when
+/// indeterminate), wrapped in a 48px [ScaffoldTouchTarget]. The fill, mark, edge
+/// color, corner radius and edge width come from `colorRoles.checkboxFill`,
+/// `checkboxMark`, `checkboxEdge` and `shapes.checkboxRadius`,
+/// `checkboxBorderWidth`; unset, they keep `colorRoles.accentOnSurface`, white,
+/// `palette.textSecondary`, 2 px and 2 px.{% elif variant == "toggle" %}Renders a 40x24 pill
 /// track whose 20px thumb slides to the on position, wrapped in a 48px
 /// [ScaffoldTouchTarget].{% endif %}
 class {{ widget_class_name }} extends StatelessWidget {
@@ -130,18 +133,31 @@ class {{ widget_class_name }} extends StatelessWidget {
 
   Widget _buildCheckbox(BuildContext context, ScaffoldPalette palette) {
     final bool? checked = value;
+    final colorRoles = context.colorRoles;
+    final shapes = context.shapes;
+    final Color mark = colorRoles.checkboxMark ?? Colors.white;
     final Widget? icon = checked == null
-        ? const Icon(Icons.remove, color: Colors.white, size: 16)
+        ? Icon(Icons.remove, color: mark, size: 16)
         : checked
-            ? const Icon(Icons.check, color: Colors.white, size: 16)
+            ? Icon(Icons.check, color: mark, size: 16)
+            : null;
+    // A themed mark is read against the themed fill, so the dash gets the fill
+    // too; unthemed, only the checked state is filled.
+    final Color? fill = checked == true
+        ? colorRoles.checkboxFill ?? colorRoles.accentOnSurface
+        : checked == null
+            ? colorRoles.checkboxFill
             : null;
     return Container(
       width: 20,
       height: 20,
       decoration: BoxDecoration(
-        color: checked == true ? context.colorRoles.accentOnSurface : null,
-        borderRadius: BorderRadius.circular(2),
-        border: Border.all(color: palette.textSecondary, width: 2),
+        color: fill,
+        borderRadius: BorderRadius.circular(shapes.checkboxRadius ?? 2),
+        border: Border.all(
+          color: colorRoles.checkboxEdge ?? palette.textSecondary,
+          width: shapes.checkboxBorderWidth ?? 2,
+        ),
       ),
       child: icon == null ? null : Center(child: icon),
     );

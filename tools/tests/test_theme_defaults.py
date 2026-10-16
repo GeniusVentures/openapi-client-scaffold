@@ -497,8 +497,17 @@ def test_committed_color_roles_file_matches_render() -> None:
 
 def test_color_roles_tokens_are_a_dark_light_pair() -> None:
     roles = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]["colorRoles"]
-    assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, "surfaceEdge", "hoverFill", "hoverEdge", "scrim"]
-    for name in ("surfaceEdge", "hoverFill", "hoverEdge", "scrim"):
+    nullable = [
+        "surfaceEdge",
+        "hoverFill",
+        "hoverEdge",
+        "scrim",
+        "checkboxFill",
+        "checkboxMark",
+        "checkboxEdge",
+    ]
+    assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, *nullable]
+    for name in nullable:
         assert roles["dark"][name] is None
     assert list(roles["light"]) == COLOR_ROLE_NAMES
 
@@ -638,6 +647,8 @@ def test_committed_shapes_region_lists_every_shape_as_a_nullable_parameter() -> 
     assert lines[begin + 1 : end] == [
         "    this.inputFocusedBorderWidth,",
         "    this.sheetRadius,",
+        "    this.checkboxRadius,",
+        "    this.checkboxBorderWidth,",
     ]
 
 

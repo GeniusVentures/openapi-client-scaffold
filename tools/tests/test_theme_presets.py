@@ -149,6 +149,8 @@ def test_scaffold_shapes_region_renders_the_focused_border_width_and_sheet_radiu
     assert lines[begin + 1 : end] == [
         "    inputFocusedBorderWidth: 2.0,",
         "    sheetRadius: 24.0,",
+        "    checkboxRadius: 4.0,",
+        "    checkboxBorderWidth: 1.5,",
     ]
 
 

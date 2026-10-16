@@ -83,6 +83,9 @@ abstract final class Midnight {
     hoverFill: Color(0x1414C8FF),
     hoverEdge: Color(0x3D14C8FF),
     scrim: Color(0x99000000),
+    checkboxFill: Color(0xFF0AAEE6),
+    checkboxMark: Color(0xFF000B18),
+    checkboxEdge: Color(0xFF0AAEE6),
     // END GENERATED scaffold.colorRoles.dark
   );
 
@@ -101,6 +104,9 @@ abstract final class Midnight {
     hoverFill: Color(0x1414C8FF),
     hoverEdge: Color(0x3D14C8FF),
     scrim: Color(0x99000000),
+    checkboxFill: Color(0xFF0AAEE6),
+    checkboxMark: Color(0xFF000B18),
+    checkboxEdge: Color(0xFF0A6885),
     // END GENERATED scaffold.colorRoles.light
   );
 
@@ -189,6 +195,8 @@ abstract final class Midnight {
     // GENERATED from tokens/midnight.json scaffold.shapes. Do not edit.
     inputFocusedBorderWidth: 2.0,
     sheetRadius: 24.0,
+    checkboxRadius: 4.0,
+    checkboxBorderWidth: 1.5,
     // END GENERATED scaffold.shapes
   );
 

@@ -15,10 +15,18 @@ class ScaffoldShapes extends ThemeExtension<ScaffoldShapes> {
   /// top corners on mobile and a square desktop panel.
   final double? sheetRadius;
 
+  /// Corner radius of a ScaffoldSelectionIndicatorCheckbox. Null keeps 2 px.
+  final double? checkboxRadius;
+
+  /// Edge width of a ScaffoldSelectionIndicatorCheckbox. Null keeps 2 px.
+  final double? checkboxBorderWidth;
+
   const ScaffoldShapes({
     // GENERATED from design_tokens.json scaffold.shapes. Do not edit.
     this.inputFocusedBorderWidth,
     this.sheetRadius,
+    this.checkboxRadius,
+    this.checkboxBorderWidth,
     // END GENERATED scaffold.shapes
   });
 
@@ -30,11 +38,15 @@ class ScaffoldShapes extends ThemeExtension<ScaffoldShapes> {
   ScaffoldShapes copyWith({
     double? inputFocusedBorderWidth,
     double? sheetRadius,
+    double? checkboxRadius,
+    double? checkboxBorderWidth,
   }) {
     return ScaffoldShapes(
       inputFocusedBorderWidth:
           inputFocusedBorderWidth ?? this.inputFocusedBorderWidth,
       sheetRadius: sheetRadius ?? this.sheetRadius,
+      checkboxRadius: checkboxRadius ?? this.checkboxRadius,
+      checkboxBorderWidth: checkboxBorderWidth ?? this.checkboxBorderWidth,
     );
   }
 
@@ -50,6 +62,12 @@ class ScaffoldShapes extends ThemeExtension<ScaffoldShapes> {
         t,
       ),
       sheetRadius: lerpDouble(sheetRadius, other.sheetRadius, t),
+      checkboxRadius: lerpDouble(checkboxRadius, other.checkboxRadius, t),
+      checkboxBorderWidth: lerpDouble(
+        checkboxBorderWidth,
+        other.checkboxBorderWidth,
+        t,
+      ),
     );
   }
 }

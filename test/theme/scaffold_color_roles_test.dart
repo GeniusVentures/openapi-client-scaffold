@@ -349,6 +349,63 @@ void main() {
     });
   });
 
+  group('checkbox roles', () {
+    const fill = Color(0xFF0AAEE6);
+    const mark = Color(0xFF000B18);
+    const edge = Color(0xFF0A6885);
+    const withCheckbox = ScaffoldColorRoles(
+      checkboxFill: fill,
+      checkboxMark: mark,
+      checkboxEdge: edge,
+    );
+
+    test('are null in the defaults and every fallback', () {
+      for (final roles in [
+        dark,
+        light,
+        ScaffoldColorRoles.fallbackFor(defaultPalette, Brightness.dark),
+        ScaffoldColorRoles.fallbackFor(lightPalette, Brightness.light),
+        ScaffoldColorRoles.fallbackForPalette(defaultPalette),
+        ScaffoldColorRoles.fallbackForPalette(lightPalette),
+      ]) {
+        expect(roles.checkboxFill, isNull);
+        expect(roles.checkboxMark, isNull);
+        expect(roles.checkboxEdge, isNull);
+      }
+    });
+
+    test('copyWith sets them and keeps them', () {
+      final changed = a.copyWith(
+        checkboxFill: fill,
+        checkboxMark: mark,
+        checkboxEdge: edge,
+      );
+      expect(changed.checkboxFill, fill);
+      expect(changed.checkboxMark, mark);
+      expect(changed.checkboxEdge, edge);
+      final kept = withCheckbox.copyWith(accent: const Color(0xFF111111));
+      expect(kept.checkboxFill, fill);
+      expect(kept.checkboxMark, mark);
+      expect(kept.checkboxEdge, edge);
+    });
+
+    test('lerp keeps null, blends two values', () {
+      final nulls = a.lerp(b, 0.5);
+      expect(nulls.checkboxFill, isNull);
+      expect(nulls.checkboxMark, isNull);
+      expect(nulls.checkboxEdge, isNull);
+      const other = ScaffoldColorRoles(
+        checkboxFill: Color(0xFF000000),
+        checkboxMark: Color(0xFF000000),
+        checkboxEdge: Color(0xFF000000),
+      );
+      final mixed = withCheckbox.lerp(other, 0.5);
+      expect(mixed.checkboxFill, Color.lerp(fill, other.checkboxFill, 0.5));
+      expect(mixed.checkboxMark, Color.lerp(mark, other.checkboxMark, 0.5));
+      expect(mixed.checkboxEdge, Color.lerp(edge, other.checkboxEdge, 0.5));
+    });
+  });
+
   group('hoverFill and hoverEdge', () {
     const fill = Color(0x1F123456);
     const edge = Color(0x3D123456);

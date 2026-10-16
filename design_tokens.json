@@ -243,7 +243,10 @@
         "surfaceEdge": null,
         "hoverFill": null,
         "hoverEdge": null,
-        "scrim": null
+        "scrim": null,
+        "checkboxFill": null,
+        "checkboxMark": null,
+        "checkboxEdge": null
       },
       "light": {
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
@@ -262,7 +265,9 @@
     },
     "shapes": {
       "inputFocusedBorderWidth": null,
-      "sheetRadius": null
+      "sheetRadius": null,
+      "checkboxRadius": null,
+      "checkboxBorderWidth": null
     }
   }
 }

@@ -27,6 +27,8 @@ void main() {
     test('every field is null', () {
       expect(ScaffoldShapes.defaultShapes.inputFocusedBorderWidth, isNull);
       expect(ScaffoldShapes.defaultShapes.sheetRadius, isNull);
+      expect(ScaffoldShapes.defaultShapes.checkboxRadius, isNull);
+      expect(ScaffoldShapes.defaultShapes.checkboxBorderWidth, isNull);
     });
 
     test('const ScaffoldShapes() is the default', () {
@@ -67,6 +69,27 @@ void main() {
         sheet.lerp(const ScaffoldShapes(sheetRadius: 8.0), 0.5).sheetRadius,
         16.0,
       );
+    });
+  });
+
+  group('checkboxRadius and checkboxBorderWidth', () {
+    const box = ScaffoldShapes(checkboxRadius: 4.0, checkboxBorderWidth: 1.5);
+
+    test('copyWith sets them and keeps them', () {
+      final changed = a.copyWith(checkboxRadius: 6.0, checkboxBorderWidth: 3.0);
+      expect(changed.checkboxRadius, 6.0);
+      expect(changed.checkboxBorderWidth, 3.0);
+      final kept = box.copyWith(sheetRadius: 8.0);
+      expect(kept.checkboxRadius, 4.0);
+      expect(kept.checkboxBorderWidth, 1.5);
+    });
+
+    test('lerp keeps null, blends two values', () {
+      expect(a.lerp(b, 0.5).checkboxRadius, isNull);
+      expect(a.lerp(b, 0.5).checkboxBorderWidth, isNull);
+      const other = ScaffoldShapes(checkboxRadius: 8.0, checkboxBorderWidth: 3.5);
+      expect(box.lerp(other, 0.5).checkboxRadius, 6.0);
+      expect(box.lerp(other, 0.5).checkboxBorderWidth, 2.5);
     });
   });
 

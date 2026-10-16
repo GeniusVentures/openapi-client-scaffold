@@ -187,6 +187,18 @@ const _rolesClasses = <String, _Entry>{
     'hover hairline; the tint and the pointer carry the state',
   ),
   'scrim': _Entry(_Role.excluded, 'modal barrier'),
+  'checkboxFill': _Entry(
+    _Role.decorative,
+    'checked fill alone is about 2.3:1 on white; WCAG 1.4.11 is met by the mark on the fill and the edge on the surface, both checked',
+  ),
+  'checkboxMark': _Entry(
+    _Role.excluded,
+    'mark on checkboxFill, checked as a pair at 3:1',
+  ),
+  'checkboxEdge': _Entry(
+    _Role.nonText,
+    'checkbox edge on the surface, 3:1; skipped while null',
+  ),
 };
 
 const _presetAccentFill = _Entry(
@@ -460,6 +472,26 @@ void main() {
           );
         }
       }
+    }
+
+    final checkboxEdge = theme.roles.checkboxEdge;
+    if (checkboxEdge != null) {
+      for (final surface in _surfacesOf(theme).entries) {
+        test(
+          '${theme.name}: checkboxEdge on ${surface.key} >= $kWcagNonText',
+          () {
+            _expectPair(checkboxEdge, surface.value, kWcagNonText);
+          },
+        );
+      }
+    }
+
+    final checkboxMark = theme.roles.checkboxMark;
+    final checkboxFill = theme.roles.checkboxFill;
+    if (checkboxMark != null && checkboxFill != null) {
+      test('${theme.name}: checkboxMark on checkboxFill >= $kWcagNonText', () {
+        _expectPair(checkboxMark, checkboxFill, kWcagNonText);
+      });
     }
 
     final hoverFill = theme.roles.hoverFill;

@@ -45,6 +45,18 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   /// the Material default on mobile.
   final Color? scrim;
 
+  /// Fill of a checked ScaffoldSelectionIndicatorCheckbox. Null keeps
+  /// [accentOnSurface].
+  final Color? checkboxFill;
+
+  /// Check or dash mark of a ScaffoldSelectionIndicatorCheckbox. Null keeps
+  /// white.
+  final Color? checkboxMark;
+
+  /// Edge of a ScaffoldSelectionIndicatorCheckbox. Null keeps the 2 px
+  /// textSecondary edge color.
+  final Color? checkboxEdge;
+
   const ScaffoldColorRoles({
     // GENERATED from design_tokens.json scaffold.colorRoles.dark. Do not edit.
     this.accent = ScaffoldColors.lightGreenPrimary,
@@ -59,6 +71,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     this.hoverFill,
     this.hoverEdge,
     this.scrim,
+    this.checkboxFill,
+    this.checkboxMark,
+    this.checkboxEdge,
     // END GENERATED scaffold.colorRoles.dark
   });
 
@@ -140,6 +155,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     Color? hoverFill,
     Color? hoverEdge,
     Color? scrim,
+    Color? checkboxFill,
+    Color? checkboxMark,
+    Color? checkboxEdge,
   }) {
     return ScaffoldColorRoles(
       accent: accent ?? this.accent,
@@ -155,6 +173,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       hoverFill: hoverFill ?? this.hoverFill,
       hoverEdge: hoverEdge ?? this.hoverEdge,
       scrim: scrim ?? this.scrim,
+      checkboxFill: checkboxFill ?? this.checkboxFill,
+      checkboxMark: checkboxMark ?? this.checkboxMark,
+      checkboxEdge: checkboxEdge ?? this.checkboxEdge,
     );
   }
 
@@ -184,6 +205,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       hoverFill: Color.lerp(hoverFill, other.hoverFill, t),
       hoverEdge: Color.lerp(hoverEdge, other.hoverEdge, t),
       scrim: Color.lerp(scrim, other.scrim, t),
+      checkboxFill: Color.lerp(checkboxFill, other.checkboxFill, t),
+      checkboxMark: Color.lerp(checkboxMark, other.checkboxMark, t),
+      checkboxEdge: Color.lerp(checkboxEdge, other.checkboxEdge, t),
     );
   }
 }

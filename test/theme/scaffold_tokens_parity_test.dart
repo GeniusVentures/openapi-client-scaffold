@@ -108,6 +108,9 @@ void _expectColorRoles(
   expect(roles.hoverFill, isNull);
   expect(roles.hoverEdge, isNull);
   expect(roles.scrim, isNull);
+  expect(roles.checkboxFill, isNull);
+  expect(roles.checkboxMark, isNull);
+  expect(roles.checkboxEdge, isNull);
   for (final field in _colorRoleFields.entries) {
     expect(
       _argb(region[field.key]),
@@ -125,7 +128,15 @@ void main() {
     _expectColorRoles(
       roles['dark'] as Map<String, dynamic>,
       ScaffoldColorRoles.defaultColorRoles,
-      nullable: ['surfaceEdge', 'hoverFill', 'hoverEdge', 'scrim'],
+      nullable: [
+        'surfaceEdge',
+        'hoverFill',
+        'hoverEdge',
+        'scrim',
+        'checkboxFill',
+        'checkboxMark',
+        'checkboxEdge',
+      ],
     );
   });
 
