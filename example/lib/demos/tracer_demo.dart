@@ -30,6 +30,7 @@ class _TracerDemoState extends State<TracerDemo> {
   @override
   Widget build(BuildContext context) {
     final dimens = context.dimens;
+    final palette = context.palette;
     return Scaffold(
       appBar: AppBar(title: const Text('Tracer — Core UI Foundation')),
       body: ScaffoldMotion(
@@ -38,9 +39,13 @@ class _TracerDemoState extends State<TracerDemo> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SwitchListTile(
-              title: const Text('Reduced motion'),
+              title: Text(
+                'Reduced motion',
+                style: TextStyle(color: palette.textPrimary),
+              ),
               subtitle: Text(
                 'ScaffoldMotion.of(context).reducedMotion = $_reducedMotion',
+                style: TextStyle(color: palette.textSecondary),
               ),
               value: _reducedMotion,
               onChanged: (value) => setState(() => _reducedMotion = value),
@@ -54,9 +59,12 @@ class _TracerDemoState extends State<TracerDemo> {
                     focusNode: _focusNode,
                     child: GestureDetector(
                       onTap: () => _focusNode.requestFocus(),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text('Focus me'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          'Focus me',
+                          style: TextStyle(color: palette.textPrimary),
+                        ),
                       ),
                     ),
                   ),

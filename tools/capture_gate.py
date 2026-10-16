@@ -1,0 +1,382 @@
+"""Capture gate: existing captures change only in sanctioned re-baseline commits.
+
+The ``history`` subcommand walks git history from the v1.4 base to HEAD and
+checks every commit that touched ``images/`` against
+``tools/capture_rebaselines.json``. An existing capture may change only in a
+commit listed there. The ``render`` subcommand re-runs the capture harness into
+a scratch directory and diffs it byte for byte against ``images/``.
+
+The render check is local only. Rasterization differs between machines, so CI
+cannot compare bytes; CI runs the history check through pytest.
+
+Exit codes: 0 pass, 1 violations or differences, 2 setup error.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from collections.abc import Sequence
+from dataclasses import dataclass
+from pathlib import Path
+
+from scaffold_codegen import REPO_ROOT
+
+MANIFEST = REPO_ROOT / "tools" / "capture_rebaselines.json"
+IMAGES_DIR = REPO_ROOT / "images"
+MIDNIGHT_PREFIX = "images/midnight/"
+HARNESS_TEST = "test/capture_images_test.dart"
+OUTPUT_TAIL_LINES = 30
+SCOPES = ("default", "midnight")
+_FULL_SHA = re.compile(r"[0-9a-f]{40}")
+_MANIFEST_KEYS = {"base", "rebaselines"}
+_ENTRY_KEYS = {"sha", "subject", "scope", "follows", "record"}
+
+
+class GateError(Exception):
+    """A setup problem: unreadable git state or an unreachable base."""
+
+
+@dataclass(frozen=True)
+class FileChange:
+    status: str
+    path: str
+
+
+@dataclass(frozen=True)
+class CaptureCommit:
+    sha: str
+    first_parent: str | None
+    subject: str
+    changes: tuple[FileChange, ...]
+
+
+@dataclass(frozen=True)
+class Rebaseline:
+    sha: str
+    subject: str
+    scope: str
+    follows: str | None
+    record: str
+
+
+@dataclass(frozen=True)
+class Manifest:
+    base: str
+    rebaselines: tuple[Rebaseline, ...]
+
+
+def _require_sha(value: object, where: str) -> str:
+    if not isinstance(value, str) or not _FULL_SHA.fullmatch(value):
+        raise ValueError(f"{where} must be 40 lowercase hex characters")
+    return value
+
+
+def _require_text(value: object, where: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{where} must be a non-empty string")
+    return value
+
+
+def _parse_entry(index: int, raw: object) -> Rebaseline:
+    where = f"rebaselines[{index}]"
+    if not isinstance(raw, dict):
+        raise ValueError(f"{where} must be an object")
+    if set(raw) != _ENTRY_KEYS:
+        raise ValueError(
+            f"{where} keys must be exactly {sorted(_ENTRY_KEYS)}, got {sorted(raw)}"
+        )
+    scope = raw["scope"]
+    if scope not in SCOPES:
+        raise ValueError(f"{where}.scope must be one of {SCOPES}")
+    follows = raw["follows"]
+    if follows is not None:
+        follows = _require_sha(follows, f"{where}.follows")
+    return Rebaseline(
+        sha=_require_sha(raw["sha"], f"{where}.sha"),
+        subject=_require_text(raw["subject"], f"{where}.subject"),
+        scope=scope,
+        follows=follows,
+        record=_require_text(raw["record"], f"{where}.record"),
+    )
+
+
+def load_manifest(path: Path) -> Manifest:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or set(data) != _MANIFEST_KEYS:
+        raise ValueError(f"manifest keys must be exactly {sorted(_MANIFEST_KEYS)}")
+    raw_entries = data["rebaselines"]
+    if not isinstance(raw_entries, list):
+        raise ValueError("rebaselines must be a list")
+    entries = tuple(_parse_entry(i, raw) for i, raw in enumerate(raw_entries))
+    shas = [e.sha for e in entries]
+    if len(set(shas)) != len(shas):
+        raise ValueError("rebaselines contains a duplicate sha")
+    return Manifest(base=_require_sha(data["base"], "base"), rebaselines=entries)
+
+
+def _git(
+    repo: Path, *args: str, ok: tuple[int, ...] = (0,)
+) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        ["git", *args], cwd=repo, text=True, capture_output=True, check=False
+    )
+    if result.returncode not in ok:
+        raise GateError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
+    return result
+
+
+def _parse_name_status(raw: str) -> tuple[FileChange, ...]:
+    fields = raw.split("\0")
+    changes: list[FileChange] = []
+    i = 0
+    while i < len(fields) and fields[i]:
+        status = fields[i][0]
+        if status in "RC":
+            changes.append(FileChange(status, fields[i + 1]))
+            changes.append(FileChange(status, fields[i + 2]))
+            i += 3
+        else:
+            changes.append(FileChange(status, fields[i + 1]))
+            i += 2
+    return tuple(changes)
+
+
+def read_capture_commits(
+    repo: Path, base: str, head: str = "HEAD"
+) -> list[CaptureCommit]:
+    ancestry = _git(
+        repo, "merge-base", "--is-ancestor", base, head, ok=(0, 1, 128)
+    )
+    if ancestry.returncode != 0:
+        raise GateError(
+            f"base {base} is not reachable from {head}; "
+            "CI must check out full history (actions/checkout fetch-depth: 0)"
+        )
+    listing = _git(
+        repo,
+        "rev-list",
+        "--reverse",
+        "--full-history",
+        "--no-merges",
+        f"{base}..{head}",
+        "--",
+        "images",
+    )
+    commits: list[CaptureCommit] = []
+    for sha in listing.stdout.split():
+        tree = _git(
+            repo, "diff-tree", "--no-commit-id", "-r", "-z", "--name-status", "-M", sha
+        )
+        meta = _git(repo, "show", "-s", "--format=%P%x00%s", sha)
+        parents, subject = meta.stdout.rstrip("\n").split("\0", 1)
+        first_parent = parents.split()[0] if parents.split() else None
+        commits.append(
+            CaptureCommit(sha, first_parent, subject, _parse_name_status(tree.stdout))
+        )
+    return commits
+
+
+def _is_image(path: str) -> bool:
+    return path.startswith("images/")
+
+
+def _unsanctioned_changes(commit: CaptureCommit) -> list[str]:
+    changed = [c.path for c in commit.changes if _is_image(c.path) and c.status != "A"]
+    if not changed:
+        return []
+    return [
+        f"{commit.sha[:7]} changes existing captures without a manifest entry: "
+        f"{', '.join(changed)}"
+    ]
+
+
+def _non_png_paths(commit: CaptureCommit) -> list[str]:
+    bad = [
+        c.path for c in commit.changes if _is_image(c.path) and not c.path.endswith(".png")
+    ]
+    if not bad:
+        return []
+    return [f"{commit.sha[:7]} changes non-PNG files under images/: {', '.join(bad)}"]
+
+
+def _isolation(commit: CaptureCommit) -> list[str]:
+    outside = [c.path for c in commit.changes if not _is_image(c.path)]
+    if not outside:
+        return []
+    return [
+        f"{commit.sha[:7]} is a sanctioned capture commit but also changes "
+        f"files outside images/: {', '.join(outside)}"
+    ]
+
+
+def _scope(commit: CaptureCommit, entry: Rebaseline) -> list[str]:
+    paths = [c.path for c in commit.changes if _is_image(c.path)]
+    if entry.scope == "midnight":
+        stray = [p for p in paths if not p.startswith(MIDNIGHT_PREFIX)]
+    else:
+        stray = [p for p in paths if p.startswith(MIDNIGHT_PREFIX)]
+    if not stray:
+        return []
+    return [
+        f"{commit.sha[:7]} has scope {entry.scope} but changes: {', '.join(stray)}"
+    ]
+
+
+def _identity(commit: CaptureCommit, entry: Rebaseline) -> list[str]:
+    problems: list[str] = []
+    if commit.subject != entry.subject:
+        problems.append(
+            f"{commit.sha[:7]} subject {commit.subject!r} does not match the "
+            f"manifest subject {entry.subject!r}"
+        )
+    if entry.follows is not None and commit.first_parent != entry.follows:
+        problems.append(
+            f"{commit.sha[:7]} first parent {commit.first_parent} does not match "
+            f"the manifest follows {entry.follows}"
+        )
+    return problems
+
+
+def find_violations(
+    commits: Sequence[CaptureCommit], manifest: Manifest
+) -> list[str]:
+    entries = {e.sha: e for e in manifest.rebaselines}
+    violations: list[str] = []
+    for commit in commits:
+        violations.extend(_non_png_paths(commit))
+        entry = entries.get(commit.sha)
+        if entry is None:
+            violations.extend(_unsanctioned_changes(commit))
+        else:
+            violations.extend(_isolation(commit))
+            violations.extend(_scope(commit, entry))
+            violations.extend(_identity(commit, entry))
+    seen = {c.sha for c in commits}
+    for entry in manifest.rebaselines:
+        if entry.sha not in seen:
+            violations.append(
+                f"{entry.sha[:7]} manifest entry has no matching capture commit "
+                "in the checked range"
+            )
+    return violations
+
+
+def _describe(commit: CaptureCommit, manifest: Manifest, violations: list[str]) -> str:
+    entry = next((e for e in manifest.rebaselines if e.sha == commit.sha), None)
+    if entry is not None:
+        label = f"sanctioned {entry.scope}"
+    elif any(v.startswith(commit.sha[:7]) for v in violations):
+        label = "UNSANCTIONED"
+    else:
+        label = "added only"
+    return f"{commit.sha[:7]} {label} {commit.subject}"
+
+
+def _run_history(args: argparse.Namespace) -> int:
+    manifest = load_manifest(args.manifest)
+    commits = read_capture_commits(REPO_ROOT, manifest.base, args.head)
+    violations = find_violations(commits, manifest)
+    for commit in commits:
+        print(_describe(commit, manifest, violations))
+    print(
+        f"{len(commits)} capture commits, {len(manifest.rebaselines)} sanctioned, "
+        f"{len(violations)} violations"
+    )
+    for violation in violations:
+        print(f"VIOLATION {violation}")
+    return 1 if violations else 0
+
+
+def _png_bytes(root: Path) -> dict[str, bytes]:
+    return {
+        path.relative_to(root).as_posix(): path.read_bytes()
+        for path in sorted(root.rglob("*.png"))
+    }
+
+
+def compare_capture_dirs(committed: Path, rendered: Path) -> list[str]:
+    old = _png_bytes(committed)
+    new = _png_bytes(rendered)
+    differences = [f"MISSING {name}" for name in old if name not in new]
+    differences += [f"EXTRA {name}" for name in new if name not in old]
+    differences += [f"DIFF {name}" for name in old if name in new and old[name] != new[name]]
+    return differences
+
+
+def _resolve_flutter(explicit: str | None) -> str:
+    flutter = shutil.which(explicit) if explicit else shutil.which("flutter")
+    if flutter is None:
+        raise GateError(
+            f"flutter not found ({explicit or 'flutter'}); pass --flutter or put it on PATH"
+        )
+    return flutter
+
+
+def _run_harness(flutter: str, capture_dir: Path) -> None:
+    env = {**os.environ, "SCAFFOLD_CAPTURE_DIR": capture_dir.as_posix()}
+    result = subprocess.run(
+        [flutter, "test", HARNESS_TEST],
+        cwd=REPO_ROOT / "example",
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        lines = (result.stdout + result.stderr).splitlines()[-OUTPUT_TAIL_LINES:]
+        tail = "\n".join(lines)
+        raise GateError(
+            f"capture harness failed with exit {result.returncode}:\n{tail}"
+        )
+
+
+def _run_render(args: argparse.Namespace) -> int:
+    flutter = _resolve_flutter(args.flutter)
+    scratch = Path(tempfile.mkdtemp(prefix="capture_gate_"))
+    try:
+        _run_harness(flutter, scratch)
+    except GateError:
+        shutil.rmtree(scratch, ignore_errors=True)
+        raise
+    differences = compare_capture_dirs(IMAGES_DIR, scratch)
+    rendered = _png_bytes(scratch)
+    midnight = sum(1 for name in rendered if name.startswith("midnight/"))
+    print(f"rendered {len(rendered) - midnight} default and {midnight} midnight PNGs")
+    for difference in differences:
+        print(difference)
+    print(f"{len(differences)} differences")
+    if differences:
+        print(f"kept rendered captures in {scratch}")
+        return 1
+    if args.keep:
+        print(f"kept rendered captures in {scratch}")
+    else:
+        shutil.rmtree(scratch)
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    sub = parser.add_subparsers(dest="command", required=True)
+    history = sub.add_parser("history", help="check git history of images/")
+    history.add_argument("--head", default="HEAD")
+    history.add_argument("--manifest", type=Path, default=MANIFEST)
+    render = sub.add_parser("render", help="re-run the capture harness and diff images/")
+    render.add_argument("--flutter", help="path to the flutter executable")
+    render.add_argument("--keep", action="store_true", help="keep the scratch directory")
+    args = parser.parse_args(argv)
+    try:
+        return _run_history(args) if args.command == "history" else _run_render(args)
+    except (GateError, ValueError, KeyError, OSError) as exc:
+        print(f"capture_gate: {exc}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

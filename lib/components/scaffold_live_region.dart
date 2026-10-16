@@ -26,6 +26,12 @@ class ScaffoldLiveRegion extends StatelessWidget {
       liveRegion: true,
       label: label,
       value: value,
+      // Do NOT merge descendants into this node. The default (merge) hides
+      // the child's own Semantics labels — when a labelled region wraps an
+      // interactive subtree (e.g. the chart scrubber's 'Chart scrubber' +
+      // 'Chart' labels), the merged node swallows them and a11y consumers
+      // (and tests) can no longer find the child's labels.
+      explicitChildNodes: true,
       child: child ?? const SizedBox.shrink(),
     );
   }

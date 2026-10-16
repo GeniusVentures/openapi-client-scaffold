@@ -9,6 +9,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_motion.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// Animates [child] with a shake effect.
 ///
@@ -17,6 +18,10 @@ import 'package:frontend_scaffold/components/scaffold_motion.dart';
 /// animation plays on mount when [trigger] is null; otherwise it replays
 /// whenever [trigger] changes. Content is excluded from semantics while
 /// animating.
+///
+/// The default duration and curve come from the `ScaffoldMotionTheme` in the
+/// ambient theme (`medium` duration); [duration] and [curve]
+/// override them.
 class ScaffoldAnimatedDisplayShake extends StatefulWidget {
   /// Creates a [ScaffoldAnimatedDisplayShake].
   const ScaffoldAnimatedDisplayShake({
@@ -34,10 +39,10 @@ class ScaffoldAnimatedDisplayShake extends StatefulWidget {
   /// When non-null, the animation replays whenever this value changes.
   final int? trigger;
 
-  /// Overrides the default animation duration.
+  /// Overrides the theme's default animation duration.
   final Duration? duration;
 
-  /// Overrides the default animation curve.
+  /// Overrides the theme's default animation curve.
   final Curve? curve;
 
   /// Animation strength (slide offset, turns, oscillation amplitude).
@@ -50,17 +55,27 @@ class ScaffoldAnimatedDisplayShake extends StatefulWidget {
 class _ScaffoldAnimatedDisplayShakeState extends State<ScaffoldAnimatedDisplayShake>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _configured = false;
 
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration ?? ScaffoldMotionDurations.medium,
-    );
-    _configureAnimation();
-    _start();
+    _controller = AnimationController(vsync: this);
+  }
+
+  Duration get _defaultDuration =>
+      widget.duration ?? context.motion.medium;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _controller.duration = _defaultDuration;
+    if (!_configured) {
+      _configured = true;
+      _configureAnimation();
+      _start();
+    }
   }
 
   void _configureAnimation() {
@@ -89,7 +104,7 @@ class _ScaffoldAnimatedDisplayShakeState extends State<ScaffoldAnimatedDisplaySh
   void didUpdateWidget(ScaffoldAnimatedDisplayShake oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration ?? ScaffoldMotionDurations.medium;
+      _controller.duration = _defaultDuration;
     }
     if (widget.trigger != oldWidget.trigger) {
       _replay();

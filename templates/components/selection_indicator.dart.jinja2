@@ -7,20 +7,21 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_touch_target.dart';
-{% if variant == "toggle" %}
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
-{% endif %}
+
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// A {{ variant }} selection indicator.
 ///
 /// {% if variant == "radio" %}Renders a 20px circle outline that fills with a
-/// 12px `palette.lightGreenPrimary` dot when checked, wrapped in a 48px
+/// 12px `colorRoles.accentOnSurface` dot when checked, wrapped in a 48px
 /// [ScaffoldTouchTarget].{% elif variant == "checkbox" %}Renders a 20px
-/// rounded-rect outline that fills with `palette.lightGreenPrimary` and shows a
-/// check (or dash when indeterminate), wrapped in a 48px
-/// [ScaffoldTouchTarget].{% elif variant == "toggle" %}Renders a 40x24 pill
+/// rounded-rect outline that fills and shows a check (or dash when
+/// indeterminate), wrapped in a 48px [ScaffoldTouchTarget]. The fill, mark, edge
+/// color, corner radius and edge width come from `colorRoles.checkboxFill`,
+/// `checkboxMark`, `checkboxEdge` and `shapes.checkboxRadius`,
+/// `checkboxBorderWidth`; unset, they keep `colorRoles.accentOnSurface`, white,
+/// `palette.textSecondary`, 2 px and 2 px.{% elif variant == "toggle" %}Renders a 40x24 pill
 /// track whose 20px thumb slides to the on position, wrapped in a 48px
 /// [ScaffoldTouchTarget].{% endif %}
 class {{ widget_class_name }} extends StatelessWidget {
@@ -63,11 +64,11 @@ class {{ widget_class_name }} extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
 {% if variant == "radio" %}
-    final Widget indicator = _buildRadio(palette);
+    final Widget indicator = _buildRadio(context, palette);
 {% elif variant == "checkbox" %}
-    final Widget indicator = _buildCheckbox(palette);
+    final Widget indicator = _buildCheckbox(context, palette);
 {% elif variant == "toggle" %}
-    final Widget indicator = _buildToggle(palette);
+    final Widget indicator = _buildToggle(context, palette);
 {% endif %}
 
     Widget result = Semantics(
@@ -98,7 +99,7 @@ class {{ widget_class_name }} extends StatelessWidget {
 {% if variant == "radio" %}
   void _handleTap() => onChanged?.call(!value);
 
-  Widget _buildRadio(ScaffoldPalette palette) {
+  Widget _buildRadio(BuildContext context, ScaffoldPalette palette) {
     return Container(
       width: 20,
       height: 20,
@@ -113,7 +114,7 @@ class {{ widget_class_name }} extends StatelessWidget {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: palette.lightGreenPrimary,
+                  color: context.colorRoles.accentOnSurface,
                 ),
               ),
             )
@@ -130,20 +131,33 @@ class {{ widget_class_name }} extends StatelessWidget {
     }
   }
 
-  Widget _buildCheckbox(ScaffoldPalette palette) {
+  Widget _buildCheckbox(BuildContext context, ScaffoldPalette palette) {
     final bool? checked = value;
+    final colorRoles = context.colorRoles;
+    final shapes = context.shapes;
+    final Color mark = colorRoles.checkboxMark ?? Colors.white;
     final Widget? icon = checked == null
-        ? const Icon(Icons.remove, color: Colors.white, size: 16)
+        ? Icon(Icons.remove, color: mark, size: 16)
         : checked
-            ? const Icon(Icons.check, color: Colors.white, size: 16)
+            ? Icon(Icons.check, color: mark, size: 16)
+            : null;
+    // A themed mark is read against the themed fill, so the dash gets the fill
+    // too; unthemed, only the checked state is filled.
+    final Color? fill = checked == true
+        ? colorRoles.checkboxFill ?? colorRoles.accentOnSurface
+        : checked == null
+            ? colorRoles.checkboxFill
             : null;
     return Container(
       width: 20,
       height: 20,
       decoration: BoxDecoration(
-        color: checked == true ? palette.lightGreenPrimary : null,
-        borderRadius: BorderRadius.circular(2),
-        border: Border.all(color: palette.textSecondary, width: 2),
+        color: fill,
+        borderRadius: BorderRadius.circular(shapes.checkboxRadius ?? 2),
+        border: Border.all(
+          color: colorRoles.checkboxEdge ?? palette.textSecondary,
+          width: shapes.checkboxBorderWidth ?? 2,
+        ),
       ),
       child: icon == null ? null : Center(child: icon),
     );
@@ -151,19 +165,19 @@ class {{ widget_class_name }} extends StatelessWidget {
 {% elif variant == "toggle" %}
   void _handleTap() => onChanged?.call(!value);
 
-  Widget _buildToggle(ScaffoldPalette palette) {
+  Widget _buildToggle(BuildContext context, ScaffoldPalette palette) {
     return Container(
       width: 40,
       height: 24,
       decoration: BoxDecoration(
-        color: value ? palette.lightGreenPrimary : palette.textSecondary,
+        color: value ? context.colorRoles.accentOnSurface : palette.textSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Stack(
         children: <Widget>[
           AnimatedPositioned(
-            duration: ScaffoldMotionDurations.short,
-            curve: ScaffoldMotionCurves.standard,
+            duration: context.motion.short,
+            curve: context.motion.standard,
             left: value ? 18 : 2,
             top: 2,
             child: Container(

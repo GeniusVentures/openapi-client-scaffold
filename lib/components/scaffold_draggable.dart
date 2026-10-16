@@ -67,7 +67,7 @@ class ScaffoldDraggable extends StatelessWidget {
       onDragEnd: onDragEnd == null ? null : (_) => onDragEnd!(),
       onDraggableCanceled: onDraggableCanceled == null
           ? null
-          : (_, __) => onDraggableCanceled!(),
+          : (_, _) => onDraggableCanceled!(),
       child: resolvedChild,
     );
 

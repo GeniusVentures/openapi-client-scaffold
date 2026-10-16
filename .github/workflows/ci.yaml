@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Enforces the quality bar the docs already claim: a --fatal-infos-clean
+# analyze and a green test suite. Both were manual-only before this workflow.
+jobs:
+  dart:
+    name: Analyze & test (Dart)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.41
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Test
+        run: flutter test
+
+  python:
+    name: Lint & test (Python codegen)
+    runs-on: ubuntu-latest
+    steps:
+      # The capture gate test walks history since the v1.4 base.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches `requires-python = ">=3.11"` in pyproject.toml.
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check
+
+      - name: Test
+        run: pytest
+
+      # CI now regenerates and diffs, which CONTRIBUTING.md used to leave as a manual check.
+      - name: Generator drift check
+        run: |
+          python -m scaffold_codegen.generators.theme_defaults --check
+          python -m scaffold_codegen.generators.theme_presets --check
+          python -m scaffold_codegen.m3_tokens_css --tokens design_tokens.json --output tools/tests/fixtures/m3_tokens.css --check
+          python -m scaffold_codegen.generators
+          git diff --exit-code lib/
+          test -z "$(git status --porcelain -- lib/)"

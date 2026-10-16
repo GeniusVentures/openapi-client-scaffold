@@ -1,10 +1,15 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
+import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_selectable_surface.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -17,7 +22,38 @@ Future<void> _pump(WidgetTester tester, Widget child) {
   );
 }
 
+void _noop() {}
+
 void main() {
+  testWidgets('selection tint follows the accent role', (tester) async {
+    const accent = Color(0xFF123456);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          extensions: [
+            ...scaffoldThemeExtensions,
+            const ScaffoldColorRoles(accent: accent),
+          ],
+        ),
+        home: const Scaffold(
+          body: Center(
+            child: ScaffoldSelectableSurface(selected: true, child: Text('x')),
+          ),
+        ),
+      ),
+    );
+
+    final Iterable<Color> tints = tester
+        .widgetList<ColoredBox>(
+          find.descendant(
+            of: find.byType(ScaffoldSelectableSurface),
+            matching: find.byType(ColoredBox),
+          ),
+        )
+        .map((ColoredBox b) => b.color);
+    expect(tints, contains(accent.withValues(alpha: 0.12)));
+  });
+
   testWidgets('unselected renders deepBlueCardColor Surface', (tester) async {
     await _pump(tester, const ScaffoldSelectableSurface(child: Text('x')));
 
@@ -114,7 +150,10 @@ void main() {
       ),
     );
     expect(find.byType(ScaffoldDisabledOverlay), findsOneWidget);
-    await tester.tap(find.byType(ScaffoldSelectableSurface), warnIfMissed: false);
+    await tester.tap(
+      find.byType(ScaffoldSelectableSurface),
+      warnIfMissed: false,
+    );
     await tester.pump();
     expect(taps, 0);
   });
@@ -133,4 +172,64 @@ void main() {
     expect(animated.duration, const Duration(milliseconds: 300));
     expect(animated.curve, Curves.easeInOut);
   });
+
+  testWidgets(
+    'midnight: hovering ScaffoldSelectableSurface clips the hover treatment to its radius',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: midnightTheme(Brightness.dark),
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 240,
+                child: ScaffoldSelectableSurface(
+                  onTap: _noop,
+                  child: Text('x'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      final pressable = tester.widget<ScaffoldPressable>(
+        find.byType(ScaffoldPressable),
+      );
+      expect(
+        pressable.borderRadius,
+        BorderRadius.circular(Midnight.dimens.borderRadiusCard),
+      );
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: Offset.zero);
+      await gesture.moveTo(tester.getCenter(find.byType(ScaffoldPressable)));
+      await tester.pumpAndSettle();
+
+      final box =
+          tester
+                  .widget<DecoratedBox>(
+                    find.descendant(
+                      of: find.byType(ScaffoldPressable),
+                      matching: find.byWidgetPredicate(
+                        (w) =>
+                            w is DecoratedBox &&
+                            w.decoration is BoxDecoration &&
+                            (w.decoration as BoxDecoration).color ==
+                                Midnight.darkColorRoles.hoverFill,
+                      ),
+                    ),
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(
+        box.borderRadius,
+        BorderRadius.circular(Midnight.dimens.borderRadiusCard),
+      );
+      expect(
+        (box.border! as Border).top.color,
+        Midnight.darkColorRoles.hoverEdge,
+      );
+    },
+  );
 }

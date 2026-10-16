@@ -7,7 +7,7 @@
 /// grouped search results below. Composes ScaffoldSurface + ScaffoldFocusOutline
 /// + ScaffoldStatusIndicator + ScaffoldBadge + ScaffoldLiveRegion.
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
-/// no Riverpod or GeniusTheme dependency.
+/// no Riverpod or app-specific theme dependency.
 /// Consumes ScaffoldSearchBarCubit (in-memory).
 library;
 
@@ -18,7 +18,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
 import 'package:frontend_scaffold/components/scaffold_live_region.dart';
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart' show ToastType, showToast;
@@ -277,7 +276,7 @@ class _ScaffoldSearchBarState extends State<ScaffoldSearchBar> {
                       icon: Icon(
                         Icons.filter_list,
                         color: widget.isFiltered
-                            ? palette.lightGreenPrimary
+                            ? context.colorRoles.accentOnSurface
                             : palette.textSecondary,
                       ),
                       onPressed: widget.onFilterTap,
@@ -308,7 +307,7 @@ class _ScaffoldSearchBarState extends State<ScaffoldSearchBar> {
 
               // -- Results panel ------------------------------------------------
               AnimatedSize(
-                duration: ScaffoldMotionDurations.medium,
+                duration: context.motion.medium,
                 child: _showResults && widget.resultGroups.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.only(top: 4.0),
@@ -332,7 +331,7 @@ class _ScaffoldSearchBarState extends State<ScaffoldSearchBar> {
                                     child: Text(
                                       group.label,
                                       style: textTheme.labelLarge?.copyWith(
-                                        color: palette.lightGreenPrimary,
+                                        color: context.colorRoles.accentTextOnSurface,
                                       ),
                                     ),
                                   ),

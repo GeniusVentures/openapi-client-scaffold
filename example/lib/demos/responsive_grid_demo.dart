@@ -6,6 +6,7 @@ class ResponsiveGridDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle primary = TextStyle(color: context.palette.textPrimary);
     return Scaffold(
       appBar: AppBar(title: const Text('ResponsiveGrid')),
       body: SingleChildScrollView(
@@ -13,9 +14,11 @@ class ResponsiveGridDemo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Column count: <750w → 1, <1000w → 2, <1400w → 3, else 4. '
-              'Resize the window to watch it adapt.',
+            Text(
+              'Column count: <750w -> 1, <1000w -> 2, <1400w -> 3, else 4. '
+              'Resize the window to watch it adapt. (flutter_test reports a '
+              'mobile platform, so this capture shows the 1-column layout.)',
+              style: primary,
             ),
             SizedBox(height: context.dimens.itemSpacing),
             ResponsiveGrid(
@@ -30,7 +33,7 @@ class ResponsiveGridDemo extends StatelessWidget {
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: Text('Card $i'),
+                    child: Text('Card $i', style: primary),
                   ),
               ],
             ),

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
+import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
+import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
+import 'package:frontend_scaffold/theme/scaffold_shapes.dart';
+import 'package:frontend_scaffold/theme/scaffold_typography.dart';
 
 /// Lookup helpers for the frontend_scaffold Material 3 theme extensions.
 extension ScaffoldThemeX on BuildContext {
@@ -14,6 +20,48 @@ extension ScaffoldThemeX on BuildContext {
   /// [ScaffoldDimens.defaultDimens] when the host app did not register one.
   ScaffoldDimens get dimens =>
       Theme.of(this).extension<ScaffoldDimens>() ?? ScaffoldDimens.defaultDimens;
+
+  /// Resolves the registered [ScaffoldMotionTheme], falling back to
+  /// [ScaffoldMotionTheme.defaultMotion] when the host app did not register one.
+  ScaffoldMotionTheme get motion =>
+      Theme.of(this).extension<ScaffoldMotionTheme>() ??
+      ScaffoldMotionTheme.defaultMotion;
+
+  /// Resolves the registered [ScaffoldTypography], falling back to
+  /// [ScaffoldTypography.defaultTypography] when the host app did not register one.
+  ScaffoldTypography get typography =>
+      Theme.of(this).extension<ScaffoldTypography>() ??
+      ScaffoldTypography.defaultTypography;
+
+  /// Resolves the registered [ScaffoldColorRoles]. Without one it derives them
+  /// from the resolved [palette] with [ScaffoldColorRoles.fallbackForPalette],
+  /// so the foregrounds match the surfaces actually in use.
+  ScaffoldColorRoles get colorRoles =>
+      Theme.of(this).extension<ScaffoldColorRoles>() ??
+      ScaffoldColorRoles.fallbackForPalette(palette);
+
+  /// Resolves the registered [ScaffoldGradients], falling back to
+  /// [ScaffoldGradients.defaultGradients] when the host app did not register one.
+  ScaffoldGradients get gradients =>
+      Theme.of(this).extension<ScaffoldGradients>() ??
+      ScaffoldGradients.defaultGradients;
+
+  /// Resolves the registered [ScaffoldShapes], falling back to
+  /// [ScaffoldShapes.defaultShapes] when the host app did not register one.
+  ScaffoldShapes get shapes =>
+      Theme.of(this).extension<ScaffoldShapes>() ??
+      ScaffoldShapes.defaultShapes;
+
+  /// Resolves the registered [ScaffoldShadows], falling back to
+  /// [ScaffoldShadows.lightShadows] or [ScaffoldShadows.defaultShadows]
+  /// according to [ThemeData.brightness] when the host app did not register one.
+  ScaffoldShadows get shadows {
+    final theme = Theme.of(this);
+    return theme.extension<ScaffoldShadows>() ??
+        (theme.brightness == Brightness.light
+            ? ScaffoldShadows.lightShadows
+            : ScaffoldShadows.defaultShadows);
+  }
 }
 
 /// Convenience list of the frontend_scaffold theme extensions to spread into

@@ -1,0 +1,3 @@
+{#- Renders one `    this.name = literal,` parameter line per item of `args` (list of {name, literal}); a none literal renders `    this.name,`. -#}
+{% for a in args %}    this.{{ a.name }}{% if a.literal is not none %} = {{ a.literal }}{% endif %},
+{% endfor %}

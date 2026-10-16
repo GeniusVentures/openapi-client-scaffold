@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_touch_target.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -16,8 +18,66 @@ Future<void> _pump(WidgetTester tester, Widget child) {
   );
 }
 
+const _hoverFill = Color(0x1414C8FF);
+const _hoverEdge = Color(0x3D14C8FF);
+const _radius = BorderRadius.all(Radius.circular(12));
+
+Future<void> _pumpWithRoles(
+  WidgetTester tester,
+  ScaffoldColorRoles roles, {
+  BorderRadiusGeometry? borderRadius,
+}) {
+  return tester.pumpWidget(
+    MaterialApp(
+      theme: ThemeData(extensions: [...scaffoldThemeExtensions, roles]),
+      home: Scaffold(
+        body: Center(
+          child: ScaffoldPressable(
+            onPressed: () {},
+            borderRadius: borderRadius,
+            child: const Text('x'),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Future<TestGesture> _hover(WidgetTester tester) async {
+  final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+  addTearDown(gesture.removePointer);
+  await gesture.addPointer(location: Offset.zero);
+  await gesture.moveTo(tester.getCenter(find.byType(ScaffoldPressable)));
+  await tester.pumpAndSettle();
+  return gesture;
+}
+
+Finder _hoverDecoration() => find.descendant(
+  of: find.byType(ScaffoldPressable),
+  matching: find.byType(DecoratedBox),
+);
+
+Finder _textPrimaryLayer() => find.descendant(
+  of: find.byType(ScaffoldPressable),
+  matching: find.byWidgetPredicate(
+    (w) =>
+        w is ColoredBox &&
+        w.color == ScaffoldPalette.defaultPalette.textPrimary,
+  ),
+);
+
+double _opacityAbove(WidgetTester tester, Finder child) {
+  return tester
+      .widget<AnimatedOpacity>(
+        find.ancestor(of: child, matching: find.byType(AnimatedOpacity)).first,
+      )
+      .opacity;
+}
+
 void main() {
-  testWidgets('renders child wrapped in TouchTarget + state layer', (tester) async {
+  testWidgets('renders child wrapped in TouchTarget + state layer', (
+    tester,
+  ) async {
     await _pump(
       tester,
       ScaffoldPressable(onPressed: () {}, child: const Text('press me')),
@@ -116,5 +176,93 @@ void main() {
     await tester.tap(find.byType(ScaffoldPressable), warnIfMissed: false);
     await tester.pump();
     expect(pressed, 0);
+  });
+
+  group('hover treatment', () {
+    testWidgets('default theme: hover shows the 8% textPrimary layer', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        ScaffoldPressable(onPressed: () {}, child: const Text('x')),
+      );
+      expect(_hoverDecoration(), findsNothing);
+      await _hover(tester);
+      expect(_hoverDecoration(), findsNothing);
+      expect(_opacityAbove(tester, _textPrimaryLayer()), 0.08);
+    });
+
+    testWidgets('default theme ignores borderRadius', (tester) async {
+      await _pump(
+        tester,
+        ScaffoldPressable(
+          onPressed: () {},
+          borderRadius: _radius,
+          child: const Text('x'),
+        ),
+      );
+      await _hover(tester);
+      expect(_hoverDecoration(), findsNothing);
+      expect(_opacityAbove(tester, _textPrimaryLayer()), 0.08);
+    });
+
+    testWidgets('roles set: hover paints fill, edge and radius', (
+      tester,
+    ) async {
+      await _pumpWithRoles(
+        tester,
+        const ScaffoldColorRoles(hoverFill: _hoverFill, hoverEdge: _hoverEdge),
+        borderRadius: _radius,
+      );
+      final decoration = find.descendant(
+        of: find.byType(ScaffoldPressable),
+        matching: find.byType(DecoratedBox),
+      );
+      expect(_opacityAbove(tester, decoration), 0.0);
+
+      await _hover(tester);
+
+      final box =
+          tester.widget<DecoratedBox>(decoration).decoration as BoxDecoration;
+      expect(box.color, _hoverFill);
+      expect(box.borderRadius, _radius);
+      final border = box.border! as Border;
+      expect(border.top.color, _hoverEdge);
+      expect(border.top.width, 1);
+      expect(_opacityAbove(tester, decoration), 1.0);
+      expect(_opacityAbove(tester, _textPrimaryLayer()), 0.0);
+    });
+
+    testWidgets('roles set: hover paints no edge when hoverEdge is null', (
+      tester,
+    ) async {
+      await _pumpWithRoles(
+        tester,
+        const ScaffoldColorRoles(hoverFill: _hoverFill),
+      );
+      await _hover(tester);
+      final box =
+          tester.widget<DecoratedBox>(_hoverDecoration()).decoration
+              as BoxDecoration;
+      expect(box.color, _hoverFill);
+      expect(box.border, isNull);
+      expect(box.borderRadius, isNull);
+    });
+
+    testWidgets('roles set: pressed adds the 12% textPrimary layer', (
+      tester,
+    ) async {
+      await _pumpWithRoles(
+        tester,
+        const ScaffoldColorRoles(hoverFill: _hoverFill, hoverEdge: _hoverEdge),
+      );
+      final gesture = await _hover(tester);
+      await gesture.down(tester.getCenter(find.byType(ScaffoldPressable)));
+      await tester.pumpAndSettle();
+      expect(_opacityAbove(tester, _textPrimaryLayer()), 0.12);
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(_opacityAbove(tester, _textPrimaryLayer()), 0.0);
+    });
   });
 }

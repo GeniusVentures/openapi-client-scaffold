@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_dashed_border.dart';
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_status_indicator.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
@@ -15,11 +14,11 @@ enum _DropState { idle, overAccepted, overRejected, dropped }
 ///
 /// Composes [ScaffoldSurface] + [ScaffoldStatusIndicator] inside a [DragTarget].
 /// Idle renders a dashed `palette.borderSubtle` border; hovering an accepted
-/// drag shows `palette.dropZoneHighlight` with a `palette.lightGreenPrimary`
+/// drag shows `palette.dropZoneHighlight` with a `colorRoles.accentOnSurface`
 /// border; a rejected drag shows `palette.dropZoneRejected` with a
 /// `palette.statusError` border; a successful drop holds the accepted tint for
 /// 500ms before returning to idle. Transitions use
-/// [ScaffoldMotionDurations.medium] with [ScaffoldMotionCurves.standard].
+/// [ScaffoldMotionTheme.medium] with [ScaffoldMotionTheme.standard].
 class ScaffoldDropTarget extends StatefulWidget {
   const ScaffoldDropTarget({
     super.key,
@@ -171,8 +170,8 @@ class _ScaffoldDropTargetState extends State<ScaffoldDropTarget> {
     return Semantics(
       label: _semanticsLabel,
       child: AnimatedContainer(
-        duration: ScaffoldMotionDurations.medium,
-        curve: ScaffoldMotionCurves.standard,
+        duration: context.motion.medium,
+        curve: context.motion.standard,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           border: _borderForState(palette),
@@ -201,7 +200,7 @@ class _ScaffoldDropTargetState extends State<ScaffoldDropTarget> {
         return null;
       case _DropState.overAccepted:
       case _DropState.dropped:
-        return Border.all(color: palette.lightGreenPrimary, width: 1);
+        return Border.all(color: context.colorRoles.accentOnSurface, width: 1);
       case _DropState.overRejected:
         return Border.all(color: palette.statusError, width: 1);
     }

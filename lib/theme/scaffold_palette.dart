@@ -101,12 +101,13 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   /// Default palette seeded from the raw [ScaffoldColors] constants, plus
   /// the toast-needed tokens with dark-mode defaults.
   static const ScaffoldPalette defaultPalette = ScaffoldPalette(
+    // GENERATED from design_tokens.json scaffold.palette.dark. Do not edit.
     deepBlueCardColor: ScaffoldColors.deepBlueCardColor,
     lightGreenPrimary: ScaffoldColors.lightGreenPrimary,
     lightGreenSecondary: ScaffoldColors.lightGreenSecondary,
-    gray500: ScaffoldColors.gray500,
+    gray500: Color(0xFF818698),
     blue500: ScaffoldColors.blue500,
-    borderGrey: ScaffoldColors.borderGrey,
+    borderGrey: Color(0x5CFFFFFF),
     grayPrimary: ScaffoldColors.grayPrimary,
     deepBlueTertiary: ScaffoldColors.deepBlueTertiary,
     surfaceElevated: Color(0xFF0C0E14),
@@ -123,6 +124,7 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     dragFeedbackBackground: Color(0xFF0C0E14),
     dropZoneHighlight: Color(0x3300EAAE),
     dropZoneRejected: Color(0x33FF4D4D),
+    // END GENERATED scaffold.palette.dark
   );
 
   /// Light-mode palette — light surfaces and dark text, mirroring
@@ -130,28 +132,30 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   /// this on their light [ThemeData] so scaffold atoms render correctly in
   /// light mode; accents (green/blue) are shared with the dark palette.
   static const ScaffoldPalette lightPalette = ScaffoldPalette(
+    // GENERATED from design_tokens.json scaffold.palette.light. Do not edit.
     deepBlueCardColor: Color(0xFFFFFFFF),
     lightGreenPrimary: ScaffoldColors.lightGreenPrimary,
     lightGreenSecondary: ScaffoldColors.lightGreenSecondary,
-    gray500: ScaffoldColors.gray500,
+    gray500: Color(0xFF65697B),
     blue500: ScaffoldColors.blue500,
-    borderGrey: Color(0x1F000000),
+    borderGrey: Color(0x73000000),
     grayPrimary: Color(0xFFF1F3F5),
     deepBlueTertiary: Color(0xFFE9EDF2),
     surfaceElevated: Color(0xFFFFFFFF),
     borderSubtle: Color(0x1F000000),
     textPrimary: Color(0xFF17191E),
     textSecondary: Color(0xFF5A6070),
-    statusSuccess: Color(0xFF0AA06B),
-    statusError: Color(0xFFD13438),
-    statusWarningText: Color(0xFF9A6A00),
-    focusRingColor: ScaffoldColors.lightGreenPrimary,
+    statusSuccess: Color(0xFF087951),
+    statusError: Color(0xFFC82D31),
+    statusWarningText: Color(0xFF8D6100),
+    focusRingColor: Color(0xFF00956F),
     skeletonBaseColor: Color(0xFFE9EDF2),
     skeletonShimmerColor: Color(0xFFF5F7FA),
     disabledOverlayColor: Color(0x66000000),
     dragFeedbackBackground: Color(0xFFFFFFFF),
     dropZoneHighlight: Color(0x3300B57A),
     dropZoneRejected: Color(0x33D13438),
+    // END GENERATED scaffold.palette.light
   );
 
   /// Returns a copy of this palette with the given fields replaced.

@@ -5,7 +5,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 ///
 /// Renders [colors] as a horizontal, scrollable row of configurable-size
 /// circles, each wrapped in a `dimens.minTouchTarget` hit area. The selected
-/// swatch shows a `palette.lightGreenPrimary` ring at `dimens.focusRingWidth`.
+/// swatch shows a `colorRoles.accentOnSurface` ring at `dimens.focusRingWidth`.
 /// When [disabled], each swatch is dimmed with `palette.disabledOverlayColor`
 /// at `dimens.disabledOverlayOpacity` and ignores pointer input.
 ///
@@ -62,7 +62,7 @@ class ScaffoldColorSwatch extends StatelessWidget {
           color: colors[i],
           border: selected
               ? Border.all(
-                  color: palette.lightGreenPrimary,
+                  color: context.colorRoles.accentOnSurface,
                   width: dimens.focusRingWidth,
                 )
               : null,

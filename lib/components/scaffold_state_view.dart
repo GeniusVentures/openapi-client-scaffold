@@ -10,7 +10,7 @@
 /// Composes ScaffoldSkeleton (loading) + ScaffoldStatusIndicator +
 /// ScaffoldPressable (empty / error / unavailable / success).
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
-/// no Riverpod or GeniusTheme dependency.
+/// no Riverpod or app-specific theme dependency.
 /// Consumes ScaffoldStateViewCubit (in-memory).
 library;
 
@@ -49,7 +49,7 @@ class ScaffoldStateView extends StatefulWidget {
     this.instanceId = '',
     this.state = 'empty',
     this.loadingWidget,
-    this.emptyIcon = Icons.inbox_outlined,
+    this.emptyIcon = Icons.inbox,
     this.emptyHeadline = 'Nothing here',
     this.emptyBody = 'No items to display.',
     this.emptyAction,

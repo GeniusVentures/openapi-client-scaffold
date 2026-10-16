@@ -116,5 +116,162 @@
       "shadow": "0 4px 4px 0 rgba(0,0,0,0.3), 0 8px 12px 6px rgba(0,0,0,0.15)",
       "surfaceTint": 0.14
     }
+  },
+  "scaffold": {
+    "_comment": "Defaults of every scaffold theme extension (palette, dimens, shadows, motion, typography). Rendered into the GENERATED regions of lib/theme/*.dart by scaffold_codegen.generators.theme_defaults. Values are emitted verbatim as Dart literals. Only this repo file feeds Dart generation; a CMake DESIGN_TOKENS override never does.",
+    "palette": {
+      "dark": {
+        "deepBlueCardColor": { "value": "0xFF0A121F", "dartRef": "ScaffoldColors.deepBlueCardColor" },
+        "lightGreenPrimary": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "lightGreenSecondary": { "value": "0xFF01CC95", "dartRef": "ScaffoldColors.lightGreenSecondary" },
+        "gray500": "0xFF818698",
+        "blue500": { "value": "0xFF0068EF", "dartRef": "ScaffoldColors.blue500" },
+        "borderGrey": "0x5CFFFFFF",
+        "grayPrimary": { "value": "0xFF151E29", "dartRef": "ScaffoldColors.grayPrimary" },
+        "deepBlueTertiary": { "value": "0xFF05090F", "dartRef": "ScaffoldColors.deepBlueTertiary" },
+        "surfaceElevated": "0xFF0C0E14",
+        "borderSubtle": "0x1FFFFFFF",
+        "textPrimary": "0xFFFFFFFF",
+        "textSecondary": "0xFF8A8F9D",
+        "statusSuccess": "0xFF0AD89C",
+        "statusError": "0xFFFF4D4D",
+        "statusWarningText": "0xFFFFC42E",
+        "focusRingColor": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "skeletonBaseColor": "0xFF0C0E14",
+        "skeletonShimmerColor": "0xFF0A121F",
+        "disabledOverlayColor": "0x66000000",
+        "dragFeedbackBackground": "0xFF0C0E14",
+        "dropZoneHighlight": "0x3300EAAE",
+        "dropZoneRejected": "0x33FF4D4D"
+      },
+      "light": {
+        "deepBlueCardColor": "0xFFFFFFFF",
+        "lightGreenPrimary": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "lightGreenSecondary": { "value": "0xFF01CC95", "dartRef": "ScaffoldColors.lightGreenSecondary" },
+        "gray500": "0xFF65697B",
+        "blue500": { "value": "0xFF0068EF", "dartRef": "ScaffoldColors.blue500" },
+        "borderGrey": "0x73000000",
+        "grayPrimary": "0xFFF1F3F5",
+        "deepBlueTertiary": "0xFFE9EDF2",
+        "surfaceElevated": "0xFFFFFFFF",
+        "borderSubtle": "0x1F000000",
+        "textPrimary": "0xFF17191E",
+        "textSecondary": "0xFF5A6070",
+        "statusSuccess": "0xFF087951",
+        "statusError": "0xFFC82D31",
+        "statusWarningText": "0xFF8D6100",
+        "focusRingColor": "0xFF00956F",
+        "skeletonBaseColor": "0xFFE9EDF2",
+        "skeletonShimmerColor": "0xFFF5F7FA",
+        "disabledOverlayColor": "0x66000000",
+        "dragFeedbackBackground": "0xFFFFFFFF",
+        "dropZoneHighlight": "0x3300B57A",
+        "dropZoneRejected": "0x33D13438"
+      }
+    },
+    "dimens": {
+      "horizontalPadding": 20.0,
+      "horizontalDesktopPadding": 40.0,
+      "verticalDesktopPadding": 40.0,
+      "itemSpacing": 16.0,
+      "borderRadiusCard": 15.0,
+      "borderRadiusButton": 48.0,
+      "appBarHeight": 65.0,
+      "space2": 4.0,
+      "space3": 6.0,
+      "space4": 8.0,
+      "space6": 12.0,
+      "space8": 16.0,
+      "space12": 24.0,
+      "radiusMd": 12.0,
+      "radiusPill": 48.0,
+      "focusRingWidth": 2.0,
+      "skeletonCornerRadius": 4.0,
+      "disabledOverlayOpacity": 0.40,
+      "dragHandleSize": 24.0,
+      "minTouchTarget": 48.0,
+      "touchTargetPadding": 12.0
+    },
+    "shadows": {
+      "dark": {
+        "card": [
+          { "color": "0x59000000", "blurRadius": 16.0, "offset": [0.0, 4.0] }
+        ],
+        "elevated": null
+      },
+      "light": {
+        "card": [
+          { "color": "0x59000000", "blurRadius": 16.0, "offset": [0.0, 4.0] }
+        ]
+      }
+    },
+    "motion": {
+      "durations": {
+        "short": 150,
+        "medium": 300,
+        "long": 500
+      },
+      "curves": {
+        "standard": "Curves.easeInOut",
+        "decelerate": "Curves.easeOut",
+        "emphasized": [0.2, 0.0, 0.0, 1.2]
+      }
+    },
+    "typography": {
+      "textStyles": {
+        "inputStyle": {
+          "fontFamily": "Roboto",
+          "fontSize": 14.0,
+          "fontWeight": 400,
+          "letterSpacing": 0.0
+        },
+        "numericStyle": null
+      },
+      "fontFamilies": {
+        "monoFontFamily": "monospace"
+      }
+    },
+    "colorRoles": {
+      "dark": {
+        "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "accentOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "accentSecondaryOnSurface": { "value": "0xFF01CC95", "dartRef": "ScaffoldColors.lightGreenSecondary" },
+        "accentTextOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "borderControl": "0x5CFFFFFF",
+        "inputForeground": "0xFFFFFFFF",
+        "sheetForeground": "0xFFFFFFFF",
+        "sheetDivider": "0x1FFFFFFF",
+        "surfaceEdge": null,
+        "hoverFill": null,
+        "hoverEdge": null,
+        "scrim": null,
+        "checkboxFill": null,
+        "checkboxMark": null,
+        "checkboxEdge": null,
+        "actionIcon": null,
+        "actionDisabledFill": null,
+        "actionDisabledForeground": null
+      },
+      "light": {
+        "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "accentOnSurface": "0xFF00956F",
+        "accentSecondaryOnSurface": "0xFF01956D",
+        "accentTextOnSurface": "0xFF00795A",
+        "borderControl": "0x73000000",
+        "inputForeground": "0xFF17191E",
+        "sheetForeground": "0xFF17191E",
+        "sheetDivider": "0x1F000000"
+      }
+    },
+    "gradients": {
+      "edgeFade": null,
+      "surfaceSheen": null
+    },
+    "shapes": {
+      "inputFocusedBorderWidth": null,
+      "sheetRadius": null,
+      "checkboxRadius": null,
+      "checkboxBorderWidth": null
+    }
   }
 }

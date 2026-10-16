@@ -14,7 +14,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// A radio selection indicator.
 ///
 /// Renders a 20px circle outline that fills with a
-/// 12px `palette.lightGreenPrimary` dot when checked, wrapped in a 48px
+/// 12px `colorRoles.accentOnSurface` dot when checked, wrapped in a 48px
 /// [ScaffoldTouchTarget].
 class ScaffoldSelectionIndicatorRadio extends StatelessWidget {
   /// Creates a [ScaffoldSelectionIndicatorRadio].
@@ -43,7 +43,7 @@ class ScaffoldSelectionIndicatorRadio extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
 
-    final Widget indicator = _buildRadio(palette);
+    final Widget indicator = _buildRadio(context, palette);
 
 
     Widget result = Semantics(
@@ -69,7 +69,7 @@ class ScaffoldSelectionIndicatorRadio extends StatelessWidget {
 
   void _handleTap() => onChanged?.call(!value);
 
-  Widget _buildRadio(ScaffoldPalette palette) {
+  Widget _buildRadio(BuildContext context, ScaffoldPalette palette) {
     return Container(
       width: 20,
       height: 20,
@@ -84,7 +84,7 @@ class ScaffoldSelectionIndicatorRadio extends StatelessWidget {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: palette.lightGreenPrimary,
+                  color: context.colorRoles.accentOnSurface,
                 ),
               ),
             )

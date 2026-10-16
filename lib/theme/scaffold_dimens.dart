@@ -3,6 +3,24 @@ import 'package:flutter/material.dart';
 /// Material 3 theme extension holding the layout dimension tokens consumed
 /// by frontend_scaffold widgets. Register on [ThemeData.extensions] to allow
 /// host apps to override the defaults without forking the package.
+///
+/// ## Spacing token naming
+///
+/// The `spaceN` tokens are named by **step index on a 2px base scale**, NOT
+/// by their pixel value. The pixel value is `2 × N`:
+///
+/// | Token    | Value |
+/// |----------|-------|
+/// | `space2` | 4px   |
+/// | `space3` | 6px   |
+/// | `space4` | 8px   |
+/// | `space6` | 12px  |
+/// | `space8` | 16px  |
+/// | `space12`| 24px  |
+///
+/// So `space8` is **16px**, not 8px. Read the subscript as "spacing step #N"
+/// (a t-shirt size), not "N pixels". The per-field doc comments state the
+/// resolved point value (e.g. `/// 16pt spacing scale step` on `space8`).
 class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
   /// Horizontal page padding for phone layouts.
   final double horizontalPadding;
@@ -95,6 +113,7 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
 
   /// Default dimensions matching the previous static token values.
   static const ScaffoldDimens defaultDimens = ScaffoldDimens(
+    // GENERATED from design_tokens.json scaffold.dimens. Do not edit.
     horizontalPadding: 20.0,
     horizontalDesktopPadding: 40.0,
     verticalDesktopPadding: 40.0,
@@ -116,6 +135,7 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     dragHandleSize: 24.0,
     minTouchTarget: 48.0,
     touchTargetPadding: 12.0,
+    // END GENERATED scaffold.dimens
   );
 
   /// Returns a copy of this dimension set with the given fields replaced.

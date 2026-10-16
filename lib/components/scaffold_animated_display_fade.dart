@@ -7,6 +7,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_motion.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// Animates [child] with a fade effect.
 ///
@@ -15,6 +16,10 @@ import 'package:frontend_scaffold/components/scaffold_motion.dart';
 /// animation plays on mount when [trigger] is null; otherwise it replays
 /// whenever [trigger] changes. Content is excluded from semantics while
 /// animating.
+///
+/// The default duration and curve come from the `ScaffoldMotionTheme` in the
+/// ambient theme (`medium` duration, `standard` curve); [duration] and [curve]
+/// override them.
 class ScaffoldAnimatedDisplayFade extends StatefulWidget {
   /// Creates a [ScaffoldAnimatedDisplayFade].
   const ScaffoldAnimatedDisplayFade({
@@ -32,10 +37,10 @@ class ScaffoldAnimatedDisplayFade extends StatefulWidget {
   /// When non-null, the animation replays whenever this value changes.
   final int? trigger;
 
-  /// Overrides the default animation duration.
+  /// Overrides the theme's default animation duration.
   final Duration? duration;
 
-  /// Overrides the default animation curve.
+  /// Overrides the theme's default animation curve.
   final Curve? curve;
 
   /// Animation strength (slide offset, turns, oscillation amplitude).
@@ -48,6 +53,7 @@ class ScaffoldAnimatedDisplayFade extends StatefulWidget {
 class _ScaffoldAnimatedDisplayFadeState extends State<ScaffoldAnimatedDisplayFade>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _configured = false;
 
   late final Animation<double> _animation;
 
@@ -55,19 +61,28 @@ class _ScaffoldAnimatedDisplayFadeState extends State<ScaffoldAnimatedDisplayFad
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration ?? ScaffoldMotionDurations.medium,
-    );
-    _configureAnimation();
-    _start();
+    _controller = AnimationController(vsync: this);
+  }
+
+  Duration get _defaultDuration =>
+      widget.duration ?? context.motion.medium;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _controller.duration = _defaultDuration;
+    if (!_configured) {
+      _configured = true;
+      _configureAnimation();
+      _start();
+    }
   }
 
   void _configureAnimation() {
 
     _animation = CurvedAnimation(
       parent: _controller,
-      curve: widget.curve ?? ScaffoldMotionCurves.standard,
+      curve: widget.curve ?? context.motion.standard,
     );
 
   }
@@ -92,7 +107,7 @@ class _ScaffoldAnimatedDisplayFadeState extends State<ScaffoldAnimatedDisplayFad
   void didUpdateWidget(ScaffoldAnimatedDisplayFade oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration ?? ScaffoldMotionDurations.medium;
+      _controller.duration = _defaultDuration;
     }
     if (widget.trigger != oldWidget.trigger) {
       _replay();

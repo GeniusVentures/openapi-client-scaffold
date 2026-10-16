@@ -7,13 +7,16 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_live_region.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// Displays a duration value formatted for human consumption.
 ///
 /// Renders the formatted value via [TextTheme.bodyLarge] inside a
 /// [ScaffoldLiveRegion] so screen readers announce changes. A null value
 /// renders [nullPlaceholder] (default '--'). Long values are clamped to a
-/// single line with an ellipsis.
+/// single line with an ellipsis. When the theme sets
+/// [ScaffoldTypography.numericStyle] it is merged onto the style, so its font
+/// features replace those of the base style.
 class ScaffoldFormattedValueDuration extends StatelessWidget {
   /// Creates a [ScaffoldFormattedValueDuration].
   const ScaffoldFormattedValueDuration({
@@ -34,18 +37,24 @@ class ScaffoldFormattedValueDuration extends StatelessWidget {
   /// Text rendered when [value] is null. Defaults to '--'.
   final String nullPlaceholder;
 
-  /// Text style; defaults to [TextTheme.bodyLarge].
+  /// Text style; defaults to [TextTheme.bodyLarge]. [ScaffoldTypography.numericStyle]
+  /// is merged onto it.
   final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final String display = _format(value) ?? nullPlaceholder;
+    final TextStyle? base = style ?? textTheme.bodyLarge;
+    final TextStyle? numericStyle = context.typography.numericStyle;
+    final TextStyle? resolved = numericStyle == null
+        ? base
+        : (base ?? const TextStyle()).merge(numericStyle);
     return ScaffoldLiveRegion(
       label: display,
       child: Text(
         display,
-        style: style ?? textTheme.bodyLarge,
+        style: resolved,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

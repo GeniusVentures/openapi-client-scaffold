@@ -1,0 +1,103 @@
+{
+  "base": "e67e00c02d522cf2fe50a0f3d3213e76dfa93e48",
+  "rebaselines": [
+    {
+      "sha": "d9342ff8b4885b0dfc6e13075876df4e58e6122b",
+      "subject": "chore(14-01): re-render captures on this machine, no code change",
+      "scope": "default",
+      "follows": "07a7808d3ea11327b59610a81edf4c54507b2fdb",
+      "record": "v1.4 14-COLOR-CHANGES.md BASELINE"
+    },
+    {
+      "sha": "b9145a8ae0a1bb768dbbfeb040228efdc517db8a",
+      "subject": "chore(14-01): re-baseline text field and drawer captures for the harness change",
+      "scope": "default",
+      "follows": "20762f7af7bfd56fc923493bfcf0187a11894104",
+      "record": "v1.4 14-COLOR-CHANGES.md COVERAGE_CAPTURES"
+    },
+    {
+      "sha": "f4207f79c9ca8bb132853dc506ee2fc07cf62e8f",
+      "subject": "chore(14-02): re-baseline captures for A11Y-01",
+      "scope": "default",
+      "follows": "0f79aaae12a9c7715be85836ac091f2fcb7cee88",
+      "record": "v1.4 14-COLOR-CHANGES.md A11Y01_CAPTURES"
+    },
+    {
+      "sha": "015d521c8910c4f6b9eb30bd99d6d42a1b756c25",
+      "subject": "chore(14-03): re-baseline light text field and drawer captures for A11Y-02",
+      "scope": "default",
+      "follows": "3ae320d98bdf22e305273894d8ee2dc0d1548806",
+      "record": "v1.4 14-COLOR-CHANGES.md A11Y02_CAPTURES"
+    },
+    {
+      "sha": "4b406e560bf1ea9d6deec8d1da9ead64c75e54c3",
+      "subject": "chore(14-05): re-baseline light captures for the accent fix",
+      "scope": "default",
+      "follows": "b673be75417464354fe08117ad336d74204a0b60",
+      "record": "v1.4 14-COLOR-CHANGES.md ACCENT_CAPTURES"
+    },
+    {
+      "sha": "bc8d692b62f46fc3b5012ef8ba99a1f6e8090144",
+      "subject": "chore(15-06): midnight captures, 26 demos in light and dark (PRE-03)",
+      "scope": "midnight",
+      "follows": "1049be80c464b9b8d05718239b978de09e66998d",
+      "record": "v1.4 15-06-SUMMARY MIDNIGHT_CAPTURES"
+    },
+    {
+      "sha": "8ba7e915a94e5293c0267cf8cbc3e6eee6f9a3a6",
+      "subject": "chore(16-01): re-baseline midnight captures after the elevated shadow (RST-01)",
+      "scope": "midnight",
+      "follows": "0d71055ed293e02856147fcb5e2c6ee85f3374a8",
+      "record": "v1.4 16-RESTYLES.md (16-01)"
+    },
+    {
+      "sha": "d878e8067d7fd57d13eaec42fea8e3830048d04f",
+      "subject": "chore(16-02): re-baseline midnight captures after the card sheen and hairline (RST-01)",
+      "scope": "midnight",
+      "follows": "f1b2611e3b88c7279fba197748600b5af4b01346",
+      "record": "v1.4 16-RESTYLES.md (16-02)"
+    },
+    {
+      "sha": "8edd14058aa15c282fe552aee20be17ff7a797f3",
+      "subject": "chore(16-03): re-baseline midnight captures after the hover treatment (RST-01)",
+      "scope": "midnight",
+      "follows": "98498eb5bf1db49cca0122fc1c92eb5c32e84baa",
+      "record": "v1.4 16-RESTYLES.md (16-03)"
+    },
+    {
+      "sha": "2e591786e82a8f2ba5c0a28463e3ceb48c6bd84c",
+      "subject": "chore(16-04): re-baseline midnight captures after the focused field border (RST-01)",
+      "scope": "midnight",
+      "follows": "332cf567eac7a4d1692f3e173dbeb9c2e723a3f1",
+      "record": "v1.4 16-RESTYLES.md (16-04)"
+    },
+    {
+      "sha": "dfe9732cf6265f96f551dcffb842f22f9e545694",
+      "subject": "chore(16-05): re-baseline midnight captures after the drawer restyle (RST-01)",
+      "scope": "midnight",
+      "follows": "719b78562c096cda3a0acb5c6445890f4f76d386",
+      "record": "v1.4 16-RESTYLES.md (16-05)"
+    },
+    {
+      "sha": "292d5ba3bc928932bae8099647d7234cba3f2d77",
+      "subject": "chore(16-06): re-baseline midnight captures after the checkbox restyle (RST-01)",
+      "scope": "midnight",
+      "follows": "fbb7b68a3591bafff314180e87296b0bf414c159",
+      "record": "v1.4 16-RESTYLES.md (16-06)"
+    },
+    {
+      "sha": "75f7a041a011d1577ee14ab2b13945309cdce956",
+      "subject": "chore(16-07): re-baseline midnight captures after the ActionButton restyle (RST-01)",
+      "scope": "midnight",
+      "follows": "7645aed5a0ec06d5c7fccc63633b53cd9bfbe381",
+      "record": "v1.4 16-RESTYLES.md (16-07)"
+    },
+    {
+      "sha": "5d783f3771c2a88614bfc2e624bf96b72bde5ced",
+      "subject": "chore(16-07): re-baseline midnight captures after tabular figures (RST-01)",
+      "scope": "midnight",
+      "follows": "0eddc5942c595a802bd06cbea327b92f4b9e60b3",
+      "record": "v1.4 16-RESTYLES.md (16-07)"
+    }
+  ]
+}

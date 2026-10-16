@@ -6,18 +6,18 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 class Loading extends StatelessWidget {
   final String? text;
 
-  /// Left dot color; falls back to [ScaffoldPalette.lightGreenPrimary].
+  /// Left dot color; falls back to `colorRoles.accentOnSurface`.
   final Color? leftDotColor;
 
   /// Right dot color; falls back to [ScaffoldPalette.blue500].
   final Color? rightDotColor;
 
   const Loading({
-    Key? key,
+    super.key,
     this.text,
     this.leftDotColor,
     this.rightDotColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +27,13 @@ class Loading extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           LoadingAnimationWidget.flickr(
-            leftDotColor: leftDotColor ?? palette.lightGreenPrimary,
+            leftDotColor: leftDotColor ?? context.colorRoles.accentOnSurface,
             rightDotColor: rightDotColor ?? palette.blue500,
             size: 50,
           ),
           AutoSizeText(
-            text ?? "",
-            style: const TextStyle(fontSize: 24),
+            text ?? '',
+            style: TextStyle(fontSize: 24, color: palette.textPrimary),
           )
         ]);
   }

@@ -1,5 +1,5 @@
 {
-  "_comment": "Fixture variables for standalone rendering of animated_display.dart.jinja2. The representative variant (fade) renders a single class; scripts/generate_animated_display.py overrides `variant` and `widget_class_name` once per variant to emit the seven per-variant files.",
+  "_comment": "Fixture variables for standalone rendering of animated_display.dart.jinja2. The representative variant (fade) renders a single class; scaffold_codegen.generators.animated_display overrides `variant` and `widget_class_name` once per variant to emit the seven per-variant files.",
   "widget_class_name": "ScaffoldAnimatedDisplayFade",
   "variant": "fade",
   "generator_version": "0.4.0"

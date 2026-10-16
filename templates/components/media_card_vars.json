@@ -1,0 +1,6 @@
+{
+  "_comment": "Fixture variables for standalone rendering of media_card.dart.jinja2. widget_class_name is the generated class name; file_stem is the lower-snake-case filename stem; default_aspect_ratio seeds the default 16:9 aspect.",
+  "widget_class_name": "MediaCard",
+  "file_stem": "media_card",
+  "default_aspect_ratio": "16 / 9"
+}

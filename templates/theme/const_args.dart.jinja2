@@ -1,0 +1,3 @@
+{#- Renders one `    name: literal,` argument line per item of `args` (list of {name, literal}). -#}
+{% for a in args %}    {{ a.name }}: {{ a.literal }},
+{% endfor %}

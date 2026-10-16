@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart';
-import 'package:frontend_scaffold/theme/scaffold_elevation.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -135,7 +134,7 @@ class _Compact extends StatelessWidget {
         color: palette.surfaceElevated,
         border: Border.all(color: palette.borderSubtle),
         borderRadius: BorderRadius.circular(dimens.radiusPill),
-        boxShadow: ScaffoldElevation.card,
+        boxShadow: context.shadows.card,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -185,7 +184,7 @@ class _Card extends StatelessWidget {
         color: palette.surfaceElevated,
         border: Border.all(color: palette.borderSubtle),
         borderRadius: BorderRadius.circular(dimens.radiusMd),
-        boxShadow: ScaffoldElevation.card,
+        boxShadow: context.shadows.card,
       ),
       // Two rows, not two columns. The icon and the title are one statement -
       // what happened - so they share a line; the message is explanation and

@@ -15,6 +15,8 @@ class BottomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorRoles = context.colorRoles;
+
     return Container(
       color: context.palette.deepBlueTertiary,
       child: SafeArea(
@@ -33,8 +35,8 @@ class BottomDrawer extends StatelessWidget {
                     child: Text(
                       title ?? '',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: colorRoles.sheetForeground,
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
                       ),
@@ -47,14 +49,14 @@ class BottomDrawer extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      icon: Icon(Icons.close, color: colorRoles.sheetForeground),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),
                 ],
               ),
             ),
-            const Divider(height: 1, color: Colors.white12),
+            Divider(height: 1, color: colorRoles.sheetDivider),
             const SizedBox(height: 4),
             // Scrollable content
             Expanded(

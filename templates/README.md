@@ -10,6 +10,9 @@ Consumable by any project that adds the scaffold as a submodule.
   ``data_table``, ``form_dialog``, ``navigation``, ``search_bar``, ``state``.
   Each set has ``.dart.jinja2``, ``.css.jinja2``, ``.html.jinja2``, and a
   ``_vars.json`` variables file.
+- ``theme/`` — ``const_args.dart.jinja2``, the argument lines of the generated
+  const constructor calls in ``lib/theme``, rendered by
+  ``../tools/scaffold_codegen/generators/theme_defaults.py``.
 - ``cpp/`` — Placeholder for C++ Cubit-style interface templates (Phase 7).
 - Module-scaffolding jinja2 files — ``module.dart.jinja2``,
   ``pubspec.yaml.jinja2``, ``api_provider.dart.jinja2``,
@@ -33,8 +36,12 @@ spec (``json/identity_openapi.json``).
 
 ## Cross-reference
 
-- ``../engine.py`` — Jinja2 rendering engine that consumes these templates.
+- ``../tools/scaffold_codegen/engine.py`` — Jinja2 rendering engine that
+  consumes these templates.
+- ``../tools/scaffold_codegen/generators/`` — per-widget-family drivers that
+  render ``components/*.jinja2`` into the committed ``lib/components/`` files.
 - ``../design_tokens.json`` — Material 3 design tokens referenced by the
   templates.
-- ``frontend/templates/`` — project-specific residue (screens and other
+- The consuming repo's own templates tree (passed to renders via
+  ``--templates-dir``) — project-specific residue (screens and other
   non-shared templates that did not move into the scaffold).

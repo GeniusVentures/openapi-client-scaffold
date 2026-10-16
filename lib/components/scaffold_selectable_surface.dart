@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -8,10 +7,10 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 ///
 /// Composes [ScaffoldSurface] + [ScaffoldPressable] into a selectable card.
 /// Unselected renders the default `palette.deepBlueCardColor` surface; selected
-/// overlays `palette.lightGreenPrimary` at 12% opacity with a 1px
-/// `palette.lightGreenPrimary` border. Focus ring, press state layer, and
+/// overlays `colorRoles.accent` at 12% opacity with a 1px
+/// `colorRoles.accentOnSurface` border. Focus ring, press state layer, and
 /// disabled dim come from [ScaffoldPressable]. State transitions use
-/// [ScaffoldMotionDurations.medium] with [ScaffoldMotionCurves.standard].
+/// [ScaffoldMotionTheme.medium] with [ScaffoldMotionTheme.standard].
 class ScaffoldSelectableSurface extends StatelessWidget {
   const ScaffoldSelectableSurface({
     super.key,
@@ -39,7 +38,6 @@ class ScaffoldSelectableSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.palette;
     final dimens = context.dimens;
 
     Widget content = ScaffoldSurface(child: child);
@@ -51,7 +49,7 @@ class ScaffoldSelectableSurface extends StatelessWidget {
           Positioned.fill(
             child: IgnorePointer(
               child: ColoredBox(
-                color: palette.lightGreenPrimary.withValues(alpha: 0.12),
+                color: context.colorRoles.accent.withValues(alpha: 0.12),
               ),
             ),
           ),
@@ -59,15 +57,18 @@ class ScaffoldSelectableSurface extends StatelessWidget {
       );
     }
 
+    final BorderRadiusGeometry radius = BorderRadius.circular(
+      dimens.borderRadiusCard,
+    );
     content = AnimatedContainer(
-      duration: ScaffoldMotionDurations.medium,
-      curve: ScaffoldMotionCurves.standard,
+      duration: context.motion.medium,
+      curve: context.motion.standard,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         border: selected
-            ? Border.all(color: palette.lightGreenPrimary, width: 1)
+            ? Border.all(color: context.colorRoles.accentOnSurface, width: 1)
             : null,
-        borderRadius: BorderRadius.circular(dimens.borderRadiusCard),
+        borderRadius: radius,
       ),
       child: content,
     );
@@ -76,6 +77,7 @@ class ScaffoldSelectableSurface extends StatelessWidget {
       onPressed: onTap,
       onLongPress: onLongPress,
       disabled: disabled,
+      borderRadius: radius,
       child: content,
     );
 

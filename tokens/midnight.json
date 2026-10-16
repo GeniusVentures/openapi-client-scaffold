@@ -1,0 +1,555 @@
+{
+  "_comment": "Values of the midnight preset, rendered into the GENERATED regions of lib/theme/presets/midnight_tokens.dart by scaffold_codegen.generators.theme_presets. Same scaffold schema as design_tokens.json, no M3 keys.",
+  "scaffold": {
+    "palette": {
+      "dark": {
+        "deepBlueCardColor": "0xFF0C0E14",
+        "lightGreenPrimary": "0xFF0AAEE6",
+        "lightGreenSecondary": "0xFF2BF5B4",
+        "gray500": "0xFF8A8F9D",
+        "blue500": "0xFF14C8FF",
+        "borderGrey": "0x5CFFFFFF",
+        "grayPrimary": "0xFF171A21",
+        "deepBlueTertiary": "0xFF0C0E14",
+        "surfaceElevated": "0xFF0C0E14",
+        "borderSubtle": "0x1FFFFFFF",
+        "textPrimary": "0xFFFFFFFF",
+        "textSecondary": "0xFF8A8F9D",
+        "statusSuccess": "0xFF0AD89C",
+        "statusError": "0xFFFF4D4D",
+        "statusWarningText": "0xFFFFC42E",
+        "focusRingColor": "0xFF0AAEE6",
+        "skeletonBaseColor": "0xFF171A21",
+        "skeletonShimmerColor": "0xFF0B0D12",
+        "disabledOverlayColor": "0x66000000",
+        "dragFeedbackBackground": "0xFF0C0E14",
+        "dropZoneHighlight": "0x330AAEE6",
+        "dropZoneRejected": "0x33FF4D4D"
+      },
+      "light": {
+        "deepBlueCardColor": "0xFFFFFFFF",
+        "lightGreenPrimary": "0xFF0AAEE6",
+        "lightGreenSecondary": "0xFF2BF5B4",
+        "gray500": "0xFF5A606E",
+        "blue500": "0xFF0A6885",
+        "borderGrey": "0x7A10131A",
+        "grayPrimary": "0xFFEFF2F6",
+        "deepBlueTertiary": "0xFFFFFFFF",
+        "surfaceElevated": "0xFFFFFFFF",
+        "borderSubtle": "0x1F10131A",
+        "textPrimary": "0xFF10131A",
+        "textSecondary": "0xFF5A606E",
+        "statusSuccess": "0xFF065F46",
+        "statusError": "0xFF991B1B",
+        "statusWarningText": "0xFF92400E",
+        "focusRingColor": "0xFF0A6885",
+        "skeletonBaseColor": "0xFFEFF2F6",
+        "skeletonShimmerColor": "0xFFFFFFFF",
+        "disabledOverlayColor": "0x66000000",
+        "dragFeedbackBackground": "0xFFFFFFFF",
+        "dropZoneHighlight": "0x330AAEE6",
+        "dropZoneRejected": "0x33991B1B"
+      }
+    },
+    "colorRoles": {
+      "dark": {
+        "accent": "0xFF0AAEE6",
+        "accentOnSurface": "0xFF0AAEE6",
+        "accentSecondaryOnSurface": "0xFF2BF5B4",
+        "accentTextOnSurface": "0xFF0AAEE6",
+        "borderControl": "0x5CFFFFFF",
+        "inputForeground": "0xFFFFFFFF",
+        "sheetForeground": "0xFFFFFFFF",
+        "sheetDivider": "0x1FFFFFFF",
+        "surfaceEdge": "0x1FFFFFFF",
+        "hoverFill": "0x1414C8FF",
+        "hoverEdge": "0x3D14C8FF",
+        "scrim": "0x99000000",
+        "checkboxFill": "0xFF0AAEE6",
+        "checkboxMark": "0xFF000B18",
+        "checkboxEdge": "0xFF0AAEE6",
+        "actionIcon": "0xFF0AAEE6",
+        "actionDisabledFill": "0xFF06080C",
+        "actionDisabledForeground": "0x8AFFFFFF"
+      },
+      "light": {
+        "accent": "0xFF0AAEE6",
+        "accentOnSurface": "0xFF0A6885",
+        "accentSecondaryOnSurface": "0xFF07875F",
+        "accentTextOnSurface": "0xFF0A6885",
+        "borderControl": "0x7A10131A",
+        "inputForeground": "0xFF10131A",
+        "sheetForeground": "0xFF10131A",
+        "sheetDivider": "0x1F10131A",
+        "surfaceEdge": "0x1F10131A",
+        "hoverFill": "0x1414C8FF",
+        "hoverEdge": "0x3D14C8FF",
+        "scrim": "0x99000000",
+        "checkboxFill": "0xFF0AAEE6",
+        "checkboxMark": "0xFF000B18",
+        "checkboxEdge": "0xFF0A6885",
+        "actionIcon": "0xFF0A6885",
+        "actionDisabledFill": "0xFFCFD4DB",
+        "actionDisabledForeground": "0x8A10131A"
+      }
+    },
+    "dimens": {
+      "horizontalPadding": 20.0,
+      "horizontalDesktopPadding": 40.0,
+      "verticalDesktopPadding": 40.0,
+      "itemSpacing": 16.0,
+      "borderRadiusCard": 15.0,
+      "borderRadiusButton": 48.0,
+      "appBarHeight": 68.0,
+      "space2": 4.0,
+      "space3": 6.0,
+      "space4": 8.0,
+      "space6": 12.0,
+      "space8": 16.0,
+      "space12": 24.0,
+      "radiusMd": 12.0,
+      "radiusPill": 48.0,
+      "focusRingWidth": 2.0,
+      "skeletonCornerRadius": 4.0,
+      "disabledOverlayOpacity": 0.40,
+      "dragHandleSize": 24.0,
+      "minTouchTarget": 48.0,
+      "touchTargetPadding": 12.0
+    },
+    "shadows": {
+      "dark": {
+        "card": [
+          {
+            "color": "0x59000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
+        ],
+        "elevated": [
+          {
+            "color": "0x59000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
+        ]
+      },
+      "light": {
+        "card": [
+          {
+            "color": "0x1F000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
+        ],
+        "elevated": [
+          {
+            "color": "0x1F000000",
+            "blurRadius": 16.0,
+            "offset": [
+              0.0,
+              4.0
+            ]
+          }
+        ]
+      }
+    },
+    "gradients": {
+      "dark": {},
+      "light": {
+        "surfaceSheen": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFFFFFFF",
+            "0xFFF5F7FA"
+          ]
+        }
+      }
+    },
+    "motion": {
+      "durations": {
+        "short": 120,
+        "medium": 200,
+        "long": 320
+      },
+      "curves": {
+        "standard": "Curves.easeOutCubic",
+        "decelerate": "Curves.easeOut",
+        "emphasized": "Curves.easeOutExpo"
+      }
+    },
+    "typography": {
+      "textStyles": {
+        "inputStyle": {
+          "fontFamily": "Inter",
+          "fontSize": 16.0,
+          "fontWeight": 400,
+          "letterSpacing": 0.0
+        },
+        "numericStyle": { "tabularFigures": true }
+      },
+      "fontFamilies": {
+        "monoFontFamily": "JetBrainsMono"
+      }
+    },
+    "shapes": {
+      "inputFocusedBorderWidth": 2.0,
+      "sheetRadius": 24.0,
+      "checkboxRadius": 4.0,
+      "checkboxBorderWidth": 1.5
+    }
+  },
+  "preset": {
+    "colors": {
+      "dark": {
+        "surfaceBase": "0xFF0B0D12",
+        "surfaceSheet": "0xFF171A21",
+        "surfaceSunken": "0xFF06080C",
+        "scrim": "0x99000000",
+        "accentPrimary": "0xFF14C8FF",
+        "accentPrimaryStrong": "0xFF0AAEE6",
+        "accentSecondary": "0xFF2BF5B4",
+        "accentSecondaryStrong": "0xFF0AD89C",
+        "accentSecondaryBright": "0xFF5BFFD0",
+        "accentTertiary": "0xFFC28FFF",
+        "accentBadgeText": "0xFF0AB2EB",
+        "textOnAccent": "0xFF000B18",
+        "textOnError": "0xFF000B18",
+        "textTertiary": "0xFF35363D",
+        "borderStrong": "0x3DFFFFFF",
+        "borderControlOnAccent": "0x94FFFFFF",
+        "statusWarning": "0xFFFFC42E",
+        "selection": "0xFF8A8F9D"
+      },
+      "light": {
+        "surfaceBase": "0xFFDCE0E6",
+        "surfaceSheet": "0xFFEFF2F6",
+        "surfaceSunken": "0xFFCFD4DB",
+        "scrim": "0x99000000",
+        "accentPrimary": "0xFF14C8FF",
+        "accentPrimaryStrong": "0xFF0AAEE6",
+        "accentSecondary": "0xFF2BF5B4",
+        "accentSecondaryStrong": "0xFF0AD89C",
+        "accentSecondaryBright": "0xFF5BFFD0",
+        "accentTertiary": "0xFFC28FFF",
+        "accentBadgeText": "0xFF0A6480",
+        "textOnAccent": "0xFF000B18",
+        "textOnError": "0xFFFFFFFF",
+        "textTertiary": "0xFF35363D",
+        "borderStrong": "0x3D10131A",
+        "borderControlOnAccent": "0x8510131A",
+        "statusWarning": "0xFFFFC42E",
+        "selection": "0xFF8A8F9D"
+      }
+    },
+    "shadows": {
+      "dark": {
+        "dialog": [
+          {
+            "color": "0x73000000",
+            "blurRadius": 32.0,
+            "offset": [
+              0.0,
+              8.0
+            ]
+          }
+        ],
+        "glowAccent": [
+          {
+            "color": "0x2E14C8FF",
+            "blurRadius": 24.0,
+            "offset": [
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "glowAccentPair": [
+          {
+            "color": "0x2614C8FF",
+            "blurRadius": 28.0,
+            "offset": [
+              -6.0,
+              8.0
+            ]
+          },
+          {
+            "color": "0x262BF5B4",
+            "blurRadius": 28.0,
+            "offset": [
+              6.0,
+              8.0
+            ]
+          }
+        ]
+      },
+      "light": {
+        "dialog": [
+          {
+            "color": "0x33000000",
+            "blurRadius": 32.0,
+            "offset": [
+              0.0,
+              8.0
+            ]
+          }
+        ],
+        "glowAccent": [
+          {
+            "color": "0x2E14C8FF",
+            "blurRadius": 24.0,
+            "offset": [
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "glowAccentPair": [
+          {
+            "color": "0x2614C8FF",
+            "blurRadius": 28.0,
+            "offset": [
+              -6.0,
+              8.0
+            ]
+          },
+          {
+            "color": "0x262BF5B4",
+            "blurRadius": 28.0,
+            "offset": [
+              6.0,
+              8.0
+            ]
+          }
+        ]
+      }
+    },
+    "gradients": {
+      "dark": {
+        "accentFill": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF0AD89C",
+            "0xFF0AAEE6"
+          ]
+        },
+        "accentBorder": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF14C8FF",
+            "0xFF5BFFD0"
+          ]
+        },
+        "heroWash": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFF0B0D12",
+            "0xFF0C0E14"
+          ]
+        },
+        "canvas": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFF14171E",
+            "0xFF0B0D12",
+            "0xFF07090D"
+          ],
+          "stops": [
+            0.0,
+            0.4,
+            1.0
+          ]
+        },
+        "surfaceSheen": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFF0C0E14",
+            "0xFF0C0E14"
+          ]
+        },
+        "canvasGlow": {
+          "type": "radial",
+          "center": [
+            0.0,
+            -0.9
+          ],
+          "radius": 1.0,
+          "colors": [
+            "0x1FFFFFFF",
+            "0x00FFFFFF"
+          ],
+          "stops": [
+            0.0,
+            0.6
+          ]
+        }
+      },
+      "light": {
+        "accentFill": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF0AD89C",
+            "0xFF0AAEE6"
+          ]
+        },
+        "accentBorder": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF14C8FF",
+            "0xFF5BFFD0"
+          ]
+        },
+        "heroWash": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFDCE0E6",
+            "0xFFFFFFFF"
+          ]
+        },
+        "canvas": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFE3E6EB",
+            "0xFFDCE0E6",
+            "0xFFD3D7DE"
+          ],
+          "stops": [
+            0.0,
+            0.4,
+            1.0
+          ]
+        },
+        "surfaceSheen": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFFFFFFF",
+            "0xFFF5F7FA"
+          ]
+        }
+      }
+    },
+    "textTheme": {
+      "displayLarge": {
+        "fontSize": 32.0,
+        "fontWeight": 700,
+        "letterSpacing": -0.4,
+        "lineHeight": 40.0
+      },
+      "displayMedium": {
+        "fontSize": 28.0,
+        "fontWeight": 700,
+        "letterSpacing": -0.4,
+        "lineHeight": 36.0
+      },
+      "headlineLarge": {
+        "fontSize": 24.0,
+        "fontWeight": 600,
+        "letterSpacing": -0.4,
+        "lineHeight": 32.0
+      },
+      "headlineMedium": {
+        "fontSize": 20.0,
+        "fontWeight": 600,
+        "lineHeight": 28.0
+      },
+      "titleLarge": {
+        "fontSize": 18.0,
+        "fontWeight": 600,
+        "lineHeight": 24.0
+      },
+      "titleMedium": {
+        "fontSize": 16.0,
+        "fontWeight": 500,
+        "lineHeight": 22.0
+      },
+      "bodyLarge": {
+        "fontSize": 16.0,
+        "fontWeight": 400,
+        "lineHeight": 24.0
+      },
+      "bodyMedium": {
+        "fontSize": 16.0,
+        "fontWeight": 400,
+        "lineHeight": 24.0
+      },
+      "bodySmall": {
+        "fontSize": 14.0,
+        "fontWeight": 400,
+        "lineHeight": 20.0
+      },
+      "labelMedium": {
+        "fontSize": 13.0,
+        "fontWeight": 500,
+        "lineHeight": 18.0
+      }
+    },
+    "typeScale": {
+      "numeric": {
+        "numericDisplay": {
+          "fontSize": 32.0,
+          "fontWeight": 700,
+          "letterSpacing": -0.4,
+          "lineHeight": 40.0,
+          "tabularFigures": true
+        },
+        "numericHeadline": {
+          "fontSize": 24.0,
+          "fontWeight": 600,
+          "lineHeight": 32.0,
+          "tabularFigures": true
+        },
+        "numericBody": {
+          "fontSize": 14.0,
+          "fontWeight": 500,
+          "lineHeight": 20.0,
+          "tabularFigures": true
+        }
+      },
+      "fontFamilies": {
+        "sansFontFamily": "Inter"
+      }
+    },
+    "scale": {
+      "space10": 20.0,
+      "space16": 32.0,
+      "space20": 40.0,
+      "space24": 48.0,
+      "space32": 64.0,
+      "radiusXs": 4.0,
+      "radiusSm": 8.0,
+      "radiusBase": 10.0,
+      "radius2xl": 16.0,
+      "radiusXl": 24.0
+    }
+  }
+}

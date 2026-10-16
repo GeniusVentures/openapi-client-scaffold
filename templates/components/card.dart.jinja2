@@ -6,7 +6,7 @@
 /// Composes ScaffoldSurface + ScaffoldPressable for elevated, outlined, or
 /// filled variants with optional header, body, and actions slots.
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
-/// no Riverpod or GeniusTheme dependency.
+/// no Riverpod or app-specific theme dependency.
 /// Consumes {{ widget_class_name }}Cubit (in-memory).
 library;
 
@@ -27,7 +27,7 @@ import '{{ file_stem }}_state.dart';
 /// A Material 3 card with configurable variant and content slots.
 ///
 /// The variant selects the surface treatment: elevated (ScaffoldSurface
-/// elevation 4 + palette.deepBlueCardColor), outlined (elevation 0 + 1px
+/// elevation 4 + its default palette.deepBlueCardColor), outlined (elevation 0 + 1px
 /// palette.borderSubtle border), or filled (elevation 0 +
 /// palette.surfaceElevated). It is owned by the cubit state
 /// ([{{ widget_class_name }}State.cardVariant]); the [variant] parameter
@@ -208,9 +208,9 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
               break;
             case 'elevated':
             default:
-              // Elevated cards use a subtle elevation of 4 dp.
+              // Elevated cards use a subtle elevation of 4 dp and the surface
+              // default color, so a themed sheen can replace the flat fill.
               surface = ScaffoldSurface(
-                color: palette.deepBlueCardColor,
                 elevation: 4,
                 borderRadius: radius,
                 child: cardChild,
@@ -222,6 +222,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
             return ScaffoldPressable(
               onPressed: widget.onTap,
               disabled: widget.disabled,
+              borderRadius: radius,
               child: surface,
             );
           }
