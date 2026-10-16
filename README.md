@@ -508,17 +508,19 @@ openapi-client-scaffold/            ← package `frontend_scaffold`
 ├── analysis_options.yaml           ← flutter_lints (dart analyze --fatal-infos)
 ├── pyproject.toml                  ← Python codegen package + pytest/ruff config
 ├── CMakeLists.txt                  ← self-contained build orchestrator
-├── design_tokens.json              ← M3 tokens single source of truth
+├── design_tokens.json              ← M3 and scaffold tokens, single source of truth
+├── tokens/                         ← preset token files (midnight.json)
 ├── lib/                            ← THE WIDGET LIBRARY (Part 1)
 │   ├── frontend_scaffold.dart      ← barrel export
 │   ├── components/                 ← ~70 M3 widgets
 │   ├── theme/                      ← theme extensions, palette, dimens, elevation
 │   └── utils/                      ← breakpoints
-├── test/                           ← 454 widget + token tests
+├── test/                           ← 1464 widget + token tests
 │   ├── components/
 │   └── theme/
 ├── example/                        ← runnable demo gallery
 ├── images/                         ← per-demo screenshots (gallery above)
+│   └── midnight/                   ← midnight preset captures
 ├── templates/                      ← Jinja2 templates (base, components, module, cpp)
 ├── tools/
 │   ├── scaffold_codegen/           ← Python build tooling
@@ -526,6 +528,9 @@ openapi-client-scaffold/            ← package `frontend_scaffold`
 │   │   ├── m3_tokens_css.py        ← tokens → CSS custom properties
 │   │   ├── api_clients.py          ← OpenAPI client codegen
 │   │   └── generators/             ← per-widget-family drivers
+│   ├── capture_gate.py             ← capture history and render checks
+│   ├── capture_rebaselines.json    ← sanctioned capture re-baselines
+│   ├── consumer_check/             ← GCS consumer build and test harness
 │   └── tests/                      ← pytest suite for the codegen
 ├── json/                           ← identity submodule's OpenAPI spec
 ├── .planning/                      ← GSD workflow records (see CLAUDE.md)

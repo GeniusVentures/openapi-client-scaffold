@@ -14,11 +14,13 @@ python3 -m venv .venv              # Python codegen tooling
 dart analyze --fatal-infos   # must be clean — no infos, no warnings
 flutter test                 # 1464 tests
 ruff check                   # Python lint
-pytest                       # Python codegen tests
+pytest                       # Python codegen tests, including the capture history gate
 python -m scaffold_codegen.generators && git diff --exit-code lib/   # generator drift (CI runs this)
 ```
 
-Both jobs are defined in `.github/workflows/ci.yaml`.
+Both jobs are defined in `.github/workflows/ci.yaml`. The Python job checks out
+the full history (`fetch-depth: 0`), because the capture gate walks it (see
+[Capture gate](#capture-gate)).
 
 ## Generated files: change the template, not the output
 
@@ -156,6 +158,8 @@ from the `scaffold` namespace of `design_tokens.json`.
   midnight-only `restyles_{dark,light}.png` capture of a card, a hovered
   pressable, a focused field and the checkbox states. Re-baseline midnight
   captures in a separate `chore` commit that touches only `images/midnight/`.
+  Any re-baseline of an existing capture also needs a manifest entry, or pytest
+  fails (see [Capture gate](#capture-gate)).
 - Brand names: `tools/tests/test_no_brand_names.py` scans the text files under
   `lib/`, `example/` and `tokens/` for organization and product names. It skips
   the platform runner folders of the example app, whose bundle identifiers are
@@ -182,6 +186,88 @@ before pushing.
 Generators write LF on every OS and `.gitattributes` pins LF. A whole-file diff
 after regenerating means a writer lacks `newline="\n"`;
 `tools/tests/test_codegen_writes_lf.py` catches that.
+
+## Capture gate
+
+`tools/capture_gate.py history` walks git history from the v1.4 base
+(`e67e00c`, recorded in `tools/capture_rebaselines.json`) to HEAD. It fails
+when:
+
+- a commit changes an existing PNG under `images/` and is not listed in
+  `tools/capture_rebaselines.json`;
+- a listed commit touches anything other than `images/`, or its scope does not
+  match its folder (`default` for `images/*.png`, `midnight` for
+  `images/midnight/*.png`), or its subject or first parent differs from the entry;
+- `images/` holds a file that is not a PNG.
+
+Commits that only add new captures need no entry. `pytest` runs the gate
+(`tools/tests/`), so CI needs the full history: the `python` job uses
+`fetch-depth: 0`. A shallow clone fails the test.
+
+Manifest entry fields, with a real entry:
+
+```json
+{
+  "sha": "f4207f79c9ca8bb132853dc506ee2fc07cf62e8f",
+  "subject": "chore(14-02): re-baseline captures for A11Y-01",
+  "scope": "default",
+  "follows": "0f79aaae12a9c7715be85836ac091f2fcb7cee88",
+  "record": "v1.4 14-COLOR-CHANGES.md A11Y01_CAPTURES"
+}
+```
+
+`sha` and `follows` are full 40-character SHAs. `follows` is the first parent
+of the capture commit, and `subject` must equal the commit's subject line.
+`record` points at the written reason for the change.
+
+Re-baselining a capture:
+
+1. Commit the code or token change that moves the pixels.
+2. Re-render and commit only the changed PNGs, in a `chore` commit that touches
+   nothing else (midnight captures in their own commit).
+3. Add the manifest entry for that commit in a third commit, and write the
+   reason in the record it points to.
+
+`pytest` fails between steps 2 and 3, so do not push in between.
+
+Merge `develop` into `main` with a merge commit. A squash or rebase merge
+rewrites the SHAs and the manifest no longer matches, so the gate fails.
+
+Two commands:
+
+```bash
+python tools/capture_gate.py history   # the check pytest runs
+python tools/capture_gate.py render    # flutter on PATH; re-renders into a scratch dir and diffs images/
+```
+
+`render` is local only. Rasterization differs across machines, so CI cannot
+compare bytes. On a different machine from the one that rendered the committed
+captures, render a known-good commit into a directory of your own
+(`SCAFFOLD_CAPTURE_DIR=<dir> flutter test test/capture_images_test.dart` from
+`example/`) and compare your working tree against that instead of `images/`.
+
+## Consumer check (GeniusCognitiveSystem)
+
+`tools/consumer_check/gcs_check.sh` builds and tests a consuming app against a
+ref of this repo:
+
+```bash
+PATH="<flutter>/bin:$PATH" bash tools/consumer_check/gcs_check.sh <gcs-app-dir> <scaffold-ref>
+```
+
+Prerequisites: a checkout of the app that holds the scaffold submodule (it has
+`scaffold/` and `templates/components/`), `flutter` and `python` on PATH, and a
+clean submodule. `<scaffold-ref>` is a branch, tag or commit of this repo.
+
+It fetches this repo into the app's `scaffold` submodule and checks the ref out
+detached, deletes and re-renders the gitignored `lib/generated/chat`, then runs
+`pub get`, `dart analyze` and `flutter test`. It never commits in the app, and on exit
+the submodule returns to the commit it started on.
+
+Expected on a healthy ref: 0 codegen failures of 12, `pub get` exit 0, 0 analyze
+issues in app code (`lib/`, `test/`), and all tests passing. Analyze errors
+under `scaffold/example` are expected noise (the example package does not
+resolve inside the consumer).
 
 ## Commits
 

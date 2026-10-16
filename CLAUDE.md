@@ -29,6 +29,10 @@ overwritten, and this drift has already happened once (commit `ed8859b`).
 Change `templates/components/*.jinja2` and regenerate.
 `lib/theme/scaffold_palette.dart`, `scaffold_dimens.dart`, `scaffold_shadows.dart`, `scaffold_motion_theme.dart`, `scaffold_typography.dart`, `scaffold_gradients.dart`, `scaffold_color_roles.dart` and `scaffold_shapes.dart` contain generated regions between `// GENERATED` markers. Edit `design_tokens.json` (`scaffold` namespace) and run `scaffold_codegen.generators.theme_defaults`, never the Dart; `lib/theme/presets/midnight_tokens.dart` is generated from `tokens/midnight.json` by `scaffold_codegen.generators.theme_presets`.
 
+A commit that changes an existing PNG under `images/` must be PNG-only and
+listed in `tools/capture_rebaselines.json`, or pytest fails. Details in
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
 The families, drivers, and the manual drift check are listed in
 [CONTRIBUTING.md](CONTRIBUTING.md). Read it before touching anything matching
 `scaffold_{animated_display,formatted_value,image_placeholder,selection_indicator}_*`
