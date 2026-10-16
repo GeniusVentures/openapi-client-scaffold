@@ -15,9 +15,11 @@ by the consumer, never committed).
     python3 -m scaffold_codegen.generators.image_placeholder
     python3 -m scaffold_codegen.generators.selection_indicator
     python3 -m scaffold_codegen.generators.theme_defaults [--check]
+    python3 -m scaffold_codegen.generators.theme_presets [--check]
 
 ``theme_defaults`` splices the generated regions of ``lib/theme`` from
-``design_tokens.json``. ``python3 -m scaffold_codegen.generators`` runs every
+``design_tokens.json``. ``theme_presets`` does the same for the opt-in preset files in
+``lib/theme/presets`` from their own token files. ``python3 -m scaffold_codegen.generators`` runs every
 committed generator.
 """
 
@@ -29,6 +31,7 @@ COMMITTED_GENERATORS = (
     "image_placeholder",
     "selection_indicator",
     "theme_defaults",
+    "theme_presets",
 )
 
 #: Renders into a consuming project's tree, needs explicit paths, never run by the drift check.

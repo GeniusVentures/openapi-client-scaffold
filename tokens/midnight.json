@@ -1,0 +1,55 @@
+{
+  "_comment": "Values of the midnight preset, rendered into the GENERATED regions of lib/theme/presets/midnight_tokens.dart by scaffold_codegen.generators.theme_presets. Same scaffold schema as design_tokens.json, no M3 keys.",
+  "scaffold": {
+    "palette": {
+      "dark": {
+        "deepBlueCardColor": "0xFF0C0E14",
+        "lightGreenPrimary": "0xFF0AAEE6",
+        "lightGreenSecondary": "0xFF2BF5B4",
+        "gray500": "0xFF8A8F9D",
+        "blue500": "0xFF14C8FF",
+        "borderGrey": "0x5CFFFFFF",
+        "grayPrimary": "0xFF171A21",
+        "deepBlueTertiary": "0xFF171A21",
+        "surfaceElevated": "0xFF0C0E14",
+        "borderSubtle": "0x1FFFFFFF",
+        "textPrimary": "0xFFFFFFFF",
+        "textSecondary": "0xFF8A8F9D",
+        "statusSuccess": "0xFF0AD89C",
+        "statusError": "0xFFFF4D4D",
+        "statusWarningText": "0xFFFFC42E",
+        "focusRingColor": "0xFF0AAEE6",
+        "skeletonBaseColor": "0xFF171A21",
+        "skeletonShimmerColor": "0xFF0B0D12",
+        "disabledOverlayColor": "0x66000000",
+        "dragFeedbackBackground": "0xFF0C0E14",
+        "dropZoneHighlight": "0x330AAEE6",
+        "dropZoneRejected": "0x33FF4D4D"
+      },
+      "light": {
+        "deepBlueCardColor": "0xFFFFFFFF",
+        "lightGreenPrimary": "0xFF0AAEE6",
+        "lightGreenSecondary": "0xFF2BF5B4",
+        "gray500": "0xFF5A606E",
+        "blue500": "0xFF0A6885",
+        "borderGrey": "0x7A10131A",
+        "grayPrimary": "0xFFEFF2F6",
+        "deepBlueTertiary": "0xFFEFF2F6",
+        "surfaceElevated": "0xFFFFFFFF",
+        "borderSubtle": "0x1F10131A",
+        "textPrimary": "0xFF10131A",
+        "textSecondary": "0xFF5A606E",
+        "statusSuccess": "0xFF065F46",
+        "statusError": "0xFF991B1B",
+        "statusWarningText": "0xFF92400E",
+        "focusRingColor": "0xFF0A6885",
+        "skeletonBaseColor": "0xFFEFF2F6",
+        "skeletonShimmerColor": "0xFFFFFFFF",
+        "disabledOverlayColor": "0x66000000",
+        "dragFeedbackBackground": "0xFFFFFFFF",
+        "dropZoneHighlight": "0x330AAEE6",
+        "dropZoneRejected": "0x33991B1B"
+      }
+    }
+  }
+}
