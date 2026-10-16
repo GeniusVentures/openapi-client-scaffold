@@ -193,7 +193,13 @@ Plans:
   3. The GeniusCognitiveSystem team has a written notice listing each changed default color with its old and new value.
   4. At the same head, `dart analyze --fatal-infos`, `flutter test`, `ruff check`, `pytest` and the generator `--check` all pass.
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+
+- [ ] 17-01-PLAN.md — (wave 1) tracer: capture history gate (manifest of the 14 sanctioned v1.4 capture commits, rules, pytest in CI with full history) and the local render check (GATE-01)
+- [ ] 17-02-PLAN.md — (wave 2) portable GCS harness in tools/consumer_check, run at develop against the session harness; draft GCS notice, not sent (GATE-02)
+- [ ] 17-03-PLAN.md — (wave 3) gate and harness docs; every release gate at one head in 17-GATES.md; milestone wrap to 20/20 requirements
 
 ### v1.4 sequencing notes
 
