@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/frontend_scaffold.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
 
 import 'demos/action_button_demo.dart';
 import 'demos/animations_demo.dart';
@@ -36,7 +37,9 @@ void main() {
 ///
 /// Registers [scaffoldThemeExtensions] on both light and dark themes. The
 /// "Theme overrides" toggle on the home page rebuilds the app with an
-/// overridden [ScaffoldPalette] to demonstrate the ThemeExtension path.
+/// overridden [ScaffoldPalette] to demonstrate the ThemeExtension path. The
+/// "Midnight preset" toggle swaps the defaults for the opt-in `midnightTheme`
+/// preset, in either brightness, and composes with the other two toggles.
 class ScaffoldExampleApp extends StatefulWidget {
   const ScaffoldExampleApp({super.key});
 
@@ -47,6 +50,7 @@ class ScaffoldExampleApp extends StatefulWidget {
 class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
   bool _useOverridePalette = false;
   bool _useLightTheme = false;
+  bool _useMidnight = false;
 
   /// Brightness mode currently in effect — dark by default, light when the
   /// "Light mode" toggle is on. Exposed so both themes are inspectable.
@@ -59,6 +63,12 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
     final ScaffoldPalette base = brightness == Brightness.light
         ? ScaffoldPalette.lightPalette
         : ScaffoldPalette.defaultPalette;
+    return _applyOverride(base);
+  }
+
+  /// The orange "Theme overrides" swap, shared by the default and midnight
+  /// paths. Returns [base] unchanged when the toggle is off.
+  ScaffoldPalette _applyOverride(ScaffoldPalette base) {
     if (!_useOverridePalette) {
       return base;
     }
@@ -70,6 +80,9 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
   }
 
   ThemeData _buildTheme(Brightness brightness) {
+    if (_useMidnight) {
+      return _buildMidnightTheme(brightness);
+    }
     final ScaffoldPalette palette = _paletteFor(brightness);
     // Align the ColorScheme's onX slots with the palette's text colors so
     // M3 composites (SwitchListTile, ListTile, ElevatedButton text, etc.)
@@ -94,6 +107,25 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
     );
   }
 
+  /// The midnight preset for [brightness]. With "Theme overrides" on, the
+  /// registered [ScaffoldPalette] is replaced by its orange copy and every
+  /// other extension is kept.
+  ThemeData _buildMidnightTheme(Brightness brightness) {
+    final ThemeData theme = midnightTheme(brightness);
+    if (!_useOverridePalette) {
+      return theme;
+    }
+    return theme.copyWith(
+      extensions: [
+        for (final extension in theme.extensions.values)
+          if (extension is ScaffoldPalette)
+            _applyOverride(extension)
+          else
+            extension,
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -110,6 +142,10 @@ class _ScaffoldExampleAppState extends State<ScaffoldExampleApp> {
         onLightThemeChanged: (value) {
           setState(() => _useLightTheme = value);
         },
+        midnight: _useMidnight,
+        onMidnightChanged: (value) {
+          setState(() => _useMidnight = value);
+        },
       ),
     );
   }
@@ -121,6 +157,8 @@ class HomePage extends StatelessWidget {
   final ValueChanged<bool> onOverrideChanged;
   final bool lightTheme;
   final ValueChanged<bool> onLightThemeChanged;
+  final bool midnight;
+  final ValueChanged<bool> onMidnightChanged;
 
   const HomePage({
     super.key,
@@ -128,6 +166,8 @@ class HomePage extends StatelessWidget {
     required this.onOverrideChanged,
     required this.lightTheme,
     required this.onLightThemeChanged,
+    required this.midnight,
+    required this.onMidnightChanged,
   });
 
   @override
@@ -153,6 +193,15 @@ class HomePage extends StatelessWidget {
             ),
             value: lightTheme,
             onChanged: onLightThemeChanged,
+          ),
+          SwitchListTile(
+            title: const Text('Midnight preset'),
+            subtitle: const Text(
+              'Opt-in preset (deep import, one call per brightness); off '
+              'shows the defaults',
+            ),
+            value: midnight,
+            onChanged: onMidnightChanged,
           ),
           const Divider(),
           _DemoTile(
