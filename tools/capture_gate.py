@@ -15,9 +15,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -27,6 +30,8 @@ from scaffold_codegen import REPO_ROOT
 MANIFEST = REPO_ROOT / "tools" / "capture_rebaselines.json"
 IMAGES_DIR = REPO_ROOT / "images"
 MIDNIGHT_PREFIX = "images/midnight/"
+HARNESS_TEST = "test/capture_images_test.dart"
+OUTPUT_TAIL_LINES = 30
 SCOPES = ("default", "midnight")
 _FULL_SHA = re.compile(r"[0-9a-f]{40}")
 _MANIFEST_KEYS = {"base", "rebaselines"}
@@ -288,15 +293,86 @@ def _run_history(args: argparse.Namespace) -> int:
     return 1 if violations else 0
 
 
+def _png_bytes(root: Path) -> dict[str, bytes]:
+    return {
+        path.relative_to(root).as_posix(): path.read_bytes()
+        for path in sorted(root.rglob("*.png"))
+    }
+
+
+def compare_capture_dirs(committed: Path, rendered: Path) -> list[str]:
+    old = _png_bytes(committed)
+    new = _png_bytes(rendered)
+    differences = [f"MISSING {name}" for name in old if name not in new]
+    differences += [f"EXTRA {name}" for name in new if name not in old]
+    differences += [f"DIFF {name}" for name in old if name in new and old[name] != new[name]]
+    return differences
+
+
+def _resolve_flutter(explicit: str | None) -> str:
+    flutter = shutil.which(explicit) if explicit else shutil.which("flutter")
+    if flutter is None:
+        raise GateError(
+            f"flutter not found ({explicit or 'flutter'}); pass --flutter or put it on PATH"
+        )
+    return flutter
+
+
+def _run_harness(flutter: str, capture_dir: Path) -> None:
+    env = {**os.environ, "SCAFFOLD_CAPTURE_DIR": capture_dir.as_posix()}
+    result = subprocess.run(
+        [flutter, "test", HARNESS_TEST],
+        cwd=REPO_ROOT / "example",
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        lines = (result.stdout + result.stderr).splitlines()[-OUTPUT_TAIL_LINES:]
+        tail = "\n".join(lines)
+        raise GateError(
+            f"capture harness failed with exit {result.returncode}:\n{tail}"
+        )
+
+
+def _run_render(args: argparse.Namespace) -> int:
+    flutter = _resolve_flutter(args.flutter)
+    scratch = Path(tempfile.mkdtemp(prefix="capture_gate_"))
+    try:
+        _run_harness(flutter, scratch)
+    except GateError:
+        shutil.rmtree(scratch, ignore_errors=True)
+        raise
+    differences = compare_capture_dirs(IMAGES_DIR, scratch)
+    rendered = _png_bytes(scratch)
+    midnight = sum(1 for name in rendered if name.startswith("midnight/"))
+    print(f"rendered {len(rendered) - midnight} default and {midnight} midnight PNGs")
+    for difference in differences:
+        print(difference)
+    print(f"{len(differences)} differences")
+    if differences:
+        print(f"kept rendered captures in {scratch}")
+        return 1
+    if args.keep:
+        print(f"kept rendered captures in {scratch}")
+    else:
+        shutil.rmtree(scratch)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
     history = sub.add_parser("history", help="check git history of images/")
     history.add_argument("--head", default="HEAD")
     history.add_argument("--manifest", type=Path, default=MANIFEST)
+    render = sub.add_parser("render", help="re-run the capture harness and diff images/")
+    render.add_argument("--flutter", help="path to the flutter executable")
+    render.add_argument("--keep", action="store_true", help="keep the scratch directory")
     args = parser.parse_args(argv)
     try:
-        return _run_history(args)
+        return _run_history(args) if args.command == "history" else _run_render(args)
     except (GateError, ValueError, KeyError, OSError) as exc:
         print(f"capture_gate: {exc}", file=sys.stderr)
         return 2

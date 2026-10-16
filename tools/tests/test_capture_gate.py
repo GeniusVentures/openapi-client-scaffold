@@ -13,6 +13,7 @@ from capture_gate import (
     GateError,
     Manifest,
     Rebaseline,
+    compare_capture_dirs,
     find_violations,
     load_manifest,
     main,
@@ -197,3 +198,38 @@ def test_cli_exits_2_on_malformed_manifest(tmp_path):
 def test_unreachable_base_names_fetch_depth():
     with pytest.raises(GateError, match="fetch-depth: 0"):
         read_capture_commits(REPO_ROOT, "0" * 40)
+
+
+def _tree(root: Path, files: dict[str, bytes]) -> Path:
+    for name, data in files.items():
+        target = root / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+    return root
+
+
+def test_identical_capture_trees_have_no_differences(tmp_path):
+    files = {"a_light.png": b"1", "midnight/a_light.png": b"2", "notes.txt": b"x"}
+    old = _tree(tmp_path / "old", files)
+    new = _tree(tmp_path / "new", {**files, "notes.txt": b"y"})
+    assert compare_capture_dirs(old, new) == []
+
+
+def test_capture_trees_report_missing_extra_and_diff(tmp_path):
+    old = _tree(
+        tmp_path / "old",
+        {"gone.png": b"1", "same.png": b"1", "midnight/changed.png": b"1"},
+    )
+    new = _tree(
+        tmp_path / "new",
+        {"new.png": b"1", "same.png": b"1", "midnight/changed.png": b"2"},
+    )
+    assert compare_capture_dirs(old, new) == [
+        "MISSING gone.png",
+        "EXTRA new.png",
+        "DIFF midnight/changed.png",
+    ]
+
+
+def test_render_exits_2_when_flutter_is_missing():
+    assert main(["render", "--flutter", "does-not-exist"]) == 2
