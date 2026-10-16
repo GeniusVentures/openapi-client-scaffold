@@ -10,7 +10,7 @@
 /// Composes ScaffoldSkeleton (loading) + ScaffoldStatusIndicator +
 /// ScaffoldPressable (empty / error / unavailable / success).
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
-/// no Riverpod or GeniusTheme dependency.
+/// no Riverpod or app-specific theme dependency.
 /// Consumes ScaffoldStateViewCubit (in-memory).
 library;
 
