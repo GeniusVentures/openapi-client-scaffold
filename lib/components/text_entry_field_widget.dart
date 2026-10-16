@@ -16,6 +16,7 @@ class TextEntryFieldWidget extends StatelessWidget {
     final dimens = context.dimens;
     final typography = context.typography;
     final colorRoles = context.colorRoles;
+    final shapes = context.shapes;
 
     return TextFormField(
       style: typography.inputStyle.copyWith(color: colorRoles.inputForeground),
@@ -26,7 +27,7 @@ class TextEntryFieldWidget extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: colorRoles.accentOnSurface,
-              width: 1.0,
+              width: shapes.inputFocusedBorderWidth ?? 1.0,
             ),
             borderRadius:
                 BorderRadius.circular(dimens.borderRadiusCard),
