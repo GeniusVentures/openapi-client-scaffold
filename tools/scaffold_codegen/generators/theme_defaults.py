@@ -36,11 +36,15 @@ END_MARKER = "    // END GENERATED {id}"
 
 #: (file name in LIB_THEME_DIR, token path, literal kind). Row order is splice order.
 REGIONS: tuple[tuple[str, tuple[str, ...], str], ...] = (
+    ("scaffold_palette.dart", ("scaffold", "palette", "dark"), "color"),
+    ("scaffold_palette.dart", ("scaffold", "palette", "light"), "color"),
     ("scaffold_dimens.dart", ("scaffold", "dimens"), "double"),
 )
 
 _DOUBLE_RE = re.compile(r"-?\d+\.\d+")
 _NAME_RE = re.compile(r"[a-z][A-Za-z0-9]*")
+_ARGB_RE = re.compile(r"0x[0-9A-F]{8}")
+_DART_REF_RE = re.compile(r"ScaffoldColors\.[a-z][A-Za-z0-9]*")
 
 
 class ThemeTokenError(ValueError):
@@ -67,8 +71,32 @@ def dart_double(name: str, value: object) -> str:
     raise ThemeTokenError(f"{name}: expected a decimal number such as 20.0, got {value!r}")
 
 
+def dart_color(name: str, value: object) -> str:
+    """Return the Dart expression for a color token.
+
+    A ``0xAARRGGBB`` string becomes ``Color(...)``. An object holding ``value`` and
+    ``dartRef`` is emitted as the ScaffoldColors reference; ``value`` is the resolved ARGB the
+    Dart parity test checks the reference against.
+    """
+    if isinstance(value, str) and _ARGB_RE.fullmatch(value):
+        return f"Color({value})"
+    if (
+        isinstance(value, dict)
+        and set(value) == {"value", "dartRef"}
+        and isinstance(value["value"], str)
+        and _ARGB_RE.fullmatch(value["value"])
+        and isinstance(value["dartRef"], str)
+        and _DART_REF_RE.fullmatch(value["dartRef"])
+    ):
+        return value["dartRef"]
+    raise ThemeTokenError(
+        f"{name}: expected an uppercase 0xAARRGGBB string or a {{value, dartRef}} object, got {value!r}"
+    )
+
+
 _LITERAL_ENCODERS = {
     "double": dart_double,
+    "color": dart_color,
 }
 
 

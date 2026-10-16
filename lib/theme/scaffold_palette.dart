@@ -101,6 +101,7 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   /// Default palette seeded from the raw [ScaffoldColors] constants, plus
   /// the toast-needed tokens with dark-mode defaults.
   static const ScaffoldPalette defaultPalette = ScaffoldPalette(
+    // GENERATED from design_tokens.json scaffold.palette.dark. Do not edit.
     deepBlueCardColor: ScaffoldColors.deepBlueCardColor,
     lightGreenPrimary: ScaffoldColors.lightGreenPrimary,
     lightGreenSecondary: ScaffoldColors.lightGreenSecondary,
@@ -123,6 +124,7 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     dragFeedbackBackground: Color(0xFF0C0E14),
     dropZoneHighlight: Color(0x3300EAAE),
     dropZoneRejected: Color(0x33FF4D4D),
+    // END GENERATED scaffold.palette.dark
   );
 
   /// Light-mode palette — light surfaces and dark text, mirroring
@@ -130,6 +132,7 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
   /// this on their light [ThemeData] so scaffold atoms render correctly in
   /// light mode; accents (green/blue) are shared with the dark palette.
   static const ScaffoldPalette lightPalette = ScaffoldPalette(
+    // GENERATED from design_tokens.json scaffold.palette.light. Do not edit.
     deepBlueCardColor: Color(0xFFFFFFFF),
     lightGreenPrimary: ScaffoldColors.lightGreenPrimary,
     lightGreenSecondary: ScaffoldColors.lightGreenSecondary,
@@ -152,6 +155,7 @@ class ScaffoldPalette extends ThemeExtension<ScaffoldPalette> {
     dragFeedbackBackground: Color(0xFFFFFFFF),
     dropZoneHighlight: Color(0x3300B57A),
     dropZoneRejected: Color(0x33D13438),
+    // END GENERATED scaffold.palette.light
   );
 
   /// Returns a copy of this palette with the given fields replaced.

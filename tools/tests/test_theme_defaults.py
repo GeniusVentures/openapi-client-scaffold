@@ -16,12 +16,14 @@ from scaffold_codegen.generators import theme_defaults
 from scaffold_codegen.generators.theme_defaults import (
     REGIONS,
     ThemeTokenError,
+    dart_color,
     dart_double,
     render_files,
     run,
 )
 
 DIMENS_FILE = "scaffold_dimens.dart"
+PALETTE_FILE = "scaffold_palette.dart"
 
 
 @pytest.fixture
@@ -156,3 +158,55 @@ def test_cli_has_no_token_path_option() -> None:
 def test_existing_token_keys_and_order_preserved() -> None:
     data = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))
     assert list(data) == ["_comment", "color", "typography", "shape", "elevation", "scaffold"]
+
+
+def test_dart_color_string_and_ref() -> None:
+    assert dart_color("x", "0xFF0C0E14") == "Color(0xFF0C0E14)"
+    ref = {"value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary"}
+    assert dart_color("x", ref) == "ScaffoldColors.lightGreenPrimary"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "0xff0c0e14",
+        "0xFF0C0E",
+        "#0C0E14",
+        "0xFF0C0E14); evil(",
+        {"value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary", "extra": 1},
+        {"dartRef": "ScaffoldColors.lightGreenPrimary"},
+        {"value": "0xFF00EAAE", "dartRef": "Colors.red"},
+        {"value": "0xFF00EAAE", "dartRef": "ScaffoldColors.a; b"},
+        20,
+        None,
+    ],
+)
+def test_dart_color_rejects_invalid(value: object) -> None:
+    with pytest.raises(ThemeTokenError):
+        dart_color("x", value)
+
+
+def test_palette_token_change_regenerates_only_that_line(workdir: tuple[Path, Path]) -> None:
+    tokens, theme = workdir
+    data = json.loads(tokens.read_text(encoding="utf-8"))
+    assert data["scaffold"]["palette"]["dark"]["statusError"] == "0xFFFF4D4D"
+    text = tokens.read_text(encoding="utf-8")
+    tokens.write_text(
+        text.replace('"statusError": "0xFFFF4D4D"', '"statusError": "0xFFFF0000"'), encoding="utf-8"
+    )
+    before = (theme / PALETTE_FILE).read_text(encoding="utf-8").splitlines()
+
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 1
+    assert run(check=False, tokens_path=tokens, theme_dir=theme) == 0
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 0
+
+    after = (theme / PALETTE_FILE).read_text(encoding="utf-8").splitlines()
+    changed = [(a, b) for a, b in zip(before, after, strict=True) if a != b]
+    assert changed == [("    statusError: Color(0xFFFF4D4D),", "    statusError: Color(0xFFFF0000),")]
+
+
+def test_palette_regions_hold_22_entries_and_dimens_21() -> None:
+    scaffold = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]
+    assert len(scaffold["palette"]["dark"]) == 22
+    assert len(scaffold["palette"]["light"]) == 22
+    assert len(scaffold["dimens"]) == 21
