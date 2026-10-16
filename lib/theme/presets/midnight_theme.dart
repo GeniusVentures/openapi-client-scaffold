@@ -60,13 +60,16 @@ ThemeData midnightTheme(Brightness brightness) {
           outlineVariant: c.surfaceSheet,
         );
 
-  final t = Midnight.textTheme
-      .apply(bodyColor: p.textPrimary, displayColor: p.textPrimary)
-      .copyWith(
-        bodySmall: Midnight.textTheme.bodySmall?.copyWith(
-          color: p.textSecondary,
-        ),
-      );
+  // ThemeData applies fontFamily only to its own default text theme, so the
+  // styles reused by appBarTheme and tabBarTheme need it set here.
+  final base = Midnight.textTheme.apply(
+    fontFamily: Midnight.typeScale.sansFontFamily,
+    bodyColor: p.textPrimary,
+    displayColor: p.textPrimary,
+  );
+  final t = base.copyWith(
+    bodySmall: base.bodySmall?.copyWith(color: p.textSecondary),
+  );
 
   return ThemeData(
     useMaterial3: true,
