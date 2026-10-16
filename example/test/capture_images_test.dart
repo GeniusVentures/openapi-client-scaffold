@@ -4,7 +4,9 @@
 /// `example/lib/main.dart` under BOTH dark and light themes and writes two
 /// PNGs per demo into the package-root `images/` directory
 /// (`../images/<name>_dark.png` and `../images/<name>_light.png` relative to
-/// `example/`).
+/// `example/`). Set `SCAFFOLD_CAPTURE_DIR` to write the PNGs elsewhere, for
+/// example a baseline outside the repo; the default stays the package-root
+/// `images/`.
 ///
 /// Run from `example/`:
 ///
@@ -129,6 +131,10 @@ ThemeData _buildCaptureTheme(Brightness brightness) {
   );
 }
 
+/// Output directory for every captured PNG: `SCAFFOLD_CAPTURE_DIR` when set,
+/// otherwise the package-root `images/` relative to `example/`.
+String _captureDir() => Platform.environment['SCAFFOLD_CAPTURE_DIR'] ?? '../images';
+
 /// Pumps [child] inside a MaterialApp + Scaffold + Center wrapper with the
 /// theme for the given [brightness]. Mirrors the demo app's theme setup so
 /// captured pixels match what users see when running the demo.
@@ -173,7 +179,8 @@ typedef PrepareCapture = Future<void> Function(WidgetTester tester);
 
 /// Renders [widget] to a [kCaptureWidth]x[kCaptureHeight] offscreen surface at
 /// [kCapturePixelRatio] pixel ratio and writes the resulting PNG to
-/// `../images/<filename>.png` (package-root `images/`).
+/// `<captureDir>/<filename>.png`. The directory is `SCAFFOLD_CAPTURE_DIR` when
+/// set and the package-root `images/` otherwise.
 ///
 /// Rasterization uses the canonical Flutter SDK pattern: locate the
 /// [RenderRepaintBoundary] keyed `'capture'`, call its `toImage(pixelRatio:)`,
@@ -250,7 +257,7 @@ Future<void> _captureWidget(
   }
   await tester.runAsync(() async {
     final File f =
-        await File('../images/$filename.png').create(recursive: true);
+        await File('${_captureDir()}/$filename.png').create(recursive: true);
     await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
 
@@ -530,7 +537,7 @@ Future<void> _captureToast(WidgetTester tester, Brightness brightness) async {
   }
   await tester.runAsync(() async {
     final File f = await File(
-      '../images/toast_${brightness.name}.png',
+      '${_captureDir()}/toast_${brightness.name}.png',
     ).create(recursive: true);
     await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
@@ -693,7 +700,7 @@ Future<void> _captureWalletSheet(
   }
   await tester.runAsync(() async {
     final File f = await File(
-      '../images/wallet_connect_sheet_${brightness.name}.png',
+      '${_captureDir()}/wallet_connect_sheet_${brightness.name}.png',
     ).create(recursive: true);
     await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
