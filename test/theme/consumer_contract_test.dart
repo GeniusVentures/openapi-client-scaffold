@@ -87,10 +87,7 @@ void main() {
         isTrue,
       );
       expect(context.colorRoles.accent, ScaffoldPalette.lightPalette.lightGreenPrimary);
-      expect(
-        context.colorRoles.accentOnSurface,
-        ScaffoldPalette.lightPalette.lightGreenPrimary,
-      );
+      expect(context.colorRoles.accentOnSurface, const Color(0xFF00956F));
       expect(context.colorRoles.borderControl, ScaffoldPalette.lightPalette.borderGrey);
     });
 

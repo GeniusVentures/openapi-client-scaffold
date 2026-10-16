@@ -51,9 +51,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   static const ScaffoldColorRoles lightColorRoles = ScaffoldColorRoles(
     // GENERATED from design_tokens.json scaffold.colorRoles.light. Do not edit.
     accent: ScaffoldColors.lightGreenPrimary,
-    accentOnSurface: ScaffoldColors.lightGreenPrimary,
-    accentSecondaryOnSurface: ScaffoldColors.lightGreenSecondary,
-    accentTextOnSurface: ScaffoldColors.lightGreenPrimary,
+    accentOnSurface: Color(0xFF00956F),
+    accentSecondaryOnSurface: Color(0xFF01956D),
+    accentTextOnSurface: Color(0xFF00795A),
     borderControl: Color(0x73000000),
     inputForeground: Color(0xFF17191E),
     sheetForeground: Color(0xFF17191E),
@@ -61,21 +61,31 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     // END GENERATED scaffold.colorRoles.light
   );
 
-  /// Roles for an app that registered no [ScaffoldColorRoles]. [accent],
-  /// the accent foreground roles and [borderControl] come from [palette], which is what
-  /// the widgets read before these roles existed; the other roles come from
-  /// [lightColorRoles] or [defaultColorRoles] by [brightness].
+  /// Roles for an app that registered no [ScaffoldColorRoles]. [accent] and
+  /// [borderControl] come from [palette], which is what the widgets read before
+  /// these roles existed; the other roles come from [lightColorRoles] or
+  /// [defaultColorRoles] by [brightness].
+  ///
+  /// In dark mode the accent foreground roles also come from [palette]. In
+  /// light mode they keep the [lightColorRoles] values, because the palette
+  /// accent is a bright fill that does not contrast with a light surface.
   static ScaffoldColorRoles fallbackFor(
     ScaffoldPalette palette,
     Brightness brightness,
   ) {
-    final base = brightness == Brightness.light ? lightColorRoles : defaultColorRoles;
-    return base.copyWith(
+    final isLight = brightness == Brightness.light;
+    final base = isLight ? lightColorRoles : defaultColorRoles;
+    final roles = base.copyWith(
       accent: palette.lightGreenPrimary,
+      borderControl: palette.borderGrey,
+    );
+    if (isLight) {
+      return roles;
+    }
+    return roles.copyWith(
       accentOnSurface: palette.lightGreenPrimary,
       accentSecondaryOnSurface: palette.lightGreenSecondary,
       accentTextOnSurface: palette.lightGreenPrimary,
-      borderControl: palette.borderGrey,
     );
   }
 

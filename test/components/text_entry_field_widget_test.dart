@@ -73,7 +73,9 @@ void main() {
         expect(decoration.hintStyle, _expectedStyle(palette.gray500));
         expect(
           _borderColor(decoration.focusedBorder),
-          palette.lightGreenPrimary,
+          identical(palette, lightPalette)
+              ? const Color(0xFF00956F)
+              : palette.lightGreenPrimary,
         );
         expect(_borderColor(decoration.enabledBorder), palette.borderGrey);
         expect(decoration.fillColor, palette.grayPrimary);

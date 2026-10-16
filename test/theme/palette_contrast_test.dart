@@ -52,12 +52,9 @@ class _Entry {
 const _surface = _Entry(_Role.surface, 'background checked against');
 const _text = _Entry(_Role.text, 'text, 4.5:1');
 
-// As a foreground on light surfaces this is about 1.57:1. Plan 14-04 moves the
-// foreground uses onto color roles and 14-05 gives them AA light values and
-// reclassifies them.
 const _accentFill = _Entry(
   _Role.excluded,
-  'accent fill carrying dark text; foreground uses move to color roles in 14-04, AA values in 14-05',
+  'accent fill carrying dark text; foreground uses read the colorRoles accents',
 );
 
 const _paletteClasses = <String, _Entry>{
@@ -105,9 +102,18 @@ const _paletteClasses = <String, _Entry>{
 
 const _rolesClasses = <String, _Entry>{
   'accent': _accentFill,
-  'accentOnSurface': _accentFill,
-  'accentSecondaryOnSurface': _accentFill,
-  'accentTextOnSurface': _accentFill,
+  'accentOnSurface': _Entry(
+    _Role.nonText,
+    'accent icons, borders, lines, dots and state graphics, 3:1',
+  ),
+  'accentSecondaryOnSurface': _Entry(
+    _Role.nonText,
+    'secondary accent icon, 3:1',
+  ),
+  'accentTextOnSurface': _Entry(
+    _Role.text,
+    'accent text (links, citation marker, group label), 4.5:1',
+  ),
   'borderControl': _Entry(_Role.nonText, 'control border, 3:1'),
   'inputForeground': _Entry(
     _Role.text,
@@ -165,6 +171,9 @@ void _expectPair(Color fg, Color bg, double min) {
 Color _roleColor(ScaffoldColorRoles roles, String name) => switch (name) {
   'inputForeground' => roles.inputForeground,
   'sheetForeground' => roles.sheetForeground,
+  'accentOnSurface' => roles.accentOnSurface,
+  'accentSecondaryOnSurface' => roles.accentSecondaryOnSurface,
+  'accentTextOnSurface' => roles.accentTextOnSurface,
   _ => throw ArgumentError(name),
 };
 
@@ -258,6 +267,36 @@ void main() {
           kWcagText,
         );
       });
+    }
+
+    for (final name in [
+      'accentOnSurface',
+      'accentSecondaryOnSurface',
+      'accentTextOnSurface',
+    ]) {
+      final min = _rolesClasses[name]!.role == _Role.text
+          ? kWcagText
+          : kWcagNonText;
+      for (final surface in _surfaces.entries) {
+        test('${theme.name}: $name (roles) on ${surface.key} >= $min', () {
+          _expectPair(
+            _roleColor(theme.roles, name),
+            surface.value(theme.palette),
+            min,
+          );
+        });
+        test('${theme.name}: $name (fallback) on ${surface.key} >= $min', () {
+          final roles = ScaffoldColorRoles.fallbackFor(
+            theme.palette,
+            theme.brightness,
+          );
+          _expectPair(
+            _roleColor(roles, name),
+            surface.value(theme.palette),
+            min,
+          );
+        });
+      }
     }
 
     for (final source in ['roles', 'fallback']) {
