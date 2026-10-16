@@ -27,7 +27,7 @@ import 'scaffold_card_state.dart';
 /// A Material 3 card with configurable variant and content slots.
 ///
 /// The variant selects the surface treatment: elevated (ScaffoldSurface
-/// elevation 4 + palette.deepBlueCardColor), outlined (elevation 0 + 1px
+/// elevation 4 + its default palette.deepBlueCardColor), outlined (elevation 0 + 1px
 /// palette.borderSubtle border), or filled (elevation 0 +
 /// palette.surfaceElevated). It is owned by the cubit state
 /// ([ScaffoldCardState.cardVariant]); the [variant] parameter
@@ -208,9 +208,9 @@ class _ScaffoldCardState extends State<ScaffoldCard> {
               break;
             case 'elevated':
             default:
-              // Elevated cards use a subtle elevation of 4 dp.
+              // Elevated cards use a subtle elevation of 4 dp and the surface
+              // default color, so a themed sheen can replace the flat fill.
               surface = ScaffoldSurface(
-                color: palette.deepBlueCardColor,
                 elevation: 4,
                 borderRadius: radius,
                 child: cardChild,

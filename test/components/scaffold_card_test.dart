@@ -91,9 +91,20 @@ void main() {
 
     final ScaffoldSurface surface =
         tester.widget<ScaffoldSurface>(find.byType(ScaffoldSurface));
-    expect(surface.color, ScaffoldPalette.defaultPalette.deepBlueCardColor);
+    expect(surface.color, isNull);
     expect(surface.elevation, 4.0);
     expect(surface.border, isNull);
+    final decoration = tester
+        .widgetList<Container>(
+          find.descendant(
+            of: find.byType(ScaffoldSurface),
+            matching: find.byType(Container),
+          ),
+        )
+        .map((c) => c.decoration)
+        .whereType<BoxDecoration>()
+        .first;
+    expect(decoration.color, ScaffoldPalette.defaultPalette.deepBlueCardColor);
   });
 
   testWidgets('outlined variant renders elevation 0 + 1px borderSubtle border',
