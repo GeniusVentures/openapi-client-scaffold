@@ -54,7 +54,7 @@ Full phase details, goals, and success criteria: [milestones/v1.2-ROADMAP.md](mi
 ### 🚧 v1.4 Design Tokens & Midnight Preset (Phases 12-17) — ACTIVE
 
 - [x] **Phase 12: Token Pipeline** - Dart default palette and dimens generate byte-identically from `design_tokens.json`, with a drift check and LF output (completed 2026-10-16)
-- [ ] **Phase 13: Theme Fields** - Shadows, typography, motion, gradients and accent tokens become themeable with defaults equal to today
+- [x] **Phase 13: Theme Fields** - Shadows, typography, motion, gradients and accent tokens become themeable with defaults equal to today (completed 2026-10-16)
 - [ ] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, as two re-baselined commits
 - [ ] **Phase 15: Midnight Preset** - Opt-in `midnight` theme (light and dark) in one call, with an example-app switcher and a contrast test over all palettes
 - [ ] **Phase 16: Component Restyles** - Components take the midnight look where tokens alone cannot reach it, with default rendering unchanged
@@ -100,11 +100,11 @@ Plans:
 
 Plans:
 
-- [ ] 13-01-PLAN.md — (wave 1) tracer: ScaffoldShadows from token to toast; ScaffoldMotionTheme and ScaffoldTypography generated from `scaffold` tokens, with `context` getters
-- [ ] 13-02-PLAN.md — (wave 2) ScaffoldColorRoles and ScaffoldGradients; text field, drawer and overflow fade on tokens; consumer contract covers new getters
-- [ ] 13-03-PLAN.md — (wave 2) hand-written components read `context.motion` and the mono family
-- [ ] 13-04-PLAN.md — (wave 2) animated_display, search_bar and selection_indicator templates read `context.motion`, regenerated
-- [ ] 13-05-PLAN.md — (wave 3) docs, full CI gate, same-machine capture comparison against b618159, GCS harness
+- [x] 13-01-PLAN.md — (wave 1) tracer: ScaffoldShadows from token to toast; ScaffoldMotionTheme and ScaffoldTypography generated from `scaffold` tokens, with `context` getters
+- [x] 13-02-PLAN.md — (wave 2) ScaffoldColorRoles and ScaffoldGradients; text field, drawer and overflow fade on tokens; consumer contract covers new getters
+- [x] 13-03-PLAN.md — (wave 2) hand-written components read `context.motion` and the mono family
+- [x] 13-04-PLAN.md — (wave 2) animated_display, search_bar and selection_indicator templates read `context.motion`, regenerated
+- [x] 13-05-PLAN.md — (wave 3) docs, full CI gate, same-machine capture comparison against b618159, GCS harness
 
 ### Phase 14: Default Accessibility Fixes
 

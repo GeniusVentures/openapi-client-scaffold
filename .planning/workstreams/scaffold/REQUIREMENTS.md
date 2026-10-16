@@ -16,13 +16,13 @@
 
 ### Theme fields
 
-- [ ] **THM-01**: Shadows are themeable through a new `ThemeExtension`, with light and dark values whose defaults match today's output.
-- [ ] **THM-02**: Typography is themeable through a new `ThemeExtension`, with defaults matching today's output.
-- [ ] **THM-03**: Motion durations and curves come from tokens, with defaults equal to `ScaffoldMotion` today.
-- [ ] **THM-04**: Gradients are themeable through a new `ThemeExtension` (none by default).
-- [ ] **THM-05**: Accent, `borderControl` and on-surface brand tokens exist with defaults equal to today's colors.
-- [ ] **THM-06**: The `ScaffoldPalette` and `ScaffoldDimens` constructors and public field names are unchanged. New extensions fall back to defaults when an app doesn't register them.
-- [ ] **THM-07**: The hard-coded white in the text field and drawers is replaced with tokens. At this commit, the defaults reproduce today's output.
+- [x] **THM-01**: Shadows are themeable through a new `ThemeExtension`, with light and dark values whose defaults match today's output.
+- [x] **THM-02**: Typography is themeable through a new `ThemeExtension`, with defaults matching today's output.
+- [x] **THM-03**: Motion durations and curves come from tokens, with defaults equal to `ScaffoldMotion` today.
+- [x] **THM-04**: Gradients are themeable through a new `ThemeExtension` (none by default).
+- [x] **THM-05**: Accent, `borderControl` and on-surface brand tokens exist with defaults equal to today's colors.
+- [x] **THM-06**: The `ScaffoldPalette` and `ScaffoldDimens` constructors and public field names are unchanged. New extensions fall back to defaults when an app doesn't register them.
+- [x] **THM-07**: The hard-coded white in the text field and drawers is replaced with tokens. At this commit, the defaults reproduce today's output.
 
 ### Midnight preset
 
@@ -63,13 +63,13 @@
 | TOK-02 | Phase 12 | Complete |
 | TOK-03 | Phase 12 | Complete |
 | TOK-04 | Phase 12 | Complete |
-| THM-01 | Phase 13 | Pending |
-| THM-02 | Phase 13 | Pending |
-| THM-03 | Phase 13 | Pending |
-| THM-04 | Phase 13 | Pending |
-| THM-05 | Phase 13 | Pending |
-| THM-06 | Phase 13 | Pending |
-| THM-07 | Phase 13 | Pending |
+| THM-01 | Phase 13 | Complete |
+| THM-02 | Phase 13 | Complete |
+| THM-03 | Phase 13 | Complete |
+| THM-04 | Phase 13 | Complete |
+| THM-05 | Phase 13 | Complete |
+| THM-06 | Phase 13 | Complete |
+| THM-07 | Phase 13 | Complete |
 | A11Y-01 | Phase 14 | Pending |
 | A11Y-02 | Phase 14 | Pending |
 | PRE-01 | Phase 15 | Pending |
