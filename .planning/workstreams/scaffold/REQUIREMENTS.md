@@ -36,8 +36,8 @@
 
 ### Accessibility and defaults
 
-- [ ] **A11Y-01**: Default palettes pass WCAG AA in light and dark. The known failures to fix are the light focus ring, `gray500` and light `statusSuccess`. The captures are re-baselined in a dedicated commit.
-- [ ] **A11Y-02**: The light-mode text field and drawer contrast bug is fixed in its own commit, followed by its own capture re-baseline commit.
+- [x] **A11Y-01**: Default palettes pass WCAG AA in light and dark. The known failures to fix are the light focus ring, `gray500` and light `statusSuccess`. The captures are re-baselined in a dedicated commit.
+- [x] **A11Y-02**: The light-mode text field and drawer contrast bug is fixed in its own commit, followed by its own capture re-baseline commit.
 - [ ] **A11Y-03**: An automated contrast test covers the default and midnight palettes in both modes.
 
 ### Release gates
@@ -70,8 +70,8 @@
 | THM-05 | Phase 13 | Complete |
 | THM-06 | Phase 13 | Complete |
 | THM-07 | Phase 13 | Complete |
-| A11Y-01 | Phase 14 | Pending |
-| A11Y-02 | Phase 14 | Pending |
+| A11Y-01 | Phase 14 | Complete |
+| A11Y-02 | Phase 14 | Complete |
 | PRE-01 | Phase 15 | Pending |
 | PRE-02 | Phase 15 | Pending |
 | PRE-03 | Phase 15 | Pending |

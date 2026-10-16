@@ -55,7 +55,7 @@ Full phase details, goals, and success criteria: [milestones/v1.2-ROADMAP.md](mi
 
 - [x] **Phase 12: Token Pipeline** - Dart default palette and dimens generate byte-identically from `design_tokens.json`, with a drift check and LF output (completed 2026-10-16)
 - [x] **Phase 13: Theme Fields** - Shadows, typography, motion, gradients and accent tokens become themeable with defaults equal to today (completed 2026-10-16)
-- [ ] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, each fix followed by its own capture re-baseline commit
+- [x] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, each fix followed by its own capture re-baseline commit (completed 2026-10-16)
 - [ ] **Phase 15: Midnight Preset** - Opt-in `midnight` theme (light and dark) in one call, with an example-app switcher and a contrast test over all palettes
 - [ ] **Phase 16: Component Restyles** - Components take the midnight look where tokens alone cannot reach it, with default rendering unchanged
 - [ ] **Phase 17: Release Gates** - Captures change only in the sanctioned re-baseline commits and GeniusCognitiveSystem builds and passes against develop
@@ -123,12 +123,12 @@ Plans:
 
 Plans:
 
-- [ ] 14-01-PLAN.md — (wave 1) same-machine capture baseline commit; harness shows typed text and the open drawer, then its own capture commit
-- [ ] 14-02-PLAN.md — (wave 2) WCAG contrast helper and palette contrast test; A11Y-01 token fix commit, then its own capture commit
-- [ ] 14-03-PLAN.md — (wave 3) A11Y-02 light text field and drawer foreground tokens, fix commit, then its own two-PNG capture commit
-- [ ] 14-04-PLAN.md — (wave 4) accent call sites move to color roles (new accentSecondaryOnSurface, accentTextOnSurface); refactor commit, no pixel change
-- [ ] 14-05-PLAN.md — (wave 5) light accent role values (3:1 non-text, 4.5:1 text) and light fallback, fix commit, then its own light capture commit; dark unchanged
-- [ ] 14-06-PLAN.md — (wave 6) 14-COLOR-CHANGES.md record, CONTRIBUTING contrast rule, phase gate with residual accent check and GCS harness
+- [x] 14-01-PLAN.md — (wave 1) same-machine capture baseline commit; harness shows typed text and the open drawer, then its own capture commit
+- [x] 14-02-PLAN.md — (wave 2) WCAG contrast helper and palette contrast test; A11Y-01 token fix commit, then its own capture commit
+- [x] 14-03-PLAN.md — (wave 3) A11Y-02 light text field and drawer foreground tokens, fix commit, then its own two-PNG capture commit
+- [x] 14-04-PLAN.md — (wave 4) accent call sites move to color roles (new accentSecondaryOnSurface, accentTextOnSurface); refactor commit, no pixel change
+- [x] 14-05-PLAN.md — (wave 5) light accent role values (3:1 non-text, 4.5:1 text) and light fallback, fix commit, then its own light capture commit; dark unchanged
+- [x] 14-06-PLAN.md — (wave 6) 14-COLOR-CHANGES.md record, CONTRIBUTING contrast rule, phase gate with residual accent check and GCS harness
 
 ### Phase 15: Midnight Preset
 

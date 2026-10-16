@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Design Tokens & Midnight Preset
-current_phase: 14
-current_phase_name: Default Accessibility Fixes
-status: executing
+current_phase: 15
+current_phase_name: Midnight Preset
+status: planning
 stopped_at: v1.4 roadmap created (Phases 12-17); nothing planned or executed yet
-last_updated: "2026-10-16T15:40:46.304Z"
+last_updated: "2026-10-16T16:10:45.715Z"
 last_activity: 2026-10-16
 last_activity_desc: Phase 12 execution started
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 14
-  completed_plans: 8
-  percent: 33
+  completed_plans: 14
+  percent: 50
 ---
 
 # Project State
@@ -28,10 +28,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: 14 (Default Accessibility Fixes) — EXECUTING
-Plan: 1 of 6
-Status: Executing Phase 14
-Last activity: 2026-10-16 — Phase 14 execution started
+Phase: 15 — Midnight Preset
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-16 — Phase 14 complete, transitioned to Phase 15
 
 Progress: [..........] 0% (0/6 phases)
 
