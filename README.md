@@ -47,12 +47,49 @@ import 'package:frontend_scaffold/components/scaffold_badge.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 ```
 
+### Midnight preset (opt-in)
+
+The package also ships a dark and light preset. It is not in the barrel, so an
+app that does not import it sees no change. Deep-import it:
+
+```dart
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
+
+MaterialApp(
+  theme: midnightTheme(Brightness.light),
+  darkTheme: midnightTheme(Brightness.dark),
+);
+```
+
+`midnightTheme(brightness)` returns a full `ThemeData`: color scheme, page
+background, text theme, 21 component themes and the six scaffold extensions.
+An app that builds its own `ThemeData` can take only the extensions with
+`midnightExtensions(brightness)`.
+
+Fonts: the preset names Inter and JetBrains Mono and ships no font files.
+Register them in the app's `pubspec.yaml`, or the platform default font is used.
+
+The example app has a "Midnight preset" switch that swaps the defaults for the
+preset in both modes. Captures of all 26 demos are in `images/midnight/`.
+
+Some reference values failed WCAG AA, so the preset adjusts them:
+
+- Light `statusSuccess` and `statusError` use the reference's text-safe green
+  and red (`0xFF065F46` and `0xFF991B1B`).
+- In light mode, `blue500`, the focus ring, `colorRoles.accentOnSurface`,
+  `accentTextOnSurface` and `ColorScheme.outline` use `0xFF0A6885`.
+- Light `accentSecondaryOnSurface` is `0xFF07875F`.
+- `ColorScheme.onTertiary` and the dark `onError` are near-black `0xFF000B18`.
+  `ColorScheme.error` is each mode's `statusError`.
+- Every accent drawn as a foreground (outlines, cursor, tab indicator, checkbox
+  side, navigation selection) uses `accentOnSurface`.
+
 ## What's in it
 
 | Directory | Contents |
 |---|---|
 | `lib/components/` | ~70 widgets — surfaces, pressables, badges, skeletons, sliders, drag/drop, search bar, state views, toasts, animations, media |
-| `lib/theme/` | `scaffold_theme` (extensions), `scaffold_palette`, `scaffold_colors`, `scaffold_dimens`, `scaffold_elevation`, `scaffold_shadows`, `scaffold_motion_theme`, `scaffold_typography`, `scaffold_gradients`, `scaffold_color_roles` |
+| `lib/theme/` | `scaffold_theme` (extensions), `scaffold_palette`, `scaffold_colors`, `scaffold_dimens`, `scaffold_elevation`, `scaffold_shadows`, `scaffold_motion_theme`, `scaffold_typography`, `scaffold_gradients`, `scaffold_color_roles`, `presets/midnight_theme`, `presets/midnight_tokens` |
 | `lib/utils/` | `breakpoints` |
 
 Some widget families are **generated** from Jinja2 templates rather than
@@ -66,6 +103,7 @@ hand-written — one file per variant, no runtime enum/switch spanning variants:
 | `ScaffoldSelectionIndicator*` | radio, checkbox, toggle | `generators.selection_indicator` |
 | `ScaffoldCard` / `ScaffoldStateView` / `ScaffoldSearchBar` | + `_cubit` / `_state` companions | `generators.composites` |
 | `ScaffoldPalette`, `ScaffoldDimens` and the five theme extensions (shadows, motion, typography, gradients, color roles) defaults | dark and light palette, dimens, shadows, motion, typography, gradients, color roles | `generators.theme_defaults` |
+| `lib/theme/presets/midnight_tokens.dart` | midnight preset palette, shadows, gradients, text styles, type scale and spacing, from `tokens/midnight.json` | `generators.theme_presets` |
 
 **These files are committed, but the template is the source of truth.** Never
 hand-edit a generated file — change `templates/components/*.jinja2`, or

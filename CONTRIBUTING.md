@@ -37,6 +37,7 @@ Generated families and their drivers:
 | `scaffold_selection_indicator_*.dart` | `scaffold_codegen.generators.selection_indicator` |
 | `scaffold_card*`, `scaffold_state_view*`, `scaffold_search_bar*` | `scaffold_codegen.generators.composites` |
 | `lib/theme/scaffold_{palette,dimens,shadows,motion_theme,typography,gradients,color_roles}.dart` (only the lines between the `// GENERATED` and `// END GENERATED` markers) | `scaffold_codegen.generators.theme_defaults` |
+| `lib/theme/presets/midnight_tokens.dart` (only the `// GENERATED` regions) | `scaffold_codegen.generators.theme_presets` |
 
 To change one: edit `templates/components/<name>.jinja2` (and its `_vars.json`
 if you are adding a variable), then regenerate and commit both.
@@ -77,9 +78,13 @@ from the `scaffold` namespace of `design_tokens.json`.
   - durations: integer milliseconds.
   - curves: `Curves.<name>`, or a four-number list for a `Cubic`.
   - text styles: an object with a subset of `fontFamily`, `fontSize`,
-    `fontWeight` (100 to 900) and `letterSpacing`.
+    `fontWeight` (100 to 900), `letterSpacing`, `lineHeight` (px, emitted as
+    `height: lineHeight / fontSize`) and `tabularFigures` (`true` only).
   - font family names: letters, digits, space, underscore and hyphen.
-  - gradients: `null` only. A non-null gradient needs an encoder first.
+  - gradients: `null`, or an object. A linear gradient has `type: "linear"`,
+    `begin` and `end` (`Alignment` names such as `topLeft`), `colors` and
+    optional `stops`. A radial gradient has `type: "radial"`, `center`
+    (a two-number `[x, y]` list), `radius`, `colors` and optional `stops`.
 
   Every string format is validated by full match, and anything else fails the
   generator.
@@ -113,6 +118,20 @@ from the `scaffold` namespace of `design_tokens.json`.
   reason. Translucent colors are composited over the surface first. A new token
   without a classification fails the test. A value change that fails it needs a
   different value, not a lower threshold.
+  The same test also covers the midnight preset, dark and light, with
+  `surfaceBase` and `surfaceSheet` as extra surfaces and the `preset.colors`
+  classification. `test/theme/midnight_theme_contrast_test.dart` covers the
+  midnight `ColorScheme` and component themes.
+- Presets: a preset has its own token file, `tokens/midnight.json`. It uses the
+  same `scaffold` schema plus a `preset` key for values with no extension field.
+  `scaffold_codegen.generators.theme_presets` renders it with the same encoders
+  into `lib/theme/presets/midnight_tokens.dart`, and `theme_presets --check`
+  fails on drift. The CLI reads only that file. `design_tokens.json` never feeds
+  a preset.
+- Brand names: `tools/tests/test_no_brand_names.py` scans the text files under
+  `lib/`, `example/` and `tokens/` for organization and product names. It skips
+  the platform runner folders of the example app, whose bundle identifiers are
+  build metadata.
 
 ### Drift check
 
@@ -124,8 +143,8 @@ PYTHONPATH=tools python3 -m scaffold_codegen.generators
 git diff --exit-code lib/
 ```
 
-CI runs exactly this, plus the `theme_defaults --check` and
-`m3_tokens_css ... --check` commands, and fails on any diff. Use `python3` on
+CI runs exactly this, plus the `theme_defaults --check`, `theme_presets --check`
+and `m3_tokens_css ... --check` commands, and fails on any diff. Use `python3` on
 macOS and Linux, and `python` on Windows. A non-empty diff means the committed
 output and its source disagree: commit the regenerated files (or fix the source)
 before pushing.
