@@ -3,6 +3,7 @@ import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
+import 'package:frontend_scaffold/theme/scaffold_typography.dart';
 
 /// Lookup helpers for the frontend_scaffold Material 3 theme extensions.
 extension ScaffoldThemeX on BuildContext {
@@ -22,6 +23,12 @@ extension ScaffoldThemeX on BuildContext {
   ScaffoldMotionTheme get motion =>
       Theme.of(this).extension<ScaffoldMotionTheme>() ??
       ScaffoldMotionTheme.defaultMotion;
+
+  /// Resolves the registered [ScaffoldTypography], falling back to
+  /// [ScaffoldTypography.defaultTypography] when the host app did not register one.
+  ScaffoldTypography get typography =>
+      Theme.of(this).extension<ScaffoldTypography>() ??
+      ScaffoldTypography.defaultTypography;
 
   /// Resolves the registered [ScaffoldShadows], falling back to
   /// [ScaffoldShadows.lightShadows] or [ScaffoldShadows.defaultShadows]

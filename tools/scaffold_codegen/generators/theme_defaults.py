@@ -51,6 +51,8 @@ REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
     ("scaffold_shadows.dart", ("scaffold", "shadows", "light"), "shadows", "args"),
     ("scaffold_motion_theme.dart", ("scaffold", "motion", "durations"), "duration", "params"),
     ("scaffold_motion_theme.dart", ("scaffold", "motion", "curves"), "curve", "params"),
+    ("scaffold_typography.dart", ("scaffold", "typography", "textStyles"), "textStyle", "params"),
+    ("scaffold_typography.dart", ("scaffold", "typography", "fontFamilies"), "fontFamily", "params"),
 )
 
 _DOUBLE_RE = re.compile(r"-?\d+\.\d+")
@@ -157,12 +159,49 @@ def dart_curve(name: str, value: object) -> str:
     )
 
 
+_FONT_FAMILY_RE = re.compile(r"[A-Za-z][A-Za-z0-9 _-]*")
+_FONT_WEIGHTS = frozenset(range(100, 1000, 100))
+_TEXT_STYLE_KEYS = ("fontFamily", "fontSize", "fontWeight", "letterSpacing")
+
+
+def dart_font_family(name: str, value: object) -> str:
+    """Return a single-quoted Dart string for a font family name."""
+    if isinstance(value, str) and _FONT_FAMILY_RE.fullmatch(value):
+        return f"'{value}'"
+    raise ThemeTokenError(f"{name}: expected a font family name such as 'Roboto', got {value!r}")
+
+
+def dart_text_style(name: str, value: object) -> str:
+    """Return a ``TextStyle(...)`` literal; the keys are emitted in a fixed order."""
+    if not isinstance(value, dict) or not set(value) <= set(_TEXT_STYLE_KEYS):
+        raise ThemeTokenError(
+            f"{name}: expected an object with keys from {list(_TEXT_STYLE_KEYS)}, got {value!r}"
+        )
+    parts = []
+    for key in _TEXT_STYLE_KEYS:
+        if key not in value:
+            continue
+        label = f"{name}.{key}"
+        entry = value[key]
+        if key == "fontFamily":
+            parts.append(f"{key}: {dart_font_family(label, entry)}")
+        elif key == "fontWeight":
+            if not (isinstance(entry, int) and not isinstance(entry, bool) and entry in _FONT_WEIGHTS):
+                raise ThemeTokenError(f"{label}: expected one of 100, 200, ..., 900, got {entry!r}")
+            parts.append(f"{key}: FontWeight.w{entry}")
+        else:
+            parts.append(f"{key}: {dart_double(label, entry)}")
+    return f"TextStyle({', '.join(parts)})"
+
+
 _LITERAL_ENCODERS: dict[str, Callable[[str, object], str | None]] = {
     "double": dart_double,
     "color": dart_color,
     "shadows": dart_shadows,
     "duration": dart_duration,
     "curve": dart_curve,
+    "textStyle": dart_text_style,
+    "fontFamily": dart_font_family,
 }
 
 

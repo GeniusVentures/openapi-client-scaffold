@@ -215,6 +215,19 @@
         "decelerate": "Curves.easeOut",
         "emphasized": [0.2, 0.0, 0.0, 1.2]
       }
+    },
+    "typography": {
+      "textStyles": {
+        "inputStyle": {
+          "fontFamily": "Roboto",
+          "fontSize": 14.0,
+          "fontWeight": 400,
+          "letterSpacing": 0.0
+        }
+      },
+      "fontFamilies": {
+        "monoFontFamily": "monospace"
+      }
     }
   }
 }

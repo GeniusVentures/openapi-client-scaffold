@@ -20,7 +20,9 @@ from scaffold_codegen.generators.theme_defaults import (
     dart_curve,
     dart_double,
     dart_duration,
+    dart_font_family,
     dart_shadows,
+    dart_text_style,
     render_files,
     run,
 )
@@ -355,3 +357,69 @@ def test_motion_token_change_regenerates_only_that_line(workdir: tuple[Path, Pat
             "    this.medium = const Duration(milliseconds: 350),",
         )
     ]
+
+
+def _style(**overrides: object) -> dict[str, object]:
+    style: dict[str, object] = {
+        "fontFamily": "Roboto",
+        "fontSize": Decimal("14.0"),
+        "fontWeight": 400,
+        "letterSpacing": Decimal("0.0"),
+    }
+    style.update(overrides)
+    return style
+
+
+def test_dart_text_style_fixed_order() -> None:
+    expected = (
+        "TextStyle(fontFamily: 'Roboto', fontSize: 14.0, "
+        "fontWeight: FontWeight.w400, letterSpacing: 0.0)"
+    )
+    assert dart_text_style("x", _style()) == expected
+    reordered = dict(reversed(list(_style().items())))
+    assert dart_text_style("x", reordered) == expected
+
+
+def test_dart_text_style_subset() -> None:
+    assert dart_text_style("x", {"fontSize": Decimal("12.5")}) == "TextStyle(fontSize: 12.5)"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        _style(color="0xFFFFFFFF"),
+        _style(fontWeight=450),
+        _style(fontWeight="w400"),
+        _style(fontWeight=True),
+        _style(fontSize=14),
+        _style(fontFamily="Rob'oto"),
+        "TextStyle()",
+    ],
+)
+def test_dart_text_style_rejects_invalid(value: object) -> None:
+    with pytest.raises(ThemeTokenError):
+        dart_text_style("x", value)
+
+
+def test_dart_font_family() -> None:
+    assert dart_font_family("x", "monospace") == "'monospace'"
+    assert dart_font_family("x", "Open Sans") == "'Open Sans'"
+
+
+@pytest.mark.parametrize("value", ["Rob'oto", "", "1abc", "a\nb", 5, None])
+def test_dart_font_family_rejects_invalid(value: object) -> None:
+    with pytest.raises(ThemeTokenError):
+        dart_font_family("x", value)
+
+
+def test_typography_group_order_and_m3_key_untouched() -> None:
+    data = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))
+    assert list(data["scaffold"]) == [
+        "_comment",
+        "palette",
+        "dimens",
+        "shadows",
+        "motion",
+        "typography",
+    ]
+    assert data["typography"] != data["scaffold"]["typography"]

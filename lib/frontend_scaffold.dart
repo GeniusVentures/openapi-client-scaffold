@@ -103,6 +103,7 @@ export 'theme/scaffold_motion_theme.dart';
 export 'theme/scaffold_palette.dart';
 export 'theme/scaffold_shadows.dart';
 export 'theme/scaffold_theme.dart';
+export 'theme/scaffold_typography.dart';
 export 'utils/breakpoints.dart';
 export 'utils/chart_geometry.dart';
 export 'utils/light_syntax_tokenizer.dart';
