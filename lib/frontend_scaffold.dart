@@ -100,6 +100,7 @@ export 'theme/scaffold_color_roles.dart';
 export 'theme/scaffold_colors.dart';
 export 'theme/scaffold_dimens.dart';
 export 'theme/scaffold_elevation.dart';
+export 'theme/scaffold_gradients.dart';
 export 'theme/scaffold_motion_theme.dart';
 export 'theme/scaffold_palette.dart';
 export 'theme/scaffold_shadows.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
+import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
@@ -37,6 +38,12 @@ extension ScaffoldThemeX on BuildContext {
   ScaffoldColorRoles get colorRoles =>
       Theme.of(this).extension<ScaffoldColorRoles>() ??
       ScaffoldColorRoles.fallbackFor(palette, Theme.of(this).brightness);
+
+  /// Resolves the registered [ScaffoldGradients], falling back to
+  /// [ScaffoldGradients.defaultGradients] when the host app did not register one.
+  ScaffoldGradients get gradients =>
+      Theme.of(this).extension<ScaffoldGradients>() ??
+      ScaffoldGradients.defaultGradients;
 
   /// Resolves the registered [ScaffoldShadows], falling back to
   /// [ScaffoldShadows.lightShadows] or [ScaffoldShadows.defaultShadows]

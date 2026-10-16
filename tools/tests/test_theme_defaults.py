@@ -21,6 +21,7 @@ from scaffold_codegen.generators.theme_defaults import (
     dart_double,
     dart_duration,
     dart_font_family,
+    dart_gradient,
     dart_shadows,
     dart_text_style,
     render_files,
@@ -422,6 +423,7 @@ def test_typography_group_order_and_m3_key_untouched() -> None:
         "motion",
         "typography",
         "colorRoles",
+        "gradients",
     ]
     assert data["typography"] != data["scaffold"]["typography"]
 
@@ -470,3 +472,58 @@ def test_color_role_token_change_regenerates_only_light_line(workdir: tuple[Path
     after = (theme / COLOR_ROLES_FILE).read_text(encoding="utf-8").splitlines()
     changed = [(a, b) for a, b in zip(before, after, strict=True) if a != b]
     assert changed == [("    sheetDivider: Color(0x1FFFFFFF),", "    sheetDivider: Color(0x33FFFFFF),")]
+
+
+GRADIENTS_FILE = "scaffold_gradients.dart"
+
+
+def test_dart_gradient_accepts_only_null() -> None:
+    assert dart_gradient("x", None) is None
+
+
+@pytest.mark.parametrize("value", [{"colors": []}, "LinearGradient()", [], 0])
+def test_dart_gradient_rejects_everything_else(value: object) -> None:
+    with pytest.raises(ThemeTokenError, match="x"):
+        dart_gradient("x", value)
+
+
+def test_committed_gradients_region_is_one_line() -> None:
+    rendered = render_files()[LIB_THEME_DIR / GRADIENTS_FILE]
+    assert (LIB_THEME_DIR / GRADIENTS_FILE).read_bytes() == rendered.encode("utf-8")
+    lines = rendered.split("\n")
+    begin = lines.index("    // GENERATED from design_tokens.json scaffold.gradients. Do not edit.")
+    end = lines.index("    // END GENERATED scaffold.gradients")
+    assert lines[begin + 1 : end] == ["    this.edgeFade,"]
+
+
+def test_non_null_gradient_token_fails_naming_the_entry(
+    workdir: tuple[Path, Path],
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    tokens, theme = workdir
+    monkeypatch.setattr(
+        theme_defaults,
+        "REGIONS",
+        (("scaffold_gradients.dart", ("scaffold", "gradients"), "gradient", "args"),),
+    )
+    data = json.loads(tokens.read_text(encoding="utf-8"))
+    data["scaffold"]["gradients"]["edgeFade"] = {"colors": ["0xFF000000"]}
+    tokens.write_text(json.dumps(data), encoding="utf-8")
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 1
+    assert "scaffold.gradients" in capsys.readouterr().err
+
+
+def test_gradients_region_in_args_style_rejects_null(
+    workdir: tuple[Path, Path],
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    tokens, theme = workdir
+    monkeypatch.setattr(
+        theme_defaults,
+        "REGIONS",
+        (("scaffold_gradients.dart", ("scaffold", "gradients"), "gradient", "args"),),
+    )
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 1
+    assert "scaffold.gradients.edgeFade" in capsys.readouterr().err

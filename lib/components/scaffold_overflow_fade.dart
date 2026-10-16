@@ -31,7 +31,8 @@ enum FadeDirection {
 /// center to transparent at the configured edges, so overflowing content
 /// visually dissolves into the background instead of clipping hard. The fade
 /// color defaults to `palette.deepBlueCardColor`; pass [backgroundColor] to
-/// match the surface behind the content.
+/// match the surface behind the content. A registered
+/// `ScaffoldGradients.edgeFade` replaces the fade ramp.
 class ScaffoldOverflowFade extends StatelessWidget {
   const ScaffoldOverflowFade({
     super.key,
@@ -58,13 +59,27 @@ class ScaffoldOverflowFade extends StatelessWidget {
   /// [extent] and the bounds size. With [BlendMode.dstOut], the shader's
   /// alpha hides the destination where it is opaque — so the gradient is
   /// opaque at the faded edges and transparent in the center.
+  ///
+  /// A non-null [ramp] replaces the default opaque-to-transparent ramp: its
+  /// color alphas and stops run from the faded edge (stop 0) toward the
+  /// content (stop 1), scaled to the same edge fraction.
   @visibleForTesting
   static Gradient gradientFor({
     required FadeDirection direction,
     required double extent,
     required Rect bounds,
     required Color color,
+    LinearGradient? ramp,
   }) {
+    if (ramp != null) {
+      return _rampGradientFor(
+        direction: direction,
+        extent: extent,
+        bounds: bounds,
+        color: color,
+        ramp: ramp,
+      );
+    }
     final Color transparent = color.withValues(alpha: 0.0);
     final Color opaque = color.withValues(alpha: 1.0);
 
@@ -127,6 +142,99 @@ class ScaffoldOverflowFade extends StatelessWidget {
     }
   }
 
+  static Gradient _rampGradientFor({
+    required FadeDirection direction,
+    required double extent,
+    required Rect bounds,
+    required Color color,
+    required LinearGradient ramp,
+  }) {
+    final int count = ramp.colors.length;
+    final List<double> rampStops = ramp.stops ??
+        <double>[
+          for (int i = 0; i < count; i++) count > 1 ? i / (count - 1) : 0.0,
+        ];
+    final List<Color> nearColors = <Color>[
+      for (final Color c in ramp.colors) color.withValues(alpha: c.a),
+    ];
+    final List<Color> farColors = nearColors.reversed.toList();
+
+    List<double> nearStops(double edge) =>
+        <double>[for (final double s in rampStops) edge * s];
+    List<double> farStops(double edge) => <double>[
+          for (int i = count - 1; i >= 0; i--) 1.0 - edge * rampStops[i],
+        ];
+
+    LinearGradient linear(
+      double edge,
+      Alignment begin,
+      Alignment end, {
+      required bool near,
+      required bool far,
+    }) {
+      return LinearGradient(
+        begin: begin,
+        end: end,
+        colors: <Color>[if (near) ...nearColors, if (far) ...farColors],
+        stops: <double>[if (near) ...nearStops(edge), if (far) ...farStops(edge)],
+      );
+    }
+
+    switch (direction) {
+      case FadeDirection.horizontal:
+        return linear(
+          _edgeStop(extent, bounds.width),
+          Alignment.centerLeft,
+          Alignment.centerRight,
+          near: true,
+          far: true,
+        );
+      case FadeDirection.vertical:
+        return linear(
+          _edgeStop(extent, bounds.height),
+          Alignment.topCenter,
+          Alignment.bottomCenter,
+          near: true,
+          far: true,
+        );
+      case FadeDirection.both:
+        final double edge = _edgeStop(extent, bounds.shortestSide / 2);
+        return RadialGradient(colors: farColors, stops: farStops(edge));
+      case FadeDirection.left:
+        return linear(
+          _edgeStop(extent, bounds.width),
+          Alignment.centerLeft,
+          Alignment.centerRight,
+          near: true,
+          far: false,
+        );
+      case FadeDirection.right:
+        return linear(
+          _edgeStop(extent, bounds.width),
+          Alignment.centerLeft,
+          Alignment.centerRight,
+          near: false,
+          far: true,
+        );
+      case FadeDirection.top:
+        return linear(
+          _edgeStop(extent, bounds.height),
+          Alignment.topCenter,
+          Alignment.bottomCenter,
+          near: true,
+          far: false,
+        );
+      case FadeDirection.bottom:
+        return linear(
+          _edgeStop(extent, bounds.height),
+          Alignment.topCenter,
+          Alignment.bottomCenter,
+          near: false,
+          far: true,
+        );
+    }
+  }
+
   /// Normalized stop position for a fade of [extent] px within [length] px,
   /// clamped so the fade never exceeds half the available dimension.
   static double _edgeStop(double extent, double length) {
@@ -140,6 +248,7 @@ class ScaffoldOverflowFade extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
     final Color resolvedColor = backgroundColor ?? palette.deepBlueCardColor;
+    final LinearGradient? ramp = context.gradients.edgeFade;
 
     return ShaderMask(
       blendMode: BlendMode.dstOut,
@@ -149,6 +258,7 @@ class ScaffoldOverflowFade extends StatelessWidget {
           extent: fadeExtent,
           bounds: bounds,
           color: resolvedColor,
+          ramp: ramp,
         ).createShader(bounds);
       },
       child: child,

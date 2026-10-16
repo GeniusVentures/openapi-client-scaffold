@@ -246,6 +246,9 @@
         "sheetForeground": "0xFFFFFFFF",
         "sheetDivider": "0x1FFFFFFF"
       }
+    },
+    "gradients": {
+      "edgeFade": null
     }
   }
 }

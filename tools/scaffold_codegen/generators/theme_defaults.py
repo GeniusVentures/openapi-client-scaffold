@@ -10,7 +10,8 @@ lines inside a const constructor call
 ``this.name = literal,`` lines inside a constructor parameter list
 (``templates/theme/const_params.dart.jinja2``). Everything outside the markers is
 left as written. Target files: scaffold_palette.dart, scaffold_dimens.dart,
-scaffold_shadows.dart.
+scaffold_shadows.dart, scaffold_motion_theme.dart, scaffold_typography.dart,
+scaffold_color_roles.dart, scaffold_gradients.dart.
 
 The CLI always reads the repo ``design_tokens.json``; a CMake ``DESIGN_TOKENS``
 override never feeds committed Dart.
@@ -55,6 +56,7 @@ REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
     ("scaffold_typography.dart", ("scaffold", "typography", "fontFamilies"), "fontFamily", "params"),
     ("scaffold_color_roles.dart", ("scaffold", "colorRoles", "dark"), "color", "params"),
     ("scaffold_color_roles.dart", ("scaffold", "colorRoles", "light"), "color", "args"),
+    ("scaffold_gradients.dart", ("scaffold", "gradients"), "gradient", "params"),
 )
 
 _DOUBLE_RE = re.compile(r"-?\d+\.\d+")
@@ -196,6 +198,13 @@ def dart_text_style(name: str, value: object) -> str:
     return f"TextStyle({', '.join(parts)})"
 
 
+def dart_gradient(name: str, value: object) -> str | None:
+    """Return None for an unset gradient; no gradient literal is accepted yet."""
+    if value is None:
+        return None
+    raise ThemeTokenError(f"{name}: only null (no gradient) is supported, got {value!r}")
+
+
 _LITERAL_ENCODERS: dict[str, Callable[[str, object], str | None]] = {
     "double": dart_double,
     "color": dart_color,
@@ -204,6 +213,7 @@ _LITERAL_ENCODERS: dict[str, Callable[[str, object], str | None]] = {
     "curve": dart_curve,
     "textStyle": dart_text_style,
     "fontFamily": dart_font_family,
+    "gradient": dart_gradient,
 }
 
 
