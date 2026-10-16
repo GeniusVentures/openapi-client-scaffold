@@ -85,7 +85,7 @@ Fonts: the preset names Inter and JetBrains Mono and ships no font files.
 Register them in the app's `pubspec.yaml`, or the platform default font is used.
 
 The example app has a "Midnight preset" switch that swaps the defaults for the
-preset in both modes. Captures of all 26 demos are in `images/midnight/`.
+preset in both modes. Captures of all 27 demos in both modes are in `images/midnight/`.
 
 Some reference values failed WCAG AA, so the preset adjusts them:
 
