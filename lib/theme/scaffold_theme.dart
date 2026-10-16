@@ -33,11 +33,11 @@ extension ScaffoldThemeX on BuildContext {
       ScaffoldTypography.defaultTypography;
 
   /// Resolves the registered [ScaffoldColorRoles]. Without one it derives them
-  /// from the resolved [palette] and [ThemeData.brightness] with
-  /// [ScaffoldColorRoles.fallbackFor].
+  /// from the resolved [palette] with [ScaffoldColorRoles.fallbackForPalette],
+  /// so the foregrounds match the surfaces actually in use.
   ScaffoldColorRoles get colorRoles =>
       Theme.of(this).extension<ScaffoldColorRoles>() ??
-      ScaffoldColorRoles.fallbackFor(palette, Theme.of(this).brightness);
+      ScaffoldColorRoles.fallbackForPalette(palette);
 
   /// Resolves the registered [ScaffoldGradients], falling back to
   /// [ScaffoldGradients.defaultGradients] when the host app did not register one.

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 import 'wcag_contrast.dart';
 
@@ -272,4 +273,52 @@ void main() {
       });
     }
   }
+
+  group('unregistered colorRoles are readable on the palette in use', () {
+    // ThemeData brightness x registered palette, no ScaffoldColorRoles registered.
+    final cases = <String, ThemeData>{
+      'light theme, no palette': ThemeData(brightness: Brightness.light),
+      'dark theme, no palette': ThemeData(brightness: Brightness.dark),
+      'light theme, light palette': ThemeData(
+        brightness: Brightness.light,
+        extensions: const [ScaffoldPalette.lightPalette],
+      ),
+      'dark theme, dark palette': ThemeData(
+        brightness: Brightness.dark,
+        extensions: const [ScaffoldPalette.defaultPalette],
+      ),
+    };
+    for (final entry in cases.entries) {
+      testWidgets(entry.key, (tester) async {
+        late BuildContext captured;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: entry.value,
+            home: Builder(
+              builder: (context) {
+                captured = context;
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+        final palette = captured.palette;
+        final roles = captured.colorRoles;
+        for (final name in ['inputForeground', 'sheetForeground']) {
+          _expectPair(
+            _roleColor(roles, name),
+            _roleBackground(palette, name),
+            kWcagText,
+          );
+        }
+        final panel = palette.deepBlueTertiary;
+        final line = Color.alphaBlend(roles.sheetDivider, panel);
+        if (panel.computeLuminance() > 0.5) {
+          expect(line.computeLuminance(), lessThan(panel.computeLuminance()));
+        } else {
+          expect(line.computeLuminance(), greaterThan(panel.computeLuminance()));
+        }
+      });
+    }
+  });
 }

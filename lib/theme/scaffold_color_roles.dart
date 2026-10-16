@@ -67,6 +67,24 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     );
   }
 
+  /// Like [fallbackFor], but picks the foreground tokens from the surfaces of
+  /// [palette] instead of a [Brightness]. Input text follows the luminance of
+  /// [ScaffoldPalette.grayPrimary] and the drawer foregrounds follow
+  /// [ScaffoldPalette.deepBlueTertiary], so a light theme with no registered
+  /// palette (dark default surfaces) still gets readable text.
+  static ScaffoldColorRoles fallbackForPalette(ScaffoldPalette palette) {
+    final onInput =
+        _isLightSurface(palette.grayPrimary) ? lightColorRoles : defaultColorRoles;
+    final onSheet = _isLightSurface(palette.deepBlueTertiary)
+        ? Brightness.light
+        : Brightness.dark;
+    return fallbackFor(palette, onSheet)
+        .copyWith(inputForeground: onInput.inputForeground);
+  }
+
+  static bool _isLightSurface(Color surface) =>
+      ThemeData.estimateBrightnessForColor(surface) == Brightness.light;
+
   /// Returns a copy of these roles with the given fields replaced.
   @override
   ScaffoldColorRoles copyWith({

@@ -102,6 +102,31 @@ void main() {
     });
   });
 
+  group('fallbackForPalette', () {
+    test('dark surfaces get the dark tokens', () {
+      final roles = ScaffoldColorRoles.fallbackForPalette(defaultPalette);
+      expect(roles.inputForeground.toARGB32(), dark.inputForeground.toARGB32());
+      expect(roles.sheetForeground.toARGB32(), dark.sheetForeground.toARGB32());
+      expect(roles.sheetDivider.toARGB32(), dark.sheetDivider.toARGB32());
+    });
+
+    test('light surfaces get the light tokens', () {
+      final roles = ScaffoldColorRoles.fallbackForPalette(lightPalette);
+      expect(roles.inputForeground.toARGB32(), light.inputForeground.toARGB32());
+      expect(roles.sheetForeground.toARGB32(), light.sheetForeground.toARGB32());
+      expect(roles.sheetDivider.toARGB32(), light.sheetDivider.toARGB32());
+    });
+
+    test('input and sheet follow their own surface', () {
+      final mixed = defaultPalette.copyWith(
+        grayPrimary: lightPalette.grayPrimary,
+      );
+      final roles = ScaffoldColorRoles.fallbackForPalette(mixed);
+      expect(roles.inputForeground.toARGB32(), light.inputForeground.toARGB32());
+      expect(roles.sheetForeground.toARGB32(), dark.sheetForeground.toARGB32());
+    });
+  });
+
   group('context.colorRoles', () {
     testWidgets('returns a registered instance', (tester) async {
       final context = await _pumpContext(

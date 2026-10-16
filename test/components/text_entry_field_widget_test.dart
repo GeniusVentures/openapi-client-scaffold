@@ -58,8 +58,8 @@ void main() {
       lightPalette,
       const Color(0xFF17191E),
     ),
-    // ThemeData() is light, so the light color roles apply over the default palette.
-    'no extensions': (ThemeData(), defaultPalette, const Color(0xFF17191E)),
+    // No palette registered: the dark default surfaces get the dark-mode foreground.
+    'no extensions': (ThemeData(), defaultPalette, const Color(0xFFFFFFFF)),
   };
 
   group('defaults equal the values drawn before the tokens', () {

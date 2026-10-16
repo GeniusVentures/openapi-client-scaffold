@@ -46,7 +46,7 @@ void main() {
   group('defaults follow the brightness', () {
     const dark = (foreground: Color(0xFFFFFFFF), divider: Color(0x1FFFFFFF));
     const light = (foreground: Color(0xFF17191E), divider: Color(0x1F000000));
-    final expected = {'dark': dark, 'light': light, 'no extensions': light};
+    final expected = {'dark': dark, 'light': light, 'no extensions': dark};
     for (final entry in themes.entries) {
       testWidgets(entry.key, (tester) async {
         await _pumpDrawer(tester, entry.value);
