@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Design Tokens & Midnight Preset
-status: planning
-last_updated: "2026-10-16T12:30:59.749Z"
+status: ready_to_plan
+last_updated: "2026-10-16T12:47:22.000Z"
 last_activity: 2026-10-16
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,14 +20,31 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.3 POS-General Interaction Primitives — queued (requirements staged, phases TBD at kickoff)
+**Current focus:** v1.4 Design Tokens & Midnight Preset — Phase 12 (Token Pipeline) ready to plan. v1.3 POS-General Interaction Primitives is queued behind v1.4 (requirements staged, phases numbered at kickoff).
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 12 of 17 (Token Pipeline)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-10-16 — Milestone v1.4 started
+Status: Ready to plan
+Last activity: 2026-10-16 — Roadmap created for v1.4 (6 phases, 20/20 requirements mapped)
+
+Progress: [..........] 0% (0/6 phases)
+
+## v1.4 Milestone
+
+**Goal:** One token source for the Dart theme and CSS, themeable shadows/typography/motion/gradients, an opt-in `midnight` preset with the GeniusWallet look, and default AA fixes, without breaking consumers.
+
+**Phase map:**
+
+- Phase 12 — Token Pipeline: `scaffold` namespace in `design_tokens.json`, byte-identical Dart generation for palette and dimens, drift check, LF output (TOK-01..04)
+- Phase 13 — Theme Fields: shadow, typography, motion and gradient extensions, accent/borderControl/on-surface tokens, hard-coded white tokenized, defaults equal today (THM-01..07)
+- Phase 14 — Default Accessibility Fixes: default palettes pass AA, light text field and drawers legible, two separate re-baseline commits (A11Y-01, A11Y-02)
+- Phase 15 — Midnight Preset: one-call opt-in preset, example-app switcher, contrast test over default and midnight (PRE-01..03, A11Y-03)
+- Phase 16 — Component Restyles: wallet look where tokens alone cannot reach, defaults unchanged (RST-01)
+- Phase 17 — Release Gates: capture diff only in sanctioned re-baselines, GeniusCognitiveSystem builds and passes against develop (GATE-01, GATE-02)
+
+**Coverage:** 20/20 v1.4 requirements mapped. No orphans.
 
 ## v1.2 Milestone
 
@@ -73,7 +90,18 @@ Last activity: 2026-10-16 — Milestone v1.4 started
 - **v1.2 verification gate is its own phase** — WIDG-44 (per-atom tests/demos/barrel) and WIDG-45 (Beautiful UI coverage) execute as a final sweep over all atoms shipped in Phases 8-10, matching the v1.1 Phase 7 UAT/verification pattern
 - **10-04 Scrubber composition** — ScaffoldChartScrubber stacks Shortcuts+Actions+Focus with a private stateful core owning ONLY a FocusNode (transient interaction state carve-out); ScaffoldFocusOutline shares the same node so the ring lights exactly when keyboard focus is on the scrub area. Tap-to-focus uses Listener.onPointerDown (not GestureDetector.onTap) so focus lands before fl_chart's gesture arena resolves.
 
+### v1.4 Decisions (roadmap, 2026-10-16)
+
+- **Refactor, then behavior.** Phase 12 is byte-identical refactor only. Default output may change only in Phase 14, in two separate re-baseline commits (A11Y-01, A11Y-02).
+- **Token file is additive.** New `scaffold` namespace in `design_tokens.json`; existing M3 keys are frozen because GeniusCognitiveSystem templates read them under `StrictUndefined`.
+- **Public theme API is frozen.** `ScaffoldPalette` and `ScaffoldDimens` constructors and field names unchanged; new groups are new `ThemeExtension`s with default fallbacks.
+- **A11Y fixes supersede "defaults frozen".** Owner requirements A11Y-01/02 override research Anti-Pattern 5 and open decision (a).
+- **Preset-only items ship in Phase 15.** `ThemeData` builder and the no-widget-code restyles (R7, R14, R15) belong to the one-call preset; Phase 16 holds only component-code restyles.
+- **v1.3 is queued behind v1.4** and gets its phase numbers at kickoff.
+
 ### Pending Todos
+
+- [ ] `/gsd-plan-phase 12 --ws scaffold` — Token Pipeline (next)
 
 - [x] `/gsd:plan-phase 6` — wrote plans for Core UI Foundation (28 atoms + composites across 4 waves); executed + verified 28/28
 - [x] `/gsd:plan-phase 7` — wrote plans for Media & Integration Widgets (4 plans, 2 waves: MediaCard, MediaControls, WalletConnectSheet, barrel+demos+gate); checker passed 7/7 decisions
@@ -103,10 +131,10 @@ Last activity: 2026-10-16 — Milestone v1.4 started
 
 ## Session Continuity
 
-**Last session:** 2026-08-21T00:00:00.000Z
-**Stopped at:** 10-05 Plan Task 3 awaiting human UAT (Tasks 1+2 complete — barrel exports + demos shipped; analyze + 408 tests + D-02 gates all green)
-**Resume file:** .planning/workstreams/scaffold/phases/10-chart-scrubber/10-05-PLAN.md (Task 3 checkpoint:human-verify)
-**Next action:** Human UAT of Chart + Chart Scrubber demos under dark + light palettes; on "approved" → continuation agent writes 10-05-SUMMARY.md, marks WIDG-35/36 complete, closes Phase 10
+**Last session:** 2026-10-16T12:47:22.000Z
+**Stopped at:** v1.4 roadmap created (Phases 12-17); nothing planned or executed yet
+**Resume file:** None
+**Next action:** `/gsd-plan-phase 12 --ws scaffold` (optionally `/gsd-discuss-phase 12 --ws scaffold` first; research flag: byte-identical `dart format` output and `0xFF` vs `0xff` casing)
 
 ## Deferred Items
 
@@ -121,4 +149,4 @@ Items acknowledged and deferred at milestone close on 2026-08-24:
 See: .planning/PROJECT.md (updated 2026-08-24)
 
 **Core value:** single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates
-**Current focus:** Planning next milestone (run /gsd:new-milestone)
+**Current focus:** v1.4 Design Tokens & Midnight Preset, Phase 12 ready to plan

@@ -48,4 +48,37 @@
 - Driving Dart generation from the CMake `DESIGN_TOKENS` override: that override stays CSS-only.
 
 ## Traceability
-(filled by the roadmap)
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| TOK-01 | Phase 12 | Pending |
+| TOK-02 | Phase 12 | Pending |
+| TOK-03 | Phase 12 | Pending |
+| TOK-04 | Phase 12 | Pending |
+| THM-01 | Phase 13 | Pending |
+| THM-02 | Phase 13 | Pending |
+| THM-03 | Phase 13 | Pending |
+| THM-04 | Phase 13 | Pending |
+| THM-05 | Phase 13 | Pending |
+| THM-06 | Phase 13 | Pending |
+| THM-07 | Phase 13 | Pending |
+| A11Y-01 | Phase 14 | Pending |
+| A11Y-02 | Phase 14 | Pending |
+| PRE-01 | Phase 15 | Pending |
+| PRE-02 | Phase 15 | Pending |
+| PRE-03 | Phase 15 | Pending |
+| A11Y-03 | Phase 15 | Pending |
+| RST-01 | Phase 16 | Pending |
+| GATE-01 | Phase 17 | Pending |
+| GATE-02 | Phase 17 | Pending |
+
+**Coverage:** 20/20 v1.4 requirements mapped, each to exactly one phase. No orphans.
+
+| Phase | Name | Requirements |
+|-------|------|--------------|
+| 12 | Token Pipeline | TOK-01..04 |
+| 13 | Theme Fields | THM-01..07 |
+| 14 | Default Accessibility Fixes | A11Y-01, A11Y-02 |
+| 15 | Midnight Preset | PRE-01..03, A11Y-03 |
+| 16 | Component Restyles | RST-01 |
+| 17 | Release Gates | GATE-01, GATE-02 |
