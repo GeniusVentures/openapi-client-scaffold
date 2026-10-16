@@ -33,7 +33,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend_scaffold/components/bottom_drawer/bottom_drawer.dart';
+import 'package:frontend_scaffold/components/bottom_drawer/responsive_drawer.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
 import 'package:frontend_scaffold/components/scaffold_card.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_range_selector.dart';
@@ -916,8 +916,8 @@ Future<void> _typeIntoFirstField(WidgetTester tester) async {
 }
 
 /// The open ResponsiveDrawer desktop panel. Dialogs open in the app Overlay,
-/// outside the capture boundary, so this mirrors ResponsiveDrawer's desktop
-/// branch (kCaptureWidth is its breakpoint) without the barrier scrim.
+/// outside the capture boundary, so this places ResponsiveDrawerPanel directly
+/// (kCaptureWidth is its breakpoint) without the barrier scrim.
 class _OpenDrawerCapture extends StatelessWidget {
   const _OpenDrawerCapture();
 
@@ -927,20 +927,10 @@ class _OpenDrawerCapture extends StatelessWidget {
       fit: StackFit.expand,
       children: <Widget>[
         const BottomDrawerDemo(),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Material(
-            color: context.palette.deepBlueTertiary,
-            child: SizedBox(
-              width: 400,
-              height: double.infinity,
-              child: BottomDrawer(
-                title: BottomDrawerDemo.drawerTitle,
-                footer: BottomDrawerDemo.drawerFooter(context),
-                children: BottomDrawerDemo.drawerItems(context),
-              ),
-            ),
-          ),
+        ResponsiveDrawerPanel(
+          title: BottomDrawerDemo.drawerTitle,
+          footer: BottomDrawerDemo.drawerFooter(context),
+          children: BottomDrawerDemo.drawerItems(context),
         ),
       ],
     );

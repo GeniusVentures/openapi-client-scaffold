@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/bottom_drawer/bottom_drawer.dart';
+import 'package:frontend_scaffold/components/bottom_drawer/responsive_drawer.dart';
 import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
@@ -78,5 +79,37 @@ void main() {
       foreground: const Color(0xFF101010),
       divider: const Color(0xFF202020),
     );
+  });
+
+  testWidgets('show at desktop width opens a ResponsiveDrawerPanel', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    late BuildContext context;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          extensions: [
+            ScaffoldPalette.defaultPalette,
+            ScaffoldDimens.defaultDimens,
+          ],
+        ),
+        home: Builder(
+          builder: (c) {
+            context = c;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+    ResponsiveDrawer.show<void>(
+      context: context,
+      title: 'Title',
+      children: const [Text('item')],
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(ResponsiveDrawerPanel), findsOneWidget);
   });
 }

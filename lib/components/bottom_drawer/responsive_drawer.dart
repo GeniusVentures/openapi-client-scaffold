@@ -19,20 +19,10 @@ class ResponsiveDrawer {
             context: context,
             barrierColor: Colors.black87,
             builder: (context) {
-              return Align(
-                alignment: Alignment.centerRight,
-                child: Material(
-                  color: context.palette.deepBlueTertiary,
-                  child: SizedBox(
-                    width: 400,
-                    height: double.infinity,
-                    child: BottomDrawer(
-                      title: title,
-                      footer: footer,
-                      children: children,
-                    ),
-                  ),
-                ),
+              return ResponsiveDrawerPanel(
+                title: title,
+                footer: footer,
+                children: children,
               );
             },
           )
@@ -59,5 +49,38 @@ class ResponsiveDrawer {
         onClose();
       }
     });
+  }
+}
+
+/// The desktop side panel ResponsiveDrawer.show opens; usable on its own.
+class ResponsiveDrawerPanel extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+  final Widget? footer;
+
+  const ResponsiveDrawerPanel({
+    super.key,
+    required this.title,
+    required this.children,
+    this.footer,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Material(
+        color: context.palette.deepBlueTertiary,
+        child: SizedBox(
+          width: 400,
+          height: double.infinity,
+          child: BottomDrawer(
+            title: title,
+            footer: footer,
+            children: children,
+          ),
+        ),
+      ),
+    );
   }
 }
