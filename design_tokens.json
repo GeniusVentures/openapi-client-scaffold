@@ -242,9 +242,9 @@
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
         "accentOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
         "borderControl": "0x73000000",
-        "inputForeground": "0xFFFFFFFF",
-        "sheetForeground": "0xFFFFFFFF",
-        "sheetDivider": "0x1FFFFFFF"
+        "inputForeground": "0xFF17191E",
+        "sheetForeground": "0xFF17191E",
+        "sheetDivider": "0x1F000000"
       }
     },
     "gradients": {

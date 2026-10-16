@@ -41,13 +41,14 @@ void main() {
   final defaultPalette = ScaffoldPalette.defaultPalette;
   final lightPalette = ScaffoldPalette.lightPalette;
 
-  final themes = <String, (ThemeData, ScaffoldPalette)>{
+  final themes = <String, (ThemeData, ScaffoldPalette, Color)>{
     'dark': (
       ThemeData(
         brightness: Brightness.dark,
         extensions: [defaultPalette, ScaffoldDimens.defaultDimens],
       ),
       defaultPalette,
+      const Color(0xFFFFFFFF),
     ),
     'light': (
       ThemeData(
@@ -55,18 +56,20 @@ void main() {
         extensions: [lightPalette, ScaffoldDimens.defaultDimens],
       ),
       lightPalette,
+      const Color(0xFF17191E),
     ),
-    'no extensions': (ThemeData(), defaultPalette),
+    // ThemeData() is light, so the light color roles apply over the default palette.
+    'no extensions': (ThemeData(), defaultPalette, const Color(0xFF17191E)),
   };
 
   group('defaults equal the values drawn before the tokens', () {
     for (final entry in themes.entries) {
       testWidgets(entry.key, (tester) async {
-        final (theme, palette) = entry.value;
+        final (theme, palette, typedColor) = entry.value;
         final field = await _pumpField(tester, theme);
         final decoration = field.decoration!;
 
-        expect(field.style, _expectedStyle(const Color(0xFFFFFFFF)));
+        expect(field.style, _expectedStyle(typedColor));
         expect(decoration.hintStyle, _expectedStyle(palette.gray500));
         expect(
           _borderColor(decoration.focusedBorder),

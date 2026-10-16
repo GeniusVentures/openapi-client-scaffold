@@ -65,13 +65,13 @@ void main() {
       expect(dark.sheetDivider.toARGB32(), 0x1FFFFFFF);
     });
 
-    test('light roles differ from dark only in borderControl', () {
+    test('light roles differ from dark in borderControl and the input and sheet colors', () {
       expect(light.accent.toARGB32(), dark.accent.toARGB32());
       expect(light.accentOnSurface.toARGB32(), dark.accentOnSurface.toARGB32());
       expect(light.borderControl.toARGB32(), lightPalette.borderGrey.toARGB32());
-      expect(light.inputForeground.toARGB32(), 0xFFFFFFFF);
-      expect(light.sheetForeground.toARGB32(), 0xFFFFFFFF);
-      expect(light.sheetDivider.toARGB32(), 0x1FFFFFFF);
+      expect(light.inputForeground.toARGB32(), 0xFF17191E);
+      expect(light.sheetForeground.toARGB32(), 0xFF17191E);
+      expect(light.sheetDivider.toARGB32(), 0x1F000000);
     });
   });
 
@@ -91,7 +91,7 @@ void main() {
       expect(roles.sheetDivider.toARGB32(), dark.sheetDivider.toARGB32());
     });
 
-    test('light takes palette colors and the light white tokens', () {
+    test('light takes palette colors and the light dark-foreground tokens', () {
       final roles = ScaffoldColorRoles.fallbackFor(custom, Brightness.light);
       expect(roles.accent.toARGB32(), 0xFF010203);
       expect(roles.accentOnSurface.toARGB32(), 0xFF010203);

@@ -43,14 +43,17 @@ void main() {
     'no extensions': ThemeData(),
   };
 
-  group('defaults are white and white at 12 percent', () {
+  group('defaults follow the brightness', () {
+    const dark = (foreground: Color(0xFFFFFFFF), divider: Color(0x1FFFFFFF));
+    const light = (foreground: Color(0xFF17191E), divider: Color(0x1F000000));
+    final expected = {'dark': dark, 'light': light, 'no extensions': light};
     for (final entry in themes.entries) {
       testWidgets(entry.key, (tester) async {
         await _pumpDrawer(tester, entry.value);
         _expectHeader(
           tester: tester,
-          foreground: const Color(0xFFFFFFFF),
-          divider: const Color(0x1FFFFFFF),
+          foreground: expected[entry.key]!.foreground,
+          divider: expected[entry.key]!.divider,
         );
       });
     }

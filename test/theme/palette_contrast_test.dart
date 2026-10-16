@@ -39,7 +39,7 @@ final Map<String, Color Function(ScaffoldPalette)> _surfaces = {
   'deepBlueTertiary': (p) => p.deepBlueTertiary,
 };
 
-enum _Role { surface, text, nonText, deferred, excluded }
+enum _Role { surface, text, nonText, decorative, excluded }
 
 class _Entry {
   const _Entry(this.role, this.reason);
@@ -50,7 +50,6 @@ class _Entry {
 
 const _surface = _Entry(_Role.surface, 'background checked against');
 const _text = _Entry(_Role.text, 'text, 4.5:1');
-const _deferred = _Entry(_Role.deferred, 'A11Y-02, plan 14-03');
 
 // As a foreground on light surfaces this is about 1.57:1. Plan 14-04 moves the
 // foreground uses onto color roles and 14-05 gives them AA light values and
@@ -107,9 +106,18 @@ const _rolesClasses = <String, _Entry>{
   'accent': _accentFill,
   'accentOnSurface': _accentFill,
   'borderControl': _Entry(_Role.nonText, 'control border, 3:1'),
-  'inputForeground': _deferred,
-  'sheetForeground': _deferred,
-  'sheetDivider': _deferred,
+  'inputForeground': _Entry(
+    _Role.text,
+    'typed text on the field fill (grayPrimary), 4.5:1',
+  ),
+  'sheetForeground': _Entry(
+    _Role.text,
+    'drawer title and close icon on the panel (deepBlueTertiary), 4.5:1 covers the icon 3:1',
+  ),
+  'sheetDivider': _Entry(
+    _Role.decorative,
+    'decorative hairline, exempt from 1.4.11; checked for polarity only',
+  ),
 };
 
 final Map<String, Color Function(ScaffoldPalette)> _paletteGetters = {
@@ -150,6 +158,18 @@ void _expectPair(Color fg, Color bg, double min) {
         'needs $min',
   );
 }
+
+Color _roleColor(ScaffoldColorRoles roles, String name) => switch (name) {
+  'inputForeground' => roles.inputForeground,
+  'sheetForeground' => roles.sheetForeground,
+  _ => throw ArgumentError(name),
+};
+
+Color _roleBackground(ScaffoldPalette palette, String name) => switch (name) {
+  'inputForeground' => palette.grayPrimary,
+  'sheetForeground' => palette.deepBlueTertiary,
+  _ => throw ArgumentError(name),
+};
 
 void main() {
   test('every scaffold.palette and scaffold.colorRoles token is classified', () {
@@ -214,6 +234,42 @@ void main() {
           );
         },
       );
+    }
+
+    for (final name in ['inputForeground', 'sheetForeground']) {
+      test('${theme.name}: $name (roles) on its surface >= $kWcagText', () {
+        _expectPair(
+          _roleColor(theme.roles, name),
+          _roleBackground(theme.palette, name),
+          kWcagText,
+        );
+      });
+      test('${theme.name}: $name (fallback) on its surface >= $kWcagText', () {
+        final roles = ScaffoldColorRoles.fallbackFor(
+          theme.palette,
+          theme.brightness,
+        );
+        _expectPair(
+          _roleColor(roles, name),
+          _roleBackground(theme.palette, name),
+          kWcagText,
+        );
+      });
+    }
+
+    for (final source in ['roles', 'fallback']) {
+      test('${theme.name}: sheetDivider ($source) has the sheet text polarity', () {
+        final roles = source == 'roles'
+            ? theme.roles
+            : ScaffoldColorRoles.fallbackFor(theme.palette, theme.brightness);
+        final panel = theme.palette.deepBlueTertiary;
+        final line = Color.alphaBlend(roles.sheetDivider, panel);
+        if (theme.brightness == Brightness.light) {
+          expect(line.computeLuminance(), lessThan(panel.computeLuminance()));
+        } else {
+          expect(line.computeLuminance(), greaterThan(panel.computeLuminance()));
+        }
+      });
     }
   }
 }

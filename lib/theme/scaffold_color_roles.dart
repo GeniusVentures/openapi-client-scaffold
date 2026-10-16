@@ -45,9 +45,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     accent: ScaffoldColors.lightGreenPrimary,
     accentOnSurface: ScaffoldColors.lightGreenPrimary,
     borderControl: Color(0x73000000),
-    inputForeground: Color(0xFFFFFFFF),
-    sheetForeground: Color(0xFFFFFFFF),
-    sheetDivider: Color(0x1FFFFFFF),
+    inputForeground: Color(0xFF17191E),
+    sheetForeground: Color(0xFF17191E),
+    sheetDivider: Color(0x1F000000),
     // END GENERATED scaffold.colorRoles.light
   );
 

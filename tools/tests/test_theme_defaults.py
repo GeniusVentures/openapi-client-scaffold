@@ -444,7 +444,7 @@ def test_committed_color_roles_file_matches_render() -> None:
     assert (LIB_THEME_DIR / COLOR_ROLES_FILE).read_bytes() == rendered.encode("utf-8")
     assert "    this.accent = ScaffoldColors.lightGreenPrimary,\n" in rendered
     assert "    this.inputForeground = const Color(0xFFFFFFFF),\n" in rendered
-    assert "    inputForeground: Color(0xFFFFFFFF),\n" in rendered
+    assert "    inputForeground: Color(0xFF17191E),\n" in rendered
     assert rendered.count("// GENERATED from design_tokens.json scaffold.colorRoles") == 2
 
 
@@ -459,7 +459,7 @@ def test_color_role_token_change_regenerates_only_light_line(workdir: tuple[Path
     text = tokens.read_text(encoding="utf-8")
     light_start = text.index('"light"', text.index('"colorRoles"'))
     edited = text[:light_start] + text[light_start:].replace(
-        '"sheetDivider": "0x1FFFFFFF"', '"sheetDivider": "0x33FFFFFF"', 1
+        '"sheetDivider": "0x1F000000"', '"sheetDivider": "0x33000000"', 1
     )
     assert edited != text
     tokens.write_text(edited, encoding="utf-8")
@@ -471,7 +471,7 @@ def test_color_role_token_change_regenerates_only_light_line(workdir: tuple[Path
 
     after = (theme / COLOR_ROLES_FILE).read_text(encoding="utf-8").splitlines()
     changed = [(a, b) for a, b in zip(before, after, strict=True) if a != b]
-    assert changed == [("    sheetDivider: Color(0x1FFFFFFF),", "    sheetDivider: Color(0x33FFFFFF),")]
+    assert changed == [("    sheetDivider: Color(0x1F000000),", "    sheetDivider: Color(0x33000000),")]
 
 
 GRADIENTS_FILE = "scaffold_gradients.dart"
