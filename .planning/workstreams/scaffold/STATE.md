@@ -1,11 +1,10 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: POS-General Interaction Primitives
-status: ready_to_plan
-stopped_at: v1.3 queued — SCF-POS-01..18 staged in REQUIREMENTS.md; phase breakdown TBD at kickoff
-last_updated: "2026-10-01T00:00:00.000Z"
-last_activity: 2026-10-01 -- v1.3 milestone queued (ingest follow-through)
+milestone: v1.4
+milestone_name: Design Tokens & Midnight Preset
+status: planning
+last_updated: "2026-10-16T12:30:59.749Z"
+last_activity: 2026-10-16
 progress:
   total_phases: 0
   completed_phases: 0
@@ -25,10 +24,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: — (v1.3 not yet phased)
+Phase: Not started (defining requirements)
 Plan: —
-Status: v1.3 queued — SCF-POS-01..18 staged in REQUIREMENTS.md; discuss/plan the phase breakdown to start
-Last activity: 2026-10-01 -- v1.3 milestone queued (genius-ai-boss ingest follow-through; parent MERGE-PLAN §1.7)
+Status: Defining requirements
+Last activity: 2026-10-16 — Milestone v1.4 started
 
 ## v1.2 Milestone
 
