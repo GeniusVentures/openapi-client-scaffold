@@ -31,6 +31,8 @@ SOURCE = "tokens/midnight.json"
 REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
     ("presets/midnight_tokens.dart", ("scaffold", "palette", "dark"), "color", "args"),
     ("presets/midnight_tokens.dart", ("scaffold", "palette", "light"), "color", "args"),
+    ("presets/midnight_tokens.dart", ("scaffold", "colorRoles", "dark"), "color", "args"),
+    ("presets/midnight_tokens.dart", ("scaffold", "colorRoles", "light"), "color", "args"),
 )
 
 

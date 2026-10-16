@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 
 /// The values of the opt-in midnight preset, generated from
@@ -59,5 +60,33 @@ abstract final class Midnight {
     dropZoneHighlight: Color(0x330AAEE6),
     dropZoneRejected: Color(0x33991B1B),
     // END GENERATED scaffold.palette.light
+  );
+
+  /// Dark-mode color roles of the midnight preset.
+  static const ScaffoldColorRoles darkColorRoles = ScaffoldColorRoles(
+    // GENERATED from tokens/midnight.json scaffold.colorRoles.dark. Do not edit.
+    accent: Color(0xFF0AAEE6),
+    accentOnSurface: Color(0xFF0AAEE6),
+    accentSecondaryOnSurface: Color(0xFF2BF5B4),
+    accentTextOnSurface: Color(0xFF0AAEE6),
+    borderControl: Color(0x5CFFFFFF),
+    inputForeground: Color(0xFFFFFFFF),
+    sheetForeground: Color(0xFFFFFFFF),
+    sheetDivider: Color(0x1FFFFFFF),
+    // END GENERATED scaffold.colorRoles.dark
+  );
+
+  /// Light-mode color roles of the midnight preset.
+  static const ScaffoldColorRoles lightColorRoles = ScaffoldColorRoles(
+    // GENERATED from tokens/midnight.json scaffold.colorRoles.light. Do not edit.
+    accent: Color(0xFF0AAEE6),
+    accentOnSurface: Color(0xFF0A6885),
+    accentSecondaryOnSurface: Color(0xFF07875F),
+    accentTextOnSurface: Color(0xFF0A6885),
+    borderControl: Color(0x7A10131A),
+    inputForeground: Color(0xFF10131A),
+    sheetForeground: Color(0xFF10131A),
+    sheetDivider: Color(0x1F10131A),
+    // END GENERATED scaffold.colorRoles.light
   );
 }

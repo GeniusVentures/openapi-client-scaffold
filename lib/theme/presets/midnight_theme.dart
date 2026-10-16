@@ -21,8 +21,14 @@ ThemeData midnightTheme(Brightness brightness) {
   );
 }
 
-const List<ThemeExtension<dynamic>> _darkExtensions = [Midnight.darkPalette];
-const List<ThemeExtension<dynamic>> _lightExtensions = [Midnight.lightPalette];
+const List<ThemeExtension<dynamic>> _darkExtensions = [
+  Midnight.darkPalette,
+  Midnight.darkColorRoles,
+];
+const List<ThemeExtension<dynamic>> _lightExtensions = [
+  Midnight.lightPalette,
+  Midnight.lightColorRoles,
+];
 
 /// The scaffold theme extensions of the midnight preset for [brightness].
 List<ThemeExtension<dynamic>> midnightExtensions(Brightness brightness) {

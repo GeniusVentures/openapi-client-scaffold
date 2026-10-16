@@ -50,6 +50,28 @@
         "dropZoneHighlight": "0x330AAEE6",
         "dropZoneRejected": "0x33991B1B"
       }
+    },
+    "colorRoles": {
+      "dark": {
+        "accent": "0xFF0AAEE6",
+        "accentOnSurface": "0xFF0AAEE6",
+        "accentSecondaryOnSurface": "0xFF2BF5B4",
+        "accentTextOnSurface": "0xFF0AAEE6",
+        "borderControl": "0x5CFFFFFF",
+        "inputForeground": "0xFFFFFFFF",
+        "sheetForeground": "0xFFFFFFFF",
+        "sheetDivider": "0x1FFFFFFF"
+      },
+      "light": {
+        "accent": "0xFF0AAEE6",
+        "accentOnSurface": "0xFF0A6885",
+        "accentSecondaryOnSurface": "0xFF07875F",
+        "accentTextOnSurface": "0xFF0A6885",
+        "borderControl": "0x7A10131A",
+        "inputForeground": "0xFF10131A",
+        "sheetForeground": "0xFF10131A",
+        "sheetDivider": "0x1F10131A"
+      }
     }
   }
 }

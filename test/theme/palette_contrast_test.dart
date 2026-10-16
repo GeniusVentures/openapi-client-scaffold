@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
 import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -10,28 +12,65 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 import 'wcag_contrast.dart';
 
 class _Theme {
-  const _Theme(this.name, this.palette, this.brightness, this.roles);
+  const _Theme(
+    this.name,
+    this.palette,
+    this.brightness,
+    this.roles, {
+    this.checksFallback = false,
+    this.extraSurfaces = const {},
+  });
 
   final String name;
   final ScaffoldPalette palette;
   final Brightness brightness;
   final ScaffoldColorRoles roles;
+
+  /// True when the theme relies on the derived roles of an unregistered
+  /// [ScaffoldColorRoles]; a preset registers its own, so it has no fallback.
+  final bool checksFallback;
+
+  /// Backgrounds beyond the four palette surfaces.
+  final Map<String, Color> extraSurfaces;
 }
 
-const _themes = <_Theme>[
-  _Theme(
+final _themes = <_Theme>[
+  const _Theme(
     'default dark',
     ScaffoldPalette.defaultPalette,
     Brightness.dark,
     ScaffoldColorRoles.defaultColorRoles,
+    checksFallback: true,
   ),
-  _Theme(
+  const _Theme(
     'default light',
     ScaffoldPalette.lightPalette,
     Brightness.light,
     ScaffoldColorRoles.lightColorRoles,
+    checksFallback: true,
+  ),
+  const _Theme(
+    'midnight dark',
+    Midnight.darkPalette,
+    Brightness.dark,
+    Midnight.darkColorRoles,
+    extraSurfaces: {},
+  ),
+  const _Theme(
+    'midnight light',
+    Midnight.lightPalette,
+    Brightness.light,
+    Midnight.lightColorRoles,
+    extraSurfaces: {},
   ),
 ];
+
+/// The four palette surfaces plus the theme's extra surfaces.
+Map<String, Color> _surfacesOf(_Theme theme) => {
+  for (final surface in _surfaces.entries)
+    surface.key: surface.value(theme.palette),
+  ...theme.extraSurfaces,
+};
 
 final Map<String, Color Function(ScaffoldPalette)> _surfaces = {
   'surfaceElevated': (p) => p.surfaceElevated,
@@ -145,16 +184,14 @@ final Map<String, Color Function(ScaffoldPalette)> _paletteGetters = {
   'blue500': (p) => p.blue500,
 };
 
-Map<String, dynamic> _scaffoldTokens() {
+Map<String, dynamic> _scaffoldTokens([String file = 'design_tokens.json']) {
   final decoded =
-      jsonDecode(File('design_tokens.json').readAsStringSync())
-          as Map<String, dynamic>;
+      jsonDecode(File(file).readAsStringSync()) as Map<String, dynamic>;
   return decoded['scaffold'] as Map<String, dynamic>;
 }
 
 Set<String> _keys(Map<String, dynamic> tokens, String group, String mode) =>
-    ((tokens[group] as Map<String, dynamic>)[mode] as Map<String, dynamic>)
-        .keys
+    ((tokens[group] as Map<String, dynamic>)[mode] as Map<String, dynamic>).keys
         .toSet();
 
 void _expectPair(Color fg, Color bg, double min) {
@@ -184,24 +221,40 @@ Color _roleBackground(ScaffoldPalette palette, String name) => switch (name) {
 };
 
 void main() {
-  test('every scaffold.palette and scaffold.colorRoles token is classified', () {
-    final tokens = _scaffoldTokens();
-    for (final mode in ['dark', 'light']) {
-      expect(
-        _paletteClasses.keys.toSet(),
-        _keys(tokens, 'palette', mode),
-        reason: 'scaffold.palette.$mode',
-      );
-      expect(
-        _rolesClasses.keys.toSet(),
-        _keys(tokens, 'colorRoles', mode),
-        reason: 'scaffold.colorRoles.$mode',
-      );
-    }
-    for (final entry in {..._paletteClasses, ..._rolesClasses}.entries) {
-      expect(entry.value.reason, isNotEmpty, reason: entry.key);
-    }
-  });
+  test(
+    'every scaffold.palette and scaffold.colorRoles token is classified',
+    () {
+      final tokens = _scaffoldTokens();
+      for (final mode in ['dark', 'light']) {
+        expect(
+          _paletteClasses.keys.toSet(),
+          _keys(tokens, 'palette', mode),
+          reason: 'scaffold.palette.$mode',
+        );
+        expect(
+          _rolesClasses.keys.toSet(),
+          _keys(tokens, 'colorRoles', mode),
+          reason: 'scaffold.colorRoles.$mode',
+        );
+      }
+      final midnight = _scaffoldTokens('tokens/midnight.json');
+      for (final mode in ['dark', 'light']) {
+        expect(
+          _paletteClasses.keys.toSet(),
+          _keys(midnight, 'palette', mode),
+          reason: 'midnight scaffold.palette.$mode',
+        );
+        expect(
+          _rolesClasses.keys.toSet(),
+          _keys(midnight, 'colorRoles', mode),
+          reason: 'midnight scaffold.colorRoles.$mode',
+        );
+      }
+      for (final entry in {..._paletteClasses, ..._rolesClasses}.entries) {
+        expect(entry.value.reason, isNotEmpty, reason: entry.key);
+      }
+    },
+  );
 
   for (final theme in _themes) {
     for (final entry in _paletteClasses.entries) {
@@ -210,42 +263,36 @@ void main() {
         continue;
       }
       final min = role == _Role.text ? kWcagText : kWcagNonText;
-      for (final surface in _surfaces.entries) {
+      for (final surface in _surfacesOf(theme).entries) {
         test('${theme.name}: ${entry.key} on ${surface.key} >= $min', () {
           _expectPair(
             _paletteGetters[entry.key]!(theme.palette),
-            surface.value(theme.palette),
+            surface.value,
             min,
           );
         });
       }
     }
 
-    for (final surface in _surfaces.entries) {
+    for (final surface in _surfacesOf(theme).entries) {
       test(
         '${theme.name}: borderControl (roles) on ${surface.key} >= $kWcagNonText',
         () {
-          _expectPair(
-            theme.roles.borderControl,
-            surface.value(theme.palette),
-            kWcagNonText,
-          );
+          _expectPair(theme.roles.borderControl, surface.value, kWcagNonText);
         },
       );
-      test(
-        '${theme.name}: borderControl (fallback) on ${surface.key} >= $kWcagNonText',
-        () {
-          final roles = ScaffoldColorRoles.fallbackFor(
-            theme.palette,
-            theme.brightness,
-          );
-          _expectPair(
-            roles.borderControl,
-            surface.value(theme.palette),
-            kWcagNonText,
-          );
-        },
-      );
+      if (theme.checksFallback) {
+        test(
+          '${theme.name}: borderControl (fallback) on ${surface.key} >= $kWcagNonText',
+          () {
+            final roles = ScaffoldColorRoles.fallbackFor(
+              theme.palette,
+              theme.brightness,
+            );
+            _expectPair(roles.borderControl, surface.value, kWcagNonText);
+          },
+        );
+      }
     }
 
     for (final name in ['inputForeground', 'sheetForeground']) {
@@ -256,17 +303,22 @@ void main() {
           kWcagText,
         );
       });
-      test('${theme.name}: $name (fallback) on its surface >= $kWcagText', () {
-        final roles = ScaffoldColorRoles.fallbackFor(
-          theme.palette,
-          theme.brightness,
+      if (theme.checksFallback) {
+        test(
+          '${theme.name}: $name (fallback) on its surface >= $kWcagText',
+          () {
+            final roles = ScaffoldColorRoles.fallbackFor(
+              theme.palette,
+              theme.brightness,
+            );
+            _expectPair(
+              _roleColor(roles, name),
+              _roleBackground(theme.palette, name),
+              kWcagText,
+            );
+          },
         );
-        _expectPair(
-          _roleColor(roles, name),
-          _roleBackground(theme.palette, name),
-          kWcagText,
-        );
-      });
+      }
     }
 
     for (final name in [
@@ -277,43 +329,53 @@ void main() {
       final min = _rolesClasses[name]!.role == _Role.text
           ? kWcagText
           : kWcagNonText;
-      for (final surface in _surfaces.entries) {
+      for (final surface in _surfacesOf(theme).entries) {
         test('${theme.name}: $name (roles) on ${surface.key} >= $min', () {
-          _expectPair(
-            _roleColor(theme.roles, name),
-            surface.value(theme.palette),
-            min,
-          );
+          _expectPair(_roleColor(theme.roles, name), surface.value, min);
         });
-        test('${theme.name}: $name (fallback) on ${surface.key} >= $min', () {
-          final roles = ScaffoldColorRoles.fallbackFor(
-            theme.palette,
-            theme.brightness,
-          );
-          _expectPair(
-            _roleColor(roles, name),
-            surface.value(theme.palette),
-            min,
-          );
-        });
+        if (theme.checksFallback) {
+          test('${theme.name}: $name (fallback) on ${surface.key} >= $min', () {
+            final roles = ScaffoldColorRoles.fallbackFor(
+              theme.palette,
+              theme.brightness,
+            );
+            _expectPair(_roleColor(roles, name), surface.value, min);
+          });
+        }
       }
     }
 
-    for (final source in ['roles', 'fallback']) {
-      test('${theme.name}: sheetDivider ($source) has the sheet text polarity', () {
-        final roles = source == 'roles'
-            ? theme.roles
-            : ScaffoldColorRoles.fallbackFor(theme.palette, theme.brightness);
-        final panel = theme.palette.deepBlueTertiary;
-        final line = Color.alphaBlend(roles.sheetDivider, panel);
-        if (theme.brightness == Brightness.light) {
-          expect(line.computeLuminance(), lessThan(panel.computeLuminance()));
-        } else {
-          expect(line.computeLuminance(), greaterThan(panel.computeLuminance()));
-        }
-      });
+    for (final source in ['roles', if (theme.checksFallback) 'fallback']) {
+      test(
+        '${theme.name}: sheetDivider ($source) has the sheet text polarity',
+        () {
+          final roles = source == 'roles'
+              ? theme.roles
+              : ScaffoldColorRoles.fallbackFor(theme.palette, theme.brightness);
+          final panel = theme.palette.deepBlueTertiary;
+          final line = Color.alphaBlend(roles.sheetDivider, panel);
+          if (theme.brightness == Brightness.light) {
+            expect(line.computeLuminance(), lessThan(panel.computeLuminance()));
+          } else {
+            expect(
+              line.computeLuminance(),
+              greaterThan(panel.computeLuminance()),
+            );
+          }
+        },
+      );
     }
   }
+
+  test('midnightExtensions registers ScaffoldColorRoles in both modes', () {
+    for (final brightness in Brightness.values) {
+      expect(
+        midnightExtensions(brightness).whereType<ScaffoldColorRoles>(),
+        hasLength(1),
+        reason: '$brightness',
+      );
+    }
+  });
 
   group('unregistered colorRoles are readable on the palette in use', () {
     // ThemeData brightness x registered palette, no ScaffoldColorRoles registered.
@@ -357,7 +419,10 @@ void main() {
         if (panel.computeLuminance() > 0.5) {
           expect(line.computeLuminance(), lessThan(panel.computeLuminance()));
         } else {
-          expect(line.computeLuminance(), greaterThan(panel.computeLuminance()));
+          expect(
+            line.computeLuminance(),
+            greaterThan(panel.computeLuminance()),
+          );
         }
       });
     }
