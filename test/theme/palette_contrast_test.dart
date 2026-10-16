@@ -178,6 +178,14 @@ const _rolesClasses = <String, _Entry>{
     _Role.decorative,
     'card hairline, exempt from 1.4.11; null in the defaults',
   ),
+  'hoverFill': _Entry(
+    _Role.excluded,
+    'surface overlay; textPrimary and textSecondary are checked on every surface composited with it',
+  ),
+  'hoverEdge': _Entry(
+    _Role.decorative,
+    'hover hairline; the tint and the pointer carry the state',
+  ),
 };
 
 const _presetAccentFill = _Entry(
@@ -445,6 +453,25 @@ void main() {
               _expectPair(
                 _presetTextGetters[entry.key]!(colors),
                 surface.value,
+                kWcagText,
+              );
+            },
+          );
+        }
+      }
+    }
+
+    final hoverFill = theme.roles.hoverFill;
+    if (hoverFill != null) {
+      for (final surface in _surfacesOf(theme).entries) {
+        final hovered = Color.alphaBlend(hoverFill, surface.value);
+        for (final name in ['textPrimary', 'textSecondary']) {
+          test(
+            '${theme.name}: $name on ${surface.key} + hoverFill >= $kWcagText',
+            () {
+              _expectPair(
+                _paletteGetters[name]!(theme.palette),
+                hovered,
                 kWcagText,
               );
             },

@@ -192,6 +192,8 @@ final Map<String, Color? Function(ScaffoldColorRoles)> _roleFields = {
   'sheetForeground': (c) => c.sheetForeground,
   'sheetDivider': (c) => c.sheetDivider,
   'surfaceEdge': (c) => c.surfaceEdge,
+  'hoverFill': (c) => c.hoverFill,
+  'hoverEdge': (c) => c.hoverEdge,
 };
 
 const List<_PaletteRow> _roleRows = [
@@ -243,6 +245,18 @@ const List<_PaletteRow> _roleRows = [
     Color(0x1FFFFFFF),
     Color(0x1F10131A),
     'card hairline; equals palette borderSubtle',
+  ),
+  _PaletteRow(
+    'hoverFill',
+    Color(0x1414C8FF),
+    Color(0x1414C8FF),
+    'hover tint, 8% accent; 12% fails 4.5:1 for textSecondary',
+  ),
+  _PaletteRow(
+    'hoverEdge',
+    Color(0x3D14C8FF),
+    Color(0x3D14C8FF),
+    'hover hairline, 24% of the source hover accent',
   ),
 ];
 

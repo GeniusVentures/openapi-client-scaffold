@@ -79,6 +79,8 @@ abstract final class Midnight {
     sheetForeground: Color(0xFFFFFFFF),
     sheetDivider: Color(0x1FFFFFFF),
     surfaceEdge: Color(0x1FFFFFFF),
+    hoverFill: Color(0x1414C8FF),
+    hoverEdge: Color(0x3D14C8FF),
     // END GENERATED scaffold.colorRoles.dark
   );
 
@@ -94,6 +96,8 @@ abstract final class Midnight {
     sheetForeground: Color(0xFF10131A),
     sheetDivider: Color(0x1F10131A),
     surfaceEdge: Color(0x1F10131A),
+    hoverFill: Color(0x1414C8FF),
+    hoverEdge: Color(0x3D14C8FF),
     // END GENERATED scaffold.colorRoles.light
   );
 

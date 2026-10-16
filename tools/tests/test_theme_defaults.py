@@ -496,8 +496,9 @@ def test_committed_color_roles_file_matches_render() -> None:
 
 def test_color_roles_tokens_are_a_dark_light_pair() -> None:
     roles = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]["colorRoles"]
-    assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, "surfaceEdge"]
-    assert roles["dark"]["surfaceEdge"] is None
+    assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, "surfaceEdge", "hoverFill", "hoverEdge"]
+    for name in ("surfaceEdge", "hoverFill", "hoverEdge"):
+        assert roles["dark"][name] is None
     assert list(roles["light"]) == COLOR_ROLE_NAMES
 
 

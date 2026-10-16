@@ -34,6 +34,13 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   /// Hairline around raised cards, surfaces and sheets. Null draws none.
   final Color? surfaceEdge;
 
+  /// Tint painted over a hovered pressable. Null keeps the 8% textPrimary
+  /// state layer.
+  final Color? hoverFill;
+
+  /// Hairline drawn around a hovered pressable. Null draws none.
+  final Color? hoverEdge;
+
   const ScaffoldColorRoles({
     // GENERATED from design_tokens.json scaffold.colorRoles.dark. Do not edit.
     this.accent = ScaffoldColors.lightGreenPrimary,
@@ -45,6 +52,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     this.sheetForeground = const Color(0xFFFFFFFF),
     this.sheetDivider = const Color(0x1FFFFFFF),
     this.surfaceEdge,
+    this.hoverFill,
+    this.hoverEdge,
     // END GENERATED scaffold.colorRoles.dark
   });
 
@@ -123,6 +132,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     Color? sheetForeground,
     Color? sheetDivider,
     Color? surfaceEdge,
+    Color? hoverFill,
+    Color? hoverEdge,
   }) {
     return ScaffoldColorRoles(
       accent: accent ?? this.accent,
@@ -135,6 +146,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       sheetForeground: sheetForeground ?? this.sheetForeground,
       sheetDivider: sheetDivider ?? this.sheetDivider,
       surfaceEdge: surfaceEdge ?? this.surfaceEdge,
+      hoverFill: hoverFill ?? this.hoverFill,
+      hoverEdge: hoverEdge ?? this.hoverEdge,
     );
   }
 
@@ -161,6 +174,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       sheetForeground: Color.lerp(sheetForeground, other.sheetForeground, t)!,
       sheetDivider: Color.lerp(sheetDivider, other.sheetDivider, t)!,
       surfaceEdge: Color.lerp(surfaceEdge, other.surfaceEdge, t),
+      hoverFill: Color.lerp(hoverFill, other.hoverFill, t),
+      hoverEdge: Color.lerp(hoverEdge, other.hoverEdge, t),
     );
   }
 }

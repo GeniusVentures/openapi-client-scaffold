@@ -240,7 +240,9 @@
         "inputForeground": "0xFFFFFFFF",
         "sheetForeground": "0xFFFFFFFF",
         "sheetDivider": "0x1FFFFFFF",
-        "surfaceEdge": null
+        "surfaceEdge": null,
+        "hoverFill": null,
+        "hoverEdge": null
       },
       "light": {
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },

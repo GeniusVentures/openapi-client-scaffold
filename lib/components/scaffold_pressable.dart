@@ -12,7 +12,9 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// opacity on hover, 12% opacity on press — with a [ScaffoldFocusOutline] ring
 /// when focused and a [ScaffoldDisabledOverlay] when [disabled]. Composes
 /// [ScaffoldTouchTarget] internally for a 48x48 hit area, responds to Enter /
-/// Space keys, and registers `Semantics(button: true)`.
+/// Space keys, and registers `Semantics(button: true)`. When the theme's
+/// `ScaffoldColorRoles.hoverFill` is set, hover paints that tint and an optional
+/// `hoverEdge` hairline clipped to [borderRadius] instead of the 8% layer.
 class ScaffoldPressable extends StatefulWidget {
   const ScaffoldPressable({
     super.key,
@@ -23,6 +25,7 @@ class ScaffoldPressable extends StatefulWidget {
     this.focusNode,
     this.disabled = false,
     this.semanticLabel,
+    this.borderRadius,
   });
 
   /// Content rendered inside the pressable surface.
@@ -47,6 +50,9 @@ class ScaffoldPressable extends StatefulWidget {
   /// Optional accessible name announced by screen readers. Required for
   /// icon-only pressables (WCAG 4.1.2 Name, Role, Value).
   final String? semanticLabel;
+
+  /// Corner radius of the hover treatment; null is square.
+  final BorderRadiusGeometry? borderRadius;
 
   @override
   State<ScaffoldPressable> createState() => _ScaffoldPressableState();
@@ -118,12 +124,7 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
 
     Widget content = ScaffoldTouchTarget(child: widget.child);
 
-    content = Stack(
-      children: <Widget>[
-        content,
-        _buildStateLayer(palette),
-      ],
-    );
+    content = Stack(children: <Widget>[content, _buildStateLayer(palette)]);
 
     content = MouseRegion(
       onEnter: (_) => _setHovered(true),
@@ -160,14 +161,48 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
   }
 
   Widget _buildStateLayer(ScaffoldPalette palette) {
-    final double opacity = _pressed ? 0.12 : (_hovered ? 0.08 : 0.0);
+    final roles = context.colorRoles;
+    final hoverFill = roles.hoverFill;
+    if (hoverFill == null) {
+      final double opacity = _pressed ? 0.12 : (_hovered ? 0.08 : 0.0);
+      return Positioned.fill(
+        child: IgnorePointer(
+          child: AnimatedOpacity(
+            opacity: opacity,
+            duration: context.motion.short,
+            curve: context.motion.standard,
+            child: ColoredBox(color: palette.textPrimary),
+          ),
+        ),
+      );
+    }
+    final hoverEdge = roles.hoverEdge;
     return Positioned.fill(
       child: IgnorePointer(
-        child: AnimatedOpacity(
-          opacity: opacity,
-          duration: context.motion.short,
-          curve: context.motion.standard,
-          child: ColoredBox(color: palette.textPrimary),
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            AnimatedOpacity(
+              opacity: _hovered ? 1.0 : 0.0,
+              duration: context.motion.short,
+              curve: context.motion.standard,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: hoverFill,
+                  border: hoverEdge == null
+                      ? null
+                      : Border.all(color: hoverEdge),
+                  borderRadius: widget.borderRadius,
+                ),
+              ),
+            ),
+            AnimatedOpacity(
+              opacity: _pressed ? 0.12 : 0.0,
+              duration: context.motion.short,
+              curve: context.motion.standard,
+              child: ColoredBox(color: palette.textPrimary),
+            ),
+          ],
         ),
       ),
     );

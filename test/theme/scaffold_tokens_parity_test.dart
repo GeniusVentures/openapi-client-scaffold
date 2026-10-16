@@ -105,6 +105,8 @@ void _expectColorRoles(
     expect(region[key], isNull, reason: key);
   }
   expect(roles.surfaceEdge, isNull);
+  expect(roles.hoverFill, isNull);
+  expect(roles.hoverEdge, isNull);
   for (final field in _colorRoleFields.entries) {
     expect(
       _argb(region[field.key]),
@@ -122,7 +124,7 @@ void main() {
     _expectColorRoles(
       roles['dark'] as Map<String, dynamic>,
       ScaffoldColorRoles.defaultColorRoles,
-      nullable: ['surfaceEdge'],
+      nullable: ['surfaceEdge', 'hoverFill', 'hoverEdge'],
     );
   });
 

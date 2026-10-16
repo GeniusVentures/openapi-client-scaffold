@@ -61,7 +61,9 @@
         "inputForeground": "0xFFFFFFFF",
         "sheetForeground": "0xFFFFFFFF",
         "sheetDivider": "0x1FFFFFFF",
-        "surfaceEdge": "0x1FFFFFFF"
+        "surfaceEdge": "0x1FFFFFFF",
+        "hoverFill": "0x1414C8FF",
+        "hoverEdge": "0x3D14C8FF"
       },
       "light": {
         "accent": "0xFF0AAEE6",
@@ -72,7 +74,9 @@
         "inputForeground": "0xFF10131A",
         "sheetForeground": "0xFF10131A",
         "sheetDivider": "0x1F10131A",
-        "surfaceEdge": "0x1F10131A"
+        "surfaceEdge": "0x1F10131A",
+        "hoverFill": "0x1414C8FF",
+        "hoverEdge": "0x3D14C8FF"
       }
     },
     "dimens": {
