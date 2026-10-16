@@ -62,9 +62,24 @@ MaterialApp(
 ```
 
 `midnightTheme(brightness)` returns a full `ThemeData`: color scheme, page
-background, text theme, 21 component themes and the six scaffold extensions.
+background, text theme, 21 component themes and the eight scaffold extensions.
 An app that builds its own `ThemeData` can take only the extensions with
 `midnightExtensions(brightness)`.
+
+The preset also restyles components:
+
+- Cards and raised surfaces: themed shadow, top-lit sheen in light mode and a
+  1 px hairline.
+- Hover: an accent tint with a 1 px accent edge, no change in size.
+- Focused text fields: a 2 px accent border.
+- Drawers and sheets: card fill, hairline, 24 px open-edge radius and a 60% scrim.
+- Checkboxes: accent fill, dark mark, accent edge and 4 px corners.
+- ActionButton: accent glyph and a sunken, dimmed disabled state.
+- Tabular figures on formatted numbers.
+
+None of this needs the preset: any theme can supply the same values through the
+`ScaffoldShadows`, `ScaffoldGradients`, `ScaffoldColorRoles`, `ScaffoldShapes`
+and `ScaffoldTypography` extensions. Null values keep the built-in look.
 
 Fonts: the preset names Inter and JetBrains Mono and ships no font files.
 Register them in the app's `pubspec.yaml`, or the platform default font is used.
@@ -89,7 +104,7 @@ Some reference values failed WCAG AA, so the preset adjusts them:
 | Directory | Contents |
 |---|---|
 | `lib/components/` | ~70 widgets — surfaces, pressables, badges, skeletons, sliders, drag/drop, search bar, state views, toasts, animations, media |
-| `lib/theme/` | `scaffold_theme` (extensions), `scaffold_palette`, `scaffold_colors`, `scaffold_dimens`, `scaffold_elevation`, `scaffold_shadows`, `scaffold_motion_theme`, `scaffold_typography`, `scaffold_gradients`, `scaffold_color_roles`, `presets/midnight_theme`, `presets/midnight_tokens` |
+| `lib/theme/` | `scaffold_theme` (extensions), `scaffold_palette`, `scaffold_colors`, `scaffold_dimens`, `scaffold_elevation`, `scaffold_shadows`, `scaffold_motion_theme`, `scaffold_typography`, `scaffold_gradients`, `scaffold_color_roles`, `scaffold_shapes`, `presets/midnight_theme`, `presets/midnight_tokens` |
 | `lib/utils/` | `breakpoints` |
 
 Some widget families are **generated** from Jinja2 templates rather than
@@ -102,7 +117,7 @@ hand-written — one file per variant, no runtime enum/switch spanning variants:
 | `ScaffoldImagePlaceholder*` | loading, missing, empty, failed | `generators.image_placeholder` |
 | `ScaffoldSelectionIndicator*` | radio, checkbox, toggle | `generators.selection_indicator` |
 | `ScaffoldCard` / `ScaffoldStateView` / `ScaffoldSearchBar` | + `_cubit` / `_state` companions | `generators.composites` |
-| `ScaffoldPalette`, `ScaffoldDimens` and the five theme extensions (shadows, motion, typography, gradients, color roles) defaults | dark and light palette, dimens, shadows, motion, typography, gradients, color roles | `generators.theme_defaults` |
+| `ScaffoldPalette`, `ScaffoldDimens` and the six theme extensions (shadows, motion, typography, gradients, color roles, shapes) defaults | dark and light palette, dimens, shadows, motion, typography, gradients, color roles, shapes | `generators.theme_defaults` |
 | `lib/theme/presets/midnight_tokens.dart` | midnight preset palette, shadows, gradients, text styles, type scale and spacing, from `tokens/midnight.json` | `generators.theme_presets` |
 
 **These files are committed, but the template is the source of truth.** Never
@@ -286,7 +301,7 @@ are primitive-enabled** (unlocked by the new v1.2 primitives).
 ```bash
 flutter pub get
 dart analyze --fatal-infos    # must be clean
-flutter test                  # 1225 tests
+flutter test                  # 1464 tests
 ```
 
 ---

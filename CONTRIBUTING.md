@@ -12,7 +12,7 @@ python3 -m venv .venv              # Python codegen tooling
 
 ```bash
 dart analyze --fatal-infos   # must be clean — no infos, no warnings
-flutter test                 # 1225 tests
+flutter test                 # 1464 tests
 ruff check                   # Python lint
 pytest                       # Python codegen tests
 python -m scaffold_codegen.generators && git diff --exit-code lib/   # generator drift (CI runs this)
@@ -36,7 +36,7 @@ Generated families and their drivers:
 | `scaffold_image_placeholder_*.dart` | `scaffold_codegen.generators.image_placeholder` |
 | `scaffold_selection_indicator_*.dart` | `scaffold_codegen.generators.selection_indicator` |
 | `scaffold_card*`, `scaffold_state_view*`, `scaffold_search_bar*` | `scaffold_codegen.generators.composites` |
-| `lib/theme/scaffold_{palette,dimens,shadows,motion_theme,typography,gradients,color_roles}.dart` (only the lines between the `// GENERATED` and `// END GENERATED` markers) | `scaffold_codegen.generators.theme_defaults` |
+| `lib/theme/scaffold_{palette,dimens,shadows,motion_theme,typography,gradients,color_roles,shapes}.dart` (only the lines between the `// GENERATED` and `// END GENERATED` markers) | `scaffold_codegen.generators.theme_defaults` |
 | `lib/theme/presets/midnight_tokens.dart` (only the `// GENERATED` regions) | `scaffold_codegen.generators.theme_presets` |
 
 To change one: edit `templates/components/<name>.jinja2` (and its `_vars.json`
@@ -44,8 +44,8 @@ if you are adding a variable), then regenerate and commit both.
 
 ### Theme tokens
 
-The defaults of `ScaffoldPalette`, `ScaffoldDimens` and the five theme
-extensions (shadows, motion, typography, gradients, color roles) are generated
+The defaults of `ScaffoldPalette`, `ScaffoldDimens` and the six theme
+extensions (shadows, motion, typography, gradients, color roles, shapes) are generated
 from the `scaffold` namespace of `design_tokens.json`.
 
 - Source: `scaffold.palette.dark` feeds `ScaffoldPalette.defaultPalette`,
@@ -61,6 +61,22 @@ from the `scaffold` namespace of `design_tokens.json`.
   - `scaffold.gradients` feeds `ScaffoldGradients`.
   - `scaffold.colorRoles.dark` feeds the `ScaffoldColorRoles` defaults
     (`defaultColorRoles`), and `scaffold.colorRoles.light` feeds `lightColorRoles`.
+  - `scaffold.shapes` feeds `ScaffoldShapes` (component geometry: focused field
+    border width, sheet radius, checkbox radius and border width), read through
+    `context.shapes`. One instance serves both modes, and it is not in
+    `scaffoldThemeExtensions`.
+  - The component restyle fields are nullable and null by default:
+    `colorRoles` keys `surfaceEdge`, `hoverFill`, `hoverEdge`, `scrim`,
+    `checkboxFill`, `checkboxMark`, `checkboxEdge`, `actionIcon`,
+    `actionDisabledFill` and `actionDisabledForeground`; `shadows` key
+    `elevated`; `gradients` key `surfaceSheen`; and `typography` style
+    `numericStyle`.
+- Null means built-in: a null token keeps the widget's built-in look, so the
+  default theme renders as before. A `params` region accepts `null` for every
+  value kind and emits `this.name,`. An `args` region rejects `null`, so the
+  default `light` region omits the nullable keys and the light instance
+  inherits null from the constructor. A widget switches on the value, not on
+  the preset: any theme that registers the extension value gets the restyle.
 - Region styles: `REGIONS` in `tools/scaffold_codegen/generators/theme_defaults.py`
   is the full list. An `args` region holds the arguments of a const constructor
   call (`name: value,`). A `params` region holds constructor parameter defaults
@@ -128,6 +144,18 @@ from the `scaffold` namespace of `design_tokens.json`.
   into `lib/theme/presets/midnight_tokens.dart`, and `theme_presets --check`
   fails on drift. The CLI reads only that file. `design_tokens.json` never feeds
   a preset.
+- Midnight component restyles: the preset sets the nullable fields above in
+  `tokens/midnight.json`. The generated consts are `Midnight.darkShadows` and
+  `lightShadows` (with `elevated`), `Midnight.darkScaffoldGradients` and
+  `lightScaffoldGradients` (the `darkGradients` name is taken by
+  `MidnightGradients`), `Midnight.shapes`, and the color roles and typography
+  already registered by `midnightExtensions`. Where a value equals an existing
+  preset token, `test/theme/midnight_token_map_test.dart` pins the equality.
+- Captures: the default run writes the 52 images in `images/` and must leave
+  them byte-identical. The midnight run writes `images/midnight/`, including a
+  midnight-only `restyles_{dark,light}.png` capture of a card, a hovered
+  pressable, a focused field and the checkbox states. Re-baseline midnight
+  captures in a separate `chore` commit that touches only `images/midnight/`.
 - Brand names: `tools/tests/test_no_brand_names.py` scans the text files under
   `lib/`, `example/` and `tokens/` for organization and product names. It skips
   the platform runner folders of the example app, whose bundle identifiers are

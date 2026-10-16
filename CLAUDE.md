@@ -17,7 +17,7 @@ It is consumed as a git submodule by three repos, so treat anything under
 
 ```bash
 dart analyze --fatal-infos   # must be clean
-flutter test                 # 1225 tests
+flutter test                 # 1464 tests
 ruff check && pytest         # Python codegen (needs .venv, see CONTRIBUTING.md)
 ```
 
@@ -27,7 +27,7 @@ Several widget families in `lib/components/` are Jinja2 output **that is
 committed**. Editing the `.dart` file directly is wrong — it will be
 overwritten, and this drift has already happened once (commit `ed8859b`).
 Change `templates/components/*.jinja2` and regenerate.
-`lib/theme/scaffold_palette.dart`, `scaffold_dimens.dart`, `scaffold_shadows.dart`, `scaffold_motion_theme.dart`, `scaffold_typography.dart`, `scaffold_gradients.dart` and `scaffold_color_roles.dart` contain generated regions between `// GENERATED` markers. Edit `design_tokens.json` (`scaffold` namespace) and run `scaffold_codegen.generators.theme_defaults`, never the Dart; `lib/theme/presets/midnight_tokens.dart` is generated from `tokens/midnight.json` by `scaffold_codegen.generators.theme_presets`.
+`lib/theme/scaffold_palette.dart`, `scaffold_dimens.dart`, `scaffold_shadows.dart`, `scaffold_motion_theme.dart`, `scaffold_typography.dart`, `scaffold_gradients.dart`, `scaffold_color_roles.dart` and `scaffold_shapes.dart` contain generated regions between `// GENERATED` markers. Edit `design_tokens.json` (`scaffold` namespace) and run `scaffold_codegen.generators.theme_defaults`, never the Dart; `lib/theme/presets/midnight_tokens.dart` is generated from `tokens/midnight.json` by `scaffold_codegen.generators.theme_presets`.
 
 The families, drivers, and the manual drift check are listed in
 [CONTRIBUTING.md](CONTRIBUTING.md). Read it before touching anything matching
