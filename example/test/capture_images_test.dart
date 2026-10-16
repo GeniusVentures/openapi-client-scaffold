@@ -28,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_scaffold/components/bottom_drawer/bottom_drawer.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_range_selector.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_scrubber.dart';
@@ -717,16 +718,57 @@ void main() {
   });
 }
 
+/// Types into the first text field, then unfocuses so the capture shows the
+/// enabled border with no cursor.
+Future<void> _typeIntoFirstField(WidgetTester tester) async {
+  await tester.enterText(find.byType(TextFormField).first, 'Ada Lovelace');
+  FocusManager.instance.primaryFocus?.unfocus();
+  await tester.pump();
+}
+
+/// The open ResponsiveDrawer desktop panel. Dialogs open in the app Overlay,
+/// outside the capture boundary, so this mirrors ResponsiveDrawer's desktop
+/// branch (kCaptureWidth is its breakpoint) without the barrier scrim.
+class _OpenDrawerCapture extends StatelessWidget {
+  const _OpenDrawerCapture();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        const BottomDrawerDemo(),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Material(
+            color: context.palette.deepBlueTertiary,
+            child: SizedBox(
+              width: 400,
+              height: double.infinity,
+              child: BottomDrawer(
+                title: BottomDrawerDemo.drawerTitle,
+                footer: BottomDrawerDemo.drawerFooter(context),
+                children: BottomDrawerDemo.drawerItems(context),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// Drives every demo through both themes.
 Future<void> _captureAllDemos(WidgetTester tester) async {
     // Order mirrors the _DemoTile registry in example/lib/main.dart.
     await _captureBothThemes(tester, const ActionButtonDemo(), 'action_button');
     await _captureBothThemes(tester, const StringButtonDemo(), 'string_button');
-    await _captureBothThemes(tester, const TextEntryFieldDemo(), 'text_entry_field');
+    await _captureBothThemes(tester, const TextEntryFieldDemo(), 'text_entry_field',
+        prepare: _typeIntoFirstField);
     await _captureBothThemes(tester, const LoadingDemo(), 'loading');
     await _captureToast(tester, Brightness.dark);
     await _captureToast(tester, Brightness.light);
-    await _captureBothThemes(tester, const BottomDrawerDemo(), 'bottom_drawer');
+    await _captureBothThemes(tester, const _OpenDrawerCapture(), 'bottom_drawer');
     await _captureBothThemes(tester, const AnimationsDemo(), 'animations');
     await _captureBothThemes(tester, const PageChromeDemo(), 'page_chrome');
     await _captureBothThemes(tester, const ResponsiveGridDemo(), 'responsive_grid');
