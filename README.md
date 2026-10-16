@@ -65,10 +65,11 @@ hand-written — one file per variant, no runtime enum/switch spanning variants:
 | `ScaffoldImagePlaceholder*` | loading, missing, empty, failed | `generators.image_placeholder` |
 | `ScaffoldSelectionIndicator*` | radio, checkbox, toggle | `generators.selection_indicator` |
 | `ScaffoldCard` / `ScaffoldStateView` / `ScaffoldSearchBar` | + `_cubit` / `_state` companions | `generators.composites` |
+| `ScaffoldPalette` / `ScaffoldDimens` defaults | dark and light palette, dimens | `generators.theme_defaults` |
 
 **These files are committed, but the template is the source of truth.** Never
-hand-edit a generated file — change `templates/components/*.jinja2` and
-regenerate. See [CONTRIBUTING.md](CONTRIBUTING.md).
+hand-edit a generated file — change `templates/components/*.jinja2`, or
+`design_tokens.json` for theme defaults, and regenerate. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Demo app
 

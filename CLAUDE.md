@@ -27,6 +27,7 @@ Several widget families in `lib/components/` are Jinja2 output **that is
 committed**. Editing the `.dart` file directly is wrong — it will be
 overwritten, and this drift has already happened once (commit `ed8859b`).
 Change `templates/components/*.jinja2` and regenerate.
+`lib/theme/scaffold_palette.dart` and `lib/theme/scaffold_dimens.dart` contain generated regions between `// GENERATED` markers. Edit `design_tokens.json` (`scaffold` namespace) and run `scaffold_codegen.generators.theme_defaults`, never the Dart.
 
 The families, drivers, and the manual drift check are listed in
 [CONTRIBUTING.md](CONTRIBUTING.md). Read it before touching anything matching
@@ -37,7 +38,8 @@ or `scaffold_{card,state_view,search_bar}*`.
 > is never committed — D-16, CI regenerates and diffs." That holds for the
 > OpenAPI client output and the consumer-space component output (both
 > gitignored under `generated/`), but **not** for the widget families above,
-> which are deliberately committed. CI does not currently run the diff.
+> which are deliberately committed. CI regenerates every committed family and
+> fails on any diff (python -m scaffold_codegen.generators, then git diff --exit-code lib/).
 
 ## Workflow: GSD is mandatory
 

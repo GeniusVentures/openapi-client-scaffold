@@ -10,6 +10,9 @@ Consumable by any project that adds the scaffold as a submodule.
   ``data_table``, ``form_dialog``, ``navigation``, ``search_bar``, ``state``.
   Each set has ``.dart.jinja2``, ``.css.jinja2``, ``.html.jinja2``, and a
   ``_vars.json`` variables file.
+- ``theme/`` — ``const_args.dart.jinja2``, the argument lines of the generated
+  const constructor calls in ``lib/theme``, rendered by
+  ``../tools/scaffold_codegen/generators/theme_defaults.py``.
 - ``cpp/`` — Placeholder for C++ Cubit-style interface templates (Phase 7).
 - Module-scaffolding jinja2 files — ``module.dart.jinja2``,
   ``pubspec.yaml.jinja2``, ``api_provider.dart.jinja2``,
