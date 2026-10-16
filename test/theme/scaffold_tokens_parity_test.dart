@@ -111,6 +111,9 @@ void _expectColorRoles(
   expect(roles.checkboxFill, isNull);
   expect(roles.checkboxMark, isNull);
   expect(roles.checkboxEdge, isNull);
+  expect(roles.actionIcon, isNull);
+  expect(roles.actionDisabledFill, isNull);
+  expect(roles.actionDisabledForeground, isNull);
   for (final field in _colorRoleFields.entries) {
     expect(
       _argb(region[field.key]),
@@ -136,6 +139,9 @@ void main() {
         'checkboxFill',
         'checkboxMark',
         'checkboxEdge',
+        'actionIcon',
+        'actionDisabledFill',
+        'actionDisabledForeground',
       ],
     );
   });

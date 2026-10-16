@@ -505,6 +505,9 @@ def test_color_roles_tokens_are_a_dark_light_pair() -> None:
         "checkboxFill",
         "checkboxMark",
         "checkboxEdge",
+        "actionIcon",
+        "actionDisabledFill",
+        "actionDisabledForeground",
     ]
     assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, *nullable]
     for name in nullable:

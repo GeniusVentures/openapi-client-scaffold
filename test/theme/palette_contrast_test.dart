@@ -199,6 +199,12 @@ const _rolesClasses = <String, _Entry>{
     _Role.nonText,
     'checkbox edge on the surface, 3:1; skipped while null',
   ),
+  'actionIcon': _Entry(
+    _Role.nonText,
+    'enabled ActionButton glyph, 3:1 on the surfaces; skipped while null',
+  ),
+  'actionDisabledFill': _Entry(_Role.excluded, 'disabled state is exempt'),
+  'actionDisabledForeground': _Entry(_Role.excluded, 'disabled state is exempt'),
 };
 
 const _presetAccentFill = _Entry(
@@ -481,6 +487,18 @@ void main() {
           '${theme.name}: checkboxEdge on ${surface.key} >= $kWcagNonText',
           () {
             _expectPair(checkboxEdge, surface.value, kWcagNonText);
+          },
+        );
+      }
+    }
+
+    final actionIcon = theme.roles.actionIcon;
+    if (actionIcon != null) {
+      for (final surface in _surfacesOf(theme).entries) {
+        test(
+          '${theme.name}: actionIcon on ${surface.key} >= $kWcagNonText',
+          () {
+            _expectPair(actionIcon, surface.value, kWcagNonText);
           },
         );
       }

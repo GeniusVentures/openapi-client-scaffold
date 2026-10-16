@@ -199,6 +199,9 @@ final Map<String, Color? Function(ScaffoldColorRoles)> _roleFields = {
   'checkboxFill': (c) => c.checkboxFill,
   'checkboxMark': (c) => c.checkboxMark,
   'checkboxEdge': (c) => c.checkboxEdge,
+  'actionIcon': (c) => c.actionIcon,
+  'actionDisabledFill': (c) => c.actionDisabledFill,
+  'actionDisabledForeground': (c) => c.actionDisabledForeground,
 };
 
 const List<_PaletteRow> _roleRows = [
@@ -286,6 +289,24 @@ const List<_PaletteRow> _roleRows = [
     Color(0xFF0AAEE6),
     Color(0xFF0A6885),
     'checkbox edge; equals the midnight accentOnSurface',
+  ),
+  _PaletteRow(
+    'actionIcon',
+    Color(0xFF0AAEE6),
+    Color(0xFF0A6885),
+    'enabled ActionButton glyph; equals the midnight accentOnSurface',
+  ),
+  _PaletteRow(
+    'actionDisabledFill',
+    Color(0xFF06080C),
+    Color(0xFFCFD4DB),
+    'disabled ActionButton fill; equals MidnightColors.surfaceSunken',
+  ),
+  _PaletteRow(
+    'actionDisabledForeground',
+    Color(0x8AFFFFFF),
+    Color(0x8A10131A),
+    'disabled ActionButton glyph and caption; textPrimary at 54%',
   ),
 ];
 
@@ -630,6 +651,33 @@ void main() {
     expect(
       Midnight.lightColorRoles.checkboxEdge,
       Midnight.lightColorRoles.accentOnSurface,
+    );
+  });
+
+  test('midnight action button roles equal the preset and the other roles', () {
+    expect(
+      Midnight.darkColorRoles.actionIcon,
+      Midnight.darkColorRoles.accentOnSurface,
+    );
+    expect(
+      Midnight.lightColorRoles.actionIcon,
+      Midnight.lightColorRoles.accentOnSurface,
+    );
+    expect(
+      Midnight.darkColorRoles.actionDisabledFill,
+      Midnight.darkColors.surfaceSunken,
+    );
+    expect(
+      Midnight.lightColorRoles.actionDisabledFill,
+      Midnight.lightColors.surfaceSunken,
+    );
+    expect(
+      Midnight.darkColorRoles.actionDisabledForeground,
+      Midnight.darkPalette.textPrimary.withAlpha(0x8A),
+    );
+    expect(
+      Midnight.lightColorRoles.actionDisabledForeground,
+      Midnight.lightPalette.textPrimary.withAlpha(0x8A),
     );
   });
 

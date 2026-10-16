@@ -86,6 +86,9 @@ abstract final class Midnight {
     checkboxFill: Color(0xFF0AAEE6),
     checkboxMark: Color(0xFF000B18),
     checkboxEdge: Color(0xFF0AAEE6),
+    actionIcon: Color(0xFF0AAEE6),
+    actionDisabledFill: Color(0xFF06080C),
+    actionDisabledForeground: Color(0x8AFFFFFF),
     // END GENERATED scaffold.colorRoles.dark
   );
 
@@ -107,6 +110,9 @@ abstract final class Midnight {
     checkboxFill: Color(0xFF0AAEE6),
     checkboxMark: Color(0xFF000B18),
     checkboxEdge: Color(0xFF0A6885),
+    actionIcon: Color(0xFF0A6885),
+    actionDisabledFill: Color(0xFFCFD4DB),
+    actionDisabledForeground: Color(0x8A10131A),
     // END GENERATED scaffold.colorRoles.light
   );
 

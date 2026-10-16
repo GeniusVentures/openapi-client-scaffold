@@ -246,7 +246,10 @@
         "scrim": null,
         "checkboxFill": null,
         "checkboxMark": null,
-        "checkboxEdge": null
+        "checkboxEdge": null,
+        "actionIcon": null,
+        "actionDisabledFill": null,
+        "actionDisabledForeground": null
       },
       "light": {
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },

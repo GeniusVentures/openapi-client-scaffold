@@ -57,6 +57,17 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   /// textSecondary edge color.
   final Color? checkboxEdge;
 
+  /// Glyph of an enabled ActionButton. Null keeps [accentSecondaryOnSurface].
+  final Color? actionIcon;
+
+  /// Background of a disabled ActionButton. Null keeps the palette
+  /// deepBlueCardColor.
+  final Color? actionDisabledFill;
+
+  /// Glyph and caption of a disabled ActionButton. Null keeps the enabled
+  /// colors.
+  final Color? actionDisabledForeground;
+
   const ScaffoldColorRoles({
     // GENERATED from design_tokens.json scaffold.colorRoles.dark. Do not edit.
     this.accent = ScaffoldColors.lightGreenPrimary,
@@ -74,6 +85,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     this.checkboxFill,
     this.checkboxMark,
     this.checkboxEdge,
+    this.actionIcon,
+    this.actionDisabledFill,
+    this.actionDisabledForeground,
     // END GENERATED scaffold.colorRoles.dark
   });
 
@@ -158,6 +172,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     Color? checkboxFill,
     Color? checkboxMark,
     Color? checkboxEdge,
+    Color? actionIcon,
+    Color? actionDisabledFill,
+    Color? actionDisabledForeground,
   }) {
     return ScaffoldColorRoles(
       accent: accent ?? this.accent,
@@ -176,6 +193,10 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       checkboxFill: checkboxFill ?? this.checkboxFill,
       checkboxMark: checkboxMark ?? this.checkboxMark,
       checkboxEdge: checkboxEdge ?? this.checkboxEdge,
+      actionIcon: actionIcon ?? this.actionIcon,
+      actionDisabledFill: actionDisabledFill ?? this.actionDisabledFill,
+      actionDisabledForeground:
+          actionDisabledForeground ?? this.actionDisabledForeground,
     );
   }
 
@@ -208,6 +229,14 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       checkboxFill: Color.lerp(checkboxFill, other.checkboxFill, t),
       checkboxMark: Color.lerp(checkboxMark, other.checkboxMark, t),
       checkboxEdge: Color.lerp(checkboxEdge, other.checkboxEdge, t),
+      actionIcon: Color.lerp(actionIcon, other.actionIcon, t),
+      actionDisabledFill:
+          Color.lerp(actionDisabledFill, other.actionDisabledFill, t),
+      actionDisabledForeground: Color.lerp(
+        actionDisabledForeground,
+        other.actionDisabledForeground,
+        t,
+      ),
     );
   }
 }

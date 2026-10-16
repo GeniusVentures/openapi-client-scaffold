@@ -406,6 +406,69 @@ void main() {
     });
   });
 
+  group('action button roles', () {
+    const icon = Color(0xFF0AAEE6);
+    const fill = Color(0xFF06080C);
+    const foreground = Color(0x8AFFFFFF);
+    const withAction = ScaffoldColorRoles(
+      actionIcon: icon,
+      actionDisabledFill: fill,
+      actionDisabledForeground: foreground,
+    );
+
+    test('are null in the defaults and every fallback', () {
+      for (final roles in [
+        dark,
+        light,
+        ScaffoldColorRoles.fallbackFor(defaultPalette, Brightness.dark),
+        ScaffoldColorRoles.fallbackFor(lightPalette, Brightness.light),
+        ScaffoldColorRoles.fallbackForPalette(defaultPalette),
+        ScaffoldColorRoles.fallbackForPalette(lightPalette),
+      ]) {
+        expect(roles.actionIcon, isNull);
+        expect(roles.actionDisabledFill, isNull);
+        expect(roles.actionDisabledForeground, isNull);
+      }
+    });
+
+    test('copyWith sets them and keeps them', () {
+      final changed = a.copyWith(
+        actionIcon: icon,
+        actionDisabledFill: fill,
+        actionDisabledForeground: foreground,
+      );
+      expect(changed.actionIcon, icon);
+      expect(changed.actionDisabledFill, fill);
+      expect(changed.actionDisabledForeground, foreground);
+      final kept = withAction.copyWith(accent: const Color(0xFF111111));
+      expect(kept.actionIcon, icon);
+      expect(kept.actionDisabledFill, fill);
+      expect(kept.actionDisabledForeground, foreground);
+    });
+
+    test('lerp keeps null, blends two values', () {
+      final nulls = a.lerp(b, 0.5);
+      expect(nulls.actionIcon, isNull);
+      expect(nulls.actionDisabledFill, isNull);
+      expect(nulls.actionDisabledForeground, isNull);
+      const other = ScaffoldColorRoles(
+        actionIcon: Color(0xFF000000),
+        actionDisabledFill: Color(0xFF000000),
+        actionDisabledForeground: Color(0xFF000000),
+      );
+      final mixed = withAction.lerp(other, 0.5);
+      expect(mixed.actionIcon, Color.lerp(icon, other.actionIcon, 0.5));
+      expect(
+        mixed.actionDisabledFill,
+        Color.lerp(fill, other.actionDisabledFill, 0.5),
+      );
+      expect(
+        mixed.actionDisabledForeground,
+        Color.lerp(foreground, other.actionDisabledForeground, 0.5),
+      );
+    });
+  });
+
   group('hoverFill and hoverEdge', () {
     const fill = Color(0x1F123456);
     const edge = Color(0x3D123456);

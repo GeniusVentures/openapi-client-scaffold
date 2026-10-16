@@ -9,13 +9,16 @@ class ActionButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
 
-  /// Background color; falls back to [ScaffoldPalette.deepBlueCardColor].
+  /// Background color when enabled; falls back to
+  /// [ScaffoldPalette.deepBlueCardColor]. A disabled button uses
+  /// [ScaffoldColorRoles.actionDisabledFill] or the same palette color.
   final Color? backgroundColor;
 
-  /// Icon tint; falls back to [ScaffoldColorRoles.accentSecondaryOnSurface].
+  /// Icon tint when enabled; falls back to [ScaffoldColorRoles.actionIcon],
+  /// then [ScaffoldColorRoles.accentSecondaryOnSurface].
   final Color? iconColor;
 
-  /// Label color; falls back to [ScaffoldPalette.gray500].
+  /// Label color when enabled; falls back to [ScaffoldPalette.gray500].
   final Color? textColor;
 
   final ActionButtonAnimation animation;
@@ -75,8 +78,14 @@ class _ActionButtonState extends State<ActionButton>
     final colorRoles = context.colorRoles;
     final dimens = context.dimens;
     final backgroundColor = widget.backgroundColor ?? palette.deepBlueCardColor;
-    final iconColor = widget.iconColor ?? colorRoles.accentSecondaryOnSurface;
-    final textColor = widget.textColor ?? palette.gray500;
+    final disabledForeground = widget.onPressed == null
+        ? colorRoles.actionDisabledForeground
+        : null;
+    final iconColor = disabledForeground ??
+        widget.iconColor ??
+        colorRoles.actionIcon ??
+        colorRoles.accentSecondaryOnSurface;
+    final textColor = disabledForeground ?? widget.textColor ?? palette.gray500;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -104,7 +113,8 @@ class _ActionButtonState extends State<ActionButton>
                   dimens.borderRadiusCard,
                 ),
               ),
-              disabledBackgroundColor: palette.deepBlueCardColor,
+              disabledBackgroundColor:
+                  colorRoles.actionDisabledFill ?? palette.deepBlueCardColor,
               backgroundColor: backgroundColor,
             ),
             child: Column(

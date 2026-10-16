@@ -67,7 +67,10 @@
         "scrim": "0x99000000",
         "checkboxFill": "0xFF0AAEE6",
         "checkboxMark": "0xFF000B18",
-        "checkboxEdge": "0xFF0AAEE6"
+        "checkboxEdge": "0xFF0AAEE6",
+        "actionIcon": "0xFF0AAEE6",
+        "actionDisabledFill": "0xFF06080C",
+        "actionDisabledForeground": "0x8AFFFFFF"
       },
       "light": {
         "accent": "0xFF0AAEE6",
@@ -84,7 +87,10 @@
         "scrim": "0x99000000",
         "checkboxFill": "0xFF0AAEE6",
         "checkboxMark": "0xFF000B18",
-        "checkboxEdge": "0xFF0A6885"
+        "checkboxEdge": "0xFF0A6885",
+        "actionIcon": "0xFF0A6885",
+        "actionDisabledFill": "0xFFCFD4DB",
+        "actionDisabledForeground": "0x8A10131A"
       }
     },
     "dimens": {
