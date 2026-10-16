@@ -34,7 +34,10 @@ jobs:
     name: Lint & test (Python codegen)
     runs-on: ubuntu-latest
     steps:
+      # The capture gate test walks history since the v1.4 base.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
