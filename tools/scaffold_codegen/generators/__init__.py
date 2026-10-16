@@ -14,4 +14,22 @@ by the consumer, never committed).
     python3 -m scaffold_codegen.generators.formatted_value
     python3 -m scaffold_codegen.generators.image_placeholder
     python3 -m scaffold_codegen.generators.selection_indicator
+    python3 -m scaffold_codegen.generators.theme_defaults [--check]
+
+``theme_defaults`` splices the generated regions of ``lib/theme`` from
+``design_tokens.json``. ``python3 -m scaffold_codegen.generators`` runs every
+committed generator.
 """
+
+#: Output is committed under lib/ and drift-checked. The order is the run order.
+COMMITTED_GENERATORS = (
+    "animated_display",
+    "composites",
+    "formatted_value",
+    "image_placeholder",
+    "selection_indicator",
+    "theme_defaults",
+)
+
+#: Renders into a consuming project's tree, needs explicit paths, never run by the drift check.
+CONSUMER_GENERATORS = ("cpp_store",)

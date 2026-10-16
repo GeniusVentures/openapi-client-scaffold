@@ -50,3 +50,12 @@ jobs:
 
       - name: Test
         run: pytest
+
+      # CI now regenerates and diffs, which CONTRIBUTING.md used to leave as a manual check.
+      - name: Generator drift check
+        run: |
+          python -m scaffold_codegen.generators.theme_defaults --check
+          python -m scaffold_codegen.m3_tokens_css --tokens design_tokens.json --output tools/tests/fixtures/m3_tokens.css --check
+          python -m scaffold_codegen.generators
+          git diff --exit-code lib/
+          test -z "$(git status --porcelain -- lib/)"
