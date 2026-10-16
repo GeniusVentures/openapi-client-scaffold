@@ -468,6 +468,7 @@ def test_typography_group_order_and_m3_key_untouched() -> None:
         "typography",
         "colorRoles",
         "gradients",
+        "shapes",
     ]
     assert data["typography"] != data["scaffold"]["typography"]
 
@@ -623,6 +624,18 @@ def test_committed_gradients_region_lists_every_gradient() -> None:
     begin = lines.index("    // GENERATED from design_tokens.json scaffold.gradients. Do not edit.")
     end = lines.index("    // END GENERATED scaffold.gradients")
     assert lines[begin + 1 : end] == ["    this.edgeFade,", "    this.surfaceSheen,"]
+
+
+SHAPES_FILE = "scaffold_shapes.dart"
+
+
+def test_committed_shapes_region_lists_every_shape_as_a_nullable_parameter() -> None:
+    rendered = render_files()[LIB_THEME_DIR / SHAPES_FILE]
+    assert (LIB_THEME_DIR / SHAPES_FILE).read_bytes() == rendered.encode("utf-8")
+    lines = rendered.split("\n")
+    begin = lines.index("    // GENERATED from design_tokens.json scaffold.shapes. Do not edit.")
+    end = lines.index("    // END GENERATED scaffold.shapes")
+    assert lines[begin + 1 : end] == ["    this.inputFocusedBorderWidth,"]
 
 
 def test_non_null_gradient_token_fails_naming_the_entry(

@@ -186,6 +186,9 @@
       "fontFamilies": {
         "monoFontFamily": "JetBrainsMono"
       }
+    },
+    "shapes": {
+      "inputFocusedBorderWidth": 2.0
     }
   },
   "preset": {

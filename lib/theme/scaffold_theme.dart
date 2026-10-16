@@ -5,6 +5,7 @@ import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
+import 'package:frontend_scaffold/theme/scaffold_shapes.dart';
 import 'package:frontend_scaffold/theme/scaffold_typography.dart';
 
 /// Lookup helpers for the frontend_scaffold Material 3 theme extensions.
@@ -44,6 +45,12 @@ extension ScaffoldThemeX on BuildContext {
   ScaffoldGradients get gradients =>
       Theme.of(this).extension<ScaffoldGradients>() ??
       ScaffoldGradients.defaultGradients;
+
+  /// Resolves the registered [ScaffoldShapes], falling back to
+  /// [ScaffoldShapes.defaultShapes] when the host app did not register one.
+  ScaffoldShapes get shapes =>
+      Theme.of(this).extension<ScaffoldShapes>() ??
+      ScaffoldShapes.defaultShapes;
 
   /// Resolves the registered [ScaffoldShadows], falling back to
   /// [ScaffoldShadows.lightShadows] or [ScaffoldShadows.defaultShadows]

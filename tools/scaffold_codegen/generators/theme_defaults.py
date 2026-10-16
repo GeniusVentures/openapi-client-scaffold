@@ -12,7 +12,7 @@ lines inside a const constructor call
 ``this.name,`` for a nullable field, and an args region rejects it. Everything outside the markers is
 left as written. Target files: scaffold_palette.dart, scaffold_dimens.dart,
 scaffold_shadows.dart, scaffold_motion_theme.dart, scaffold_typography.dart,
-scaffold_color_roles.dart, scaffold_gradients.dart.
+scaffold_color_roles.dart, scaffold_gradients.dart, scaffold_shapes.dart.
 
 The CLI always reads the repo ``design_tokens.json``; a CMake ``DESIGN_TOKENS``
 override never feeds committed Dart.
@@ -60,6 +60,7 @@ REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
     ("scaffold_color_roles.dart", ("scaffold", "colorRoles", "dark"), "color", "params"),
     ("scaffold_color_roles.dart", ("scaffold", "colorRoles", "light"), "color", "args"),
     ("scaffold_gradients.dart", ("scaffold", "gradients"), "gradient", "params"),
+    ("scaffold_shapes.dart", ("scaffold", "shapes"), "double", "params"),
 )
 
 _DOUBLE_RE = re.compile(r"-?\d+\.\d+")

@@ -319,6 +319,7 @@ const List<ThemeExtension<dynamic>> _darkExtensions = [
   Midnight.darkScaffoldGradients,
   Midnight.motion,
   Midnight.typography,
+  Midnight.shapes,
 ];
 const List<ThemeExtension<dynamic>> _lightExtensions = [
   Midnight.lightPalette,
@@ -328,6 +329,7 @@ const List<ThemeExtension<dynamic>> _lightExtensions = [
   Midnight.lightScaffoldGradients,
   Midnight.motion,
   Midnight.typography,
+  Midnight.shapes,
 ];
 
 /// The scaffold theme extensions of the midnight preset for [brightness].

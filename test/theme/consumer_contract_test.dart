@@ -7,6 +7,7 @@ import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
+import 'package:frontend_scaffold/theme/scaffold_shapes.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_typography.dart';
 
@@ -86,6 +87,7 @@ void main() {
         identical(context.gradients, ScaffoldGradients.defaultGradients),
         isTrue,
       );
+      expect(identical(context.shapes, ScaffoldShapes.defaultShapes), isTrue);
       expect(context.colorRoles.accent, ScaffoldPalette.lightPalette.lightGreenPrimary);
       expect(context.colorRoles.accentOnSurface, const Color(0xFF00956F));
       expect(context.colorRoles.borderControl, ScaffoldPalette.lightPalette.borderGrey);
@@ -106,6 +108,7 @@ void main() {
         identical(context.gradients, ScaffoldGradients.defaultGradients),
         isTrue,
       );
+      expect(identical(context.shapes, ScaffoldShapes.defaultShapes), isTrue);
       expect(context.colorRoles.accent, ScaffoldPalette.defaultPalette.lightGreenPrimary);
       expect(
         context.colorRoles.accentOnSurface,

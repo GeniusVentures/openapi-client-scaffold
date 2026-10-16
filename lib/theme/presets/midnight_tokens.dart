@@ -5,6 +5,7 @@ import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
+import 'package:frontend_scaffold/theme/scaffold_shapes.dart';
 import 'package:frontend_scaffold/theme/scaffold_typography.dart';
 
 /// The values of the opt-in midnight preset, generated from
@@ -179,6 +180,13 @@ abstract final class Midnight {
     // GENERATED from tokens/midnight.json scaffold.typography.fontFamilies. Do not edit.
     monoFontFamily: 'JetBrainsMono',
     // END GENERATED scaffold.typography.fontFamilies
+  );
+
+  /// Component radii and stroke widths of the midnight preset.
+  static const ScaffoldShapes shapes = ScaffoldShapes(
+    // GENERATED from tokens/midnight.json scaffold.shapes. Do not edit.
+    inputFocusedBorderWidth: 2.0,
+    // END GENERATED scaffold.shapes
   );
 
   /// Dark-mode colors of the midnight preset that have no palette or role field.

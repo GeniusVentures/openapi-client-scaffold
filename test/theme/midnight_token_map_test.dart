@@ -8,6 +8,7 @@ import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_shapes.dart';
 import 'package:frontend_scaffold/theme/scaffold_typography.dart';
 
 /// Pins the midnight palette to the documented source token map, field by
@@ -567,6 +568,11 @@ void main() {
     expect(typography.inputStyle.fontSize, 16.0);
     expect(typography.inputStyle.fontWeight, FontWeight.w400);
     expect(typography.monoFontFamily, 'JetBrainsMono');
+  });
+
+  test('midnight shapes', () {
+    const ScaffoldShapes shapes = Midnight.shapes;
+    expect(shapes.inputFocusedBorderWidth, 2.0);
   });
 
   group('midnight gradients match the source token map', () {

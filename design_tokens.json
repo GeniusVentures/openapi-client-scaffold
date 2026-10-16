@@ -258,6 +258,9 @@
     "gradients": {
       "edgeFade": null,
       "surfaceSheen": null
+    },
+    "shapes": {
+      "inputFocusedBorderWidth": null
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
+import 'package:frontend_scaffold/theme/scaffold_shapes.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 Future<ScaffoldPalette> _paletteUnder(
@@ -252,7 +253,17 @@ void main() {
         );
         expect(identical(captured.motion, Midnight.motion), isTrue);
         expect(identical(captured.typography, Midnight.typography), isTrue);
+        expect(identical(captured.shapes, Midnight.shapes), isTrue);
       });
+    }
+  });
+
+  test('each mode registers exactly one ScaffoldShapes', () {
+    for (final brightness in Brightness.values) {
+      final count = midnightExtensions(
+        brightness,
+      ).whereType<ScaffoldShapes>().length;
+      expect(count, 1, reason: brightness.name);
     }
   });
 

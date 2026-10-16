@@ -104,6 +104,7 @@ export 'theme/scaffold_gradients.dart';
 export 'theme/scaffold_motion_theme.dart';
 export 'theme/scaffold_palette.dart';
 export 'theme/scaffold_shadows.dart';
+export 'theme/scaffold_shapes.dart';
 export 'theme/scaffold_theme.dart';
 export 'theme/scaffold_typography.dart';
 export 'utils/breakpoints.dart';
