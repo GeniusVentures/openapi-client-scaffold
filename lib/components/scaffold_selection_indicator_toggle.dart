@@ -8,8 +8,6 @@ library;
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/components/scaffold_touch_target.dart';
 
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
-
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -45,7 +43,7 @@ class ScaffoldSelectionIndicatorToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
 
-    final Widget indicator = _buildToggle(palette);
+    final Widget indicator = _buildToggle(context, palette);
 
 
     Widget result = Semantics(
@@ -70,7 +68,7 @@ class ScaffoldSelectionIndicatorToggle extends StatelessWidget {
 
   void _handleTap() => onChanged?.call(!value);
 
-  Widget _buildToggle(ScaffoldPalette palette) {
+  Widget _buildToggle(BuildContext context, ScaffoldPalette palette) {
     return Container(
       width: 40,
       height: 24,
@@ -81,8 +79,8 @@ class ScaffoldSelectionIndicatorToggle extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           AnimatedPositioned(
-            duration: ScaffoldMotionDurations.short,
-            curve: ScaffoldMotionCurves.standard,
+            duration: context.motion.short,
+            curve: context.motion.standard,
             left: value ? 18 : 2,
             top: 2,
             child: Container(
