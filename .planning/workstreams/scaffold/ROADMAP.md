@@ -56,7 +56,7 @@ Full phase details, goals, and success criteria: [milestones/v1.2-ROADMAP.md](mi
 - [x] **Phase 12: Token Pipeline** - Dart default palette and dimens generate byte-identically from `design_tokens.json`, with a drift check and LF output (completed 2026-10-16)
 - [x] **Phase 13: Theme Fields** - Shadows, typography, motion, gradients and accent tokens become themeable with defaults equal to today (completed 2026-10-16)
 - [x] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, each fix followed by its own capture re-baseline commit (completed 2026-10-16)
-- [ ] **Phase 15: Midnight Preset** - Opt-in `midnight` theme (light and dark) in one call, with an example-app switcher and a contrast test over all palettes
+- [x] **Phase 15: Midnight Preset** - Opt-in `midnight` theme (light and dark) in one call, with an example-app switcher and a contrast test over all palettes (completed 2026-10-16)
 - [ ] **Phase 16: Component Restyles** - Components take the midnight look where tokens alone cannot reach it, with default rendering unchanged
 - [ ] **Phase 17: Release Gates** - Captures change only in the sanctioned re-baseline commits and GeniusCognitiveSystem builds and passes against develop
 
@@ -147,13 +147,13 @@ Plans:
 
 Plans:
 
-- [ ] 15-01-PLAN.md — (wave 1) tracer: tokens/midnight.json -> theme_presets driver -> midnight palette -> `midnightTheme(Brightness)`; shared render refactor first; drift check, CI, source-map test
-- [ ] 15-02-PLAN.md — (wave 2) midnight color roles, dimens, shadows, motion, typography, MidnightColors; contrast test extended to midnight light and dark (A11Y-03)
-- [ ] 15-03-PLAN.md — (wave 3) gradient and text-style encoders; midnight gradients, dialog and glow shadows, text theme, numeric styles, spacing and radius ladder
-- [ ] 15-04-PLAN.md — (wave 4) full ThemeData: ColorScheme (R15), dividers (R7), component themes (R14); scheme and component contrast test; smoke test
-- [ ] 15-05-PLAN.md — (wave 5) example preset switch (PRE-03); neutral comments in lib/ via templates; brand-name scan
-- [ ] 15-06-PLAN.md — (wave 6) profile-driven capture harness, defaults byte-identical; 52 midnight captures in images/midnight/
-- [ ] 15-07-PLAN.md — (wave 7) README, CONTRIBUTING, CLAUDE.md; phase gate with frozen-defaults checks and GCS harness
+- [x] 15-01-PLAN.md — (wave 1) tracer: tokens/midnight.json -> theme_presets driver -> midnight palette -> `midnightTheme(Brightness)`; shared render refactor first; drift check, CI, source-map test
+- [x] 15-02-PLAN.md — (wave 2) midnight color roles, dimens, shadows, motion, typography, MidnightColors; contrast test extended to midnight light and dark (A11Y-03)
+- [x] 15-03-PLAN.md — (wave 3) gradient and text-style encoders; midnight gradients, dialog and glow shadows, text theme, numeric styles, spacing and radius ladder
+- [x] 15-04-PLAN.md — (wave 4) full ThemeData: ColorScheme (R15), dividers (R7), component themes (R14); scheme and component contrast test; smoke test
+- [x] 15-05-PLAN.md — (wave 5) example preset switch (PRE-03); neutral comments in lib/ via templates; brand-name scan
+- [x] 15-06-PLAN.md — (wave 6) profile-driven capture harness, defaults byte-identical; 52 midnight captures in images/midnight/
+- [x] 15-07-PLAN.md — (wave 7) README, CONTRIBUTING, CLAUDE.md; phase gate with frozen-defaults checks and GCS harness
 
 ### Phase 16: Component Restyles
 

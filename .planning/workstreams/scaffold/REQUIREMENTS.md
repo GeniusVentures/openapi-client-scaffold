@@ -26,9 +26,9 @@
 
 ### Midnight preset
 
-- [ ] **PRE-01**: A consumer can opt into `midnight` (light and dark) with one call, from a preset generated from its own token file in `lib/`.
-- [ ] **PRE-02**: The preset reproduces the wallet token map (colors, spacing, radius, type, motion, shadows, gradients) documented in research/FEATURES.md, with no brand names in `lib/` or `example/`.
-- [ ] **PRE-03**: The example app can switch between the default and midnight presets in both modes.
+- [x] **PRE-01**: A consumer can opt into `midnight` (light and dark) with one call, from a preset generated from its own token file in `lib/`.
+- [x] **PRE-02**: The preset reproduces the wallet token map (colors, spacing, radius, type, motion, shadows, gradients) documented in research/FEATURES.md, with no brand names in `lib/` or `example/`.
+- [x] **PRE-03**: The example app can switch between the default and midnight presets in both modes.
 
 ### Restyles
 
@@ -38,7 +38,7 @@
 
 - [x] **A11Y-01**: Default palettes pass WCAG AA in light and dark. The known failures to fix are the light focus ring, `gray500` and light `statusSuccess`. The captures are re-baselined in a dedicated commit.
 - [x] **A11Y-02**: The light-mode text field and drawer contrast bug is fixed in its own commit, followed by its own capture re-baseline commit.
-- [ ] **A11Y-03**: An automated contrast test covers the default and midnight palettes in both modes.
+- [x] **A11Y-03**: An automated contrast test covers the default and midnight palettes in both modes.
 
 ### Release gates
 
@@ -72,10 +72,10 @@
 | THM-07 | Phase 13 | Complete |
 | A11Y-01 | Phase 14 | Complete |
 | A11Y-02 | Phase 14 | Complete |
-| PRE-01 | Phase 15 | Pending |
-| PRE-02 | Phase 15 | Pending |
-| PRE-03 | Phase 15 | Pending |
-| A11Y-03 | Phase 15 | Pending |
+| PRE-01 | Phase 15 | Complete |
+| PRE-02 | Phase 15 | Complete |
+| PRE-03 | Phase 15 | Complete |
+| A11Y-03 | Phase 15 | Complete |
 | RST-01 | Phase 16 | Pending |
 | GATE-01 | Phase 17 | Pending |
 | GATE-02 | Phase 17 | Pending |

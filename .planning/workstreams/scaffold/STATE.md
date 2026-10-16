@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Design Tokens & Midnight Preset
-current_phase: 15
-current_phase_name: Midnight Preset
-status: executing
+current_phase: 16
+current_phase_name: Component Restyles
+status: planning
 stopped_at: v1.4 roadmap created (Phases 12-17); nothing planned or executed yet
-last_updated: "2026-10-16T17:36:08.229Z"
+last_updated: "2026-10-16T18:09:04.102Z"
 last_activity: 2026-10-16
 last_activity_desc: Phase 12 execution started
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 21
-  completed_plans: 14
-  percent: 50
+  completed_plans: 21
+  percent: 67
 ---
 
 # Project State
@@ -28,10 +28,10 @@ See: .planning/workstreams/scaffold/ROADMAP.md
 
 ## Current Position
 
-Phase: 15 (Midnight Preset) — EXECUTING
-Plan: 1 of 7
-Status: Executing Phase 15
-Last activity: 2026-10-16 — Phase 15 execution started
+Phase: 16 — Component Restyles
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-16 — Phase 15 complete, transitioned to Phase 16
 
 Progress: [..........] 0% (0/6 phases)
 
