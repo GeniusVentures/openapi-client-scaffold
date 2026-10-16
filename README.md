@@ -286,7 +286,7 @@ are primitive-enabled** (unlocked by the new v1.2 primitives).
 ```bash
 flutter pub get
 dart analyze --fatal-infos    # must be clean
-flutter test                  # 454 tests
+flutter test                  # 1225 tests
 ```
 
 ---

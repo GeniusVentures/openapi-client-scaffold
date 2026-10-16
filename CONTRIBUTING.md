@@ -12,7 +12,7 @@ python3 -m venv .venv              # Python codegen tooling
 
 ```bash
 dart analyze --fatal-infos   # must be clean — no infos, no warnings
-flutter test                 # 214 tests
+flutter test                 # 1225 tests
 ruff check                   # Python lint
 pytest                       # Python codegen tests
 python -m scaffold_codegen.generators && git diff --exit-code lib/   # generator drift (CI runs this)

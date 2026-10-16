@@ -17,7 +17,7 @@ It is consumed as a git submodule by three repos, so treat anything under
 
 ```bash
 dart analyze --fatal-infos   # must be clean
-flutter test                 # 214 tests
+flutter test                 # 1225 tests
 ruff check && pytest         # Python codegen (needs .venv, see CONTRIBUTING.md)
 ```
 
