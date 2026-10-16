@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// Thin edge hairlines that signal when a scrollable's content extends beyond
@@ -8,7 +7,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// Listens to [scrollController] and renders 1px hairlines (`palette.borderSubtle`)
 /// at the top and/or bottom edge of the viewport when content overflows in
 /// that direction. Edge lines fade in and out with
-/// [ScaffoldMotionDurations.short] as the scroll position crosses the
+/// [ScaffoldMotionTheme.short] as the scroll position crosses the
 /// boundaries. The indicator never participates in hit-testing, so it does not
 /// steal gestures from the scrollable it decorates.
 class ScaffoldScrollEdgeIndicator extends StatefulWidget {
@@ -96,8 +95,8 @@ class _ScaffoldScrollEdgeIndicatorState
             child: AnimatedOpacity(
               key: const Key('scroll_edge_start'),
               opacity: showStart ? 1.0 : 0.0,
-              duration: ScaffoldMotionDurations.short,
-              curve: ScaffoldMotionCurves.standard,
+              duration: context.motion.short,
+              curve: context.motion.standard,
               child: Container(height: widget.edgeWidth, color: color),
             ),
           ),
@@ -108,8 +107,8 @@ class _ScaffoldScrollEdgeIndicatorState
             child: AnimatedOpacity(
               key: const Key('scroll_edge_end'),
               opacity: showEnd ? 1.0 : 0.0,
-              duration: ScaffoldMotionDurations.short,
-              curve: ScaffoldMotionCurves.standard,
+              duration: context.motion.short,
+              curve: context.motion.standard,
               child: Container(height: widget.edgeWidth, color: color),
             ),
           ),

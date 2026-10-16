@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -11,7 +10,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// overlays `palette.lightGreenPrimary` at 12% opacity with a 1px
 /// `palette.lightGreenPrimary` border. Focus ring, press state layer, and
 /// disabled dim come from [ScaffoldPressable]. State transitions use
-/// [ScaffoldMotionDurations.medium] with [ScaffoldMotionCurves.standard].
+/// [ScaffoldMotionTheme.medium] with [ScaffoldMotionTheme.standard].
 class ScaffoldSelectableSurface extends StatelessWidget {
   const ScaffoldSelectableSurface({
     super.key,
@@ -60,8 +59,8 @@ class ScaffoldSelectableSurface extends StatelessWidget {
     }
 
     content = AnimatedContainer(
-      duration: ScaffoldMotionDurations.medium,
-      curve: ScaffoldMotionCurves.standard,
+      duration: context.motion.medium,
+      curve: context.motion.standard,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         border: selected

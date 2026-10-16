@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Static animation duration tokens consumed by frontend_scaffold atoms.
+/// Static animation duration constants kept for compatibility.
 ///
-/// Every animated atom reads from [ScaffoldMotionDurations] rather than
-/// hard-coding a duration, so a change here propagates across the library.
+/// Atoms read durations from the registered [ScaffoldMotionTheme] through
+/// `context.motion`. [ScaffoldMotionTheme.defaultMotion] equals these values.
 class ScaffoldMotionDurations {
   ScaffoldMotionDurations._();
 
@@ -17,7 +17,10 @@ class ScaffoldMotionDurations {
   static const Duration long = Duration(milliseconds: 500);
 }
 
-/// Static animation curve tokens consumed by frontend_scaffold atoms.
+/// Static animation curve constants kept for compatibility.
+///
+/// Atoms read curves from the registered [ScaffoldMotionTheme] through
+/// `context.motion`. [ScaffoldMotionTheme.defaultMotion] equals these values.
 class ScaffoldMotionCurves {
   ScaffoldMotionCurves._();
 

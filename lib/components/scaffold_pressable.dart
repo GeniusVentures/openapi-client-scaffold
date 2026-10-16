@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_scaffold/components/scaffold_disabled_overlay.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
-import 'package:frontend_scaffold/components/scaffold_motion.dart';
 import 'package:frontend_scaffold/components/scaffold_touch_target.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -166,8 +165,8 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
       child: IgnorePointer(
         child: AnimatedOpacity(
           opacity: opacity,
-          duration: ScaffoldMotionDurations.short,
-          curve: ScaffoldMotionCurves.standard,
+          duration: context.motion.short,
+          curve: context.motion.standard,
           child: ColoredBox(color: palette.textPrimary),
         ),
       ),
