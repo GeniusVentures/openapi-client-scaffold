@@ -36,6 +36,8 @@ import 'package:frontend_scaffold/components/scaffold_disclosure.dart';
 import 'package:frontend_scaffold/components/scaffold_pressable.dart';
 import 'package:frontend_scaffold/components/toast/toast_manager.dart';
 import 'package:frontend_scaffold/components/toast/toast_widget.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
+import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -158,6 +160,15 @@ final _CaptureProfile _defaultProfile = _CaptureProfile(
   palette: (Brightness brightness) => brightness == Brightness.light
       ? ScaffoldPalette.lightPalette
       : ScaffoldPalette.defaultPalette,
+);
+
+final _CaptureProfile _midnightProfile = _CaptureProfile(
+  name: 'midnight',
+  subdir: 'midnight/',
+  theme: midnightTheme,
+  palette: (Brightness brightness) => brightness == Brightness.light
+      ? Midnight.lightPalette
+      : Midnight.darkPalette,
 );
 
 /// Output directory for every captured PNG: `SCAFFOLD_CAPTURE_DIR` when set,
@@ -371,11 +382,13 @@ Future<void> _loadRealFonts() async {
   // Register under all family names the widget library uses. 'Roboto' covers
   // text_entry_field_widget.dart; 'monospace' covers scaffold_code_block.dart
   // and scaffold_streaming_rich_text.dart. Roboto isn't monospace but at
-  // least renders real glyphs instead of Ahem's placeholder squares.
+  // least renders real glyphs instead of Ahem's placeholder squares. The
+  // midnight preset names 'Inter' and 'JetBrainsMono' without bundling them,
+  // so Roboto renders under those names too, as it already does for 'monospace'.
   final Map<String, List<String>> fontFiles = <String, List<String>>{
-    'Roboto-Regular.ttf': <String>['Roboto', 'monospace'],
-    'Roboto-Medium.ttf': <String>['Roboto Medium'],
-    'Roboto-Bold.ttf': <String>['Roboto Bold'],
+    'Roboto-Regular.ttf': <String>['Roboto', 'monospace', 'Inter', 'JetBrainsMono'],
+    'Roboto-Medium.ttf': <String>['Roboto Medium', 'Inter'],
+    'Roboto-Bold.ttf': <String>['Roboto Bold', 'Inter'],
     'MaterialIcons-Regular.otf': <String>['MaterialIcons'],
   };
 
@@ -755,6 +768,10 @@ void main() {
 
   testWidgets('capture all demo screens', (WidgetTester tester) async {
     await _captureAllDemos(tester, _defaultProfile);
+  });
+
+  testWidgets('capture midnight demo screens', (WidgetTester tester) async {
+    await _captureAllDemos(tester, _midnightProfile);
   });
 }
 
