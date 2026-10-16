@@ -14,7 +14,7 @@ Scaffold v1.4 changes some default colors so the default light and dark palettes
 (text 4.5:1, controls and focus indicators 3:1). No public API changed. Your light and dark themes
 pick up every change below without a code change.
 
-We built and tested GCS against the scaffold at `9840f09` with the consumer check harness
+We built and tested GCS against the scaffold at `f6b99d3` with the consumer check harness
 (`tools/consumer_check/gcs_check.sh`):
 
 - Codegen of the chat components: 0 failures of 12.
@@ -145,13 +145,13 @@ Then put `lightPaletteOld` and `lightRolesOld` in the `extensions` list of `GcsT
 Registering roles also replaces the fallback. Pixel parity with pre-v1.4 is close, but not
 guaranteed for cases that relied on the old unregistered-role fallback.
 
-We compiled this snippet against the scaffold at `9840f09` and checked each overridden field
+We compiled this snippet against the scaffold at `f6b99d3` and checked each overridden field
 against the old value in a scratch test.
 
 ## Notes
 
 - To take the change, bump the `src/app/scaffold` submodule. Pin it to the tested commit
-  `9840f09`, or to `main` after the v1.4 merge.
+  `f6b99d3`, or to `main` after the v1.4 merge.
 - `flutter analyze` in GCS reports 57 errors under `scaffold/example`. They come from the example
   package not resolving inside GCS (missing imports and undefined types in
   `scaffold/example/test/capture_images_test.dart`), they are the same kind of issue as the 50 that
