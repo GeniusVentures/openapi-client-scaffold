@@ -76,6 +76,31 @@ void main() {
     });
   });
 
+  group('midnightTheme page and type', () {
+    for (final brightness in Brightness.values) {
+      final isDark = brightness == Brightness.dark;
+      final colors = isDark ? Midnight.darkColors : Midnight.lightColors;
+      final palette = isDark ? Midnight.darkPalette : Midnight.lightPalette;
+
+      test('${brightness.name}: scaffold background is surfaceBase', () {
+        expect(
+          midnightTheme(brightness).scaffoldBackgroundColor,
+          colors.surfaceBase,
+        );
+      });
+
+      test('${brightness.name}: text theme is Inter and colored', () {
+        final text = midnightTheme(brightness).textTheme;
+        expect(text.bodyMedium?.fontFamily, 'Inter');
+        expect(text.bodyMedium?.fontSize, 16);
+        expect(text.bodyMedium?.color, palette.textPrimary);
+        expect(text.bodySmall?.color, palette.textSecondary);
+        expect(text.labelLarge, isNotNull);
+        expect(text.labelLarge?.fontFamily, 'Inter');
+      });
+    }
+  });
+
   group('midnightTheme registers every scaffold extension', () {
     for (final brightness in Brightness.values) {
       final isDark = brightness == Brightness.dark;
