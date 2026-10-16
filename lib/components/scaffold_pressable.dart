@@ -161,8 +161,7 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
   }
 
   Widget _buildStateLayer(ScaffoldPalette palette) {
-    final roles = context.colorRoles;
-    final hoverFill = roles.hoverFill;
+    final hoverFill = context.colorRoles.hoverFill;
     if (hoverFill == null) {
       final double opacity = _pressed ? 0.12 : (_hovered ? 0.08 : 0.0);
       return Positioned.fill(
@@ -176,7 +175,7 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
         ),
       );
     }
-    final hoverEdge = roles.hoverEdge;
+    final hoverEdge = context.colorRoles.hoverEdge;
     return Positioned.fill(
       child: IgnorePointer(
         child: Stack(
