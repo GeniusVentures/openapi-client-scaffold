@@ -76,6 +76,45 @@ void main() {
     });
   });
 
+  group('midnightTheme registers every scaffold extension', () {
+    for (final brightness in Brightness.values) {
+      final isDark = brightness == Brightness.dark;
+      testWidgets('${brightness.name} groups resolve through the context', (
+        tester,
+      ) async {
+        late BuildContext captured;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: midnightTheme(brightness),
+            home: Builder(
+              builder: (context) {
+                captured = context;
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+        expect(identical(captured.dimens, Midnight.dimens), isTrue);
+        expect(
+          identical(
+            captured.colorRoles,
+            isDark ? Midnight.darkColorRoles : Midnight.lightColorRoles,
+          ),
+          isTrue,
+        );
+        expect(
+          identical(
+            captured.shadows,
+            isDark ? Midnight.darkShadows : Midnight.lightShadows,
+          ),
+          isTrue,
+        );
+        expect(identical(captured.motion, Midnight.motion), isTrue);
+        expect(identical(captured.typography, Midnight.typography), isTrue);
+      });
+    }
+  });
+
   test('the default extension list is unchanged', () {
     expect(scaffoldThemeExtensions, hasLength(2));
     expect(
