@@ -99,6 +99,7 @@ export 'components/toast/toast_widget.dart';
 export 'theme/scaffold_colors.dart';
 export 'theme/scaffold_dimens.dart';
 export 'theme/scaffold_elevation.dart';
+export 'theme/scaffold_motion_theme.dart';
 export 'theme/scaffold_palette.dart';
 export 'theme/scaffold_shadows.dart';
 export 'theme/scaffold_theme.dart';

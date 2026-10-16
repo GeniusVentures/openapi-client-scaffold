@@ -203,6 +203,18 @@
           { "color": "0x59000000", "blurRadius": 16.0, "offset": [0.0, 4.0] }
         ]
       }
+    },
+    "motion": {
+      "durations": {
+        "short": 150,
+        "medium": 300,
+        "long": 500
+      },
+      "curves": {
+        "standard": "Curves.easeInOut",
+        "decelerate": "Curves.easeOut",
+        "emphasized": [0.2, 0.0, 0.0, 1.2]
+      }
     }
   }
 }

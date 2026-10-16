@@ -17,7 +17,9 @@ from scaffold_codegen.generators.theme_defaults import (
     REGIONS,
     ThemeTokenError,
     dart_color,
+    dart_curve,
     dart_double,
+    dart_duration,
     dart_shadows,
     render_files,
     run,
@@ -296,3 +298,60 @@ def test_scaffold_group_order_keeps_existing_keys_first() -> None:
     scaffold = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]
     assert list(scaffold)[:3] == ["_comment", "palette", "dimens"]
     assert scaffold["shadows"]["dark"] == scaffold["shadows"]["light"]
+
+
+MOTION_FILE = "scaffold_motion_theme.dart"
+
+
+def test_dart_duration() -> None:
+    assert dart_duration("x", 150) == "Duration(milliseconds: 150)"
+    assert dart_duration("x", 0) == "Duration(milliseconds: 0)"
+
+
+@pytest.mark.parametrize("value", [True, -1, Decimal("150.0"), "150", None])
+def test_dart_duration_rejects_invalid(value: object) -> None:
+    with pytest.raises(ThemeTokenError):
+        dart_duration("x", value)
+
+
+def test_dart_curve() -> None:
+    assert dart_curve("x", "Curves.easeInOut") == "Curves.easeInOut"
+    points = [Decimal("0.2"), Decimal("0.0"), Decimal("0.0"), Decimal("1.2")]
+    assert dart_curve("x", points) == "Cubic(0.2, 0.0, 0.0, 1.2)"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "Curves.easeInOut()",
+        "curves.linear",
+        "Cubic(0.2,0,0,1)",
+        [Decimal("0.2"), Decimal("0.0"), Decimal("1.0")],
+        [Decimal("0.2"), Decimal("0.0"), Decimal("0.0"), 1],
+        5,
+    ],
+)
+def test_dart_curve_rejects_invalid(value: object) -> None:
+    with pytest.raises(ThemeTokenError):
+        dart_curve("x", value)
+
+
+def test_motion_token_change_regenerates_only_that_line(workdir: tuple[Path, Path]) -> None:
+    tokens, theme = workdir
+    text = tokens.read_text(encoding="utf-8")
+    assert '"medium": 300' in text
+    tokens.write_text(text.replace('"medium": 300', '"medium": 350'), encoding="utf-8")
+    before = (theme / MOTION_FILE).read_text(encoding="utf-8").splitlines()
+
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 1
+    assert run(check=False, tokens_path=tokens, theme_dir=theme) == 0
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 0
+
+    after = (theme / MOTION_FILE).read_text(encoding="utf-8").splitlines()
+    changed = [(a, b) for a, b in zip(before, after, strict=True) if a != b]
+    assert changed == [
+        (
+            "    this.medium = const Duration(milliseconds: 300),",
+            "    this.medium = const Duration(milliseconds: 350),",
+        )
+    ]

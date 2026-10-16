@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
+import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
 
@@ -15,6 +16,12 @@ extension ScaffoldThemeX on BuildContext {
   /// [ScaffoldDimens.defaultDimens] when the host app did not register one.
   ScaffoldDimens get dimens =>
       Theme.of(this).extension<ScaffoldDimens>() ?? ScaffoldDimens.defaultDimens;
+
+  /// Resolves the registered [ScaffoldMotionTheme], falling back to
+  /// [ScaffoldMotionTheme.defaultMotion] when the host app did not register one.
+  ScaffoldMotionTheme get motion =>
+      Theme.of(this).extension<ScaffoldMotionTheme>() ??
+      ScaffoldMotionTheme.defaultMotion;
 
   /// Resolves the registered [ScaffoldShadows], falling back to
   /// [ScaffoldShadows.lightShadows] or [ScaffoldShadows.defaultShadows]

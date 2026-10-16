@@ -49,6 +49,8 @@ REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
     ("scaffold_dimens.dart", ("scaffold", "dimens"), "double", "args"),
     ("scaffold_shadows.dart", ("scaffold", "shadows", "dark"), "shadows", "params"),
     ("scaffold_shadows.dart", ("scaffold", "shadows", "light"), "shadows", "args"),
+    ("scaffold_motion_theme.dart", ("scaffold", "motion", "durations"), "duration", "params"),
+    ("scaffold_motion_theme.dart", ("scaffold", "motion", "curves"), "curve", "params"),
 )
 
 _DOUBLE_RE = re.compile(r"-?\d+\.\d+")
@@ -133,10 +135,34 @@ def dart_shadows(name: str, value: object) -> str:
     return "[" + ", ".join(entries) + "]"
 
 
+_CURVE_NAME_RE = re.compile(r"Curves\.[a-z][A-Za-z0-9]*")
+
+
+def dart_duration(name: str, value: object) -> str:
+    """Return ``Duration(milliseconds: n)`` for a non-negative integer of milliseconds."""
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return f"Duration(milliseconds: {value})"
+    raise ThemeTokenError(f"{name}: expected a non-negative integer of milliseconds, got {value!r}")
+
+
+def dart_curve(name: str, value: object) -> str:
+    """Return a ``Curves.<name>`` reference or ``Cubic(a, b, c, d)`` for four control points."""
+    if isinstance(value, str) and _CURVE_NAME_RE.fullmatch(value):
+        return value
+    if isinstance(value, list) and len(value) == 4:
+        points = ", ".join(dart_double(f"{name}[{i}]", v) for i, v in enumerate(value))
+        return f"Cubic({points})"
+    raise ThemeTokenError(
+        f"{name}: expected a 'Curves.<name>' string or four cubic control points, got {value!r}"
+    )
+
+
 _LITERAL_ENCODERS: dict[str, Callable[[str, object], str | None]] = {
     "double": dart_double,
     "color": dart_color,
     "shadows": dart_shadows,
+    "duration": dart_duration,
+    "curve": dart_curve,
 }
 
 
