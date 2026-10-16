@@ -93,9 +93,9 @@ const List<_PaletteRow> _paletteRows = [
   ),
   _PaletteRow(
     'deepBlueTertiary',
-    Color(0xFF171A21),
-    Color(0xFFEFF2F6),
-    'surfaceMenu',
+    Color(0xFF0C0E14),
+    Color(0xFFFFFFFF),
+    'card fill (source drawer panel); was surfaceMenu before 16-05',
   ),
   _PaletteRow(
     'surfaceElevated',
@@ -195,6 +195,7 @@ final Map<String, Color? Function(ScaffoldColorRoles)> _roleFields = {
   'surfaceEdge': (c) => c.surfaceEdge,
   'hoverFill': (c) => c.hoverFill,
   'hoverEdge': (c) => c.hoverEdge,
+  'scrim': (c) => c.scrim,
 };
 
 const List<_PaletteRow> _roleRows = [
@@ -258,6 +259,12 @@ const List<_PaletteRow> _roleRows = [
     Color(0x3D14C8FF),
     Color(0x3D14C8FF),
     'hover hairline, 24% of the source hover accent',
+  ),
+  _PaletteRow(
+    'scrim',
+    Color(0x99000000),
+    Color(0x99000000),
+    'modal barrier; equals MidnightColors.scrim',
   ),
 ];
 
@@ -573,6 +580,12 @@ void main() {
   test('midnight shapes', () {
     const ScaffoldShapes shapes = Midnight.shapes;
     expect(shapes.inputFocusedBorderWidth, 2.0);
+    expect(shapes.sheetRadius, Midnight.scale.radiusXl);
+  });
+
+  test('midnight scrim equals the preset scrim in both modes', () {
+    expect(Midnight.darkColorRoles.scrim, Midnight.darkColors.scrim);
+    expect(Midnight.lightColorRoles.scrim, Midnight.lightColors.scrim);
   });
 
   group('midnight gradients match the source token map', () {

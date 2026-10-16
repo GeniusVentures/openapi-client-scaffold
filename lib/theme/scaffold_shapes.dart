@@ -10,9 +10,15 @@ class ScaffoldShapes extends ThemeExtension<ScaffoldShapes> {
   /// Width of the focused `TextEntryFieldWidget` border. Null keeps 1 px.
   final double? inputFocusedBorderWidth;
 
+  /// Corner radius of the open edge of drawers and bottom sheets: the top
+  /// corners on mobile, the left corners of the desktop panel. Null keeps 16 px
+  /// top corners on mobile and a square desktop panel.
+  final double? sheetRadius;
+
   const ScaffoldShapes({
     // GENERATED from design_tokens.json scaffold.shapes. Do not edit.
     this.inputFocusedBorderWidth,
+    this.sheetRadius,
     // END GENERATED scaffold.shapes
   });
 
@@ -21,10 +27,14 @@ class ScaffoldShapes extends ThemeExtension<ScaffoldShapes> {
 
   /// Returns a copy of these shapes with the given fields replaced.
   @override
-  ScaffoldShapes copyWith({double? inputFocusedBorderWidth}) {
+  ScaffoldShapes copyWith({
+    double? inputFocusedBorderWidth,
+    double? sheetRadius,
+  }) {
     return ScaffoldShapes(
       inputFocusedBorderWidth:
           inputFocusedBorderWidth ?? this.inputFocusedBorderWidth,
+      sheetRadius: sheetRadius ?? this.sheetRadius,
     );
   }
 
@@ -39,6 +49,7 @@ class ScaffoldShapes extends ThemeExtension<ScaffoldShapes> {
         other.inputFocusedBorderWidth,
         t,
       ),
+      sheetRadius: lerpDouble(sheetRadius, other.sheetRadius, t),
     );
   }
 }

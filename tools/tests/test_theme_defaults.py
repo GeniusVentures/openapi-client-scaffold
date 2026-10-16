@@ -497,8 +497,8 @@ def test_committed_color_roles_file_matches_render() -> None:
 
 def test_color_roles_tokens_are_a_dark_light_pair() -> None:
     roles = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]["colorRoles"]
-    assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, "surfaceEdge", "hoverFill", "hoverEdge"]
-    for name in ("surfaceEdge", "hoverFill", "hoverEdge"):
+    assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, "surfaceEdge", "hoverFill", "hoverEdge", "scrim"]
+    for name in ("surfaceEdge", "hoverFill", "hoverEdge", "scrim"):
         assert roles["dark"][name] is None
     assert list(roles["light"]) == COLOR_ROLE_NAMES
 
@@ -635,7 +635,10 @@ def test_committed_shapes_region_lists_every_shape_as_a_nullable_parameter() -> 
     lines = rendered.split("\n")
     begin = lines.index("    // GENERATED from design_tokens.json scaffold.shapes. Do not edit.")
     end = lines.index("    // END GENERATED scaffold.shapes")
-    assert lines[begin + 1 : end] == ["    this.inputFocusedBorderWidth,"]
+    assert lines[begin + 1 : end] == [
+        "    this.inputFocusedBorderWidth,",
+        "    this.sheetRadius,",
+    ]
 
 
 def test_non_null_gradient_token_fails_naming_the_entry(

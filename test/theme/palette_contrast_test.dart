@@ -186,6 +186,7 @@ const _rolesClasses = <String, _Entry>{
     _Role.decorative,
     'hover hairline; the tint and the pointer carry the state',
   ),
+  'scrim': _Entry(_Role.excluded, 'modal barrier'),
 };
 
 const _presetAccentFill = _Entry(

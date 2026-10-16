@@ -26,6 +26,7 @@ void main() {
   group('defaults', () {
     test('every field is null', () {
       expect(ScaffoldShapes.defaultShapes.inputFocusedBorderWidth, isNull);
+      expect(ScaffoldShapes.defaultShapes.sheetRadius, isNull);
     });
 
     test('const ScaffoldShapes() is the default', () {
@@ -47,6 +48,24 @@ void main() {
       expect(
         ScaffoldShapes.defaultShapes.copyWith().inputFocusedBorderWidth,
         isNull,
+      );
+    });
+  });
+
+  group('sheetRadius', () {
+    const sheet = ScaffoldShapes(sheetRadius: 24.0);
+
+    test('copyWith sets it and keeps it', () {
+      expect(a.copyWith(sheetRadius: 12.0).sheetRadius, 12.0);
+      expect(sheet.copyWith().sheetRadius, 24.0);
+      expect(sheet.copyWith(inputFocusedBorderWidth: 3.0).sheetRadius, 24.0);
+    });
+
+    test('lerp keeps null, blends two values', () {
+      expect(a.lerp(b, 0.5).sheetRadius, isNull);
+      expect(
+        sheet.lerp(const ScaffoldShapes(sheetRadius: 8.0), 0.5).sheetRadius,
+        16.0,
       );
     });
   });

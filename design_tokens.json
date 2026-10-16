@@ -242,7 +242,8 @@
         "sheetDivider": "0x1FFFFFFF",
         "surfaceEdge": null,
         "hoverFill": null,
-        "hoverEdge": null
+        "hoverEdge": null,
+        "scrim": null
       },
       "light": {
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
@@ -260,7 +261,8 @@
       "surfaceSheen": null
     },
     "shapes": {
-      "inputFocusedBorderWidth": null
+      "inputFocusedBorderWidth": null,
+      "sheetRadius": null
     }
   }
 }

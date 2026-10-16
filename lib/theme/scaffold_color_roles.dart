@@ -41,6 +41,10 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   /// Hairline drawn around a hovered pressable. Null draws none.
   final Color? hoverEdge;
 
+  /// Modal barrier behind drawers and sheets. Null keeps black87 on desktop and
+  /// the Material default on mobile.
+  final Color? scrim;
+
   const ScaffoldColorRoles({
     // GENERATED from design_tokens.json scaffold.colorRoles.dark. Do not edit.
     this.accent = ScaffoldColors.lightGreenPrimary,
@@ -54,6 +58,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     this.surfaceEdge,
     this.hoverFill,
     this.hoverEdge,
+    this.scrim,
     // END GENERATED scaffold.colorRoles.dark
   });
 
@@ -134,6 +139,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     Color? surfaceEdge,
     Color? hoverFill,
     Color? hoverEdge,
+    Color? scrim,
   }) {
     return ScaffoldColorRoles(
       accent: accent ?? this.accent,
@@ -148,6 +154,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       surfaceEdge: surfaceEdge ?? this.surfaceEdge,
       hoverFill: hoverFill ?? this.hoverFill,
       hoverEdge: hoverEdge ?? this.hoverEdge,
+      scrim: scrim ?? this.scrim,
     );
   }
 
@@ -176,6 +183,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       surfaceEdge: Color.lerp(surfaceEdge, other.surfaceEdge, t),
       hoverFill: Color.lerp(hoverFill, other.hoverFill, t),
       hoverEdge: Color.lerp(hoverEdge, other.hoverEdge, t),
+      scrim: Color.lerp(scrim, other.scrim, t),
     );
   }
 }

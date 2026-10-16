@@ -10,7 +10,7 @@
         "blue500": "0xFF14C8FF",
         "borderGrey": "0x5CFFFFFF",
         "grayPrimary": "0xFF171A21",
-        "deepBlueTertiary": "0xFF171A21",
+        "deepBlueTertiary": "0xFF0C0E14",
         "surfaceElevated": "0xFF0C0E14",
         "borderSubtle": "0x1FFFFFFF",
         "textPrimary": "0xFFFFFFFF",
@@ -34,7 +34,7 @@
         "blue500": "0xFF0A6885",
         "borderGrey": "0x7A10131A",
         "grayPrimary": "0xFFEFF2F6",
-        "deepBlueTertiary": "0xFFEFF2F6",
+        "deepBlueTertiary": "0xFFFFFFFF",
         "surfaceElevated": "0xFFFFFFFF",
         "borderSubtle": "0x1F10131A",
         "textPrimary": "0xFF10131A",
@@ -63,7 +63,8 @@
         "sheetDivider": "0x1FFFFFFF",
         "surfaceEdge": "0x1FFFFFFF",
         "hoverFill": "0x1414C8FF",
-        "hoverEdge": "0x3D14C8FF"
+        "hoverEdge": "0x3D14C8FF",
+        "scrim": "0x99000000"
       },
       "light": {
         "accent": "0xFF0AAEE6",
@@ -76,7 +77,8 @@
         "sheetDivider": "0x1F10131A",
         "surfaceEdge": "0x1F10131A",
         "hoverFill": "0x1414C8FF",
-        "hoverEdge": "0x3D14C8FF"
+        "hoverEdge": "0x3D14C8FF",
+        "scrim": "0x99000000"
       }
     },
     "dimens": {
@@ -188,7 +190,8 @@
       }
     },
     "shapes": {
-      "inputFocusedBorderWidth": 2.0
+      "inputFocusedBorderWidth": 2.0,
+      "sheetRadius": 24.0
     }
   },
   "preset": {

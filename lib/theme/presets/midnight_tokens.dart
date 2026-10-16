@@ -22,7 +22,7 @@ abstract final class Midnight {
     blue500: Color(0xFF14C8FF),
     borderGrey: Color(0x5CFFFFFF),
     grayPrimary: Color(0xFF171A21),
-    deepBlueTertiary: Color(0xFF171A21),
+    deepBlueTertiary: Color(0xFF0C0E14),
     surfaceElevated: Color(0xFF0C0E14),
     borderSubtle: Color(0x1FFFFFFF),
     textPrimary: Color(0xFFFFFFFF),
@@ -50,7 +50,7 @@ abstract final class Midnight {
     blue500: Color(0xFF0A6885),
     borderGrey: Color(0x7A10131A),
     grayPrimary: Color(0xFFEFF2F6),
-    deepBlueTertiary: Color(0xFFEFF2F6),
+    deepBlueTertiary: Color(0xFFFFFFFF),
     surfaceElevated: Color(0xFFFFFFFF),
     borderSubtle: Color(0x1F10131A),
     textPrimary: Color(0xFF10131A),
@@ -82,6 +82,7 @@ abstract final class Midnight {
     surfaceEdge: Color(0x1FFFFFFF),
     hoverFill: Color(0x1414C8FF),
     hoverEdge: Color(0x3D14C8FF),
+    scrim: Color(0x99000000),
     // END GENERATED scaffold.colorRoles.dark
   );
 
@@ -99,6 +100,7 @@ abstract final class Midnight {
     surfaceEdge: Color(0x1F10131A),
     hoverFill: Color(0x1414C8FF),
     hoverEdge: Color(0x3D14C8FF),
+    scrim: Color(0x99000000),
     // END GENERATED scaffold.colorRoles.light
   );
 
@@ -186,6 +188,7 @@ abstract final class Midnight {
   static const ScaffoldShapes shapes = ScaffoldShapes(
     // GENERATED from tokens/midnight.json scaffold.shapes. Do not edit.
     inputFocusedBorderWidth: 2.0,
+    sheetRadius: 24.0,
     // END GENERATED scaffold.shapes
   );
 

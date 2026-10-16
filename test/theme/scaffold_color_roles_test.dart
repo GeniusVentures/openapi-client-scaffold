@@ -316,6 +316,39 @@ void main() {
     });
   });
 
+  group('scrim', () {
+    const scrim = Color(0x99000000);
+    const withScrim = ScaffoldColorRoles(scrim: scrim);
+
+    test('is null in the defaults and every fallback', () {
+      for (final roles in [
+        dark,
+        light,
+        ScaffoldColorRoles.fallbackFor(defaultPalette, Brightness.dark),
+        ScaffoldColorRoles.fallbackFor(lightPalette, Brightness.light),
+        ScaffoldColorRoles.fallbackForPalette(defaultPalette),
+        ScaffoldColorRoles.fallbackForPalette(lightPalette),
+      ]) {
+        expect(roles.scrim, isNull);
+      }
+    });
+
+    test('copyWith sets it and keeps it', () {
+      expect(a.copyWith(scrim: scrim).scrim, scrim);
+      expect(withScrim.copyWith().scrim, scrim);
+      expect(withScrim.copyWith(accent: const Color(0xFF111111)).scrim, scrim);
+    });
+
+    test('lerp keeps null, blends two values', () {
+      expect(a.lerp(b, 0.5).scrim, isNull);
+      const other = ScaffoldColorRoles(scrim: Color(0x33000000));
+      expect(
+        withScrim.lerp(other, 0.5).scrim,
+        Color.lerp(scrim, other.scrim, 0.5),
+      );
+    });
+  });
+
   group('hoverFill and hoverEdge', () {
     const fill = Color(0x1F123456);
     const edge = Color(0x3D123456);

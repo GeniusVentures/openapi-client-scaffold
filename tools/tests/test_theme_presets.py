@@ -142,11 +142,14 @@ def test_scaffold_gradients_regions_render_an_empty_dark_and_a_light_sheen() -> 
     assert light[0].startswith("    surfaceSheen: LinearGradient(")
 
 
-def test_scaffold_shapes_region_renders_the_focused_border_width() -> None:
+def test_scaffold_shapes_region_renders_the_focused_border_width_and_sheet_radius() -> None:
     lines = render_files()[LIB_THEME_DIR / PRESET_FILE].split("\n")
     begin = lines.index("    // GENERATED from tokens/midnight.json scaffold.shapes. Do not edit.")
     end = lines.index("    // END GENERATED scaffold.shapes")
-    assert lines[begin + 1 : end] == ["    inputFocusedBorderWidth: 2.0,"]
+    assert lines[begin + 1 : end] == [
+        "    inputFocusedBorderWidth: 2.0,",
+        "    sheetRadius: 24.0,",
+    ]
 
 
 def test_midnight_tokens_have_no_m3_keys() -> None:
