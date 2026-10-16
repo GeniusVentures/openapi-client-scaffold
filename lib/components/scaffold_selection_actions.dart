@@ -559,8 +559,8 @@ class _ScaffoldSelectionActionsState extends State<ScaffoldSelectionActions> {
           opacity: _toolbarVisible ? 1.0 : 0.0,
           duration: reducedMotion
               ? Duration.zero
-              : ScaffoldMotionDurations.short,
-          curve: ScaffoldMotionCurves.decelerate,
+              : context.motion.short,
+          curve: context.motion.decelerate,
           child: ScaffoldSurface(
             color: palette.surfaceElevated,
             borderRadius: BorderRadius.circular(dimens.radiusMd),

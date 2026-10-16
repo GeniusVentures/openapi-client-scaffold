@@ -19,9 +19,9 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 ///
 /// The header is a [ScaffoldPressable] wrapping a `Row(title, chevron)`;
 /// tapping toggles the body visibility. The body is wrapped in [AnimatedSize]
-/// with [ScaffoldMotionDurations.medium]; when [ScaffoldMotion.reducedMotion]
+/// with [ScaffoldMotionTheme.medium]; when [ScaffoldMotion.reducedMotion]
 /// is true the duration collapses to zero. Chevron rotation uses
-/// [ScaffoldMotionDurations.short] (or zero under reduced motion).
+/// [ScaffoldMotionTheme.short] (or zero under reduced motion).
 class ScaffoldDisclosure extends StatefulWidget {
   /// Creates a disclosure row.
   ///
@@ -101,8 +101,8 @@ class _ScaffoldDisclosureState extends State<ScaffoldDisclosure> {
             turns: _effectiveExpanded ? 0.25 : 0.0,
             duration: reducedMotion
                 ? Duration.zero
-                : ScaffoldMotionDurations.short,
-            curve: ScaffoldMotionCurves.standard,
+                : context.motion.short,
+            curve: context.motion.standard,
             child: Icon(
               Icons.chevron_right,
               size: 24,
@@ -116,8 +116,8 @@ class _ScaffoldDisclosureState extends State<ScaffoldDisclosure> {
     );
 
     final Widget bodyReveal = AnimatedSize(
-      duration: reducedMotion ? Duration.zero : ScaffoldMotionDurations.medium,
-      curve: ScaffoldMotionCurves.standard,
+      duration: reducedMotion ? Duration.zero : context.motion.medium,
+      curve: context.motion.standard,
       // Keep a single stable child type so AnimatedSize keeps the same
       // render object across the transition and the collapse animates
       // smoothly instead of snapping (Padding -> SizedBox.shrink would

@@ -5,7 +5,7 @@
 /// [ScaffoldTouchTarget] hit area; label rendered with
 /// `textTheme.labelMedium`. On press, copies [textToCopy] to the clipboard
 /// and swaps the icon to `Icons.check` tinted `palette.statusSuccess` for
-/// `ScaffoldMotionDurations.medium` (300ms), then reverts. Under
+/// the theme's medium motion (300ms by default), then reverts. Under
 /// `ScaffoldMotion.reducedMotion`, the swap is a zero-duration
 /// `AnimatedSwitcher`.
 ///
@@ -74,7 +74,7 @@ class _ScaffoldStreamingCopyButtonState
     Clipboard.setData(ClipboardData(text: widget.textToCopy));
     setState(() => _isCopied = true);
     _timer?.cancel();
-    _timer = Timer(ScaffoldMotionDurations.medium, () {
+    _timer = Timer(context.motion.medium, () {
       if (mounted) {
         setState(() => _isCopied = false);
       }
@@ -104,7 +104,7 @@ class _ScaffoldStreamingCopyButtonState
             AnimatedSwitcher(
               duration: reducedMotion
                   ? Duration.zero
-                  : ScaffoldMotionDurations.medium,
+                  : context.motion.medium,
               child: Icon(
                 _isCopied ? Icons.check : Icons.copy,
                 key: ValueKey<bool>(_isCopied),

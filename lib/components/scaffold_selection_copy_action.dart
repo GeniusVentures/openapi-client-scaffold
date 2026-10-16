@@ -5,7 +5,7 @@
 /// 20px glyph inside a 48x48 [ScaffoldTouchTarget] hit area. On press,
 /// copies [selectedText] to the clipboard and swaps the icon to
 /// `Icons.check` tinted `palette.statusSuccess` for
-/// `ScaffoldMotionDurations.medium` (300ms), then reverts. Under
+/// the theme's medium motion (300ms by default), then reverts. Under
 /// `ScaffoldMotion.reducedMotion`, the swap is a zero-duration
 /// `AnimatedSwitcher`.
 ///
@@ -58,7 +58,7 @@ class _ScaffoldSelectionCopyActionState
     Clipboard.setData(ClipboardData(text: widget.selectedText));
     setState(() => _isCopied = true);
     _timer?.cancel();
-    _timer = Timer(ScaffoldMotionDurations.medium, () {
+    _timer = Timer(context.motion.medium, () {
       if (mounted) {
         setState(() => _isCopied = false);
       }
@@ -83,7 +83,7 @@ class _ScaffoldSelectionCopyActionState
         child: AnimatedSwitcher(
           duration: reducedMotion
               ? Duration.zero
-              : ScaffoldMotionDurations.medium,
+              : context.motion.medium,
           child: Icon(
             _isCopied ? Icons.check : Icons.copy,
             key: ValueKey<bool>(_isCopied),
