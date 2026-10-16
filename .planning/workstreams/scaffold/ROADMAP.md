@@ -96,7 +96,15 @@ Plans:
   4. The text field and the drawers read the colors they used to hard-code as white from tokens, and with default values the light and dark captures are pixel-identical to before.
   5. Template-generated families touched by the migration were changed in `templates/components/*.jinja2` and regenerated, and the generator drift check is clean.
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+
+- [ ] 13-01-PLAN.md — (wave 1) tracer: ScaffoldShadows from token to toast; ScaffoldMotionTheme and ScaffoldTypography generated from `scaffold` tokens, with `context` getters
+- [ ] 13-02-PLAN.md — (wave 2) ScaffoldColorRoles and ScaffoldGradients; text field, drawer and overflow fade on tokens; consumer contract covers new getters
+- [ ] 13-03-PLAN.md — (wave 2) hand-written components read `context.motion` and the mono family
+- [ ] 13-04-PLAN.md — (wave 2) animated_display, search_bar and selection_indicator templates read `context.motion`, regenerated
+- [ ] 13-05-PLAN.md — (wave 3) docs, full CI gate, same-machine capture comparison against b618159, GCS harness
 
 ### Phase 14: Default Accessibility Fixes
 
@@ -196,7 +204,7 @@ Plans:
 | 10. Chart & Scrubber | v1.2 | 6/6 | Complete | 2026-08-22 |
 | 11. Verification & Coverage Gate | v1.2 | 3/3 | Complete | 2026-08-23 |
 | 12. Token Pipeline | v1.4 | 0/3 | Planned | - |
-| 13. Theme Fields | v1.4 | 0/TBD | Not started | - |
+| 13. Theme Fields | v1.4 | 0/5 | Planned | - |
 | 14. Default Accessibility Fixes | v1.4 | 0/TBD | Not started | - |
 | 15. Midnight Preset | v1.4 | 0/TBD | Not started | - |
 | 16. Component Restyles | v1.4 | 0/TBD | Not started | - |
