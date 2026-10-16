@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from collections.abc import Sequence
@@ -25,6 +26,11 @@ from scaffold_codegen import REPO_ROOT
 
 MANIFEST = REPO_ROOT / "tools" / "capture_rebaselines.json"
 IMAGES_DIR = REPO_ROOT / "images"
+MIDNIGHT_PREFIX = "images/midnight/"
+SCOPES = ("default", "midnight")
+_FULL_SHA = re.compile(r"[0-9a-f]{40}")
+_MANIFEST_KEYS = {"base", "rebaselines"}
+_ENTRY_KEYS = {"sha", "subject", "scope", "follows", "record"}
 
 
 class GateError(Exception):
@@ -60,19 +66,53 @@ class Manifest:
     rebaselines: tuple[Rebaseline, ...]
 
 
+def _require_sha(value: object, where: str) -> str:
+    if not isinstance(value, str) or not _FULL_SHA.fullmatch(value):
+        raise ValueError(f"{where} must be 40 lowercase hex characters")
+    return value
+
+
+def _require_text(value: object, where: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{where} must be a non-empty string")
+    return value
+
+
+def _parse_entry(index: int, raw: object) -> Rebaseline:
+    where = f"rebaselines[{index}]"
+    if not isinstance(raw, dict):
+        raise ValueError(f"{where} must be an object")
+    if set(raw) != _ENTRY_KEYS:
+        raise ValueError(
+            f"{where} keys must be exactly {sorted(_ENTRY_KEYS)}, got {sorted(raw)}"
+        )
+    scope = raw["scope"]
+    if scope not in SCOPES:
+        raise ValueError(f"{where}.scope must be one of {SCOPES}")
+    follows = raw["follows"]
+    if follows is not None:
+        follows = _require_sha(follows, f"{where}.follows")
+    return Rebaseline(
+        sha=_require_sha(raw["sha"], f"{where}.sha"),
+        subject=_require_text(raw["subject"], f"{where}.subject"),
+        scope=scope,
+        follows=follows,
+        record=_require_text(raw["record"], f"{where}.record"),
+    )
+
+
 def load_manifest(path: Path) -> Manifest:
     data = json.loads(path.read_text(encoding="utf-8"))
-    entries = tuple(
-        Rebaseline(
-            sha=e["sha"],
-            subject=e["subject"],
-            scope=e["scope"],
-            follows=e["follows"],
-            record=e["record"],
-        )
-        for e in data["rebaselines"]
-    )
-    return Manifest(base=data["base"], rebaselines=entries)
+    if not isinstance(data, dict) or set(data) != _MANIFEST_KEYS:
+        raise ValueError(f"manifest keys must be exactly {sorted(_MANIFEST_KEYS)}")
+    raw_entries = data["rebaselines"]
+    if not isinstance(raw_entries, list):
+        raise ValueError("rebaselines must be a list")
+    entries = tuple(_parse_entry(i, raw) for i, raw in enumerate(raw_entries))
+    shas = [e.sha for e in entries]
+    if len(set(shas)) != len(shas):
+        raise ValueError("rebaselines contains a duplicate sha")
+    return Manifest(base=_require_sha(data["base"], "base"), rebaselines=entries)
 
 
 def _git(
@@ -145,17 +185,80 @@ def _unsanctioned_changes(commit: CaptureCommit) -> list[str]:
     changed = [c.path for c in commit.changes if _is_image(c.path) and c.status != "A"]
     if not changed:
         return []
-    return [f"{commit.sha[:7]} changes existing captures without a manifest entry: {', '.join(changed)}"]
+    return [
+        f"{commit.sha[:7]} changes existing captures without a manifest entry: "
+        f"{', '.join(changed)}"
+    ]
+
+
+def _non_png_paths(commit: CaptureCommit) -> list[str]:
+    bad = [
+        c.path for c in commit.changes if _is_image(c.path) and not c.path.endswith(".png")
+    ]
+    if not bad:
+        return []
+    return [f"{commit.sha[:7]} changes non-PNG files under images/: {', '.join(bad)}"]
+
+
+def _isolation(commit: CaptureCommit) -> list[str]:
+    outside = [c.path for c in commit.changes if not _is_image(c.path)]
+    if not outside:
+        return []
+    return [
+        f"{commit.sha[:7]} is a sanctioned capture commit but also changes "
+        f"files outside images/: {', '.join(outside)}"
+    ]
+
+
+def _scope(commit: CaptureCommit, entry: Rebaseline) -> list[str]:
+    paths = [c.path for c in commit.changes if _is_image(c.path)]
+    if entry.scope == "midnight":
+        stray = [p for p in paths if not p.startswith(MIDNIGHT_PREFIX)]
+    else:
+        stray = [p for p in paths if p.startswith(MIDNIGHT_PREFIX)]
+    if not stray:
+        return []
+    return [
+        f"{commit.sha[:7]} has scope {entry.scope} but changes: {', '.join(stray)}"
+    ]
+
+
+def _identity(commit: CaptureCommit, entry: Rebaseline) -> list[str]:
+    problems: list[str] = []
+    if commit.subject != entry.subject:
+        problems.append(
+            f"{commit.sha[:7]} subject {commit.subject!r} does not match the "
+            f"manifest subject {entry.subject!r}"
+        )
+    if entry.follows is not None and commit.first_parent != entry.follows:
+        problems.append(
+            f"{commit.sha[:7]} first parent {commit.first_parent} does not match "
+            f"the manifest follows {entry.follows}"
+        )
+    return problems
 
 
 def find_violations(
     commits: Sequence[CaptureCommit], manifest: Manifest
 ) -> list[str]:
-    listed = {e.sha for e in manifest.rebaselines}
+    entries = {e.sha: e for e in manifest.rebaselines}
     violations: list[str] = []
     for commit in commits:
-        if commit.sha not in listed:
+        violations.extend(_non_png_paths(commit))
+        entry = entries.get(commit.sha)
+        if entry is None:
             violations.extend(_unsanctioned_changes(commit))
+        else:
+            violations.extend(_isolation(commit))
+            violations.extend(_scope(commit, entry))
+            violations.extend(_identity(commit, entry))
+    seen = {c.sha for c in commits}
+    for entry in manifest.rebaselines:
+        if entry.sha not in seen:
+            violations.append(
+                f"{entry.sha[:7]} manifest entry has no matching capture commit "
+                "in the checked range"
+            )
     return violations
 
 
