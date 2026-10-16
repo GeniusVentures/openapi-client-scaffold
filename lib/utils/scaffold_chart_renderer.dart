@@ -82,7 +82,7 @@ const double _kFillGradientTopAlpha = 0.26;
 const double _kFillGradientBottomAlpha = 0.0;
 
 /// Alpha of the framed chart's horizontal gridline color (WCAG 1.4.11
-/// exempts graduated gridlines from the 3:1 gate — see GeniusWallet port
+/// exempts graduated gridlines from the 3:1 gate — see the source app's port
 /// comments).
 const double _kGridLineAlpha = 0.06;
 
@@ -509,7 +509,7 @@ Widget _buildChart({
   // For the framed chart, gridlines and right-side titles BOTH iterate
   // from the axis baseline by `interval` — handing them the same step
   // makes every label land on a gridline by construction (see the
-  // GeniusWallet port source comment).
+  // the source app's port source comment).
   double step = 1.0;
   if (useFrame) {
     final (_, double s) = chartTickStep(
@@ -574,7 +574,7 @@ Widget _buildChart({
           bottomTitles: hiddenAxis,
           // Right side because on a time series the newest value sits at
           // the right edge and would otherwise be furthest from its own
-          // scale (de-facto convention — see GeniusWallet port comment).
+          // scale (de-facto convention — see the source app's port comment).
           rightTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,

@@ -1,11 +1,11 @@
 /// Pure chart geometry rules — top-level and pure so each one can be
 /// tested on its own.
 ///
-/// Ported from GeniusWallet's `lib/chart/chart_axis.dart` (logic only — no
+/// Ported from the source app's `lib/chart/chart_axis.dart` (logic only — no
 /// money formatting, no chart-library imports). Neutral scaffold contract
 /// (D-04): no domain types, no intl, no fl_chart. A chart-axis bug looks
 /// like a working chart in every screenshot, which is exactly how the
-/// y-window bug in GeniusWallet's `chartYBounds` shipped in the first
+/// y-window bug in the source app's `chartYBounds` shipped in the first
 /// place — so every rule here is a top-level function with its own
 /// degenerate-input tests.
 library;
@@ -42,7 +42,7 @@ const double kChartLabelBand = 17.0;
 
 /// Where the below-bar area fill reaches zero alpha, as a fraction of the
 /// plot height measured over `belowBarLargestRect` (top of the highest spot
-/// to the plot floor). Preserved verbatim from the GeniusWallet port so the
+/// to the plot floor). Preserved verbatim from the source app port so the
 /// rendered gradient matches the design source 1:1.
 const double kChartFillFadeStop = 0.62;
 
@@ -116,7 +116,7 @@ const double kChartFillFadeStop = 0.62;
 /// **Deriving precision from the value's magnitude — instead of the step —
 /// is a real bug this rule exists to prevent, not a style choice**: it is
 /// exactly how a stablecoin's axis printed `$1.00 / $1.00 / $1.00 / $1.00`
-/// for four different prices in the GeniusWallet port source.
+/// for four different prices in the source app port source.
 ///
 /// Neutral scaffold contract (D-04): no currency formatter, no currency
 /// symbol — just `value.toStringAsFixed(decimals)`. Callers layer domain
@@ -179,7 +179,7 @@ bool chartUsesFrame(double plotHeight) => plotHeight >= kChartFrameMinHeight;
 /// The chart's vertical window, as `(minY, maxY)` — computed over the points
 /// inside the CURRENT X view, never the whole fetched series.
 ///
-/// Ported verbatim from GeniusWallet's `chartYBounds` — the site of the
+/// Ported verbatim from the source app's `chartYBounds` — the site of the
 /// y-window bug that motivated this whole module. The bug was computing the
 /// window over the entire series while the X window showed only the last 50
 /// points, so a coin sitting 98% below its all-time high rendered the visible

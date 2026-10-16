@@ -2,7 +2,7 @@
 ///
 /// Composes ScaffoldSurface + ScaffoldPressable + ScaffoldBadge (WIDG-29).
 /// Standalone widget consuming Theme.of(context) via context.palette/dimens;
-/// no Riverpod or GeniusTheme dependency.
+/// no Riverpod or app-specific theme dependency.
 library;
 
 import 'package:flutter/material.dart';
