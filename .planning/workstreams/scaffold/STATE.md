@@ -2,13 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Design Tokens & Midnight Preset
-status: ready_to_plan
-last_updated: "2026-10-16T12:47:22.000Z"
+current_phase: 12
+current_phase_name: Token Pipeline
+status: executing
+stopped_at: v1.4 roadmap created (Phases 12-17); nothing planned or executed yet
+last_updated: "2026-10-16T13:16:44.638Z"
 last_activity: 2026-10-16
+last_activity_desc: Phase 12 execution started
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 0
+  total_plans: 3
   completed_plans: 0
   percent: 0
 ---
@@ -20,14 +24,14 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.4 Design Tokens & Midnight Preset — Phase 12 (Token Pipeline) ready to plan. v1.3 POS-General Interaction Primitives is queued behind v1.4 (requirements staged, phases numbered at kickoff).
+**Current focus:** Phase 12 — Token Pipeline
 
 ## Current Position
 
-Phase: 12 of 17 (Token Pipeline)
-Plan: —
-Status: Ready to plan
-Last activity: 2026-10-16 — Roadmap created for v1.4 (6 phases, 20/20 requirements mapped)
+Phase: 12 (Token Pipeline) — EXECUTING
+Plan: 1 of 3
+Status: Executing Phase 12
+Last activity: 2026-10-16 — Phase 12 execution started
 
 Progress: [..........] 0% (0/6 phases)
 
