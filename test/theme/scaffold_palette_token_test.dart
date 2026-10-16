@@ -85,7 +85,11 @@ void main() {
 
     test('shares brand accents with the dark palette', () {
       expect(light.lightGreenPrimary, ScaffoldPalette.defaultPalette.lightGreenPrimary);
-      expect(light.focusRingColor, ScaffoldPalette.defaultPalette.focusRingColor);
+    });
+
+    test('light focus ring is its own AA value', () {
+      expect(light.focusRingColor, const Color(0xFF00956F));
+      expect(light.focusRingColor, isNot(ScaffoldPalette.defaultPalette.focusRingColor));
     });
 
     test('lightPalette covers all tokens consumed by shipped widgets', () {

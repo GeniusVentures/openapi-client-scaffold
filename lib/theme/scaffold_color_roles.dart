@@ -29,7 +29,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     // GENERATED from design_tokens.json scaffold.colorRoles.dark. Do not edit.
     this.accent = ScaffoldColors.lightGreenPrimary,
     this.accentOnSurface = ScaffoldColors.lightGreenPrimary,
-    this.borderControl = ScaffoldColors.borderGrey,
+    this.borderControl = const Color(0x5CFFFFFF),
     this.inputForeground = const Color(0xFFFFFFFF),
     this.sheetForeground = const Color(0xFFFFFFFF),
     this.sheetDivider = const Color(0x1FFFFFFF),
@@ -44,7 +44,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     // GENERATED from design_tokens.json scaffold.colorRoles.light. Do not edit.
     accent: ScaffoldColors.lightGreenPrimary,
     accentOnSurface: ScaffoldColors.lightGreenPrimary,
-    borderControl: Color(0x1F000000),
+    borderControl: Color(0x73000000),
     inputForeground: Color(0xFFFFFFFF),
     sheetForeground: Color(0xFFFFFFFF),
     sheetDivider: Color(0x1FFFFFFF),

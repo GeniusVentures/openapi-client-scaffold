@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
@@ -36,27 +39,181 @@ final Map<String, Color Function(ScaffoldPalette)> _surfaces = {
   'deepBlueTertiary': (p) => p.deepBlueTertiary,
 };
 
-final Map<String, Color Function(ScaffoldPalette)> _textTokens = {
-  'textPrimary': (p) => p.textPrimary,
+enum _Role { surface, text, nonText, deferred, excluded }
+
+class _Entry {
+  const _Entry(this.role, this.reason);
+
+  final _Role role;
+  final String reason;
+}
+
+const _surface = _Entry(_Role.surface, 'background checked against');
+const _text = _Entry(_Role.text, 'text, 4.5:1');
+const _deferred = _Entry(_Role.deferred, 'A11Y-02, plan 14-03');
+
+// As a foreground on light surfaces this is about 1.57:1. Plan 14-04 moves the
+// foreground uses onto color roles and 14-05 gives them AA light values and
+// reclassifies them.
+const _accentFill = _Entry(
+  _Role.excluded,
+  'accent fill carrying dark text; foreground uses move to color roles in 14-04, AA values in 14-05',
+);
+
+const _paletteClasses = <String, _Entry>{
+  'surfaceElevated': _surface,
+  'deepBlueCardColor': _surface,
+  'grayPrimary': _surface,
+  'deepBlueTertiary': _surface,
+  'textPrimary': _text,
+  'textSecondary': _text,
+  'gray500': _text,
+  'statusSuccess': _text,
+  'statusError': _text,
+  'statusWarningText': _text,
+  'focusRingColor': _Entry(_Role.nonText, 'focus indicator, 3:1'),
+  'borderGrey': _Entry(
+    _Role.nonText,
+    'control border: text-field enabled border via the color-role fallback, and the chart frame',
+  ),
+  'blue500': _Entry(
+    _Role.nonText,
+    'status and loading dots only, no text call site',
+  ),
+  'lightGreenPrimary': _accentFill,
+  'lightGreenSecondary': _accentFill,
+  'borderSubtle': _Entry(_Role.excluded, 'decorative hairline'),
+  'skeletonBaseColor': _Entry(_Role.excluded, 'decorative loading placeholder'),
+  'skeletonShimmerColor': _Entry(
+    _Role.excluded,
+    'decorative loading placeholder',
+  ),
+  'disabledOverlayColor': _Entry(_Role.excluded, 'disabled state is exempt'),
+  'dragFeedbackBackground': _Entry(
+    _Role.excluded,
+    'drag-ghost surface; its text uses textPrimary',
+  ),
+  'dropZoneHighlight': _Entry(
+    _Role.excluded,
+    'translucent state wash supplementing the drop-target border and icon',
+  ),
+  'dropZoneRejected': _Entry(
+    _Role.excluded,
+    'translucent state wash supplementing the drop-target border and icon',
+  ),
 };
 
+const _rolesClasses = <String, _Entry>{
+  'accent': _accentFill,
+  'accentOnSurface': _accentFill,
+  'borderControl': _Entry(_Role.nonText, 'control border, 3:1'),
+  'inputForeground': _deferred,
+  'sheetForeground': _deferred,
+  'sheetDivider': _deferred,
+};
+
+final Map<String, Color Function(ScaffoldPalette)> _paletteGetters = {
+  'surfaceElevated': (p) => p.surfaceElevated,
+  'deepBlueCardColor': (p) => p.deepBlueCardColor,
+  'grayPrimary': (p) => p.grayPrimary,
+  'deepBlueTertiary': (p) => p.deepBlueTertiary,
+  'textPrimary': (p) => p.textPrimary,
+  'textSecondary': (p) => p.textSecondary,
+  'gray500': (p) => p.gray500,
+  'statusSuccess': (p) => p.statusSuccess,
+  'statusError': (p) => p.statusError,
+  'statusWarningText': (p) => p.statusWarningText,
+  'focusRingColor': (p) => p.focusRingColor,
+  'borderGrey': (p) => p.borderGrey,
+  'blue500': (p) => p.blue500,
+};
+
+Map<String, dynamic> _scaffoldTokens() {
+  final decoded =
+      jsonDecode(File('design_tokens.json').readAsStringSync())
+          as Map<String, dynamic>;
+  return decoded['scaffold'] as Map<String, dynamic>;
+}
+
+Set<String> _keys(Map<String, dynamic> tokens, String group, String mode) =>
+    ((tokens[group] as Map<String, dynamic>)[mode] as Map<String, dynamic>)
+        .keys
+        .toSet();
+
+void _expectPair(Color fg, Color bg, double min) {
+  final ratio = contrastRatio(fg, bg);
+  expect(
+    ratio,
+    greaterThanOrEqualTo(min),
+    reason:
+        '${argbHex(fg)} on ${argbHex(bg)} is ${ratio.toStringAsFixed(2)}, '
+        'needs $min',
+  );
+}
+
 void main() {
+  test('every scaffold.palette and scaffold.colorRoles token is classified', () {
+    final tokens = _scaffoldTokens();
+    for (final mode in ['dark', 'light']) {
+      expect(
+        _paletteClasses.keys.toSet(),
+        _keys(tokens, 'palette', mode),
+        reason: 'scaffold.palette.$mode',
+      );
+      expect(
+        _rolesClasses.keys.toSet(),
+        _keys(tokens, 'colorRoles', mode),
+        reason: 'scaffold.colorRoles.$mode',
+      );
+    }
+    for (final entry in {..._paletteClasses, ..._rolesClasses}.entries) {
+      expect(entry.value.reason, isNotEmpty, reason: entry.key);
+    }
+  });
+
   for (final theme in _themes) {
-    for (final token in _textTokens.entries) {
+    for (final entry in _paletteClasses.entries) {
+      final role = entry.value.role;
+      if (role != _Role.text && role != _Role.nonText) {
+        continue;
+      }
+      final min = role == _Role.text ? kWcagText : kWcagNonText;
       for (final surface in _surfaces.entries) {
-        test('${theme.name}: ${token.key} on ${surface.key} >= $kWcagText', () {
-          final fg = token.value(theme.palette);
-          final bg = surface.value(theme.palette);
-          final ratio = contrastRatio(fg, bg);
-          expect(
-            ratio,
-            greaterThanOrEqualTo(kWcagText),
-            reason:
-                '${argbHex(fg)} on ${argbHex(bg)} is ${ratio.toStringAsFixed(2)}, '
-                'needs $kWcagText',
+        test('${theme.name}: ${entry.key} on ${surface.key} >= $min', () {
+          _expectPair(
+            _paletteGetters[entry.key]!(theme.palette),
+            surface.value(theme.palette),
+            min,
           );
         });
       }
+    }
+
+    for (final surface in _surfaces.entries) {
+      test(
+        '${theme.name}: borderControl (roles) on ${surface.key} >= $kWcagNonText',
+        () {
+          _expectPair(
+            theme.roles.borderControl,
+            surface.value(theme.palette),
+            kWcagNonText,
+          );
+        },
+      );
+      test(
+        '${theme.name}: borderControl (fallback) on ${surface.key} >= $kWcagNonText',
+        () {
+          final roles = ScaffoldColorRoles.fallbackFor(
+            theme.palette,
+            theme.brightness,
+          );
+          _expectPair(
+            roles.borderControl,
+            surface.value(theme.palette),
+            kWcagNonText,
+          );
+        },
+      );
     }
   }
 }
