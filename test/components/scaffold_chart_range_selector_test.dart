@@ -8,6 +8,7 @@ import 'package:frontend_scaffold/components/scaffold_chart.dart';
 import 'package:frontend_scaffold/components/scaffold_chart_range_selector.dart';
 import 'package:frontend_scaffold/components/scaffold_focus_outline.dart';
 import 'package:frontend_scaffold/components/scaffold_touch_target.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
 /// First drag-move step, in px — just over the touch slop so the overlay's
@@ -573,6 +574,45 @@ void main() {
       expect(overlay.behavior, HitTestBehavior.translucent,
           reason: 'overlay must be translucent so band edges (and the full '
               'plot) hit-test through to the chart');
+    });
+
+    testWidgets('band fill follows the accent role',
+        (WidgetTester tester) async {
+      const Color accent = Color(0xFF123456);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: [
+              ...scaffoldThemeExtensions,
+              const ScaffoldColorRoles(accent: accent),
+            ],
+          ),
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 400,
+                height: 300,
+                child: ScaffoldChartRangeSelector<int>(
+                  series: _fivePoints(),
+                  xAccessor: (int v) => v.toDouble(),
+                  yAccessor: (int v) => (v * 2).toDouble(),
+                  selectedRange: (10, 30),
+                  plotHeight: 300,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomPaint paint = tester.widget<CustomPaint>(
+        find.descendant(
+          of: find.byType(GestureDetector),
+          matching: find.byType(CustomPaint),
+        ),
+      );
+      expect((paint.painter! as dynamic).bandColor,
+          accent.withValues(alpha: 0.12));
     });
   });
 }

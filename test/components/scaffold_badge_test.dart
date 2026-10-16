@@ -3,6 +3,7 @@ import 'dart:ui' show SemanticsRole;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/components/scaffold_badge.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
@@ -49,6 +50,29 @@ Text _badgeText(WidgetTester tester) {
 }
 
 void main() {
+  testWidgets('count fill follows the accent role', (tester) async {
+    const accent = Color(0xFF123456);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          extensions: [
+            ...scaffoldThemeExtensions,
+            const ScaffoldColorRoles(accent: accent),
+          ],
+        ),
+        home: const Scaffold(
+          body: Center(
+            child: ScaffoldBadge(variant: BadgeVariant.count, count: 3),
+          ),
+        ),
+      ),
+    );
+
+    final BoxDecoration decoration =
+        _badgeContainer(tester).decoration! as BoxDecoration;
+    expect(decoration.color, accent);
+  });
+
   testWidgets('dot variant renders an 8px circle in lightGreenPrimary', (
     tester,
   ) async {

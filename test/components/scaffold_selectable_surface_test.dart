@@ -9,6 +9,7 @@ import 'package:frontend_scaffold/components/scaffold_selectable_surface.dart';
 import 'package:frontend_scaffold/components/scaffold_surface.dart';
 import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
 import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -24,6 +25,35 @@ Future<void> _pump(WidgetTester tester, Widget child) {
 void _noop() {}
 
 void main() {
+  testWidgets('selection tint follows the accent role', (tester) async {
+    const accent = Color(0xFF123456);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          extensions: [
+            ...scaffoldThemeExtensions,
+            const ScaffoldColorRoles(accent: accent),
+          ],
+        ),
+        home: const Scaffold(
+          body: Center(
+            child: ScaffoldSelectableSurface(selected: true, child: Text('x')),
+          ),
+        ),
+      ),
+    );
+
+    final Iterable<Color> tints = tester
+        .widgetList<ColoredBox>(
+          find.descendant(
+            of: find.byType(ScaffoldSelectableSurface),
+            matching: find.byType(ColoredBox),
+          ),
+        )
+        .map((ColoredBox b) => b.color);
+    expect(tints, contains(accent.withValues(alpha: 0.12)));
+  });
+
   testWidgets('unselected renders deepBlueCardColor Surface', (tester) async {
     await _pump(tester, const ScaffoldSelectableSurface(child: Text('x')));
 

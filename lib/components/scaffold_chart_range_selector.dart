@@ -35,7 +35,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/scaffold_palette.dart';
 import '../theme/scaffold_theme.dart';
 import '../utils/chart_geometry.dart';
 import 'scaffold_chart.dart';
@@ -47,7 +46,7 @@ import 'scaffold_touch_target.dart';
 // import of the chart atom. (Mirrors the scrubber's re-export.)
 export 'scaffold_chart.dart' show ScrubMode;
 
-/// Alpha of the band fill (12%) — `palette.lightGreenPrimary` at this alpha
+/// Alpha of the band fill (12%) — `colorRoles.accent` at this alpha
 /// forms the translucent selection band (D-09).
 const double _kBandFillAlpha = 0.12;
 
@@ -643,7 +642,6 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
                   // handlers read the cached value rather than re-entering
                   // the theme outside the build phase.
                   _plotInset = context.dimens.space8;
-                  final ScaffoldPalette palette = context.palette;
                   final (double left, double right)? band = _resolveBand();
                   return Stack(
                     children: <Widget>[
@@ -669,7 +667,7 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
                               painter: _RangeBandPainter(
                                 left: band?.$1,
                                 right: band?.$2,
-                                bandColor: palette.lightGreenPrimary
+                                bandColor: context.colorRoles.accent
                                     .withValues(alpha: _kBandFillAlpha),
                                 edgeColor: context.colorRoles.accentOnSurface,
                               ),
@@ -712,7 +710,7 @@ class _RangeBandPainter extends CustomPainter {
   /// Right edge x (widget-space), or null when no band is active.
   final double? right;
 
-  /// Fill color — `palette.lightGreenPrimary` at 12% alpha.
+  /// Fill color — `colorRoles.accent` at 12% alpha.
   final Color bandColor;
 
   /// Edge-rule color — `colorRoles.accentOnSurface` at full opacity.

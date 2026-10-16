@@ -47,7 +47,7 @@ class ScaffoldBadge extends StatelessWidget {
   /// Icon for the [BadgeVariant.icon] variant.
   final IconData? icon;
 
-  /// Fill color; defaults to `palette.lightGreenPrimary`, or `colorRoles.accentOnSurface` for the dot variant.
+  /// Fill color; defaults to `colorRoles.accent`, or `colorRoles.accentOnSurface` for the dot variant.
   final Color? badgeColor;
 
   /// Accessible label for the dot/icon variants (default "New item").
@@ -108,7 +108,7 @@ class ScaffoldBadge extends StatelessWidget {
     final Color resolvedBadgeColor = badgeColor ??
         (variant == BadgeVariant.dot
             ? colorRoles.accentOnSurface
-            : palette.lightGreenPrimary);
+            : colorRoles.accent);
     final Widget visual = _buildVisual(
       palette,
       dimens,
