@@ -402,6 +402,47 @@ def test_dart_text_style_rejects_invalid(value: object) -> None:
         dart_text_style("x", value)
 
 
+def test_dart_text_style_line_height_is_a_multiplier_of_font_size() -> None:
+    value = {
+        "fontSize": Decimal("32.0"),
+        "fontWeight": 700,
+        "letterSpacing": Decimal("-0.4"),
+        "lineHeight": Decimal("40.0"),
+    }
+    assert dart_text_style("x", value) == (
+        "TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700, letterSpacing: -0.4, height: 40.0 / 32.0)"
+    )
+
+
+def test_dart_text_style_tabular_figures_comes_last() -> None:
+    value = {
+        "tabularFigures": True,
+        "lineHeight": Decimal("20.0"),
+        "fontSize": Decimal("14.0"),
+        "fontWeight": 500,
+    }
+    assert dart_text_style("x", value) == (
+        "TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500, height: 20.0 / 14.0, "
+        "fontFeatures: [FontFeature.tabularFigures()])"
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {"lineHeight": Decimal("40.0")},
+        {"fontSize": Decimal("32.0"), "lineHeight": 40},
+        {"fontSize": Decimal("32.0"), "lineHeight": "40.0"},
+        {"fontSize": Decimal("32.0"), "tabularFigures": False},
+        {"fontSize": Decimal("32.0"), "tabularFigures": 1},
+        {"fontSize": Decimal("32.0"), "tabularFigures": "true"},
+    ],
+)
+def test_dart_text_style_rejects_invalid_line_height_and_figures(value: object) -> None:
+    with pytest.raises(ThemeTokenError, match="x"):
+        dart_text_style("x", value)
+
+
 def test_dart_font_family() -> None:
     assert dart_font_family("x", "monospace") == "'monospace'"
     assert dart_font_family("x", "Open Sans") == "'Open Sans'"

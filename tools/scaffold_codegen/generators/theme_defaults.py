@@ -167,7 +167,7 @@ def dart_curve(name: str, value: object) -> str:
 
 _FONT_FAMILY_RE = re.compile(r"[A-Za-z][A-Za-z0-9 _-]*")
 _FONT_WEIGHTS = frozenset(range(100, 1000, 100))
-_TEXT_STYLE_KEYS = ("fontFamily", "fontSize", "fontWeight", "letterSpacing")
+_TEXT_STYLE_KEYS = ("fontFamily", "fontSize", "fontWeight", "letterSpacing", "lineHeight", "tabularFigures")
 
 
 def dart_font_family(name: str, value: object) -> str:
@@ -178,7 +178,11 @@ def dart_font_family(name: str, value: object) -> str:
 
 
 def dart_text_style(name: str, value: object) -> str:
-    """Return a ``TextStyle(...)`` literal; the keys are emitted in a fixed order."""
+    """Return a ``TextStyle(...)`` literal; the keys are emitted in a fixed order.
+
+    ``lineHeight`` is in px and becomes ``height: lineHeight / fontSize``, the multiplier Flutter
+    expects. ``tabularFigures`` must be ``true``.
+    """
     if not isinstance(value, dict) or not set(value) <= set(_TEXT_STYLE_KEYS):
         raise ThemeTokenError(
             f"{name}: expected an object with keys from {list(_TEXT_STYLE_KEYS)}, got {value!r}"
@@ -195,6 +199,15 @@ def dart_text_style(name: str, value: object) -> str:
             if not (isinstance(entry, int) and not isinstance(entry, bool) and entry in _FONT_WEIGHTS):
                 raise ThemeTokenError(f"{label}: expected one of 100, 200, ..., 900, got {entry!r}")
             parts.append(f"{key}: FontWeight.w{entry}")
+        elif key == "lineHeight":
+            if "fontSize" not in value:
+                raise ThemeTokenError(f"{label}: a line height needs a fontSize to divide by")
+            line_height = dart_double(label, entry)
+            parts.append(f"height: {line_height} / {dart_double(f'{name}.fontSize', value['fontSize'])}")
+        elif key == "tabularFigures":
+            if entry is not True:
+                raise ThemeTokenError(f"{label}: expected true, got {entry!r}")
+            parts.append("fontFeatures: [FontFeature.tabularFigures()]")
         else:
             parts.append(f"{key}: {dart_double(label, entry)}")
     return f"TextStyle({', '.join(parts)})"

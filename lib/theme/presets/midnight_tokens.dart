@@ -247,6 +247,52 @@ abstract final class Midnight {
     surfaceSheen: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFFFFF), Color(0xFFF5F7FA)]),
     // END GENERATED preset.gradients.light
   );
+
+  /// Type scale of the midnight preset: the ten slots the source maps. The other five are left null.
+  ///
+  /// No font family is set, because the theme applies [MidnightTypeScale.sansFontFamily] to the whole theme.
+  static const TextTheme textTheme = TextTheme(
+    // GENERATED from tokens/midnight.json preset.textTheme. Do not edit.
+    displayLarge: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700, letterSpacing: -0.4, height: 40.0 / 32.0),
+    displayMedium: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700, letterSpacing: -0.4, height: 36.0 / 28.0),
+    headlineLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600, letterSpacing: -0.4, height: 32.0 / 24.0),
+    headlineMedium: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, height: 28.0 / 20.0),
+    titleLarge: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, height: 24.0 / 18.0),
+    titleMedium: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, height: 22.0 / 16.0),
+    bodyLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400, height: 24.0 / 16.0),
+    bodyMedium: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400, height: 24.0 / 16.0),
+    bodySmall: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400, height: 20.0 / 14.0),
+    labelMedium: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w500, height: 18.0 / 13.0),
+    // END GENERATED preset.textTheme
+  );
+
+  /// Numeric text styles with tabular figures, and the sans font family.
+  static const MidnightTypeScale typeScale = MidnightTypeScale(
+    // GENERATED from tokens/midnight.json preset.typeScale.numeric. Do not edit.
+    numericDisplay: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700, letterSpacing: -0.4, height: 40.0 / 32.0, fontFeatures: [FontFeature.tabularFigures()]),
+    numericHeadline: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600, height: 32.0 / 24.0, fontFeatures: [FontFeature.tabularFigures()]),
+    numericBody: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500, height: 20.0 / 14.0, fontFeatures: [FontFeature.tabularFigures()]),
+    // END GENERATED preset.typeScale.numeric
+    // GENERATED from tokens/midnight.json preset.typeScale.fontFamilies. Do not edit.
+    sansFontFamily: 'Inter',
+    // END GENERATED preset.typeScale.fontFamilies
+  );
+
+  /// Spacing and radius steps that have no [ScaffoldDimens] field.
+  static const MidnightScale scale = MidnightScale(
+    // GENERATED from tokens/midnight.json preset.scale. Do not edit.
+    space10: 20.0,
+    space16: 32.0,
+    space20: 40.0,
+    space24: 48.0,
+    space32: 64.0,
+    radiusXs: 4.0,
+    radiusSm: 8.0,
+    radiusBase: 10.0,
+    radius2xl: 16.0,
+    radiusXl: 24.0,
+    // END GENERATED preset.scale
+  );
 }
 
 /// Midnight colors with no [ScaffoldPalette] or [ScaffoldColorRoles] field.
@@ -382,4 +428,77 @@ final class MidnightGradients {
 
   /// Faint light near the top of the canvas. Dark mode only, so null in light.
   final RadialGradient? canvasGlow;
+}
+
+/// Midnight text styles and font family with no [ScaffoldTypography] field.
+///
+/// Available to apps through [Midnight.typeScale].
+final class MidnightTypeScale {
+  const MidnightTypeScale({
+    required this.numericDisplay,
+    required this.numericHeadline,
+    required this.numericBody,
+    required this.sansFontFamily,
+  });
+
+  /// Large figure such as a balance, with tabular figures.
+  final TextStyle numericDisplay;
+
+  /// Medium figure, with tabular figures.
+  final TextStyle numericHeadline;
+
+  /// Inline figure or address, with tabular figures.
+  final TextStyle numericBody;
+
+  /// Family of every text style in the preset.
+  final String sansFontFamily;
+}
+
+/// Midnight spacing and radius steps with no [ScaffoldDimens] field.
+///
+/// The other steps of the ladder already exist on [ScaffoldDimens] with equal values.
+/// Available to apps through [Midnight.scale].
+final class MidnightScale {
+  const MidnightScale({
+    required this.space10,
+    required this.space16,
+    required this.space20,
+    required this.space24,
+    required this.space32,
+    required this.radiusXs,
+    required this.radiusSm,
+    required this.radiusBase,
+    required this.radius2xl,
+    required this.radiusXl,
+  });
+
+  /// Spacing step of 20 px.
+  final double space10;
+
+  /// Spacing step of 32 px.
+  final double space16;
+
+  /// Spacing step of 40 px.
+  final double space20;
+
+  /// Spacing step of 48 px.
+  final double space24;
+
+  /// Spacing step of 64 px.
+  final double space32;
+
+  /// Radius of 4 px.
+  final double radiusXs;
+
+  /// Radius of 8 px.
+  final double radiusSm;
+
+  /// Radius of 10 px.
+  final double radiusBase;
+
+  /// Radius of 16 px.
+  final double radius2xl;
+
+  /// Radius of 24 px.
+  final double radiusXl;
 }
