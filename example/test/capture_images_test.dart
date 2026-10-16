@@ -132,6 +132,34 @@ ThemeData _buildCaptureTheme(Brightness brightness) {
   );
 }
 
+/// Which theme a capture run renders and where it writes. The default profile
+/// writes straight into the capture directory; other profiles write into a
+/// subfolder of it, so existing captures are never overwritten.
+class _CaptureProfile {
+  const _CaptureProfile({
+    required this.name,
+    required this.subdir,
+    required this.theme,
+    required this.palette,
+  });
+
+  final String name;
+
+  /// Output subfolder with a trailing slash, or an empty string.
+  final String subdir;
+  final ThemeData Function(Brightness) theme;
+  final ScaffoldPalette Function(Brightness) palette;
+}
+
+final _CaptureProfile _defaultProfile = _CaptureProfile(
+  name: 'default',
+  subdir: '',
+  theme: _buildCaptureTheme,
+  palette: (Brightness brightness) => brightness == Brightness.light
+      ? ScaffoldPalette.lightPalette
+      : ScaffoldPalette.defaultPalette,
+);
+
 /// Output directory for every captured PNG: `SCAFFOLD_CAPTURE_DIR` when set,
 /// otherwise the package-root `images/` relative to `example/`.
 String _captureDir() => Platform.environment['SCAFFOLD_CAPTURE_DIR'] ?? '../images';
@@ -146,11 +174,14 @@ String _captureDir() => Platform.environment['SCAFFOLD_CAPTURE_DIR'] ?? '../imag
 /// omits a color (e.g. `TextStyle(fontSize: 30)` in StringButton). Without
 /// this, sparse textTheme entries leave body text at M3's dark `onSurface`,
 /// which is unreadable against the scaffold palette's dark backgrounds.
-Future<void> _pump(WidgetTester tester, Widget child, Brightness brightness) {
-  final ThemeData theme = _buildCaptureTheme(brightness);
-  final ScaffoldPalette palette = brightness == Brightness.light
-      ? ScaffoldPalette.lightPalette
-      : ScaffoldPalette.defaultPalette;
+Future<void> _pump(
+  WidgetTester tester,
+  Widget child,
+  Brightness brightness,
+  _CaptureProfile profile,
+) {
+  final ThemeData theme = profile.theme(brightness);
+  final ScaffoldPalette palette = profile.palette(brightness);
   return tester.pumpWidget(
     MaterialApp(
       theme: theme,
@@ -198,11 +229,10 @@ Future<void> _captureWidget(
   Widget widget,
   String filename, {
   required Brightness brightness,
+  required _CaptureProfile profile,
   PrepareCapture? prepare,
 }) async {
-  final ScaffoldPalette palette = brightness == Brightness.light
-      ? ScaffoldPalette.lightPalette
-      : ScaffoldPalette.defaultPalette;
+  final ScaffoldPalette palette = profile.palette(brightness);
   await _pump(
     tester,
     SizedBox(
@@ -224,6 +254,7 @@ Future<void> _captureWidget(
       ),
     ),
     brightness,
+    profile,
   );
   // Settle bounded work (single-shot animations, layout, streamed timers).
   // Infinite animations simply re-render at the 1s mark — the captured pixels
@@ -258,7 +289,8 @@ Future<void> _captureWidget(
   }
   await tester.runAsync(() async {
     final File f =
-        await File('${_captureDir()}/$filename.png').create(recursive: true);
+        await File('${_captureDir()}/${profile.subdir}$filename.png')
+            .create(recursive: true);
     await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
 
@@ -284,17 +316,18 @@ Future<void> _captureWidget(
 Future<void> _captureBothThemes(
   WidgetTester tester,
   Widget widget,
-  String filename, {
+  String filename,
+  _CaptureProfile profile, {
   PrepareCapture? prepare,
 }) async {
   await _captureWidget(tester, widget, '${filename}_dark',
-      brightness: Brightness.dark, prepare: prepare);
+      brightness: Brightness.dark, profile: profile, prepare: prepare);
   // Drain any toast auto-dismiss timers before the next capture — the
   // 2s timer would otherwise fire during the next widget's settle and
   // call setState on the disposed demo.
   await _drainToasts(tester);
   await _captureWidget(tester, widget, '${filename}_light',
-      brightness: Brightness.light, prepare: prepare);
+      brightness: Brightness.light, profile: profile, prepare: prepare);
   await _drainToasts(tester);
 }
 
@@ -452,7 +485,11 @@ Future<void> _dragChartRange(WidgetTester tester) async {
 /// Like _captureWalletSheet, this builds the content directly: the ToastDemo
 /// page with a compact receipt and one toast card of each status type stacked
 /// at the bottom, all inside the boundary.
-Future<void> _captureToast(WidgetTester tester, Brightness brightness) async {
+Future<void> _captureToast(
+  WidgetTester tester,
+  Brightness brightness,
+  _CaptureProfile profile,
+) async {
   await _pump(
     tester,
     SizedBox(
@@ -516,6 +553,7 @@ Future<void> _captureToast(WidgetTester tester, Brightness brightness) async {
       ),
     ),
     brightness,
+    profile,
   );
   await tester.pump(kAnimationSettleTime);
 
@@ -538,7 +576,7 @@ Future<void> _captureToast(WidgetTester tester, Brightness brightness) async {
   }
   await tester.runAsync(() async {
     final File f = await File(
-      '${_captureDir()}/toast_${brightness.name}.png',
+      '${_captureDir()}/${profile.subdir}toast_${brightness.name}.png',
     ).create(recursive: true);
     await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
@@ -561,6 +599,7 @@ Future<void> _drainToasts(WidgetTester tester) async {
 Future<void> _captureWalletSheet(
   WidgetTester tester,
   Brightness brightness,
+  _CaptureProfile profile,
 ) async {
   const String networkName = 'Ethereum';
 
@@ -679,6 +718,7 @@ Future<void> _captureWalletSheet(
       ),
     ),
     brightness,
+    profile,
   );
   await tester.pump(kAnimationSettleTime);
 
@@ -701,7 +741,7 @@ Future<void> _captureWalletSheet(
   }
   await tester.runAsync(() async {
     final File f = await File(
-      '${_captureDir()}/wallet_connect_sheet_${brightness.name}.png',
+      '${_captureDir()}/${profile.subdir}wallet_connect_sheet_${brightness.name}.png',
     ).create(recursive: true);
     await f.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
   });
@@ -714,7 +754,7 @@ void main() {
   });
 
   testWidgets('capture all demo screens', (WidgetTester tester) async {
-    await _captureAllDemos(tester);
+    await _captureAllDemos(tester, _defaultProfile);
   });
 }
 
@@ -759,61 +799,69 @@ class _OpenDrawerCapture extends StatelessWidget {
 }
 
 /// Drives every demo through both themes.
-Future<void> _captureAllDemos(WidgetTester tester) async {
+Future<void> _captureAllDemos(
+  WidgetTester tester,
+  _CaptureProfile profile,
+) async {
     // Order mirrors the _DemoTile registry in example/lib/main.dart.
-    await _captureBothThemes(tester, const ActionButtonDemo(), 'action_button');
-    await _captureBothThemes(tester, const StringButtonDemo(), 'string_button');
-    await _captureBothThemes(tester, const TextEntryFieldDemo(), 'text_entry_field',
+    await _captureBothThemes(tester, const ActionButtonDemo(), 'action_button', profile);
+    await _captureBothThemes(tester, const StringButtonDemo(), 'string_button', profile);
+    await _captureBothThemes(tester, const TextEntryFieldDemo(), 'text_entry_field', profile,
         prepare: _typeIntoFirstField);
-    await _captureBothThemes(tester, const LoadingDemo(), 'loading');
-    await _captureToast(tester, Brightness.dark);
-    await _captureToast(tester, Brightness.light);
-    await _captureBothThemes(tester, const _OpenDrawerCapture(), 'bottom_drawer');
-    await _captureBothThemes(tester, const AnimationsDemo(), 'animations');
-    await _captureBothThemes(tester, const PageChromeDemo(), 'page_chrome');
-    await _captureBothThemes(tester, const ResponsiveGridDemo(), 'responsive_grid');
-    await _captureBothThemes(tester, const TracerDemo(), 'tracer');
-    await _captureBothThemes(tester, const KitchenSinkDemo(), 'kitchen_sink');
-    await _captureBothThemes(tester, const MediaCardDemo(), 'media_card');
-    await _captureBothThemes(tester, const MediaControlsDemo(), 'media_controls');
+    await _captureBothThemes(tester, const LoadingDemo(), 'loading', profile);
+    await _captureToast(tester, Brightness.dark, profile);
+    await _captureToast(tester, Brightness.light, profile);
+    await _captureBothThemes(tester, const _OpenDrawerCapture(), 'bottom_drawer', profile);
+    await _captureBothThemes(tester, const AnimationsDemo(), 'animations', profile);
+    await _captureBothThemes(tester, const PageChromeDemo(), 'page_chrome', profile);
+    await _captureBothThemes(tester, const ResponsiveGridDemo(), 'responsive_grid', profile);
+    await _captureBothThemes(tester, const TracerDemo(), 'tracer', profile);
+    await _captureBothThemes(tester, const KitchenSinkDemo(), 'kitchen_sink', profile);
+    await _captureBothThemes(tester, const MediaCardDemo(), 'media_card', profile);
+    await _captureBothThemes(tester, const MediaControlsDemo(), 'media_controls', profile);
     // WalletConnectSheet demo is button-triggered — capture the sheet content
     // directly instead of the button page.
-    await _captureWalletSheet(tester, Brightness.dark);
-    await _captureWalletSheet(tester, Brightness.light);
-    await _captureBothThemes(tester, const ScaffoldChipDemo(), 'chip');
-    await _captureBothThemes(tester, const ScaffoldComposerDemo(), 'composer');
-    await _captureBothThemes(tester, const ScaffoldDisclosureDemo(), 'disclosure',
+    await _captureWalletSheet(tester, Brightness.dark, profile);
+    await _captureWalletSheet(tester, Brightness.light, profile);
+    await _captureBothThemes(tester, const ScaffoldChipDemo(), 'chip', profile);
+    await _captureBothThemes(tester, const ScaffoldComposerDemo(), 'composer', profile);
+    await _captureBothThemes(tester, const ScaffoldDisclosureDemo(), 'disclosure', profile,
         prepare: _expandAllDisclosures);
-    await _captureBothThemes(tester, const ScaffoldTraceListDemo(), 'trace_list',
+    await _captureBothThemes(tester, const ScaffoldTraceListDemo(), 'trace_list', profile,
         prepare: _expandAllDisclosures);
     await _captureBothThemes(
       tester,
       const ScaffoldStreamingRichTextDemo(),
       'streaming_rich_text',
+      profile,
     );
-    await _captureBothThemes(tester, const ScaffoldCodeBlockDemo(), 'code_block');
+    await _captureBothThemes(tester, const ScaffoldCodeBlockDemo(), 'code_block', profile);
     await _captureBothThemes(
       tester,
       const ScaffoldSelectionActionsDemo(),
       'selection_actions',
+      profile,
     );
     await _captureBothThemes(
       tester,
       const ScaffoldMarkdownToSpansDemo(),
       'markdown_to_spans',
+      profile,
     );
     await _captureBothThemes(
       tester,
       const ScaffoldLightSyntaxTokenizerDemo(),
       'light_syntax_tokenizer',
+      profile,
     );
-    await _captureBothThemes(tester, const ChartDemo(), 'chart');
-    await _captureBothThemes(tester, const ChartScrubberDemo(), 'chart_scrubber',
+    await _captureBothThemes(tester, const ChartDemo(), 'chart', profile);
+    await _captureBothThemes(tester, const ChartScrubberDemo(), 'chart_scrubber', profile,
         prepare: _tapChartCenter);
     await _captureBothThemes(
       tester,
       const ChartRangeSelectorDemo(),
       'chart_range_selector',
+      profile,
       prepare: _dragChartRange,
     );
 }
