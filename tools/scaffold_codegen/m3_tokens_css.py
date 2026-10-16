@@ -276,7 +276,7 @@ def main(argv: list[str] | None = None) -> int:
     output_path = Path(args.output)
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(css, encoding="utf-8")
+        output_path.write_text(css, encoding="utf-8", newline="\n")
     except OSError as exc:
         sys.stderr.write(f"ERROR: cannot write output file: {exc}\n")
         return 1

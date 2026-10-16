@@ -112,6 +112,8 @@ def render_template(
 ) -> None:
     """Render a named template and write the result to *output_path*.
 
+    Output is written as UTF-8 with LF line endings on every OS.
+
     Parameters
     ----------
     env : jinja2.Environment
@@ -141,7 +143,7 @@ def render_template(
 
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(rendered, encoding="utf-8")
+    out.write_text(rendered, encoding="utf-8", newline="\n")
 
 
 # ---------------------------------------------------------------------------
