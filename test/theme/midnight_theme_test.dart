@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/theme/presets/midnight_theme.dart';
 import 'package:frontend_scaffold/theme/presets/midnight_tokens.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
+import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
@@ -240,9 +241,27 @@ void main() {
           ),
           isTrue,
         );
+        expect(
+          identical(
+            captured.gradients,
+            isDark
+                ? Midnight.darkScaffoldGradients
+                : Midnight.lightScaffoldGradients,
+          ),
+          isTrue,
+        );
         expect(identical(captured.motion, Midnight.motion), isTrue);
         expect(identical(captured.typography, Midnight.typography), isTrue);
       });
+    }
+  });
+
+  test('each mode registers exactly one ScaffoldGradients', () {
+    for (final brightness in Brightness.values) {
+      final count = midnightExtensions(
+        brightness,
+      ).whereType<ScaffoldGradients>().length;
+      expect(count, 1, reason: brightness.name);
     }
   });
 

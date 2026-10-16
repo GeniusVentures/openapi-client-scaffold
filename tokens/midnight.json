@@ -60,7 +60,8 @@
         "borderControl": "0x5CFFFFFF",
         "inputForeground": "0xFFFFFFFF",
         "sheetForeground": "0xFFFFFFFF",
-        "sheetDivider": "0x1FFFFFFF"
+        "sheetDivider": "0x1FFFFFFF",
+        "surfaceEdge": "0x1FFFFFFF"
       },
       "light": {
         "accent": "0xFF0AAEE6",
@@ -70,7 +71,8 @@
         "borderControl": "0x7A10131A",
         "inputForeground": "0xFF10131A",
         "sheetForeground": "0xFF10131A",
-        "sheetDivider": "0x1F10131A"
+        "sheetDivider": "0x1F10131A",
+        "surfaceEdge": "0x1F10131A"
       }
     },
     "dimens": {
@@ -140,6 +142,20 @@
             ]
           }
         ]
+      }
+    },
+    "gradients": {
+      "dark": {},
+      "light": {
+        "surfaceSheen": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFFFFFFF",
+            "0xFFF5F7FA"
+          ]
+        }
       }
     },
     "motion": {

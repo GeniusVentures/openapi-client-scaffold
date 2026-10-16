@@ -11,9 +11,14 @@ class ScaffoldGradients extends ThemeExtension<ScaffoldGradients> {
   /// fade.
   final LinearGradient? edgeFade;
 
+  /// Fill of raised cards and surfaces that use the default surface color, top
+  /// to bottom. Null keeps the flat fill.
+  final LinearGradient? surfaceSheen;
+
   const ScaffoldGradients({
     // GENERATED from design_tokens.json scaffold.gradients. Do not edit.
     this.edgeFade,
+    this.surfaceSheen,
     // END GENERATED scaffold.gradients
   });
 
@@ -22,8 +27,14 @@ class ScaffoldGradients extends ThemeExtension<ScaffoldGradients> {
 
   /// Returns a copy of these gradients with the given fields replaced.
   @override
-  ScaffoldGradients copyWith({LinearGradient? edgeFade}) {
-    return ScaffoldGradients(edgeFade: edgeFade ?? this.edgeFade);
+  ScaffoldGradients copyWith({
+    LinearGradient? edgeFade,
+    LinearGradient? surfaceSheen,
+  }) {
+    return ScaffoldGradients(
+      edgeFade: edgeFade ?? this.edgeFade,
+      surfaceSheen: surfaceSheen ?? this.surfaceSheen,
+    );
   }
 
   @override
@@ -33,6 +44,7 @@ class ScaffoldGradients extends ThemeExtension<ScaffoldGradients> {
     }
     return ScaffoldGradients(
       edgeFade: LinearGradient.lerp(edgeFade, other.edgeFade, t),
+      surfaceSheen: LinearGradient.lerp(surfaceSheen, other.surfaceSheen, t),
     );
   }
 }

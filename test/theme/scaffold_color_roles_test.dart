@@ -207,6 +207,56 @@ void main() {
     });
   });
 
+  group('surfaceEdge', () {
+    const edge = Color(0x1F123456);
+    const withEdge = ScaffoldColorRoles(surfaceEdge: edge);
+
+    test('is null in the defaults and both fallbacks', () {
+      expect(dark.surfaceEdge, isNull);
+      expect(light.surfaceEdge, isNull);
+      expect(
+        ScaffoldColorRoles.fallbackFor(
+          defaultPalette,
+          Brightness.dark,
+        ).surfaceEdge,
+        isNull,
+      );
+      expect(
+        ScaffoldColorRoles.fallbackFor(
+          lightPalette,
+          Brightness.light,
+        ).surfaceEdge,
+        isNull,
+      );
+      expect(
+        ScaffoldColorRoles.fallbackForPalette(defaultPalette).surfaceEdge,
+        isNull,
+      );
+      expect(
+        ScaffoldColorRoles.fallbackForPalette(lightPalette).surfaceEdge,
+        isNull,
+      );
+    });
+
+    test('copyWith sets it and keeps it', () {
+      expect(a.copyWith(surfaceEdge: edge).surfaceEdge, edge);
+      expect(withEdge.copyWith().surfaceEdge, edge);
+      expect(
+        withEdge.copyWith(accent: const Color(0xFF111111)).surfaceEdge,
+        edge,
+      );
+    });
+
+    test('lerp keeps null, blends two values', () {
+      expect(a.lerp(b, 0.5).surfaceEdge, isNull);
+      const other = ScaffoldColorRoles(surfaceEdge: Color(0x1F654321));
+      expect(
+        withEdge.lerp(other, 0.5).surfaceEdge,
+        Color.lerp(edge, other.surfaceEdge, 0.5),
+      );
+    });
+  });
+
   group('copyWith', () {
     test('no arguments keeps every field', () {
       expectRoles(a.copyWith(), a);

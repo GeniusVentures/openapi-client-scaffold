@@ -31,6 +31,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   /// Divider under the `BottomDrawer` header.
   final Color sheetDivider;
 
+  /// Hairline around raised cards, surfaces and sheets. Null draws none.
+  final Color? surfaceEdge;
+
   const ScaffoldColorRoles({
     // GENERATED from design_tokens.json scaffold.colorRoles.dark. Do not edit.
     this.accent = ScaffoldColors.lightGreenPrimary,
@@ -41,6 +44,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     this.inputForeground = const Color(0xFFFFFFFF),
     this.sheetForeground = const Color(0xFFFFFFFF),
     this.sheetDivider = const Color(0x1FFFFFFF),
+    this.surfaceEdge,
     // END GENERATED scaffold.colorRoles.dark
   });
 
@@ -118,6 +122,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     Color? inputForeground,
     Color? sheetForeground,
     Color? sheetDivider,
+    Color? surfaceEdge,
   }) {
     return ScaffoldColorRoles(
       accent: accent ?? this.accent,
@@ -129,6 +134,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       inputForeground: inputForeground ?? this.inputForeground,
       sheetForeground: sheetForeground ?? this.sheetForeground,
       sheetDivider: sheetDivider ?? this.sheetDivider,
+      surfaceEdge: surfaceEdge ?? this.surfaceEdge,
     );
   }
 
@@ -154,6 +160,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
       inputForeground: Color.lerp(inputForeground, other.inputForeground, t)!,
       sheetForeground: Color.lerp(sheetForeground, other.sheetForeground, t)!,
       sheetDivider: Color.lerp(sheetDivider, other.sheetDivider, t)!,
+      surfaceEdge: Color.lerp(surfaceEdge, other.surfaceEdge, t),
     );
   }
 }

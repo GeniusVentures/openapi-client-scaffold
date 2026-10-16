@@ -3,10 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 
-Future<BuildContext> _pumpContext(
-  WidgetTester tester,
-  ThemeData theme,
-) async {
+Future<BuildContext> _pumpContext(WidgetTester tester, ThemeData theme) async {
   late BuildContext captured;
   await tester.pumpWidget(
     MaterialApp(
@@ -23,12 +20,8 @@ Future<BuildContext> _pumpContext(
 }
 
 void main() {
-  const gradA = LinearGradient(
-    colors: [Color(0xFF000000), Color(0x00000000)],
-  );
-  const gradB = LinearGradient(
-    colors: [Color(0xFFFFFFFF), Color(0x00FFFFFF)],
-  );
+  const gradA = LinearGradient(colors: [Color(0xFF000000), Color(0x00000000)]);
+  const gradB = LinearGradient(colors: [Color(0xFFFFFFFF), Color(0x00FFFFFF)]);
   const a = ScaffoldGradients(edgeFade: gradA);
   const b = ScaffoldGradients(edgeFade: gradB);
 
@@ -36,6 +29,11 @@ void main() {
     test('edgeFade is null', () {
       expect(ScaffoldGradients.defaultGradients.edgeFade, isNull);
       expect(const ScaffoldGradients().edgeFade, isNull);
+    });
+
+    test('surfaceSheen is null', () {
+      expect(ScaffoldGradients.defaultGradients.surfaceSheen, isNull);
+      expect(const ScaffoldGradients().surfaceSheen, isNull);
     });
   });
 
@@ -50,6 +48,19 @@ void main() {
     test('no argument keeps edgeFade', () {
       expect(a.copyWith().edgeFade, gradA);
     });
+
+    test('sets surfaceSheen and keeps edgeFade', () {
+      final result = a.copyWith(surfaceSheen: gradB);
+      expect(result.surfaceSheen, gradB);
+      expect(result.edgeFade, gradA);
+    });
+
+    test('no argument keeps surfaceSheen', () {
+      expect(
+        const ScaffoldGradients(surfaceSheen: gradB).copyWith().surfaceSheen,
+        gradB,
+      );
+    });
   });
 
   group('lerp', () {
@@ -59,6 +70,14 @@ void main() {
         0.5,
       );
       expect(result.edgeFade, isNull);
+      expect(result.surfaceSheen, isNull);
+    });
+
+    test('surfaceSheen endpoints equal the operands', () {
+      const s = ScaffoldGradients(surfaceSheen: gradA);
+      const u = ScaffoldGradients(surfaceSheen: gradB);
+      expect(s.lerp(u, 0.0).surfaceSheen!.colors, gradA.colors);
+      expect(s.lerp(u, 1.0).surfaceSheen!.colors, gradB.colors);
     });
 
     test('endpoints equal the operands', () {

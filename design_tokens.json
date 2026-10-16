@@ -239,7 +239,8 @@
         "borderControl": "0x5CFFFFFF",
         "inputForeground": "0xFFFFFFFF",
         "sheetForeground": "0xFFFFFFFF",
-        "sheetDivider": "0x1FFFFFFF"
+        "sheetDivider": "0x1FFFFFFF",
+        "surfaceEdge": null
       },
       "light": {
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
@@ -253,7 +254,8 @@
       }
     },
     "gradients": {
-      "edgeFade": null
+      "edgeFade": null,
+      "surfaceSheen": null
     }
   }
 }

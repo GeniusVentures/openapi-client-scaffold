@@ -182,7 +182,7 @@ const List<_PaletteRow> _paletteRows = [
   ),
 ];
 
-final Map<String, Color Function(ScaffoldColorRoles)> _roleFields = {
+final Map<String, Color? Function(ScaffoldColorRoles)> _roleFields = {
   'accent': (c) => c.accent,
   'accentOnSurface': (c) => c.accentOnSurface,
   'accentSecondaryOnSurface': (c) => c.accentSecondaryOnSurface,
@@ -191,6 +191,7 @@ final Map<String, Color Function(ScaffoldColorRoles)> _roleFields = {
   'inputForeground': (c) => c.inputForeground,
   'sheetForeground': (c) => c.sheetForeground,
   'sheetDivider': (c) => c.sheetDivider,
+  'surfaceEdge': (c) => c.surfaceEdge,
 };
 
 const List<_PaletteRow> _roleRows = [
@@ -236,6 +237,12 @@ const List<_PaletteRow> _roleRows = [
     Color(0x1FFFFFFF),
     Color(0x1F10131A),
     'subtle border',
+  ),
+  _PaletteRow(
+    'surfaceEdge',
+    Color(0x1FFFFFFF),
+    Color(0x1F10131A),
+    'card hairline; equals palette borderSubtle',
   ),
 ];
 
@@ -435,6 +442,32 @@ void main() {
         expect(read(Midnight.lightColorRoles), row.light);
       });
     }
+  });
+
+  group('midnight surface edge and sheen', () {
+    test('surfaceEdge equals the palette borderSubtle in both modes', () {
+      expect(
+        Midnight.darkColorRoles.surfaceEdge,
+        Midnight.darkPalette.borderSubtle,
+      );
+      expect(
+        Midnight.lightColorRoles.surfaceEdge,
+        Midnight.lightPalette.borderSubtle,
+      );
+    });
+
+    test('light surfaceSheen equals the preset light sheen', () {
+      expect(
+        Midnight.lightScaffoldGradients.surfaceSheen,
+        Midnight.lightGradients.surfaceSheen,
+      );
+    });
+
+    test('dark surfaceSheen is unset, so dark cards stay flat', () {
+      expect(Midnight.darkScaffoldGradients.surfaceSheen, isNull);
+      expect(Midnight.darkScaffoldGradients.edgeFade, isNull);
+      expect(Midnight.lightScaffoldGradients.edgeFade, isNull);
+    });
   });
 
   group('midnight preset colors match the source token map', () {

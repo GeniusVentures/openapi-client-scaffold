@@ -94,8 +94,17 @@ void _expectPalette(Map<String, dynamic> region, ScaffoldPalette palette) {
   }
 }
 
-void _expectColorRoles(Map<String, dynamic> region, ScaffoldColorRoles roles) {
-  expect(region.keys.toList(), _colorRoleFields.keys.toList());
+/// [nullable] names the keys the region holds as null, after the rest.
+void _expectColorRoles(
+  Map<String, dynamic> region,
+  ScaffoldColorRoles roles, {
+  List<String> nullable = const [],
+}) {
+  expect(region.keys.toList(), [..._colorRoleFields.keys, ...nullable]);
+  for (final key in nullable) {
+    expect(region[key], isNull, reason: key);
+  }
+  expect(roles.surfaceEdge, isNull);
   for (final field in _colorRoleFields.entries) {
     expect(
       _argb(region[field.key]),
@@ -113,6 +122,7 @@ void main() {
     _expectColorRoles(
       roles['dark'] as Map<String, dynamic>,
       ScaffoldColorRoles.defaultColorRoles,
+      nullable: ['surfaceEdge'],
     );
   });
 

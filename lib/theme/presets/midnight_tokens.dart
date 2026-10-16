@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
+import 'package:frontend_scaffold/theme/scaffold_gradients.dart';
 import 'package:frontend_scaffold/theme/scaffold_motion_theme.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 import 'package:frontend_scaffold/theme/scaffold_shadows.dart';
@@ -77,6 +78,7 @@ abstract final class Midnight {
     inputForeground: Color(0xFFFFFFFF),
     sheetForeground: Color(0xFFFFFFFF),
     sheetDivider: Color(0x1FFFFFFF),
+    surfaceEdge: Color(0x1FFFFFFF),
     // END GENERATED scaffold.colorRoles.dark
   );
 
@@ -91,6 +93,7 @@ abstract final class Midnight {
     inputForeground: Color(0xFF10131A),
     sheetForeground: Color(0xFF10131A),
     sheetDivider: Color(0x1F10131A),
+    surfaceEdge: Color(0x1F10131A),
     // END GENERATED scaffold.colorRoles.light
   );
 
@@ -135,6 +138,19 @@ abstract final class Midnight {
     card: [BoxShadow(color: Color(0x1F000000), blurRadius: 16.0, offset: Offset(0.0, 4.0))],
     elevated: [BoxShadow(color: Color(0x1F000000), blurRadius: 16.0, offset: Offset(0.0, 4.0))],
     // END GENERATED scaffold.shadows.light
+  );
+
+  /// Dark-mode scaffold gradients of the midnight preset. No sheen: the dark source sheen is flat.
+  static const ScaffoldGradients darkScaffoldGradients = ScaffoldGradients(
+    // GENERATED from tokens/midnight.json scaffold.gradients.dark. Do not edit.
+    // END GENERATED scaffold.gradients.dark
+  );
+
+  /// Light-mode scaffold gradients of the midnight preset: the top-lit card sheen.
+  static const ScaffoldGradients lightScaffoldGradients = ScaffoldGradients(
+    // GENERATED from tokens/midnight.json scaffold.gradients.light. Do not edit.
+    surfaceSheen: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFFFFF), Color(0xFFF5F7FA)]),
+    // END GENERATED scaffold.gradients.light
   );
 
   /// Durations and curves of the midnight preset.

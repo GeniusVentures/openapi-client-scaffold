@@ -496,7 +496,8 @@ def test_committed_color_roles_file_matches_render() -> None:
 
 def test_color_roles_tokens_are_a_dark_light_pair() -> None:
     roles = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]["colorRoles"]
-    assert list(roles["dark"]) == COLOR_ROLE_NAMES
+    assert list(roles["dark"]) == [*COLOR_ROLE_NAMES, "surfaceEdge"]
+    assert roles["dark"]["surfaceEdge"] is None
     assert list(roles["light"]) == COLOR_ROLE_NAMES
 
 
@@ -614,13 +615,13 @@ def test_dart_gradient_rejects_invalid(value: object) -> None:
         dart_gradient("x", value)
 
 
-def test_committed_gradients_region_is_one_line() -> None:
+def test_committed_gradients_region_lists_every_gradient() -> None:
     rendered = render_files()[LIB_THEME_DIR / GRADIENTS_FILE]
     assert (LIB_THEME_DIR / GRADIENTS_FILE).read_bytes() == rendered.encode("utf-8")
     lines = rendered.split("\n")
     begin = lines.index("    // GENERATED from design_tokens.json scaffold.gradients. Do not edit.")
     end = lines.index("    // END GENERATED scaffold.gradients")
-    assert lines[begin + 1 : end] == ["    this.edgeFade,"]
+    assert lines[begin + 1 : end] == ["    this.edgeFade,", "    this.surfaceSheen,"]
 
 
 def test_non_null_gradient_token_fails_naming_the_entry(

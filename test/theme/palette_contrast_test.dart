@@ -67,6 +67,8 @@ final _themes = <_Theme>[
     extraSurfaces: {
       'surfaceBase': Midnight.lightColors.surfaceBase,
       'surfaceSheet': Midnight.lightColors.surfaceSheet,
+      'surfaceSheenEnd':
+          Midnight.lightScaffoldGradients.surfaceSheen!.colors.last,
     },
   ),
 ];
@@ -172,6 +174,10 @@ const _rolesClasses = <String, _Entry>{
     _Role.decorative,
     'decorative hairline, exempt from 1.4.11; checked for polarity only',
   ),
+  'surfaceEdge': _Entry(
+    _Role.decorative,
+    'card hairline, exempt from 1.4.11; null in the defaults',
+  ),
 };
 
 const _presetAccentFill = _Entry(
@@ -253,6 +259,15 @@ Set<String> _keys(Map<String, dynamic> tokens, String group, String mode) =>
     ((tokens[group] as Map<String, dynamic>)[mode] as Map<String, dynamic>).keys
         .toSet();
 
+/// Keys the dark region sets to null. A light args region cannot hold null, so
+/// it omits them.
+Set<String> _nullableKeys(Map<String, dynamic> tokens, String group) =>
+    ((tokens[group] as Map<String, dynamic>)['dark'] as Map<String, dynamic>)
+        .entries
+        .where((e) => e.value == null)
+        .map((e) => e.key)
+        .toSet();
+
 void _expectPair(Color fg, Color bg, double min) {
   final ratio = contrastRatio(fg, bg);
   expect(
@@ -291,7 +306,9 @@ void main() {
           reason: 'scaffold.palette.$mode',
         );
         expect(
-          _rolesClasses.keys.toSet(),
+          _rolesClasses.keys.toSet().difference(
+            mode == 'light' ? _nullableKeys(tokens, 'colorRoles') : <String>{},
+          ),
           _keys(tokens, 'colorRoles', mode),
           reason: 'scaffold.colorRoles.$mode',
         );
@@ -434,6 +451,19 @@ void main() {
           );
         }
       }
+    }
+
+    final edge = theme.roles.surfaceEdge;
+    if (edge != null) {
+      test('${theme.name}: surfaceEdge has the card text polarity', () {
+        final card = theme.palette.deepBlueCardColor;
+        final line = Color.alphaBlend(edge, card);
+        if (theme.brightness == Brightness.light) {
+          expect(line.computeLuminance(), lessThan(card.computeLuminance()));
+        } else {
+          expect(line.computeLuminance(), greaterThan(card.computeLuminance()));
+        }
+      });
     }
 
     for (final source in ['roles', if (theme.checksFallback) 'fallback']) {

@@ -316,6 +316,7 @@ const List<ThemeExtension<dynamic>> _darkExtensions = [
   Midnight.dimens,
   Midnight.darkColorRoles,
   Midnight.darkShadows,
+  Midnight.darkScaffoldGradients,
   Midnight.motion,
   Midnight.typography,
 ];
@@ -324,6 +325,7 @@ const List<ThemeExtension<dynamic>> _lightExtensions = [
   Midnight.dimens,
   Midnight.lightColorRoles,
   Midnight.lightShadows,
+  Midnight.lightScaffoldGradients,
   Midnight.motion,
   Midnight.typography,
 ];

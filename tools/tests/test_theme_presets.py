@@ -128,6 +128,20 @@ def test_driver_has_its_own_region_table() -> None:
     assert not set(REGIONS) & set(theme_defaults.REGIONS)
 
 
+def test_scaffold_gradients_regions_render_an_empty_dark_and_a_light_sheen() -> None:
+    lines = render_files()[LIB_THEME_DIR / PRESET_FILE].split("\n")
+
+    def body(region: str) -> list[str]:
+        begin = lines.index(f"    // GENERATED from tokens/midnight.json {region}. Do not edit.")
+        end = lines.index(f"    // END GENERATED {region}")
+        return lines[begin + 1 : end]
+
+    assert body("scaffold.gradients.dark") == []
+    light = body("scaffold.gradients.light")
+    assert len(light) == 1
+    assert light[0].startswith("    surfaceSheen: LinearGradient(")
+
+
 def test_midnight_tokens_have_no_m3_keys() -> None:
     data = json.loads(MIDNIGHT_TOKENS.read_text(encoding="utf-8"))
     assert not {"color", "typography", "shape", "elevation"} & set(data)
