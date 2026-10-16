@@ -96,6 +96,7 @@ export 'components/loading/loading.dart';
 export 'components/toast/toast_manager.dart';
 export 'components/toast/toast_navigator_observer.dart';
 export 'components/toast/toast_widget.dart';
+export 'theme/scaffold_color_roles.dart';
 export 'theme/scaffold_colors.dart';
 export 'theme/scaffold_dimens.dart';
 export 'theme/scaffold_elevation.dart';

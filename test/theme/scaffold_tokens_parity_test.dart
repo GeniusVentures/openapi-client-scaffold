@@ -3,10 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_scaffold/theme/scaffold_color_roles.dart';
 import 'package:frontend_scaffold/theme/scaffold_dimens.dart';
 import 'package:frontend_scaffold/theme/scaffold_palette.dart';
 
-/// design_tokens.json is the source of the default palette and dimens. These
+/// design_tokens.json is the source of the default palette, dimens and color roles. These
 /// tests prove the token file equals what Dart resolves at runtime, including
 /// entries the Dart source writes as ScaffoldColors references.
 
@@ -59,6 +60,15 @@ final Map<String, double Function(ScaffoldDimens)> _dimensFields = {
   'touchTargetPadding': (d) => d.touchTargetPadding,
 };
 
+final Map<String, Color Function(ScaffoldColorRoles)> _colorRoleFields = {
+  'accent': (r) => r.accent,
+  'accentOnSurface': (r) => r.accentOnSurface,
+  'borderControl': (r) => r.borderControl,
+  'inputForeground': (r) => r.inputForeground,
+  'sheetForeground': (r) => r.sheetForeground,
+  'sheetDivider': (r) => r.sheetDivider,
+};
+
 Map<String, dynamic> _scaffoldTokens() {
   final decoded =
       jsonDecode(File('design_tokens.json').readAsStringSync())
@@ -82,8 +92,35 @@ void _expectPalette(Map<String, dynamic> region, ScaffoldPalette palette) {
   }
 }
 
+void _expectColorRoles(Map<String, dynamic> region, ScaffoldColorRoles roles) {
+  expect(region.keys.toList(), _colorRoleFields.keys.toList());
+  for (final field in _colorRoleFields.entries) {
+    expect(
+      _argb(region[field.key]),
+      field.value(roles).toARGB32(),
+      reason: field.key,
+    );
+  }
+}
+
 void main() {
   final scaffold = _scaffoldTokens();
+
+  test('scaffold.colorRoles.dark equals ScaffoldColorRoles.defaultColorRoles', () {
+    final roles = scaffold['colorRoles'] as Map<String, dynamic>;
+    _expectColorRoles(
+      roles['dark'] as Map<String, dynamic>,
+      ScaffoldColorRoles.defaultColorRoles,
+    );
+  });
+
+  test('scaffold.colorRoles.light equals ScaffoldColorRoles.lightColorRoles', () {
+    final roles = scaffold['colorRoles'] as Map<String, dynamic>;
+    _expectColorRoles(
+      roles['light'] as Map<String, dynamic>,
+      ScaffoldColorRoles.lightColorRoles,
+    );
+  });
 
   test('scaffold.palette.dark equals ScaffoldPalette.defaultPalette', () {
     final palette = scaffold['palette'] as Map<String, dynamic>;

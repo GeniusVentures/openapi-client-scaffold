@@ -53,6 +53,8 @@ REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
     ("scaffold_motion_theme.dart", ("scaffold", "motion", "curves"), "curve", "params"),
     ("scaffold_typography.dart", ("scaffold", "typography", "textStyles"), "textStyle", "params"),
     ("scaffold_typography.dart", ("scaffold", "typography", "fontFamilies"), "fontFamily", "params"),
+    ("scaffold_color_roles.dart", ("scaffold", "colorRoles", "dark"), "color", "params"),
+    ("scaffold_color_roles.dart", ("scaffold", "colorRoles", "light"), "color", "args"),
 )
 
 _DOUBLE_RE = re.compile(r"-?\d+\.\d+")

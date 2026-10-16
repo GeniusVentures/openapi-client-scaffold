@@ -421,5 +421,52 @@ def test_typography_group_order_and_m3_key_untouched() -> None:
         "shadows",
         "motion",
         "typography",
+        "colorRoles",
     ]
     assert data["typography"] != data["scaffold"]["typography"]
+
+
+COLOR_ROLES_FILE = "scaffold_color_roles.dart"
+COLOR_ROLE_NAMES = [
+    "accent",
+    "accentOnSurface",
+    "borderControl",
+    "inputForeground",
+    "sheetForeground",
+    "sheetDivider",
+]
+
+
+def test_committed_color_roles_file_matches_render() -> None:
+    rendered = render_files()[LIB_THEME_DIR / COLOR_ROLES_FILE]
+    assert (LIB_THEME_DIR / COLOR_ROLES_FILE).read_bytes() == rendered.encode("utf-8")
+    assert "    this.accent = ScaffoldColors.lightGreenPrimary,\n" in rendered
+    assert "    this.inputForeground = const Color(0xFFFFFFFF),\n" in rendered
+    assert "    inputForeground: Color(0xFFFFFFFF),\n" in rendered
+    assert rendered.count("// GENERATED from design_tokens.json scaffold.colorRoles") == 2
+
+
+def test_color_roles_tokens_are_a_dark_light_pair() -> None:
+    roles = json.loads(DESIGN_TOKENS.read_text(encoding="utf-8"))["scaffold"]["colorRoles"]
+    assert list(roles["dark"]) == COLOR_ROLE_NAMES
+    assert list(roles["light"]) == COLOR_ROLE_NAMES
+
+
+def test_color_role_token_change_regenerates_only_light_line(workdir: tuple[Path, Path]) -> None:
+    tokens, theme = workdir
+    text = tokens.read_text(encoding="utf-8")
+    light_start = text.index('"light"', text.index('"colorRoles"'))
+    edited = text[:light_start] + text[light_start:].replace(
+        '"sheetDivider": "0x1FFFFFFF"', '"sheetDivider": "0x33FFFFFF"', 1
+    )
+    assert edited != text
+    tokens.write_text(edited, encoding="utf-8")
+    before = (theme / COLOR_ROLES_FILE).read_text(encoding="utf-8").splitlines()
+
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 1
+    assert run(check=False, tokens_path=tokens, theme_dir=theme) == 0
+    assert run(check=True, tokens_path=tokens, theme_dir=theme) == 0
+
+    after = (theme / COLOR_ROLES_FILE).read_text(encoding="utf-8").splitlines()
+    changed = [(a, b) for a, b in zip(before, after, strict=True) if a != b]
+    assert changed == [("    sheetDivider: Color(0x1FFFFFFF),", "    sheetDivider: Color(0x33FFFFFF),")]

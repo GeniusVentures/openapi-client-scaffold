@@ -228,6 +228,24 @@
       "fontFamilies": {
         "monoFontFamily": "monospace"
       }
+    },
+    "colorRoles": {
+      "dark": {
+        "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "accentOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "borderControl": { "value": "0x4DFFFFFF", "dartRef": "ScaffoldColors.borderGrey" },
+        "inputForeground": "0xFFFFFFFF",
+        "sheetForeground": "0xFFFFFFFF",
+        "sheetDivider": "0x1FFFFFFF"
+      },
+      "light": {
+        "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "accentOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "borderControl": "0x1F000000",
+        "inputForeground": "0xFFFFFFFF",
+        "sheetForeground": "0xFFFFFFFF",
+        "sheetDivider": "0x1FFFFFFF"
+      }
     }
   }
 }
