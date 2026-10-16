@@ -5,7 +5,7 @@
 /// motion gating). Supports both controlled ([expanded] + [onExpandedChanged])
 /// and uncontrolled ([initiallyExpanded]) modes — matching Flutter's standard
 /// controlled/uncontrolled idiom. Chevron tints [ScaffoldPalette.textSecondary]
-/// by default and flips to [ScaffoldPalette.lightGreenPrimary] when expanded
+/// by default and flips to `colorRoles.accentOnSurface` when expanded
 /// AND [highlightWhenExpanded] is true. Consumes `Theme.of(context)` via
 /// `context.palette` / `context.dimens` only — no hardcoded colors or dims.
 library;
@@ -60,7 +60,7 @@ class ScaffoldDisclosure extends StatefulWidget {
   /// parent must forward the new value into [expanded] for the UI to update.
   final ValueChanged<bool>? onExpandedChanged;
 
-  /// When true, the chevron tints [ScaffoldPalette.lightGreenPrimary] while
+  /// When true, the chevron tints `colorRoles.accentOnSurface` while
   /// expanded. When false the chevron stays [ScaffoldPalette.textSecondary].
   final bool highlightWhenExpanded;
 
@@ -107,7 +107,7 @@ class _ScaffoldDisclosureState extends State<ScaffoldDisclosure> {
               Icons.chevron_right,
               size: 24,
               color: _effectiveExpanded && widget.highlightWhenExpanded
-                  ? palette.lightGreenPrimary
+                  ? context.colorRoles.accentOnSurface
                   : palette.textSecondary,
             ),
           ),

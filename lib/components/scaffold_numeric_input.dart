@@ -229,7 +229,7 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
   }) {
     final palette = context.palette;
     final Color iconColor =
-        pressed ? palette.lightGreenPrimary : palette.textPrimary;
+        pressed ? context.colorRoles.accentOnSurface : palette.textPrimary;
 
     return Focus(
       onKeyEvent: (FocusNode node, KeyEvent event) {

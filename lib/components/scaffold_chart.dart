@@ -122,7 +122,7 @@ class ScaffoldChart<T> extends StatelessWidget {
   /// LayoutBuilder's `maxHeight` and asserts it is bounded.
   final double? plotHeight;
 
-  /// Optional line color override. Defaults to `palette.lightGreenPrimary`.
+  /// Optional line color override. Defaults to `colorRoles.accentOnSurface`.
   final Color? lineColor;
 
   /// Optional semantics label override. Defaults to `'Chart'`.
@@ -218,7 +218,7 @@ class ScaffoldChart<T> extends StatelessWidget {
           // Theme token resolution (D-07): every color and style flows
           // from context.palette / context.dimens / context.textTheme —
           // zero hardcoded colors, zero hardcoded dimens.
-          final Color resolvedLineColor = lineColor ?? palette.lightGreenPrimary;
+          final Color resolvedLineColor = lineColor ?? context.colorRoles.accentOnSurface;
           final Color borderControl = palette.borderGrey;
           final Color borderSubtle = palette.borderSubtle;
           final Color textSecondary = palette.textSecondary;

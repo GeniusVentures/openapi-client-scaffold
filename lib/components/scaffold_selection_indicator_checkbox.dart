@@ -14,7 +14,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// A checkbox selection indicator.
 ///
 /// Renders a 20px
-/// rounded-rect outline that fills with `palette.lightGreenPrimary` and shows a
+/// rounded-rect outline that fills with `colorRoles.accentOnSurface` and shows a
 /// check (or dash when indeterminate), wrapped in a 48px
 /// [ScaffoldTouchTarget].
 class ScaffoldSelectionIndicatorCheckbox extends StatelessWidget {
@@ -49,7 +49,7 @@ class ScaffoldSelectionIndicatorCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
 
-    final Widget indicator = _buildCheckbox(palette);
+    final Widget indicator = _buildCheckbox(context, palette);
 
 
     Widget result = Semantics(
@@ -82,7 +82,7 @@ class ScaffoldSelectionIndicatorCheckbox extends StatelessWidget {
     }
   }
 
-  Widget _buildCheckbox(ScaffoldPalette palette) {
+  Widget _buildCheckbox(BuildContext context, ScaffoldPalette palette) {
     final bool? checked = value;
     final Widget? icon = checked == null
         ? const Icon(Icons.remove, color: Colors.white, size: 16)
@@ -93,7 +93,7 @@ class ScaffoldSelectionIndicatorCheckbox extends StatelessWidget {
       width: 20,
       height: 20,
       decoration: BoxDecoration(
-        color: checked == true ? palette.lightGreenPrimary : null,
+        color: checked == true ? context.colorRoles.accentOnSurface : null,
         borderRadius: BorderRadius.circular(2),
         border: Border.all(color: palette.textSecondary, width: 2),
       ),

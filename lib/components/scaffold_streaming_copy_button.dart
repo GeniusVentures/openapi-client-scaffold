@@ -9,7 +9,7 @@
 /// `ScaffoldMotion.reducedMotion`, the swap is a zero-duration
 /// `AnimatedSwitcher`.
 ///
-/// When [armed] is true the icon is tinted `palette.lightGreenPrimary`
+/// When [armed] is true the icon is tinted `colorRoles.accentOnSurface`
 /// (the "copy ready" accent affordance from the Phase 9 color contract).
 /// When [announceCopied] is true, a sibling [ScaffoldLiveRegion] announces
 /// "Copied" once per press.
@@ -46,7 +46,7 @@ class ScaffoldStreamingCopyButton extends StatefulWidget {
   /// Tooltip / semantics label for the pressable.
   final String tooltip;
 
-  /// When true, the icon is tinted `palette.lightGreenPrimary` (the
+  /// When true, the icon is tinted `colorRoles.accentOnSurface` (the
   /// "copy ready" accent affordance from the Phase 9 color contract).
   final bool armed;
 
@@ -90,7 +90,7 @@ class _ScaffoldStreamingCopyButtonState
 
     final Color iconColor = _isCopied
         ? palette.statusSuccess
-        : (widget.armed ? palette.lightGreenPrimary : palette.textSecondary);
+        : (widget.armed ? context.colorRoles.accentOnSurface : palette.textSecondary);
 
     final Widget button = ScaffoldPressable(
       semanticLabel: widget.tooltip,

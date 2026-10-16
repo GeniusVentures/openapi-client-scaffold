@@ -14,7 +14,7 @@ enum _DropState { idle, overAccepted, overRejected, dropped }
 ///
 /// Composes [ScaffoldSurface] + [ScaffoldStatusIndicator] inside a [DragTarget].
 /// Idle renders a dashed `palette.borderSubtle` border; hovering an accepted
-/// drag shows `palette.dropZoneHighlight` with a `palette.lightGreenPrimary`
+/// drag shows `palette.dropZoneHighlight` with a `colorRoles.accentOnSurface`
 /// border; a rejected drag shows `palette.dropZoneRejected` with a
 /// `palette.statusError` border; a successful drop holds the accepted tint for
 /// 500ms before returning to idle. Transitions use
@@ -200,7 +200,7 @@ class _ScaffoldDropTargetState extends State<ScaffoldDropTarget> {
         return null;
       case _DropState.overAccepted:
       case _DropState.dropped:
-        return Border.all(color: palette.lightGreenPrimary, width: 1);
+        return Border.all(color: context.colorRoles.accentOnSurface, width: 1);
       case _DropState.overRejected:
         return Border.all(color: palette.statusError, width: 1);
     }

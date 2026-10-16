@@ -226,7 +226,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
                         ?.copyWith(fontFamily: monoFontFamily),
                   ),
                 ScaffoldLinkSpan(:final String text, :final Uri uri) =>
-                    _buildLinkSpan(text, uri, textTheme, palette),
+                    _buildLinkSpan(text, uri, textTheme),
                 ScaffoldCitationSpan() => WidgetSpan(
                     alignment: PlaceholderAlignment.middle,
                     child: _buildCitationPill(
@@ -258,7 +258,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
                       child: Container(
                         width: dimens.focusRingWidth,
                         height: cursorHeight,
-                        color: palette.lightGreenPrimary,
+                        color: context.colorRoles.accentOnSurface,
                       ),
                     );
                   },
@@ -375,7 +375,6 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
     String text,
     Uri uri,
     TextTheme textTheme,
-    palette,
   ) {
     final TapGestureRecognizer recognizer = TapGestureRecognizer()
       ..onTap = () => widget.onLinkTap?.call(uri);
@@ -384,7 +383,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
       text: text,
       recognizer: recognizer,
       style: textTheme.bodyMedium?.copyWith(
-        color: palette.lightGreenPrimary,
+        color: context.colorRoles.accentTextOnSurface,
         decoration: TextDecoration.underline,
       ),
     );
@@ -415,7 +414,7 @@ class _ScaffoldStreamingRichTextState extends State<ScaffoldStreamingRichText>
           child: Text(
             span.marker,
             style: textTheme.bodyMedium
-                ?.copyWith(color: palette.lightGreenPrimary),
+                ?.copyWith(color: context.colorRoles.accentTextOnSurface),
           ),
         ),
       ),

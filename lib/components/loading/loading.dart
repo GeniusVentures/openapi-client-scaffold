@@ -6,7 +6,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 class Loading extends StatelessWidget {
   final String? text;
 
-  /// Left dot color; falls back to [ScaffoldPalette.lightGreenPrimary].
+  /// Left dot color; falls back to `colorRoles.accentOnSurface`.
   final Color? leftDotColor;
 
   /// Right dot color; falls back to [ScaffoldPalette.blue500].
@@ -27,7 +27,7 @@ class Loading extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           LoadingAnimationWidget.flickr(
-            leftDotColor: leftDotColor ?? palette.lightGreenPrimary,
+            leftDotColor: leftDotColor ?? context.colorRoles.accentOnSurface,
             rightDotColor: rightDotColor ?? palette.blue500,
             size: 50,
           ),

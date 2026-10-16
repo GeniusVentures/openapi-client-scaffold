@@ -276,7 +276,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
                       icon: Icon(
                         Icons.filter_list,
                         color: widget.isFiltered
-                            ? palette.lightGreenPrimary
+                            ? context.colorRoles.accentOnSurface
                             : palette.textSecondary,
                       ),
                       onPressed: widget.onFilterTap,
@@ -331,7 +331,7 @@ class _{{ widget_class_name }}State extends State<{{ widget_class_name }}> {
                                     child: Text(
                                       group.label,
                                       style: textTheme.labelLarge?.copyWith(
-                                        color: palette.lightGreenPrimary,
+                                        color: context.colorRoles.accentTextOnSurface,
                                       ),
                                     ),
                                   ),

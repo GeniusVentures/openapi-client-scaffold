@@ -432,6 +432,8 @@ COLOR_ROLES_FILE = "scaffold_color_roles.dart"
 COLOR_ROLE_NAMES = [
     "accent",
     "accentOnSurface",
+    "accentSecondaryOnSurface",
+    "accentTextOnSurface",
     "borderControl",
     "inputForeground",
     "sheetForeground",

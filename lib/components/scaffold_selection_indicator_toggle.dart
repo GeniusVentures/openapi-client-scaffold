@@ -73,7 +73,7 @@ class ScaffoldSelectionIndicatorToggle extends StatelessWidget {
       width: 40,
       height: 24,
       decoration: BoxDecoration(
-        color: value ? palette.lightGreenPrimary : palette.textSecondary,
+        color: value ? context.colorRoles.accentOnSurface : palette.textSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Stack(

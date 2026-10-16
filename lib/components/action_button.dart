@@ -12,7 +12,7 @@ class ActionButton extends StatefulWidget {
   /// Background color; falls back to [ScaffoldPalette.deepBlueCardColor].
   final Color? backgroundColor;
 
-  /// Icon tint; falls back to [ScaffoldPalette.lightGreenSecondary].
+  /// Icon tint; falls back to [ScaffoldColorRoles.accentSecondaryOnSurface].
   final Color? iconColor;
 
   /// Label color; falls back to [ScaffoldPalette.gray500].
@@ -72,9 +72,10 @@ class _ActionButtonState extends State<ActionButton>
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final colorRoles = context.colorRoles;
     final dimens = context.dimens;
     final backgroundColor = widget.backgroundColor ?? palette.deepBlueCardColor;
-    final iconColor = widget.iconColor ?? palette.lightGreenSecondary;
+    final iconColor = widget.iconColor ?? colorRoles.accentSecondaryOnSurface;
     final textColor = widget.textColor ?? palette.gray500;
 
     return LayoutBuilder(

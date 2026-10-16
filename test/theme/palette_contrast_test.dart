@@ -106,6 +106,8 @@ const _paletteClasses = <String, _Entry>{
 const _rolesClasses = <String, _Entry>{
   'accent': _accentFill,
   'accentOnSurface': _accentFill,
+  'accentSecondaryOnSurface': _accentFill,
+  'accentTextOnSurface': _accentFill,
   'borderControl': _Entry(_Role.nonText, 'control border, 3:1'),
   'inputForeground': _Entry(
     _Role.text,

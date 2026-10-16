@@ -13,6 +13,12 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   /// Accent used as a foreground on surfaces: text, outlines, focused borders.
   final Color accentOnSurface;
 
+  /// Secondary accent used as a foreground on surfaces, such as the ActionButton icon.
+  final Color accentSecondaryOnSurface;
+
+  /// Accent used as text on surfaces, such as links.
+  final Color accentTextOnSurface;
+
   /// Enabled border of input controls.
   final Color borderControl;
 
@@ -29,6 +35,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     // GENERATED from design_tokens.json scaffold.colorRoles.dark. Do not edit.
     this.accent = ScaffoldColors.lightGreenPrimary,
     this.accentOnSurface = ScaffoldColors.lightGreenPrimary,
+    this.accentSecondaryOnSurface = ScaffoldColors.lightGreenSecondary,
+    this.accentTextOnSurface = ScaffoldColors.lightGreenPrimary,
     this.borderControl = const Color(0x5CFFFFFF),
     this.inputForeground = const Color(0xFFFFFFFF),
     this.sheetForeground = const Color(0xFFFFFFFF),
@@ -44,6 +52,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     // GENERATED from design_tokens.json scaffold.colorRoles.light. Do not edit.
     accent: ScaffoldColors.lightGreenPrimary,
     accentOnSurface: ScaffoldColors.lightGreenPrimary,
+    accentSecondaryOnSurface: ScaffoldColors.lightGreenSecondary,
+    accentTextOnSurface: ScaffoldColors.lightGreenPrimary,
     borderControl: Color(0x73000000),
     inputForeground: Color(0xFF17191E),
     sheetForeground: Color(0xFF17191E),
@@ -52,7 +62,7 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   );
 
   /// Roles for an app that registered no [ScaffoldColorRoles]. [accent],
-  /// [accentOnSurface] and [borderControl] come from [palette], which is what
+  /// the accent foreground roles and [borderControl] come from [palette], which is what
   /// the widgets read before these roles existed; the other roles come from
   /// [lightColorRoles] or [defaultColorRoles] by [brightness].
   static ScaffoldColorRoles fallbackFor(
@@ -63,6 +73,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     return base.copyWith(
       accent: palette.lightGreenPrimary,
       accentOnSurface: palette.lightGreenPrimary,
+      accentSecondaryOnSurface: palette.lightGreenSecondary,
+      accentTextOnSurface: palette.lightGreenPrimary,
       borderControl: palette.borderGrey,
     );
   }
@@ -90,6 +102,8 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
   ScaffoldColorRoles copyWith({
     Color? accent,
     Color? accentOnSurface,
+    Color? accentSecondaryOnSurface,
+    Color? accentTextOnSurface,
     Color? borderControl,
     Color? inputForeground,
     Color? sheetForeground,
@@ -98,6 +112,9 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     return ScaffoldColorRoles(
       accent: accent ?? this.accent,
       accentOnSurface: accentOnSurface ?? this.accentOnSurface,
+      accentSecondaryOnSurface:
+          accentSecondaryOnSurface ?? this.accentSecondaryOnSurface,
+      accentTextOnSurface: accentTextOnSurface ?? this.accentTextOnSurface,
       borderControl: borderControl ?? this.borderControl,
       inputForeground: inputForeground ?? this.inputForeground,
       sheetForeground: sheetForeground ?? this.sheetForeground,
@@ -113,6 +130,16 @@ class ScaffoldColorRoles extends ThemeExtension<ScaffoldColorRoles> {
     return ScaffoldColorRoles(
       accent: Color.lerp(accent, other.accent, t)!,
       accentOnSurface: Color.lerp(accentOnSurface, other.accentOnSurface, t)!,
+      accentSecondaryOnSurface: Color.lerp(
+        accentSecondaryOnSurface,
+        other.accentSecondaryOnSurface,
+        t,
+      )!,
+      accentTextOnSurface: Color.lerp(
+        accentTextOnSurface,
+        other.accentTextOnSurface,
+        t,
+      )!,
       borderControl: Color.lerp(borderControl, other.borderControl, t)!,
       inputForeground: Color.lerp(inputForeground, other.inputForeground, t)!,
       sheetForeground: Color.lerp(sheetForeground, other.sheetForeground, t)!,

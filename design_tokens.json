@@ -233,6 +233,8 @@
       "dark": {
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
         "accentOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "accentSecondaryOnSurface": { "value": "0xFF01CC95", "dartRef": "ScaffoldColors.lightGreenSecondary" },
+        "accentTextOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
         "borderControl": "0x5CFFFFFF",
         "inputForeground": "0xFFFFFFFF",
         "sheetForeground": "0xFFFFFFFF",
@@ -241,6 +243,8 @@
       "light": {
         "accent": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
         "accentOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
+        "accentSecondaryOnSurface": { "value": "0xFF01CC95", "dartRef": "ScaffoldColors.lightGreenSecondary" },
+        "accentTextOnSurface": { "value": "0xFF00EAAE", "dartRef": "ScaffoldColors.lightGreenPrimary" },
         "borderControl": "0x73000000",
         "inputForeground": "0xFF17191E",
         "sheetForeground": "0xFF17191E",

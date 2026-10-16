@@ -32,6 +32,8 @@ void main() {
   const a = ScaffoldColorRoles(
     accent: Color(0xFF010101),
     accentOnSurface: Color(0xFF020202),
+    accentSecondaryOnSurface: Color(0xFF070707),
+    accentTextOnSurface: Color(0xFF080808),
     borderControl: Color(0xFF030303),
     inputForeground: Color(0xFF040404),
     sheetForeground: Color(0xFF050505),
@@ -40,6 +42,8 @@ void main() {
   const b = ScaffoldColorRoles(
     accent: Color(0xFF101010),
     accentOnSurface: Color(0xFF202020),
+    accentSecondaryOnSurface: Color(0xFF707070),
+    accentTextOnSurface: Color(0xFF808080),
     borderControl: Color(0xFF303030),
     inputForeground: Color(0xFF404040),
     sheetForeground: Color(0xFF505050),
@@ -49,6 +53,14 @@ void main() {
   void expectRoles(ScaffoldColorRoles actual, ScaffoldColorRoles expected) {
     expect(actual.accent.toARGB32(), expected.accent.toARGB32());
     expect(actual.accentOnSurface.toARGB32(), expected.accentOnSurface.toARGB32());
+    expect(
+      actual.accentSecondaryOnSurface.toARGB32(),
+      expected.accentSecondaryOnSurface.toARGB32(),
+    );
+    expect(
+      actual.accentTextOnSurface.toARGB32(),
+      expected.accentTextOnSurface.toARGB32(),
+    );
     expect(actual.borderControl.toARGB32(), expected.borderControl.toARGB32());
     expect(actual.inputForeground.toARGB32(), expected.inputForeground.toARGB32());
     expect(actual.sheetForeground.toARGB32(), expected.sheetForeground.toARGB32());
@@ -59,6 +71,14 @@ void main() {
     test('dark roles equal what the widgets drew before', () {
       expect(dark.accent.toARGB32(), defaultPalette.lightGreenPrimary.toARGB32());
       expect(dark.accentOnSurface.toARGB32(), defaultPalette.lightGreenPrimary.toARGB32());
+      expect(
+        dark.accentSecondaryOnSurface.toARGB32(),
+        defaultPalette.lightGreenSecondary.toARGB32(),
+      );
+      expect(
+        dark.accentTextOnSurface.toARGB32(),
+        defaultPalette.lightGreenPrimary.toARGB32(),
+      );
       expect(dark.borderControl.toARGB32(), defaultPalette.borderGrey.toARGB32());
       expect(dark.inputForeground.toARGB32(), 0xFFFFFFFF);
       expect(dark.sheetForeground.toARGB32(), 0xFFFFFFFF);
@@ -68,6 +88,11 @@ void main() {
     test('light roles differ from dark in borderControl and the input and sheet colors', () {
       expect(light.accent.toARGB32(), dark.accent.toARGB32());
       expect(light.accentOnSurface.toARGB32(), dark.accentOnSurface.toARGB32());
+      expect(
+        light.accentSecondaryOnSurface.toARGB32(),
+        dark.accentSecondaryOnSurface.toARGB32(),
+      );
+      expect(light.accentTextOnSurface.toARGB32(), dark.accentTextOnSurface.toARGB32());
       expect(light.borderControl.toARGB32(), lightPalette.borderGrey.toARGB32());
       expect(light.inputForeground.toARGB32(), 0xFF17191E);
       expect(light.sheetForeground.toARGB32(), 0xFF17191E);
@@ -85,6 +110,11 @@ void main() {
       final roles = ScaffoldColorRoles.fallbackFor(custom, Brightness.dark);
       expect(roles.accent.toARGB32(), 0xFF010203);
       expect(roles.accentOnSurface.toARGB32(), 0xFF010203);
+      expect(roles.accentTextOnSurface.toARGB32(), 0xFF010203);
+      expect(
+        roles.accentSecondaryOnSurface.toARGB32(),
+        custom.lightGreenSecondary.toARGB32(),
+      );
       expect(roles.borderControl.toARGB32(), 0xFF040506);
       expect(roles.inputForeground.toARGB32(), dark.inputForeground.toARGB32());
       expect(roles.sheetForeground.toARGB32(), dark.sheetForeground.toARGB32());
@@ -95,6 +125,11 @@ void main() {
       final roles = ScaffoldColorRoles.fallbackFor(custom, Brightness.light);
       expect(roles.accent.toARGB32(), 0xFF010203);
       expect(roles.accentOnSurface.toARGB32(), 0xFF010203);
+      expect(roles.accentTextOnSurface.toARGB32(), 0xFF010203);
+      expect(
+        roles.accentSecondaryOnSurface.toARGB32(),
+        custom.lightGreenSecondary.toARGB32(),
+      );
       expect(roles.borderControl.toARGB32(), 0xFF040506);
       expect(roles.inputForeground.toARGB32(), light.inputForeground.toARGB32());
       expect(roles.sheetForeground.toARGB32(), light.sheetForeground.toARGB32());
@@ -175,6 +210,8 @@ void main() {
         const ScaffoldColorRoles(
           accent: x,
           accentOnSurface: Color(0xFF020202),
+          accentSecondaryOnSurface: Color(0xFF070707),
+          accentTextOnSurface: Color(0xFF080808),
           borderControl: Color(0xFF030303),
           inputForeground: Color(0xFF040404),
           sheetForeground: Color(0xFF050505),
@@ -183,6 +220,10 @@ void main() {
       );
       expect(a.copyWith(accentOnSurface: x).accentOnSurface, x);
       expect(a.copyWith(accentOnSurface: x).accent, a.accent);
+      expect(a.copyWith(accentSecondaryOnSurface: x).accentSecondaryOnSurface, x);
+      expect(a.copyWith(accentSecondaryOnSurface: x).accentTextOnSurface, a.accentTextOnSurface);
+      expect(a.copyWith(accentTextOnSurface: x).accentTextOnSurface, x);
+      expect(a.copyWith(accentTextOnSurface: x).accentSecondaryOnSurface, a.accentSecondaryOnSurface);
       expect(a.copyWith(borderControl: x).borderControl, x);
       expect(a.copyWith(borderControl: x).sheetDivider, a.sheetDivider);
       expect(a.copyWith(inputForeground: x).inputForeground, x);
@@ -203,6 +244,14 @@ void main() {
     test('midpoint blends a field', () {
       final mid = a.lerp(b, 0.5);
       expect(mid.accent, Color.lerp(a.accent, b.accent, 0.5));
+      expect(
+        mid.accentSecondaryOnSurface,
+        Color.lerp(a.accentSecondaryOnSurface, b.accentSecondaryOnSurface, 0.5),
+      );
+      expect(
+        mid.accentTextOnSurface,
+        Color.lerp(a.accentTextOnSurface, b.accentTextOnSurface, 0.5),
+      );
     });
 
     test('a non-ScaffoldColorRoles returns this', () {

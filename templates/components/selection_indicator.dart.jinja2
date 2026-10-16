@@ -14,9 +14,9 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// A {{ variant }} selection indicator.
 ///
 /// {% if variant == "radio" %}Renders a 20px circle outline that fills with a
-/// 12px `palette.lightGreenPrimary` dot when checked, wrapped in a 48px
+/// 12px `colorRoles.accentOnSurface` dot when checked, wrapped in a 48px
 /// [ScaffoldTouchTarget].{% elif variant == "checkbox" %}Renders a 20px
-/// rounded-rect outline that fills with `palette.lightGreenPrimary` and shows a
+/// rounded-rect outline that fills with `colorRoles.accentOnSurface` and shows a
 /// check (or dash when indeterminate), wrapped in a 48px
 /// [ScaffoldTouchTarget].{% elif variant == "toggle" %}Renders a 40x24 pill
 /// track whose 20px thumb slides to the on position, wrapped in a 48px
@@ -61,9 +61,9 @@ class {{ widget_class_name }} extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
 {% if variant == "radio" %}
-    final Widget indicator = _buildRadio(palette);
+    final Widget indicator = _buildRadio(context, palette);
 {% elif variant == "checkbox" %}
-    final Widget indicator = _buildCheckbox(palette);
+    final Widget indicator = _buildCheckbox(context, palette);
 {% elif variant == "toggle" %}
     final Widget indicator = _buildToggle(context, palette);
 {% endif %}
@@ -96,7 +96,7 @@ class {{ widget_class_name }} extends StatelessWidget {
 {% if variant == "radio" %}
   void _handleTap() => onChanged?.call(!value);
 
-  Widget _buildRadio(ScaffoldPalette palette) {
+  Widget _buildRadio(BuildContext context, ScaffoldPalette palette) {
     return Container(
       width: 20,
       height: 20,
@@ -111,7 +111,7 @@ class {{ widget_class_name }} extends StatelessWidget {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: palette.lightGreenPrimary,
+                  color: context.colorRoles.accentOnSurface,
                 ),
               ),
             )
@@ -128,7 +128,7 @@ class {{ widget_class_name }} extends StatelessWidget {
     }
   }
 
-  Widget _buildCheckbox(ScaffoldPalette palette) {
+  Widget _buildCheckbox(BuildContext context, ScaffoldPalette palette) {
     final bool? checked = value;
     final Widget? icon = checked == null
         ? const Icon(Icons.remove, color: Colors.white, size: 16)
@@ -139,7 +139,7 @@ class {{ widget_class_name }} extends StatelessWidget {
       width: 20,
       height: 20,
       decoration: BoxDecoration(
-        color: checked == true ? palette.lightGreenPrimary : null,
+        color: checked == true ? context.colorRoles.accentOnSurface : null,
         borderRadius: BorderRadius.circular(2),
         border: Border.all(color: palette.textSecondary, width: 2),
       ),
@@ -154,7 +154,7 @@ class {{ widget_class_name }} extends StatelessWidget {
       width: 40,
       height: 24,
       decoration: BoxDecoration(
-        color: value ? palette.lightGreenPrimary : palette.textSecondary,
+        color: value ? context.colorRoles.accentOnSurface : palette.textSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Stack(

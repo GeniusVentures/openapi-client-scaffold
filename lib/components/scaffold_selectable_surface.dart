@@ -8,7 +8,7 @@ import 'package:frontend_scaffold/theme/scaffold_theme.dart';
 /// Composes [ScaffoldSurface] + [ScaffoldPressable] into a selectable card.
 /// Unselected renders the default `palette.deepBlueCardColor` surface; selected
 /// overlays `palette.lightGreenPrimary` at 12% opacity with a 1px
-/// `palette.lightGreenPrimary` border. Focus ring, press state layer, and
+/// `colorRoles.accentOnSurface` border. Focus ring, press state layer, and
 /// disabled dim come from [ScaffoldPressable]. State transitions use
 /// [ScaffoldMotionTheme.medium] with [ScaffoldMotionTheme.standard].
 class ScaffoldSelectableSurface extends StatelessWidget {
@@ -64,7 +64,7 @@ class ScaffoldSelectableSurface extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         border: selected
-            ? Border.all(color: palette.lightGreenPrimary, width: 1)
+            ? Border.all(color: context.colorRoles.accentOnSurface, width: 1)
             : null,
         borderRadius: BorderRadius.circular(dimens.borderRadiusCard),
       ),

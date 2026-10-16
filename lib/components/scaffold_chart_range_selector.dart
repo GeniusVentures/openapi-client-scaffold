@@ -671,7 +671,7 @@ class _RangeSelectorCoreState<T> extends State<_RangeSelectorCore<T>> {
                                 right: band?.$2,
                                 bandColor: palette.lightGreenPrimary
                                     .withValues(alpha: _kBandFillAlpha),
-                                edgeColor: palette.lightGreenPrimary,
+                                edgeColor: context.colorRoles.accentOnSurface,
                               ),
                             ),
                           ),
@@ -715,7 +715,7 @@ class _RangeBandPainter extends CustomPainter {
   /// Fill color — `palette.lightGreenPrimary` at 12% alpha.
   final Color bandColor;
 
-  /// Edge-rule color — `palette.lightGreenPrimary` at full opacity.
+  /// Edge-rule color — `colorRoles.accentOnSurface` at full opacity.
   final Color edgeColor;
 
   @override

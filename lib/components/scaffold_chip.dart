@@ -2,7 +2,7 @@
 ///
 /// Composes [ScaffoldSurface] (pill radius) + [ScaffoldPressable] (which
 /// supplies [ScaffoldTouchTarget] internally for the 48px minimum hit area).
-/// Selected state is a 2px `palette.lightGreenPrimary` BORDER — the fill
+/// Selected state is a 2px `colorRoles.accentOnSurface` BORDER — the fill
 /// stays at the default `palette.deepBlueCardColor`, preserving the 60/30/10
 /// contract. Optional leading [icon], trailing [status]
 /// ([ScaffoldStatusIndicator]). Disabled wraps in [ScaffoldDisabledOverlay]
@@ -47,7 +47,7 @@ class ScaffoldChip extends StatelessWidget {
   /// Optional trailing status indicator variant.
   final StatusVariant? status;
 
-  /// When true, draws a 2px `palette.lightGreenPrimary` border. The fill
+  /// When true, draws a 2px `colorRoles.accentOnSurface` border. The fill
   /// remains `palette.deepBlueCardColor` — selected state is a border, not
   /// a fill change.
   final bool selected;
@@ -95,7 +95,7 @@ class ScaffoldChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(dimens.radiusPill),
       border: selected
           ? Border.all(
-              color: palette.lightGreenPrimary,
+              color: context.colorRoles.accentOnSurface,
               width: dimens.focusRingWidth,
             )
           : null,
