@@ -479,12 +479,93 @@ def test_color_role_token_change_regenerates_only_light_line(workdir: tuple[Path
 GRADIENTS_FILE = "scaffold_gradients.dart"
 
 
-def test_dart_gradient_accepts_only_null() -> None:
+def test_dart_gradient_null_is_unset() -> None:
     assert dart_gradient("x", None) is None
 
 
-@pytest.mark.parametrize("value", [{"colors": []}, "LinearGradient()", [], 0])
-def test_dart_gradient_rejects_everything_else(value: object) -> None:
+def _linear(**overrides: object) -> dict[str, object]:
+    gradient: dict[str, object] = {
+        "type": "linear",
+        "begin": "topCenter",
+        "end": "bottomCenter",
+        "colors": ["0xFF14171E", "0xFF0B0D12", "0xFF07090D"],
+        "stops": [Decimal("0.0"), Decimal("0.4"), Decimal("1.0")],
+    }
+    gradient.update(overrides)
+    return gradient
+
+
+def _radial(**overrides: object) -> dict[str, object]:
+    gradient: dict[str, object] = {
+        "type": "radial",
+        "center": [Decimal("0.0"), Decimal("-0.9")],
+        "radius": Decimal("1.0"),
+        "colors": ["0x1FFFFFFF", "0x00FFFFFF"],
+        "stops": [Decimal("0.0"), Decimal("0.6")],
+    }
+    gradient.update(overrides)
+    return gradient
+
+
+def test_dart_gradient_linear() -> None:
+    assert dart_gradient("x", _linear()) == (
+        "LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, "
+        "colors: [Color(0xFF14171E), Color(0xFF0B0D12), Color(0xFF07090D)], stops: [0.0, 0.4, 1.0])"
+    )
+
+
+def test_dart_gradient_linear_without_stops_omits_the_argument() -> None:
+    value = _linear(begin="centerLeft", end="centerRight", colors=["0xFF0AD89C", "0xFF0AAEE6"])
+    del value["stops"]
+    assert dart_gradient("x", value) == (
+        "LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, "
+        "colors: [Color(0xFF0AD89C), Color(0xFF0AAEE6)])"
+    )
+
+
+def test_dart_gradient_radial() -> None:
+    assert dart_gradient("x", _radial()) == (
+        "RadialGradient(center: Alignment(0.0, -0.9), radius: 1.0, "
+        "colors: [Color(0x1FFFFFFF), Color(0x00FFFFFF)], stops: [0.0, 0.6])"
+    )
+
+
+def test_dart_gradient_accepts_stops_ending_at_one_and_equal_stops() -> None:
+    value = _linear(colors=["0xFF000000", "0xFF000000"], stops=[Decimal("0.5"), Decimal("0.5")])
+    assert dart_gradient("x", value).endswith("stops: [0.5, 0.5])")  # type: ignore[union-attr]
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {"colors": []},
+        "LinearGradient()",
+        [],
+        0,
+        _linear(type="sweep"),
+        _linear(angle=Decimal("1.0")),
+        _linear(begin="middle"),
+        _linear(end=None),
+        _linear(colors=["0xFF14171E"], stops=[Decimal("0.0")]),
+        _linear(colors=["0xff14171e", "0xFF0B0D12", "0xFF07090D"]),
+        _linear(colors=["0xFF14171E", "0xFF0B0D12", "0xFF07090D", "0xFF000000"]),
+        _linear(stops=[Decimal("0.0"), Decimal("0.4")]),
+        _linear(stops=[Decimal("0.0"), Decimal("0.6"), Decimal("0.4")]),
+        _linear(stops=[Decimal("0.0"), Decimal("0.4"), Decimal("1.1")]),
+        _linear(stops=[Decimal("-0.1"), Decimal("0.4"), Decimal("1.0")]),
+        _linear(stops=[0, 0, 1]),
+        _radial(radius=1),
+        _radial(radius=None),
+        _radial(center=[Decimal("0.0")]),
+        _radial(center=[0, 0]),
+        _radial(begin="center"),
+        {k: v for k, v in _linear().items() if k != "begin"},
+        {k: v for k, v in _radial().items() if k != "radius"},
+        {k: v for k, v in _radial().items() if k != "colors"},
+        {"type": ["linear"]},
+    ],
+)
+def test_dart_gradient_rejects_invalid(value: object) -> None:
     with pytest.raises(ThemeTokenError, match="x"):
         dart_gradient("x", value)
 

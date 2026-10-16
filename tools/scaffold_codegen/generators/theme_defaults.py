@@ -200,11 +200,80 @@ def dart_text_style(name: str, value: object) -> str:
     return f"TextStyle({', '.join(parts)})"
 
 
+_ALIGNMENTS = (
+    "topLeft",
+    "topCenter",
+    "topRight",
+    "centerLeft",
+    "center",
+    "centerRight",
+    "bottomLeft",
+    "bottomCenter",
+    "bottomRight",
+)
+_LINEAR_GRADIENT_KEYS = frozenset({"type", "begin", "end", "colors", "stops"})
+_RADIAL_GRADIENT_KEYS = frozenset({"type", "center", "radius", "colors", "stops"})
+
+
+def _gradient_alignment(label: str, value: object) -> str:
+    if isinstance(value, str) and value in _ALIGNMENTS:
+        return f"Alignment.{value}"
+    raise ThemeTokenError(f"{label}: expected one of {list(_ALIGNMENTS)}, got {value!r}")
+
+
+def _gradient_colors(label: str, value: object) -> str:
+    if not (isinstance(value, list) and len(value) >= 2):
+        raise ThemeTokenError(f"{label}: expected a list of at least two 0xAARRGGBB strings, got {value!r}")
+    for color in value:
+        if not (isinstance(color, str) and _ARGB_RE.fullmatch(color)):
+            raise ThemeTokenError(f"{label}: expected uppercase 0xAARRGGBB strings, got {color!r}")
+    return "[" + ", ".join(f"Color({color})" for color in value) + "]"
+
+
+def _gradient_stops(label: str, value: object, count: int) -> str:
+    if not (isinstance(value, list) and len(value) == count):
+        raise ThemeTokenError(f"{label}: expected {count} stops, one per color, got {value!r}")
+    previous = decimal.Decimal(0)
+    for index, stop in enumerate(value):
+        dart_double(f"{label}[{index}]", stop)
+        if not previous <= stop <= 1:
+            raise ThemeTokenError(f"{label}: stops must not decrease and must stay within 1.0, got {value!r}")
+        previous = stop
+    return "[" + ", ".join(str(stop) for stop in value) + "]"
+
+
 def dart_gradient(name: str, value: object) -> str | None:
-    """Return None for an unset gradient; no gradient literal is accepted yet."""
+    """Return a ``LinearGradient(...)`` or ``RadialGradient(...)`` literal; None for an unset gradient."""
     if value is None:
         return None
-    raise ThemeTokenError(f"{name}: only null (no gradient) is supported, got {value!r}")
+    kind = value.get("type") if isinstance(value, dict) else None
+    allowed = {"linear": _LINEAR_GRADIENT_KEYS, "radial": _RADIAL_GRADIENT_KEYS}.get(str(kind))
+    if allowed is None or not set(value) <= allowed or "colors" not in value:
+        raise ThemeTokenError(
+            f"{name}: expected a null, linear or radial gradient object with known keys, got {value!r}"
+        )
+    parts = []
+    if kind == "linear":
+        for key in ("begin", "end"):
+            if key not in value:
+                raise ThemeTokenError(f"{name}: a linear gradient needs {key!r}, got {value!r}")
+            parts.append(f"{key}: {_gradient_alignment(f'{name}.{key}', value[key])}")
+    else:
+        center = value.get("center")
+        if not (isinstance(center, list) and len(center) == 2):
+            raise ThemeTokenError(f"{name}.center: expected a list of two numbers, got {center!r}")
+        x = dart_double(f"{name}.center", center[0])
+        y = dart_double(f"{name}.center", center[1])
+        parts.append(f"center: Alignment({x}, {y})")
+        if "radius" not in value:
+            raise ThemeTokenError(f"{name}: a radial gradient needs 'radius', got {value!r}")
+        parts.append(f"radius: {dart_double(f'{name}.radius', value['radius'])}")
+    colors = _gradient_colors(f"{name}.colors", value["colors"])
+    parts.append(f"colors: {colors}")
+    if "stops" in value:
+        parts.append(f"stops: {_gradient_stops(f'{name}.stops', value['stops'], len(value['colors']))}")
+    constructor = "LinearGradient" if kind == "linear" else "RadialGradient"
+    return f"{constructor}({', '.join(parts)})"
 
 
 _LITERAL_ENCODERS: dict[str, Callable[[str, object], str | None]] = {

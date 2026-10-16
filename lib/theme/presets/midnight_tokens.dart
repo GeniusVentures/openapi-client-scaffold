@@ -206,6 +206,47 @@ abstract final class Midnight {
     selection: Color(0xFF8A8F9D),
     // END GENERATED preset.colors.light
   );
+
+  /// Dark-mode dialog and glow shadows of the midnight preset.
+  static const MidnightElevation darkElevation = MidnightElevation(
+    // GENERATED from tokens/midnight.json preset.shadows.dark. Do not edit.
+    dialog: [BoxShadow(color: Color(0x73000000), blurRadius: 32.0, offset: Offset(0.0, 8.0))],
+    glowAccent: [BoxShadow(color: Color(0x2E14C8FF), blurRadius: 24.0, offset: Offset(0.0, 0.0))],
+    glowAccentPair: [BoxShadow(color: Color(0x2614C8FF), blurRadius: 28.0, offset: Offset(-6.0, 8.0)), BoxShadow(color: Color(0x262BF5B4), blurRadius: 28.0, offset: Offset(6.0, 8.0))],
+    // END GENERATED preset.shadows.dark
+  );
+
+  /// Light-mode dialog and glow shadows of the midnight preset.
+  static const MidnightElevation lightElevation = MidnightElevation(
+    // GENERATED from tokens/midnight.json preset.shadows.light. Do not edit.
+    dialog: [BoxShadow(color: Color(0x33000000), blurRadius: 32.0, offset: Offset(0.0, 8.0))],
+    glowAccent: [BoxShadow(color: Color(0x2E14C8FF), blurRadius: 24.0, offset: Offset(0.0, 0.0))],
+    glowAccentPair: [BoxShadow(color: Color(0x2614C8FF), blurRadius: 28.0, offset: Offset(-6.0, 8.0)), BoxShadow(color: Color(0x262BF5B4), blurRadius: 28.0, offset: Offset(6.0, 8.0))],
+    // END GENERATED preset.shadows.light
+  );
+
+  /// Dark-mode gradients of the midnight preset.
+  static const MidnightGradients darkGradients = MidnightGradients(
+    // GENERATED from tokens/midnight.json preset.gradients.dark. Do not edit.
+    accentFill: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Color(0xFF0AD89C), Color(0xFF0AAEE6)]),
+    accentBorder: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Color(0xFF14C8FF), Color(0xFF5BFFD0)]),
+    heroWash: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0B0D12), Color(0xFF0C0E14)]),
+    canvas: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF14171E), Color(0xFF0B0D12), Color(0xFF07090D)], stops: [0.0, 0.4, 1.0]),
+    surfaceSheen: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0C0E14), Color(0xFF0C0E14)]),
+    canvasGlow: RadialGradient(center: Alignment(0.0, -0.9), radius: 1.0, colors: [Color(0x1FFFFFFF), Color(0x00FFFFFF)], stops: [0.0, 0.6]),
+    // END GENERATED preset.gradients.dark
+  );
+
+  /// Light-mode gradients of the midnight preset. Has no [MidnightGradients.canvasGlow].
+  static const MidnightGradients lightGradients = MidnightGradients(
+    // GENERATED from tokens/midnight.json preset.gradients.light. Do not edit.
+    accentFill: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Color(0xFF0AD89C), Color(0xFF0AAEE6)]),
+    accentBorder: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Color(0xFF14C8FF), Color(0xFF5BFFD0)]),
+    heroWash: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFDCE0E6), Color(0xFFFFFFFF)]),
+    canvas: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFE3E6EB), Color(0xFFDCE0E6), Color(0xFFD3D7DE)], stops: [0.0, 0.4, 1.0]),
+    surfaceSheen: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFFFFF), Color(0xFFF5F7FA)]),
+    // END GENERATED preset.gradients.light
+  );
 }
 
 /// Midnight colors with no [ScaffoldPalette] or [ScaffoldColorRoles] field.
@@ -287,4 +328,58 @@ final class MidnightColors {
 
   /// Text selection highlight color.
   final Color selection;
+}
+
+/// Midnight shadows with no [ScaffoldShadows] field.
+///
+/// Available to apps through [Midnight.darkElevation] and
+/// [Midnight.lightElevation].
+final class MidnightElevation {
+  const MidnightElevation({
+    required this.dialog,
+    required this.glowAccent,
+    required this.glowAccentPair,
+  });
+
+  /// Shadow under dialogs.
+  final List<BoxShadow> dialog;
+
+  /// Cyan glow under an accent element.
+  final List<BoxShadow> glowAccent;
+
+  /// Cyan and mint glow pair under a hero call to action.
+  final List<BoxShadow> glowAccentPair;
+}
+
+/// Midnight gradients with no [ScaffoldGradients] field.
+///
+/// No widget draws these yet. Available to apps through
+/// [Midnight.darkGradients] and [Midnight.lightGradients].
+final class MidnightGradients {
+  const MidnightGradients({
+    required this.accentFill,
+    required this.accentBorder,
+    required this.heroWash,
+    required this.canvas,
+    required this.surfaceSheen,
+    this.canvasGlow,
+  });
+
+  /// Fill of a primary call to action, left to right.
+  final LinearGradient accentFill;
+
+  /// Outline of an accent card, left to right.
+  final LinearGradient accentBorder;
+
+  /// Background wash of a hero section.
+  final LinearGradient heroWash;
+
+  /// Page background wash.
+  final LinearGradient canvas;
+
+  /// Fill of an elevated surface.
+  final LinearGradient surfaceSheen;
+
+  /// Faint light near the top of the canvas. Dark mode only, so null in light.
+  final RadialGradient? canvasGlow;
 }

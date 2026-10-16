@@ -190,6 +190,212 @@
         "statusWarning": "0xFFFFC42E",
         "selection": "0xFF8A8F9D"
       }
+    },
+    "shadows": {
+      "dark": {
+        "dialog": [
+          {
+            "color": "0x73000000",
+            "blurRadius": 32.0,
+            "offset": [
+              0.0,
+              8.0
+            ]
+          }
+        ],
+        "glowAccent": [
+          {
+            "color": "0x2E14C8FF",
+            "blurRadius": 24.0,
+            "offset": [
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "glowAccentPair": [
+          {
+            "color": "0x2614C8FF",
+            "blurRadius": 28.0,
+            "offset": [
+              -6.0,
+              8.0
+            ]
+          },
+          {
+            "color": "0x262BF5B4",
+            "blurRadius": 28.0,
+            "offset": [
+              6.0,
+              8.0
+            ]
+          }
+        ]
+      },
+      "light": {
+        "dialog": [
+          {
+            "color": "0x33000000",
+            "blurRadius": 32.0,
+            "offset": [
+              0.0,
+              8.0
+            ]
+          }
+        ],
+        "glowAccent": [
+          {
+            "color": "0x2E14C8FF",
+            "blurRadius": 24.0,
+            "offset": [
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "glowAccentPair": [
+          {
+            "color": "0x2614C8FF",
+            "blurRadius": 28.0,
+            "offset": [
+              -6.0,
+              8.0
+            ]
+          },
+          {
+            "color": "0x262BF5B4",
+            "blurRadius": 28.0,
+            "offset": [
+              6.0,
+              8.0
+            ]
+          }
+        ]
+      }
+    },
+    "gradients": {
+      "dark": {
+        "accentFill": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF0AD89C",
+            "0xFF0AAEE6"
+          ]
+        },
+        "accentBorder": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF14C8FF",
+            "0xFF5BFFD0"
+          ]
+        },
+        "heroWash": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFF0B0D12",
+            "0xFF0C0E14"
+          ]
+        },
+        "canvas": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFF14171E",
+            "0xFF0B0D12",
+            "0xFF07090D"
+          ],
+          "stops": [
+            0.0,
+            0.4,
+            1.0
+          ]
+        },
+        "surfaceSheen": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFF0C0E14",
+            "0xFF0C0E14"
+          ]
+        },
+        "canvasGlow": {
+          "type": "radial",
+          "center": [
+            0.0,
+            -0.9
+          ],
+          "radius": 1.0,
+          "colors": [
+            "0x1FFFFFFF",
+            "0x00FFFFFF"
+          ],
+          "stops": [
+            0.0,
+            0.6
+          ]
+        }
+      },
+      "light": {
+        "accentFill": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF0AD89C",
+            "0xFF0AAEE6"
+          ]
+        },
+        "accentBorder": {
+          "type": "linear",
+          "begin": "centerLeft",
+          "end": "centerRight",
+          "colors": [
+            "0xFF14C8FF",
+            "0xFF5BFFD0"
+          ]
+        },
+        "heroWash": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFDCE0E6",
+            "0xFFFFFFFF"
+          ]
+        },
+        "canvas": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFE3E6EB",
+            "0xFFDCE0E6",
+            "0xFFD3D7DE"
+          ],
+          "stops": [
+            0.0,
+            0.4,
+            1.0
+          ]
+        },
+        "surfaceSheen": {
+          "type": "linear",
+          "begin": "topCenter",
+          "end": "bottomCenter",
+          "colors": [
+            "0xFFFFFFFF",
+            "0xFFF5F7FA"
+          ]
+        }
+      }
     }
   }
 }

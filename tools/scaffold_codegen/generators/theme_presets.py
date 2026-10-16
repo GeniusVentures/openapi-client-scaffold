@@ -42,6 +42,10 @@ REGIONS: tuple[tuple[str, tuple[str, ...], str, str], ...] = (
     ("presets/midnight_tokens.dart", ("scaffold", "typography", "fontFamilies"), "fontFamily", "args"),
     ("presets/midnight_tokens.dart", ("preset", "colors", "dark"), "color", "args"),
     ("presets/midnight_tokens.dart", ("preset", "colors", "light"), "color", "args"),
+    ("presets/midnight_tokens.dart", ("preset", "shadows", "dark"), "shadows", "args"),
+    ("presets/midnight_tokens.dart", ("preset", "shadows", "light"), "shadows", "args"),
+    ("presets/midnight_tokens.dart", ("preset", "gradients", "dark"), "gradient", "args"),
+    ("presets/midnight_tokens.dart", ("preset", "gradients", "light"), "gradient", "args"),
 )
 
 
