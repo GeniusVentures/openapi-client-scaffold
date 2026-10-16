@@ -142,8 +142,18 @@ Plans:
   3. The example app switches between the default and midnight presets in both light and dark, and the default captures stay unchanged.
   4. An automated contrast test passes for both the default and midnight palettes in light and dark, covering text, status, control-border and focus-ring pairs.
 
-**Plans**: TBD
+**Plans**: 7 plans
 **UI hint**: yes
+
+Plans:
+
+- [ ] 15-01-PLAN.md — (wave 1) tracer: tokens/midnight.json -> theme_presets driver -> midnight palette -> `midnightTheme(Brightness)`; shared render refactor first; drift check, CI, source-map test
+- [ ] 15-02-PLAN.md — (wave 2) midnight color roles, dimens, shadows, motion, typography, MidnightColors; contrast test extended to midnight light and dark (A11Y-03)
+- [ ] 15-03-PLAN.md — (wave 3) gradient and text-style encoders; midnight gradients, dialog and glow shadows, text theme, numeric styles, spacing and radius ladder
+- [ ] 15-04-PLAN.md — (wave 4) full ThemeData: ColorScheme (R15), dividers (R7), component themes (R14); scheme and component contrast test; smoke test
+- [ ] 15-05-PLAN.md — (wave 5) example preset switch (PRE-03); neutral comments in lib/ via templates; brand-name scan
+- [ ] 15-06-PLAN.md — (wave 6) profile-driven capture harness, defaults byte-identical; 52 midnight captures in images/midnight/
+- [ ] 15-07-PLAN.md — (wave 7) README, CONTRIBUTING, CLAUDE.md; phase gate with frozen-defaults checks and GCS harness
 
 ### Phase 16: Component Restyles
 
