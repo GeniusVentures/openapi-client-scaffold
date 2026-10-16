@@ -57,7 +57,7 @@ Full phase details, goals, and success criteria: [milestones/v1.2-ROADMAP.md](mi
 - [x] **Phase 13: Theme Fields** - Shadows, typography, motion, gradients and accent tokens become themeable with defaults equal to today (completed 2026-10-16)
 - [x] **Phase 14: Default Accessibility Fixes** - Default palettes pass WCAG AA and the light text field and drawers are legible, each fix followed by its own capture re-baseline commit (completed 2026-10-16)
 - [x] **Phase 15: Midnight Preset** - Opt-in `midnight` theme (light and dark) in one call, with an example-app switcher and a contrast test over all palettes (completed 2026-10-16)
-- [ ] **Phase 16: Component Restyles** - Components take the midnight look where tokens alone cannot reach it, with default rendering unchanged
+- [x] **Phase 16: Component Restyles** - Components take the midnight look where tokens alone cannot reach it, with default rendering unchanged (completed 2026-10-16)
 - [ ] **Phase 17: Release Gates** - Captures change only in the sanctioned re-baseline commits and GeniusCognitiveSystem builds and passes against develop
 
 ## Phase Details
@@ -172,14 +172,14 @@ Plans:
 
 Plans:
 
-- [ ] 16-01-PLAN.md — (wave 1) tracer: nullable ScaffoldShadows.elevated from tokens to ScaffoldSurface and card (R1 shadow); generator null support; midnight-only restyles capture
-- [ ] 16-02-PLAN.md — (wave 2) R1 sheen and hairline: ScaffoldGradients.surfaceSheen, colorRoles.surfaceEdge, card template refactor
-- [ ] 16-03-PLAN.md — (wave 3) R2 hover: hoverFill/hoverEdge roles, ScaffoldPressable radius, rounded consumers
-- [ ] 16-04-PLAN.md — (wave 4) ScaffoldShapes extension; R5 focused field border width
-- [ ] 16-05-PLAN.md — (wave 5) R6 drawers and sheets: ResponsiveDrawerPanel refactor, sheet radius, edge, scrim, midnight panel fill
-- [ ] 16-06-PLAN.md — (wave 6) R8 accent fill sites on colorRoles.accent (refactor); R11 checkbox roles and shapes via template
-- [ ] 16-07-PLAN.md — (wave 7) R3 ActionButton glyph and disabled roles; R9 tabular figures via formatted_value template
-- [ ] 16-08-PLAN.md — (wave 8) 16-RESTYLES.md record, docs, full gate with capture checks and GCS harness
+- [x] 16-01-PLAN.md — (wave 1) tracer: nullable ScaffoldShadows.elevated from tokens to ScaffoldSurface and card (R1 shadow); generator null support; midnight-only restyles capture
+- [x] 16-02-PLAN.md — (wave 2) R1 sheen and hairline: ScaffoldGradients.surfaceSheen, colorRoles.surfaceEdge, card template refactor
+- [x] 16-03-PLAN.md — (wave 3) R2 hover: hoverFill/hoverEdge roles, ScaffoldPressable radius, rounded consumers
+- [x] 16-04-PLAN.md — (wave 4) ScaffoldShapes extension; R5 focused field border width
+- [x] 16-05-PLAN.md — (wave 5) R6 drawers and sheets: ResponsiveDrawerPanel refactor, sheet radius, edge, scrim, midnight panel fill
+- [x] 16-06-PLAN.md — (wave 6) R8 accent fill sites on colorRoles.accent (refactor); R11 checkbox roles and shapes via template
+- [x] 16-07-PLAN.md — (wave 7) R3 ActionButton glyph and disabled roles; R9 tabular figures via formatted_value template
+- [x] 16-08-PLAN.md — (wave 8) 16-RESTYLES.md record, docs, full gate with capture checks and GCS harness
 
 ### Phase 17: Release Gates
 

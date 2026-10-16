@@ -32,7 +32,7 @@
 
 ### Restyles
 
-- [ ] **RST-01**: Components whose wallet look can't be reached with tokens alone are restyled behind the preset. The candidates are the 15 restyles in research/FEATURES.md. The defaults keep today's look.
+- [x] **RST-01**: Components whose wallet look can't be reached with tokens alone are restyled behind the preset. The candidates are the 15 restyles in research/FEATURES.md. The defaults keep today's look.
 
 ### Accessibility and defaults
 
@@ -76,7 +76,7 @@
 | PRE-02 | Phase 15 | Complete |
 | PRE-03 | Phase 15 | Complete |
 | A11Y-03 | Phase 15 | Complete |
-| RST-01 | Phase 16 | Pending |
+| RST-01 | Phase 16 | Complete |
 | GATE-01 | Phase 17 | Pending |
 | GATE-02 | Phase 17 | Pending |
 
