@@ -116,5 +116,31 @@
       "shadow": "0 4px 4px 0 rgba(0,0,0,0.3), 0 8px 12px 6px rgba(0,0,0,0.15)",
       "surfaceTint": 0.14
     }
+  },
+  "scaffold": {
+    "_comment": "Scaffold theme defaults for ScaffoldPalette and ScaffoldDimens. Rendered into the GENERATED regions of lib/theme/*.dart by scaffold_codegen.generators.theme_defaults. Values are emitted verbatim as Dart literals. Only this repo file feeds Dart generation; a CMake DESIGN_TOKENS override never does.",
+    "dimens": {
+      "horizontalPadding": 20.0,
+      "horizontalDesktopPadding": 40.0,
+      "verticalDesktopPadding": 40.0,
+      "itemSpacing": 16.0,
+      "borderRadiusCard": 15.0,
+      "borderRadiusButton": 48.0,
+      "appBarHeight": 65.0,
+      "space2": 4.0,
+      "space3": 6.0,
+      "space4": 8.0,
+      "space6": 12.0,
+      "space8": 16.0,
+      "space12": 24.0,
+      "radiusMd": 12.0,
+      "radiusPill": 48.0,
+      "focusRingWidth": 2.0,
+      "skeletonCornerRadius": 4.0,
+      "disabledOverlayOpacity": 0.40,
+      "dragHandleSize": 24.0,
+      "minTouchTarget": 48.0,
+      "touchTargetPadding": 12.0
+    }
   }
 }

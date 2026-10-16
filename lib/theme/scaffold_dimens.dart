@@ -113,6 +113,7 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
 
   /// Default dimensions matching the previous static token values.
   static const ScaffoldDimens defaultDimens = ScaffoldDimens(
+    // GENERATED from design_tokens.json scaffold.dimens. Do not edit.
     horizontalPadding: 20.0,
     horizontalDesktopPadding: 40.0,
     verticalDesktopPadding: 40.0,
@@ -134,6 +135,7 @@ class ScaffoldDimens extends ThemeExtension<ScaffoldDimens> {
     dragHandleSize: 24.0,
     minTouchTarget: 48.0,
     touchTargetPadding: 12.0,
+    // END GENERATED scaffold.dimens
   );
 
   /// Returns a copy of this dimension set with the given fields replaced.

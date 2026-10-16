@@ -8,6 +8,8 @@ Entry points (all runnable as ``python3 -m``):
     scaffold_codegen.m3_tokens_css         Design tokens -> CSS custom properties.
     scaffold_codegen.api_clients           OpenAPI specs -> typed API clients.
     scaffold_codegen.generators.<name>     Widget-family generators.
+    scaffold_codegen.generators.theme_defaults
+                                           Design tokens -> lib/theme defaults.
 
 The path constants below are the single source of truth for repo-relative
 locations, replacing the per-script ``ROOT = Path(__file__).parent.parent``
@@ -28,9 +30,13 @@ DESIGN_TOKENS = REPO_ROOT / "design_tokens.json"
 #: Destination for generated Dart widgets (committed; drift-checked).
 LIB_COMPONENTS_DIR = REPO_ROOT / "lib" / "components"
 
+#: Destination for generated theme defaults (committed; drift-checked).
+LIB_THEME_DIR = REPO_ROOT / "lib" / "theme"
+
 __all__ = [
     "REPO_ROOT",
     "TEMPLATES_DIR",
     "DESIGN_TOKENS",
     "LIB_COMPONENTS_DIR",
+    "LIB_THEME_DIR",
 ]
