@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Design Tokens & Midnight Preset
-current_phase: 17
-current_phase_name: Release Gates
-status: complete
-stopped_at: Phase 17 complete; v1.4 ready to archive
-last_updated: "2026-10-16T21:08:08.407Z"
+status: Awaiting next milestone
+stopped_at: v1.4 shipped and archived; v1.3 next
+last_updated: "2026-10-16T21:42:27.949Z"
 last_activity: 2026-10-16
-last_activity_desc: Phase 17 complete; v1.4 ready to archive with /gsd-complete-milestone
+last_activity_desc: Milestone v1.4 completed and archived
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 32
-  completed_plans: 29
-  percent: 83
+  completed_plans: 32
+  percent: 100
+current_phase: 17
+current_phase_name: Release Gates
 ---
 
 # Project State
@@ -24,18 +24,18 @@ progress:
 See: .planning/workstreams/scaffold/ROADMAP.md
 
 **Core value:** `frontend_scaffold` (openapi-client-scaffold) is the single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates — generic, M3-themed, zero app-specific business logic, consumable by any repo via pinned submodule
-**Current focus:** v1.4 closed, ready for `/gsd-complete-milestone --ws scaffold`
+**Current focus:** v1.4 shipped 2026-10-16 and archived; v1.3 POS-General Interaction Primitives is next
 
 ## Current Position
 
-Phase: 17 (Release Gates) — COMPLETE
-Plan: 3 of 3
-Status: Phase 17 complete, v1.4 ready to archive
-Last activity: 2026-10-16 — Phase 17 complete
+Phase: Milestone v1.4 complete
+Plan: —
+Status: Awaiting next milestone (v1.3)
+Last activity: 2026-10-16 — Milestone v1.4 completed and archived
 
-Progress: [##########] 100% (6/6 phases)
+## v1.4 Milestone (archive, shipped 2026-10-16)
 
-## v1.4 Milestone
+Archive: .planning/milestones/v1.4-ROADMAP.md, v1.4-REQUIREMENTS.md, v1.4-MILESTONE-AUDIT.md (tech_debt), v1.4-research/
 
 **Goal:** One token source for the Dart theme and CSS, themeable shadows/typography/motion/gradients, an opt-in `midnight` preset with the GeniusWallet look, and default AA fixes, without breaking consumers.
 
@@ -101,15 +101,15 @@ Progress: [##########] 100% (6/6 phases)
 - **Public theme API is frozen.** `ScaffoldPalette` and `ScaffoldDimens` constructors and field names unchanged; new groups are new `ThemeExtension`s with default fallbacks.
 - **A11Y fixes supersede "defaults frozen".** Owner requirements A11Y-01/02 override research Anti-Pattern 5 and open decision (a).
 - **Preset-only items ship in Phase 15.** `ThemeData` builder and the no-widget-code restyles (R7, R14, R15) belong to the one-call preset; Phase 16 holds only component-code restyles.
-- **v1.3 is queued behind v1.4** and gets its phase numbers at kickoff.
+- **v1.3 is next after v1.4** and gets its phase numbers (from 18) at kickoff. Its requirements are now in this workstream's REQUIREMENTS.md.
 - **Capture gate (Phase 17).** An existing capture changes only in a PNG-only commit listed in `tools/capture_rebaselines.json`; pytest checks this in CI with full history. The byte-for-byte render check is local only, because rasterization differs across machines. Gate record: `phases/17-release-gates/17-GATES.md`.
 
 ### Pending Todos
 
 - [ ] Owner: send `phases/17-release-gates/17-GCS-NOTICE.md` to the GCS team (draft, not sent)
 - [ ] Owner: open the develop to main PR and merge it with a merge commit (squash or rebase breaks the capture gate)
-- [ ] Owner: run `/gsd-complete-milestone --ws scaffold`
-- [ ] Owner: then kick off v1.3
+- [x] `/gsd-complete-milestone --ws scaffold` run 2026-10-16
+- [ ] Owner: kick off v1.3 with `/gsd-new-milestone --ws scaffold` (phases numbered from 18)
 
 - [x] `/gsd:plan-phase 6` — wrote plans for Core UI Foundation (28 atoms + composites across 4 waves); executed + verified 28/28
 - [x] `/gsd:plan-phase 7` — wrote plans for Media & Integration Widgets (4 plans, 2 waves: MediaCard, MediaControls, WalletConnectSheet, barrel+demos+gate); checker passed 7/7 decisions
@@ -140,9 +140,9 @@ Progress: [##########] 100% (6/6 phases)
 ## Session Continuity
 
 **Last session:** 2026-10-16
-**Stopped at:** Phase 17 complete; v1.4 ready to archive
+**Stopped at:** v1.4 shipped and archived; v1.3 next
 **Resume file:** None
-**Next action:** `/gsd-complete-milestone --ws scaffold`
+**Next action:** `/gsd-new-milestone --ws scaffold` for v1.3 (or plan its phases)
 
 ## Deferred Items
 
@@ -157,4 +157,8 @@ Items acknowledged and deferred at milestone close on 2026-08-24:
 See: .planning/PROJECT.md (updated 2026-08-24)
 
 **Core value:** single shared source for Genius Network Flutter widgets, M3 theme infrastructure, and Jinja2 codegen templates
-**Current focus:** v1.4 Design Tokens & Midnight Preset closed, ready for `/gsd-complete-milestone --ws scaffold`
+**Current focus:** v1.4 Design Tokens & Midnight Preset shipped; v1.3 next
+
+## Operator Next Steps
+
+- Start v1.3 with `/gsd-new-milestone --ws scaffold`

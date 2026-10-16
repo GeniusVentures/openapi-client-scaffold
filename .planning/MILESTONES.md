@@ -1,5 +1,35 @@
 # Milestones: Frontend Scaffold
 
+## v1.4 Design Tokens & Midnight Preset — ✅ SHIPPED 2026-10-16
+
+**Phases:** 12-17 | **Plans:** 32 | **PR:** none (pushed directly to develop)
+
+One token source for the Dart theme and CSS, themeable shadows, typography,
+motion and gradients, default palettes fixed to WCAG AA, and an opt-in
+`midnight` preset, verified non-breaking for existing consumers.
+
+**Key accomplishments:**
+
+- Token pipeline: `scaffold` namespace in `design_tokens.json` generates the default palette and dimens byte-identically, with a drift check in CI and LF output pinned by `.gitattributes` (Phase 12)
+- Themeable shadows, typography, motion, gradients and color roles as new `ThemeExtension`s with defaults equal to today; hard-coded white in the text field and drawers moved to tokens (Phase 13)
+- Default light and dark palettes fixed to WCAG AA, with the light text field and drawers made legible; each fix followed by its own sanctioned capture re-baseline commit (Phase 14)
+- Opt-in `midnight` preset in one call, light and dark, with an example-app switcher, a contrast test over all palettes, and 52 default plus 54 midnight captures (Phase 15)
+- Component restyles under midnight (surface, hover, field border, drawers and sheets, accent sites, checkbox, buttons, tabular figures) with default rendering unchanged (Phase 16)
+- Release gates: capture history gate in CI (existing captures change only in listed re-baseline commits) and an in-repo GeniusCognitiveSystem consumer check (Phase 17)
+
+**Requirements:** 20/20 v1.4 requirements complete. No orphans.
+
+**Known tech debt at close (audit status tech_debt):**
+
+- GCS notice draft not yet sent: `.planning/milestones/v1.4-phases/17-release-gates/17-GCS-NOTICE.md`
+- Byte-for-byte render gate is machine-local; the GeniusCognitiveSystem consumer check is not in CI
+- Restyles R4 and R12 skipped
+- Midnight light `statusSuccess` and `statusError` differ from the wallet map to meet AA
+
+**Archive:** [v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md) · [v1.4-REQUIREMENTS.md](milestones/v1.4-REQUIREMENTS.md) · [v1.4-MILESTONE-AUDIT.md](milestones/v1.4-MILESTONE-AUDIT.md)
+
+---
+
 ## v1.2 Atom Extensions — ✅ SHIPPED 2026-08-24
 
 **Phases:** 8-11 | **Plans:** 21 | **PR:** [#11](https://github.com/GeniusVentures/openapi-client-scaffold/pull/11)
