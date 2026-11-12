@@ -29,6 +29,8 @@ class ScaffoldNumericInput extends StatefulWidget {
     this.suffix,
     this.disabled = false,
     this.error,
+    this.onValueTap,
+    this.valueTapLabel,
   });
 
   /// Current numeric value.
@@ -60,6 +62,15 @@ class ScaffoldNumericInput extends StatefulWidget {
 
   /// When non-null, tints the value text `palette.statusError` with a border.
   final String? error;
+
+  /// When non-null, the value display becomes tappable (an opt-in direct
+  /// entry affordance — e.g. a keypad popover opened by the consumer);
+  /// null keeps the legacy widget tree with no tap target over the value.
+  final VoidCallback? onValueTap;
+
+  /// Semantic label for the tappable value display; used only when
+  /// [onValueTap] is non-null.
+  final String? valueTapLabel;
 
   @override
   State<ScaffoldNumericInput> createState() => _ScaffoldNumericInputState();
