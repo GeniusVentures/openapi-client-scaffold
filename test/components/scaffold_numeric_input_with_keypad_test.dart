@@ -34,6 +34,14 @@ Future<void> _pumpField(
   );
 }
 
+/// Taps one keypad key inside the open sheet — scoped to the sheet's
+/// InkWells so the key glyph never collides with the value display or
+/// the draft display (both render the same digits as plain Text).
+Finder sheetKey(String glyph) => find.descendant(
+  of: find.byType(BottomSheet),
+  matching: find.widgetWithText(InkWell, glyph),
+);
+
 void main() {
   group('ScaffoldKeypadEntry (pure draft)', () {
     test('append digit concatenates', () {
@@ -47,12 +55,18 @@ void main() {
     });
 
     test('second decimal point rejected', () {
-      const ScaffoldKeypadEntry entry = ScaffoldKeypadEntry('1.5', decimalPlaces: 2);
+      const ScaffoldKeypadEntry entry = ScaffoldKeypadEntry(
+        '1.5',
+        decimalPlaces: 2,
+      );
       expect(entry.append('.').text, '1.5');
     });
 
     test('fraction capped at decimalPlaces digits', () {
-      const ScaffoldKeypadEntry entry = ScaffoldKeypadEntry('1.23', decimalPlaces: 2);
+      const ScaffoldKeypadEntry entry = ScaffoldKeypadEntry(
+        '1.23',
+        decimalPlaces: 2,
+      );
       expect(entry.append('4').text, '1.23');
     });
 
@@ -72,7 +86,10 @@ void main() {
     });
 
     test('parse reads the draft as num', () {
-      const ScaffoldKeypadEntry entry = ScaffoldKeypadEntry('1.5', decimalPlaces: 2);
+      const ScaffoldKeypadEntry entry = ScaffoldKeypadEntry(
+        '1.5',
+        decimalPlaces: 2,
+      );
       expect(entry.parse(), 1.5);
     });
 
@@ -105,9 +122,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(BottomSheet), findsOneWidget);
 
-    await tester.tap(find.text('1'));
+    await tester.tap(sheetKey('1'));
     await tester.pump();
-    await tester.tap(find.text('2'));
+    await tester.tap(sheetKey('2'));
     await tester.pump();
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
@@ -123,11 +140,11 @@ void main() {
 
     await tester.tap(find.text('5'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('5'));
+    await tester.tap(sheetKey('5'));
     await tester.pump();
-    await tester.tap(find.text('0'));
+    await tester.tap(sheetKey('0'));
     await tester.pump();
-    await tester.tap(find.text('0'));
+    await tester.tap(sheetKey('0'));
     await tester.pump();
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
@@ -153,13 +170,13 @@ void main() {
       onChanged: (num v) => changed = v,
     );
 
-    await tester.tap(find.text('5'));
+    await tester.tap(find.text('5.00'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('1'));
+    await tester.tap(sheetKey('1'));
     await tester.pump();
-    await tester.tap(find.text('.'));
+    await tester.tap(sheetKey('.'));
     await tester.pump();
-    await tester.tap(find.text('5'));
+    await tester.tap(sheetKey('5'));
     await tester.pump();
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
@@ -207,7 +224,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Clear'));
     await tester.pump();
-    await tester.tap(find.text('7'));
+    await tester.tap(sheetKey('7'));
     await tester.pump();
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
@@ -221,9 +238,9 @@ void main() {
 
     await tester.tap(find.text('5'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('1'));
+    await tester.tap(sheetKey('1'));
     await tester.pump();
-    await tester.tap(find.text('2'));
+    await tester.tap(sheetKey('2'));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.backspace_outlined));
     await tester.pump();

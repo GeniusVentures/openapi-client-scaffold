@@ -16,20 +16,21 @@ Future<void> _pump(WidgetTester tester, Widget child) {
 }
 
 void main() {
-  testWidgets('renders value in bodyLarge between decrement/increment buttons', (
-    tester,
-  ) async {
-    await _pump(tester, ScaffoldNumericInput(value: 5, onChanged: (_) {}));
+  testWidgets(
+    'renders value in bodyLarge between decrement/increment buttons',
+    (tester) async {
+      await _pump(tester, ScaffoldNumericInput(value: 5, onChanged: (_) {}));
 
-    expect(find.byIcon(Icons.remove), findsOneWidget);
-    expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
 
-    final Text text = tester.widget<Text>(find.text('5'));
-    final BuildContext context = tester.element(
-      find.byType(ScaffoldNumericInput),
-    );
-    expect(text.style, Theme.of(context).textTheme.bodyLarge);
-  });
+      final Text text = tester.widget<Text>(find.text('5'));
+      final BuildContext context = tester.element(
+        find.byType(ScaffoldNumericInput),
+      );
+      expect(text.style, Theme.of(context).textTheme.bodyLarge);
+    },
+  );
 
   testWidgets('increment fires onChanged with value + step', (tester) async {
     num? changed;

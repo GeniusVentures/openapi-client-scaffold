@@ -159,42 +159,58 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
         ? textTheme.bodyLarge?.copyWith(color: palette.statusError)
         : textTheme.bodyLarge;
 
+    final Widget valueContainer = Container(
+      constraints: const BoxConstraints(minWidth: 64),
+      padding: EdgeInsets.symmetric(horizontal: dimens.space4),
+      decoration: widget.error != null
+          ? BoxDecoration(
+              border: Border.all(
+                color: palette.statusError.withValues(alpha: 0.5),
+              ),
+            )
+          : null,
+      child: Text(formatted, textAlign: TextAlign.center, style: valueStyle),
+    );
+
+    // The opt-in direct-entry seam (SCF-POS-02): with [onValueTap] null
+    // the tree is byte-identical to the legacy layout — no Material, no
+    // InkWell, no extra Semantics over the value. When set, ONLY the
+    // value display gains the tap affordance; the steppers, focus
+    // outline, live region, and spin-button semantics are untouched.
+    final Widget valueChild = widget.onValueTap == null
+        ? valueContainer
+        : Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: widget.disabled ? null : widget.onValueTap,
+              child: Semantics(
+                button: true,
+                enabled: !widget.disabled,
+                label: widget.valueTapLabel,
+                child: valueContainer,
+              ),
+            ),
+          );
+
     final Widget valueDisplay = ScaffoldLiveRegion(
       value: formatted,
-      child: Container(
-        constraints: const BoxConstraints(minWidth: 64),
-        padding: EdgeInsets.symmetric(horizontal: dimens.space4),
-        decoration: widget.error != null
-            ? BoxDecoration(
-                border: Border.all(
-                  color: palette.statusError.withValues(alpha: 0.5),
-                ),
-              )
-            : null,
-        child: Text(
-          formatted,
-          textAlign: TextAlign.center,
-          style: valueStyle,
-        ),
-      ),
+      child: valueChild,
     );
 
     Widget content = Row(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        decrementButton,
-        valueDisplay,
-        incrementButton,
-      ],
+      children: <Widget>[decrementButton, valueDisplay, incrementButton],
     );
 
     content = Semantics(
       textField: true,
       value: formatted,
-      increasedValue:
-          _canIncrement ? _formatValue(widget.value + widget.step) : null,
-      decreasedValue:
-          _canDecrement ? _formatValue(widget.value - widget.step) : null,
+      increasedValue: _canIncrement
+          ? _formatValue(widget.value + widget.step)
+          : null,
+      decreasedValue: _canDecrement
+          ? _formatValue(widget.value - widget.step)
+          : null,
       onIncrease: _canIncrement ? _increment : null,
       onDecrease: _canDecrement ? _decrement : null,
       child: content,
@@ -202,10 +218,7 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
 
     content = Focus(
       focusNode: _focusNode,
-      child: ScaffoldFocusOutline(
-        focusNode: _focusNode,
-        child: content,
-      ),
+      child: ScaffoldFocusOutline(focusNode: _focusNode, child: content),
     );
 
     if (widget.disabled) {
@@ -239,8 +252,9 @@ class _ScaffoldNumericInputState extends State<ScaffoldNumericInput> {
     required VoidCallback onPressEnded,
   }) {
     final palette = context.palette;
-    final Color iconColor =
-        pressed ? palette.lightGreenPrimary : palette.textPrimary;
+    final Color iconColor = pressed
+        ? palette.lightGreenPrimary
+        : palette.textPrimary;
 
     return Focus(
       onKeyEvent: (FocusNode node, KeyEvent event) {
