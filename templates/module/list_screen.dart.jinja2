@@ -213,6 +213,9 @@ class _{{ list_screen_class }}View extends StatelessWidget {
     BuildContext context,
     {{ model_type }} item,
   ) async {
+    // Capture BEFORE the await — context.read after an await can hit a
+    // deactivated element; the cubit reference stays valid.
+    final {{ notifier_class }} cubit = context.read<{{ notifier_class }}>();
     final bool confirmed = await GeniusDialog.confirm(
       context,
       title: 'Delete {{ display_name }}',
@@ -221,8 +224,7 @@ class _{{ list_screen_class }}View extends StatelessWidget {
     );
 
     if (confirmed) {
-      final bool success =
-          await context.read<{{ notifier_class }}>().delete{{ model_name }}(item.id);
+      final bool success = await cubit.delete{{ model_name }}(item.id);
 
       if (context.mounted && success) {
         ScaffoldMessenger.of(context).showSnackBar(

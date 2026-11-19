@@ -14,6 +14,7 @@
 library;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ui_core/ui_core.dart' show SafeEmit;
 import 'package:{{ api_package }}/src/api/{{ domain }}_api.dart';
 import 'package:{{ api_package }}/src/model/{{ model_file }}.dart'{{ model_import_prefix }};
 import 'package:{{ api_package }}/src/model/{{ model_file }}_create.dart';
@@ -86,7 +87,7 @@ class {{ state_class }} {
 }
 
 /// Cubit for {{ display_name }} CRUD operations via [{{ api_class }}].
-class {{ notifier_class }} extends Cubit<{{ state_class }}> {
+class {{ notifier_class }} extends Cubit<{{ state_class }}> with SafeEmit<{{ state_class }}> {
   /// Creates a [{{ notifier_class }}] with the given [{{ api_class }}].
   {{ notifier_class }}({
     required {{ api_class }} {{ api_class_var }},
@@ -101,7 +102,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
   /// refreshes can never ride a stale page-2 cursor. A loadMore path
   /// would pass the cursor explicitly instead.
   Future<void> fetch{{ model_plural }}() async {
-    emit(state.copyWith(isLoading: true, error: null, resetCursor: true));
+    safeEmit(state.copyWith(isLoading: true, error: null, resetCursor: true));
 
     try {
       final response = await _{{ api_class_var }}.{{ list_method }}(
@@ -110,7 +111,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
 
       final {{ model_lower }}Page = response.data;
       if ({{ model_lower }}Page == null) {
-        emit(state.copyWith(
+        safeEmit(state.copyWith(
           isLoading: false,
           {{ model_plural | lower }}: <{{ model_type }}>[],
         ));
@@ -118,7 +119,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
       }
 
       final pagination = {{ model_lower }}Page.pagination;
-      emit(state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         {{ model_plural | lower }}: {{ model_lower }}Page.data,
         cursor: pagination.nextCursor,
@@ -126,7 +127,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
         error: null,
       ));
     } on Exception catch (e) {
-      emit(state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to load {{ display_name_lower }}: $e',
       ));
@@ -135,7 +136,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
 
   /// Creates a new {{ display_name_lower }} with the given data.
   Future<bool> create{{ model_name }}(Map<String, dynamic> data) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    safeEmit(state.copyWith(isLoading: true, error: null));
 
     try {
       final {{ model_lower }}Create = {{ model_create_name }}.fromJson(data);
@@ -144,7 +145,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
       await fetch{{ model_plural }}();
       return true;
     } on Exception catch (e) {
-      emit(state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to create {{ display_name }}: $e',
       ));
@@ -154,7 +155,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
 
   /// Updates an existing {{ display_name_lower }} by ID with the given data.
   Future<bool> update{{ model_name }}(String id, Map<String, dynamic> data) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    safeEmit(state.copyWith(isLoading: true, error: null));
 
     try {
       final {{ model_lower }}Update = {{ model_update_name }}.fromJson(data);
@@ -166,7 +167,7 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
       await fetch{{ model_plural }}();
       return true;
     } on Exception {
-      emit(state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to update {{ display_name }}. Please try again.',
       ));
@@ -176,14 +177,14 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
 
   /// Deletes a {{ display_name_lower }} by ID.
   Future<bool> delete{{ model_name }}(String id) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    safeEmit(state.copyWith(isLoading: true, error: null));
 
     try {
       await _{{ api_class_var }}.{{ delete_method }}({{ id_field }}: id);
       await fetch{{ model_plural }}();
       return true;
     } on Exception {
-      emit(state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to delete {{ display_name }}. Please try again.',
       ));
@@ -193,6 +194,6 @@ class {{ notifier_class }} extends Cubit<{{ state_class }}> {
 
   /// Updates the search query for client-side filtering.
   void search{{ model_plural }}(String query) {
-    emit(state.copyWith(searchQuery: query));
+    safeEmit(state.copyWith(searchQuery: query));
   }
 }
