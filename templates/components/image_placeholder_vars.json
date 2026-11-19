@@ -1,5 +1,5 @@
 {
-  "_comment": "Fixture variables for standalone rendering of image_placeholder.dart.jinja2. The representative variant (loading) renders a single class; scripts/generate_image_placeholder.py overrides `variant`, `widget_class_name`, and `variant_label` once per variant to emit the four per-variant files.",
+  "_comment": "Fixture variables for standalone rendering of image_placeholder.dart.jinja2. The representative variant (loading) renders a single class; scaffold_codegen.generators.image_placeholder overrides `variant`, `widget_class_name`, and `variant_label` once per variant to emit the four per-variant files.",
   "widget_class_name": "ScaffoldImagePlaceholderLoading",
   "variant": "loading",
   "variant_label": "Loading image",

@@ -23,6 +23,7 @@ class ScaffoldPressable extends StatefulWidget {
     this.onHoverChanged,
     this.focusNode,
     this.disabled = false,
+    this.semanticLabel,
   });
 
   /// Content rendered inside the pressable surface.
@@ -43,6 +44,10 @@ class ScaffoldPressable extends StatefulWidget {
 
   /// When true, blocks interaction and applies [ScaffoldDisabledOverlay].
   final bool disabled;
+
+  /// Optional accessible name announced by screen readers. Required for
+  /// icon-only pressables (WCAG 4.1.2 Name, Role, Value).
+  final String? semanticLabel;
 
   @override
   State<ScaffoldPressable> createState() => _ScaffoldPressableState();
@@ -143,6 +148,7 @@ class _ScaffoldPressableState extends State<ScaffoldPressable> {
       child: Semantics(
         button: true,
         enabled: _enabled,
+        label: widget.semanticLabel,
         child: content,
       ),
     );

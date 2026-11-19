@@ -16,20 +16,21 @@ Future<void> _pump(WidgetTester tester, Widget child) {
 }
 
 void main() {
-  testWidgets('renders value in bodyLarge between decrement/increment buttons', (
-    tester,
-  ) async {
-    await _pump(tester, ScaffoldNumericInput(value: 5, onChanged: (_) {}));
+  testWidgets(
+    'renders value in bodyLarge between decrement/increment buttons',
+    (tester) async {
+      await _pump(tester, ScaffoldNumericInput(value: 5, onChanged: (_) {}));
 
-    expect(find.byIcon(Icons.remove), findsOneWidget);
-    expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
 
-    final Text text = tester.widget<Text>(find.text('5'));
-    final BuildContext context = tester.element(
-      find.byType(ScaffoldNumericInput),
-    );
-    expect(text.style, Theme.of(context).textTheme.bodyLarge);
-  });
+      final Text text = tester.widget<Text>(find.text('5'));
+      final BuildContext context = tester.element(
+        find.byType(ScaffoldNumericInput),
+      );
+      expect(text.style, Theme.of(context).textTheme.bodyLarge);
+    },
+  );
 
   testWidgets('increment fires onChanged with value + step', (tester) async {
     num? changed;
@@ -188,5 +189,68 @@ void main() {
         .toList();
     expect(labels, contains('Increment'));
     expect(labels, contains('Decrement'));
+  });
+
+  // -------------------------------------------------------------------
+  // quick-261112-jw3 / SCF-POS-02 — the opt-in onValueTap seam. These
+  // cases are ADDITIVE: everything above pins the legacy tree and stays
+  // byte-identical in expectation.
+  // -------------------------------------------------------------------
+
+  testWidgets('without onValueTap the value display carries no button '
+      'semantics (legacy tree)', (tester) async {
+    await _pump(tester, ScaffoldNumericInput(value: 5, onChanged: (_) {}));
+
+    final List<Semantics> buttons = tester
+        .widgetList<Semantics>(
+          find.descendant(
+            of: find.byType(ScaffoldNumericInput),
+            matching: find.byType(Semantics),
+          ),
+        )
+        .where((Semantics s) => s.properties.button == true)
+        .toList();
+    expect(
+      buttons,
+      hasLength(2),
+      reason: 'only the Increment/Decrement buttons are semantic buttons',
+    );
+    expect(
+      buttons.map((Semantics s) => s.properties.label),
+      containsAll(<String?>['Increment', 'Decrement']),
+    );
+  });
+
+  testWidgets('with onValueTap the value display gains button semantics '
+      'and the tap fires the callback', (tester) async {
+    bool fired = false;
+    await _pump(
+      tester,
+      ScaffoldNumericInput(
+        value: 5,
+        onChanged: (_) {},
+        onValueTap: () => fired = true,
+        valueTapLabel: 'Edit value',
+      ),
+    );
+
+    final List<Semantics> buttons = tester
+        .widgetList<Semantics>(
+          find.descendant(
+            of: find.byType(ScaffoldNumericInput),
+            matching: find.byType(Semantics),
+          ),
+        )
+        .where((Semantics s) => s.properties.button == true)
+        .toList();
+    expect(
+      buttons.map((Semantics s) => s.properties.label),
+      contains('Edit value'),
+      reason: 'the value display is a labeled semantic button',
+    );
+
+    await tester.tap(find.text('5'));
+    await tester.pump();
+    expect(fired, isTrue);
   });
 }

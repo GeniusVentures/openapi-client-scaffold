@@ -3,6 +3,11 @@
 /// Provides a single [{{ api_class }}] instance backed by the configured
 /// [GeniusApiClient] Dio from the auth package. Auto-generated from
 /// the {{ domain }} OpenAPI spec.
+///
+/// MIGRATION SEAM: this is the ONE Riverpod touch in a generated module
+/// — the app-boundary service locator for the shared Dio client. It is
+/// never used for state (all state is Cubit) and disappears when the
+/// app shell's auth package migrates off Riverpod.
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';

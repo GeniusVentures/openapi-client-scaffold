@@ -21,7 +21,7 @@ class ActionButton extends StatefulWidget {
   final ActionButtonAnimation animation;
 
   const ActionButton({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
     this.onPressed,
@@ -29,7 +29,7 @@ class ActionButton extends StatefulWidget {
     this.iconColor,
     this.textColor,
     this.animation = ActionButtonAnimation.none,
-  }) : super(key: key);
+  });
 
   @override
   State<ActionButton> createState() => _ActionButtonState();

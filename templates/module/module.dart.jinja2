@@ -69,7 +69,8 @@ class {{ module_class_name }} implements GeniusModule {
     AuthProvider authProvider,
     GeniusApiClient apiClient,
   ) async {
-    // No explicit initialization needed -- providers are managed by Riverpod.
+    // No explicit initialization needed -- screens own screen-scoped
+    // Cubits via BlocProvider; no module-level state to hold.
   }
 
   @override

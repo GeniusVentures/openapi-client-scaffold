@@ -3,10 +3,13 @@
 /// Displays a form in a dialog for creating or editing {{ display_name_lower }}.
 /// Fields are derived from the {{ model_create_name }} model. Auto-generated
 /// from the {{ domain }} OpenAPI spec.
+///
+/// State-management standard: Cubit. The owning screen's cubit is passed
+/// in explicitly — dialogs push on the root navigator, so their context
+/// is not under the screen's BlocProvider.
 library;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_core/ui_core.dart';
 import 'package:{{ api_package }}/src/model/{{ model_file }}.dart'{{ model_import_prefix }};
 
@@ -17,25 +20,31 @@ import '../providers/{{ provider_file }}';
 /// When [item] is null, the form operates in create mode.
 /// When [item] is provided, the form operates in edit mode with
 /// pre-populated fields.
-class {{ form_screen_class }} extends ConsumerStatefulWidget {
+class {{ form_screen_class }} extends StatefulWidget {
   /// Creates a [{{ form_screen_class }}].
   const {{ form_screen_class }}({
     super.key,
+    required this.cubit,
     this.item,
   });
+
+  /// The owning screen's cubit — mutations and refresh go through it.
+  final {{ notifier_class }} cubit;
 
   /// The {{ display_name_lower }} to edit, or null for create mode.
   final {{ model_type }}? item;
 
   @override
-  ConsumerState<{{ form_screen_class }}> createState() => _{{ form_screen_class }}State();
+  State<{{ form_screen_class }}> createState() => _{{ form_screen_class }}State();
 }
 
-class _{{ form_screen_class }}State extends ConsumerState<{{ form_screen_class }}> {
+class _{{ form_screen_class }}State extends State<{{ form_screen_class }}> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isSubmitting = false;
 {% for field in form_fields %}
-{% if field.is_text_controller %}
+{% if field.is_bool %}
+  bool _{{ field.accessor }} = false;
+{% elif field.is_text_controller %}
   late final TextEditingController _{{ field.accessor }}Controller;
 {% endif %}
 {% if field.is_dropdown %}
@@ -46,7 +55,9 @@ class _{{ form_screen_class }}State extends ConsumerState<{{ form_screen_class }
   @override
   void initState() {
     super.initState();
-{% for field in form_fields %}{% if field.is_text_controller %}
+{% for field in form_fields %}{% if field.is_bool %}
+    _{{ field.accessor }} = widget.item?.{{ field.accessor }} ?? false;
+{% elif field.is_text_controller %}
     _{{ field.accessor }}Controller = TextEditingController(
       text: widget.item?.{{ field.accessor }}{% if field.is_enum %}?.value{% else %}?.toString(){% endif %} ?? '',
     );
@@ -101,6 +112,28 @@ class _{{ form_screen_class }}State extends ConsumerState<{{ form_screen_class }
                       },
               ),
               const SizedBox(height: 16.0),
+{% elif field.is_bool %}
+              SwitchListTile(
+                title: Text('{{ field.label }}'),
+                value: _{{ field.accessor }},
+                onChanged: _isSubmitting
+                    ? null
+                    : (bool value) => setState(() => _{{ field.accessor }} = value),
+              ),
+              const SizedBox(height: 16.0),
+{% elif field.is_numeric %}
+              TextFormField(
+                controller: _{{ field.accessor }}Controller,
+                decoration: InputDecoration(
+                  labelText: '{{ field.label }}',
+                  hintText: 'Enter {{ field.label | lower }}',
+                ),
+                keyboardType: TextInputType.number,
+{% if field.required %}                validator: GeniusValidators.required(),
+{% endif %}                enabled: !_isSubmitting,
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 16.0),
 {% elif field.is_text_controller %}
               TextFormField(
                 controller: _{{ field.accessor }}Controller,
@@ -148,19 +181,22 @@ class _{{ form_screen_class }}State extends ConsumerState<{{ form_screen_class }
     setState(() => _isSubmitting = true);
 
     final Map<String, dynamic> data = <String, dynamic>{
-{% for field in form_fields %}{% if field.is_text_controller %}
+{% for field in form_fields %}{% if field.is_bool %}
+      '{{ field.name }}': _{{ field.accessor }},
+{% elif field.is_numeric %}
+      '{{ field.name }}': int.tryParse(_{{ field.accessor }}Controller.text.trim()),
+{% elif field.is_text_controller %}
       '{{ field.name }}': _{{ field.accessor }}Controller.text.trim(),
 {% endif %}{% if field.is_dropdown %}
       '{{ field.name }}': _selected{{ field.accessor | capitalize }},
 {% endif %}{% endfor %}    };
 
-    final {{ notifier_class }} notifier = ref.read({{ provider_name }}.notifier);
     bool success;
 
     if (widget.item != null) {
-      success = await notifier.update{{ model_name }}(widget.item!.id, data);
+      success = await widget.cubit.update{{ model_name }}(widget.item!.id, data);
     } else {
-      success = await notifier.create{{ model_name }}(data);
+      success = await widget.cubit.create{{ model_name }}(data);
     }
 
     if (mounted) {

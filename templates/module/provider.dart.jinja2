@@ -1,17 +1,24 @@
-/// Riverpod provider for {{ display_name }} CRUD operations.
+/// Cubit for {{ display_name }} CRUD operations.
 ///
 /// Wraps [{{ api_class }}] endpoints to provide {{ display_name_lower }} list,
 /// create, update, and delete functionality with loading/error state
 /// management. Auto-generated from the {{ domain }} OpenAPI spec.
+///
+/// State-management standard: Cubit (org standard, ported from the
+/// genius-tube codegen patterns) — no Riverpod in generated modules.
+/// List fetches are ALWAYS first-page reads: the cursor resets before
+/// every request so a refresh can never ride a stale page-2 cursor
+/// (the codex-P1/CR-02 lesson). The cubit never self-fetches in its
+/// constructor — the owning screen triggers the initial load, so
+/// constructions are always cheap and side-effect free.
 library;
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ui_core/ui_core.dart' show SafeEmit;
 import 'package:{{ api_package }}/src/api/{{ domain }}_api.dart';
 import 'package:{{ api_package }}/src/model/{{ model_file }}.dart'{{ model_import_prefix }};
 import 'package:{{ api_package }}/src/model/{{ model_file }}_create.dart';
 import 'package:{{ api_package }}/src/model/{{ model_file }}_update.dart';
-
-import '{{ domain }}_api_provider.dart';
 
 /// State for {{ display_name }} management operations.
 class {{ state_class }} {
@@ -56,12 +63,16 @@ class {{ state_class }} {
   }
 
   /// Creates a copy with optional overrides.
+  ///
+  /// [resetCursor] clears [cursor] to null — plain `cursor ?? this.cursor`
+  /// can never un-set it, and every list fetch is a first-page read.
   {{ state_class }} copyWith({
     List<{{ model_type }}>? {{ model_plural | lower }},
     bool? isLoading,
     String? error,
     String? searchQuery,
     String? cursor,
+    bool resetCursor = false,
     bool? hasMore,
   }) {
     return {{ state_class }}(
@@ -69,14 +80,14 @@ class {{ state_class }} {
       isLoading: isLoading ?? this.isLoading,
       error: error,
       searchQuery: searchQuery ?? this.searchQuery,
-      cursor: cursor ?? this.cursor,
+      cursor: resetCursor ? null : cursor ?? this.cursor,
       hasMore: hasMore ?? this.hasMore,
     );
   }
 }
 
-/// State notifier for {{ display_name }} CRUD operations via [{{ api_class }}].
-class {{ notifier_class }} extends StateNotifier<{{ state_class }}> {
+/// Cubit for {{ display_name }} CRUD operations via [{{ api_class }}].
+class {{ notifier_class }} extends Cubit<{{ state_class }}> with SafeEmit<{{ state_class }}> {
   /// Creates a [{{ notifier_class }}] with the given [{{ api_class }}].
   {{ notifier_class }}({
     required {{ api_class }} {{ api_class_var }},
@@ -86,43 +97,46 @@ class {{ notifier_class }} extends StateNotifier<{{ state_class }}> {
   final {{ api_class }} _{{ api_class_var }};
 
   /// Fetches the list of {{ display_name_lower }} from the API.
+  ///
+  /// Always a first-page fetch: the cursor resets before the request so
+  /// refreshes can never ride a stale page-2 cursor. A loadMore path
+  /// would pass the cursor explicitly instead.
   Future<void> fetch{{ model_plural }}() async {
-    state = state.copyWith(isLoading: true, error: null);
+    safeEmit(state.copyWith(isLoading: true, error: null, resetCursor: true));
 
     try {
       final response = await _{{ api_class_var }}.{{ list_method }}(
         limit: 50,
-        cursor: state.cursor,
       );
 
       final {{ model_lower }}Page = response.data;
       if ({{ model_lower }}Page == null) {
-        state = state.copyWith(
+        safeEmit(state.copyWith(
           isLoading: false,
           {{ model_plural | lower }}: <{{ model_type }}>[],
-        );
+        ));
         return;
       }
 
       final pagination = {{ model_lower }}Page.pagination;
-      state = state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         {{ model_plural | lower }}: {{ model_lower }}Page.data,
         cursor: pagination.nextCursor,
         hasMore: pagination.hasMore,
         error: null,
-      );
+      ));
     } on Exception catch (e) {
-      state = state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to load {{ display_name_lower }}: $e',
-      );
+      ));
     }
   }
 
   /// Creates a new {{ display_name_lower }} with the given data.
   Future<bool> create{{ model_name }}(Map<String, dynamic> data) async {
-    state = state.copyWith(isLoading: true, error: null);
+    safeEmit(state.copyWith(isLoading: true, error: null));
 
     try {
       final {{ model_lower }}Create = {{ model_create_name }}.fromJson(data);
@@ -131,17 +145,17 @@ class {{ notifier_class }} extends StateNotifier<{{ state_class }}> {
       await fetch{{ model_plural }}();
       return true;
     } on Exception catch (e) {
-      state = state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to create {{ display_name }}: $e',
-      );
+      ));
       return false;
     }
   }
 
   /// Updates an existing {{ display_name_lower }} by ID with the given data.
   Future<bool> update{{ model_name }}(String id, Map<String, dynamic> data) async {
-    state = state.copyWith(isLoading: true, error: null);
+    safeEmit(state.copyWith(isLoading: true, error: null));
 
     try {
       final {{ model_lower }}Update = {{ model_update_name }}.fromJson(data);
@@ -153,42 +167,33 @@ class {{ notifier_class }} extends StateNotifier<{{ state_class }}> {
       await fetch{{ model_plural }}();
       return true;
     } on Exception {
-      state = state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to update {{ display_name }}. Please try again.',
-      );
+      ));
       return false;
     }
   }
 
   /// Deletes a {{ display_name_lower }} by ID.
   Future<bool> delete{{ model_name }}(String id) async {
-    state = state.copyWith(isLoading: true, error: null);
+    safeEmit(state.copyWith(isLoading: true, error: null));
 
     try {
       await _{{ api_class_var }}.{{ delete_method }}({{ id_field }}: id);
       await fetch{{ model_plural }}();
       return true;
     } on Exception {
-      state = state.copyWith(
+      safeEmit(state.copyWith(
         isLoading: false,
         error: 'Failed to delete {{ display_name }}. Please try again.',
-      );
+      ));
       return false;
     }
   }
 
   /// Updates the search query for client-side filtering.
   void search{{ model_plural }}(String query) {
-    state = state.copyWith(searchQuery: query);
+    safeEmit(state.copyWith(searchQuery: query));
   }
 }
-
-/// Provider for {{ display_name }} management state.
-final {{ provider_name }} = StateNotifierProvider<{{ notifier_class }}, {{ state_class }}>((ref) {
-  final {{ api_class }} {{ api_class_var }} = ref.watch({{ api_provider_name }});
-
-  return {{ notifier_class }}(
-    {{ api_class_var }}: {{ api_class_var }},
-  );
-});
