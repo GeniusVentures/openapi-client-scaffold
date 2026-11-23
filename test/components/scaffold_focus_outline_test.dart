@@ -136,4 +136,39 @@ void main() {
 
     expect(_ringPaint(), findsOneWidget);
   });
+
+  testWidgets('showing the ring does not remount the child subtree', (
+    tester,
+  ) async {
+    // Regression: the outline previously returned bare `child` when the ring
+    // was hidden and a Stack when shown. Gaining focus under keyboard
+    // highlight mode flipped the root runtimeType, remounting the child — for
+    // a TextField that tore down EditableText state and the text input
+    // connection exactly as focus landed (desktop: ring lights, no caret).
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    await _pump(
+      tester,
+      ScaffoldFocusOutline(
+        focusNode: focusNode,
+        child: const TextField(key: Key('ring-child')),
+      ),
+    );
+
+    final Element textFieldBefore = tester.element(find.byType(TextField));
+    final State editableBefore = tester.state(find.byType(EditableText));
+
+    focusNode.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+
+    expect(_ringPaint(), findsOneWidget);
+    expect(identical(textFieldBefore, tester.element(find.byType(TextField))),
+        isTrue,
+        reason: 'TextField element must survive the ring appearing');
+    expect(identical(editableBefore, tester.state(find.byType(EditableText))),
+        isTrue,
+        reason: 'EditableText state must survive the ring appearing');
+  });
 }

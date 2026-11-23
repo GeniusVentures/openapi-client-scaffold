@@ -33,8 +33,12 @@ spec (``json/identity_openapi.json``).
 
 ## Cross-reference
 
-- ``../engine.py`` — Jinja2 rendering engine that consumes these templates.
+- ``../tools/scaffold_codegen/engine.py`` — Jinja2 rendering engine that
+  consumes these templates.
+- ``../tools/scaffold_codegen/generators/`` — per-widget-family drivers that
+  render ``components/*.jinja2`` into the committed ``lib/components/`` files.
 - ``../design_tokens.json`` — Material 3 design tokens referenced by the
   templates.
-- ``frontend/templates/`` — project-specific residue (screens and other
+- The consuming repo's own templates tree (passed to renders via
+  ``--templates-dir``) — project-specific residue (screens and other
   non-shared templates that did not move into the scaffold).

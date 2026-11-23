@@ -70,16 +70,20 @@ class _ToastDemoState extends State<ToastDemo> {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle primary = TextStyle(color: context.palette.textPrimary);
     return Scaffold(
       appBar: AppBar(title: const Text('Toast')),
       body: Padding(
         padding: EdgeInsets.all(context.dimens.itemSpacing),
         child: ListView(
           children: [
-            Text('Manual: shown=$_manualShowCount closed=$_manualCloseCount'),
-            Text('Auto:   shown=$_autoShowCount closed=$_autoCloseCount'),
+            Text('Manual: shown=$_manualShowCount closed=$_manualCloseCount',
+                style: primary),
+            Text('Auto:   shown=$_autoShowCount closed=$_autoCloseCount',
+                style: primary),
             SizedBox(height: context.dimens.itemSpacing),
-            const Text('Compact receipts (no title; auto-dismiss only):'),
+            Text('Compact receipts (no title; auto-dismiss only):',
+                style: primary),
             Wrap(
               spacing: 8,
               children: [
@@ -98,7 +102,8 @@ class _ToastDemoState extends State<ToastDemo> {
               ],
             ),
             SizedBox(height: context.dimens.itemSpacing),
-            const Text('Card alerts, manual-dismiss (5min duration; tap X):'),
+            Text('Card alerts, manual-dismiss (5min duration; tap X):',
+                style: primary),
             Wrap(
               spacing: 8,
               children: [
@@ -117,7 +122,7 @@ class _ToastDemoState extends State<ToastDemo> {
               ],
             ),
             SizedBox(height: context.dimens.itemSpacing),
-            const Text('Card alerts, auto-dismiss (2s duration):'),
+            Text('Card alerts, auto-dismiss (2s duration):', style: primary),
             Wrap(
               spacing: 8,
               children: [

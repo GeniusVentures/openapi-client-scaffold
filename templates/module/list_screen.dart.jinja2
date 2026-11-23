@@ -4,96 +4,128 @@
 /// derived from the {{ model_name }} model. Provides create, edit, and
 /// delete operations via dialogs and confirmation prompts.
 /// Auto-generated from the {{ domain }} OpenAPI spec.
+///
+/// State-management standard: Cubit. The screen owns a screen-scoped
+/// [{{ notifier_class }}] via [BlocProvider] — entry fetches the first page,
+/// leaving the screen closes the cubit, and re-entry starts fresh (no
+/// persisted cursor, no leaked global state). Riverpod appears ONLY at
+/// the app boundary (reading the shared api client) — never for state.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ui_core/ui_core.dart';
+import 'package:{{ api_package }}/src/api/{{ domain }}_api.dart';
 import 'package:{{ api_package }}/src/model/{{ model_file }}.dart'{{ model_import_prefix }};
 
 import '../providers/{{ provider_file }}';
+import '../providers/{{ api_provider_file }}';
 import '{{ form_screen_file }}';
 
 /// Screen for managing {{ display_name_lower }} with a searchable data table.
-///
-/// Follows the layout: AppBar with title, search bar above the table,
-/// floating action button for creating new {{ model_plural | lower }}, and
-/// edit/delete actions per row.
 class {{ list_screen_class }} extends ConsumerWidget {
   /// Creates a [{{ list_screen_class }}].
   const {{ list_screen_class }}({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final {{ state_class }} {{ state_var }} = ref.watch({{ provider_name }});
+    // App-boundary locator ONLY: the shared Dio client with auth/tenant
+    // interceptors. All screen state lives in the cubit below.
+    final {{ api_class }} {{ api_class_var }} = ref.watch({{ api_provider_name }});
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('{{ display_name }}'),
-      ),
-      body: Column(
-        children: <Widget>[
-          // Search bar with debounce.
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GeniusSearchBar(
-              onSearch: (String query) {
-                ref.read({{ provider_name }}.notifier).search{{ model_plural }}(query);
-              },
-              hintText: 'Search {{ display_name_lower }}...',
-            ),
+    return BlocProvider<{{ notifier_class }}>(
+      create: (BuildContext context) => {{ notifier_class }}(
+        {{ api_class_var }}: {{ api_class_var }},
+      )..fetch{{ model_plural }}(),
+      child: const _{{ list_screen_class }}View(),
+    );
+  }
+}
+
+/// Screen body — pure Cubit state, no provider lookups.
+class _{{ list_screen_class }}View extends StatelessWidget {
+  /// Creates the view.
+  const _{{ list_screen_class }}View();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<{{ notifier_class }}, {{ state_class }}>(
+      builder: (BuildContext context, {{ state_class }} {{ state_var }}) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('{{ display_name }}'),
           ),
+          body: Column(
+            children: <Widget>[
+              // Search bar with debounce.
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GeniusSearchBar(
+                  onSearch: (String query) {
+                    context
+                        .read<{{ notifier_class }}>()
+                        .search{{ model_plural }}(query);
+                  },
+                  hintText: 'Search {{ display_name_lower }}...',
+                ),
+              ),
 
-          // Error banner.
-          if ({{ state_var }}.error != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Card(
-                color: Theme.of(context).colorScheme.errorContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.error_outline,
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                      const SizedBox(width: 12.0),
-                      Expanded(
-                        child: Text(
-                          {{ state_var }}.error!,
-                          style: TextStyle(
+              // Error banner.
+              if ({{ state_var }}.error != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Card(
+                    color: Theme.of(context).colorScheme.errorContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.error_outline,
                             color:
                                 Theme.of(context).colorScheme.onErrorContainer,
                           ),
-                        ),
+                          const SizedBox(width: 12.0),
+                          Expanded(
+                            child: Text(
+                              {{ state_var }}.error!,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onErrorContainer,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
 
-          // Data table.
-          Expanded(
-            child: {{ state_var }}.isLoading && {{ state_var }}.{{ model_plural | lower }}.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : {{ state_var }}.filtered{{ model_plural }}.isEmpty
-                    ? _buildEmptyState(context, ref)
-                    : _build{{ model_plural }}Table(context, ref, {{ state_var }}),
+              // Data table.
+              Expanded(
+                child: {{ state_var }}.isLoading &&
+                        {{ state_var }}.{{ model_plural | lower }}.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : {{ state_var }}.filtered{{ model_plural }}.isEmpty
+                        ? _buildEmptyState(context)
+                        : _build{{ model_plural }}Table(context, {{ state_var }}),
+              ),
+            ],
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openForm(context, ref, null),
-        icon: const Icon(Icons.add),
-        label: const Text('Add {{ display_name }}'),
-      ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () => _openForm(context, null),
+            icon: const Icon(Icons.add),
+            label: const Text('Add {{ display_name }}'),
+          ),
+        );
+      },
     );
   }
 
   /// Builds the empty state with icon, heading, and create button.
-  Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
+  Widget _buildEmptyState(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme scheme = theme.colorScheme;
 
@@ -125,7 +157,7 @@ class {{ list_screen_class }} extends ConsumerWidget {
             ),
             const SizedBox(height: 24.0),
             ElevatedButton.icon(
-              onPressed: () => _openForm(context, ref, null),
+              onPressed: () => _openForm(context, null),
               icon: const Icon(Icons.add),
               label: const Text('Create First {{ display_name }}'),
             ),
@@ -138,7 +170,6 @@ class {{ list_screen_class }} extends ConsumerWidget {
   /// Builds the {{ display_name_lower }} data table with columns and actions.
   Widget _build{{ model_plural }}Table(
     BuildContext context,
-    WidgetRef ref,
     {{ state_class }} {{ state_var }},
   ) {
     return GeniusDataTable<{{ model_type }}>(
@@ -152,34 +183,39 @@ class {{ list_screen_class }} extends ConsumerWidget {
       data: {{ state_var }}.filtered{{ model_plural }},
       isLoading: {{ state_var }}.isLoading,
       emptyMessage: 'No {{ display_name_lower }} found.',
-      onEdit: ({{ model_type }} item) => _openForm(context, ref, item),
-      onDelete: ({{ model_type }} item) => _confirmDelete(context, ref, item),
+      onEdit: ({{ model_type }} item) => _openForm(context, item),
+      onDelete: ({{ model_type }} item) => _confirmDelete(context, item),
     );
   }
 
   /// Opens the {{ display_name_lower }} form dialog for create or edit.
+  ///
+  /// The cubit is passed EXPLICITLY — dialogs push on the root navigator,
+  /// so their context is not under this screen's BlocProvider.
   void _openForm(
     BuildContext context,
-    WidgetRef ref,
     {{ model_type }}? item,
   ) {
+    final {{ notifier_class }} cubit = context.read<{{ notifier_class }}>();
     showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
-        return {{ form_screen_class }}(item: item);
+        return {{ form_screen_class }}(cubit: cubit, item: item);
       },
     ).then((_) {
       // Refresh the list after dialog closes.
-      ref.read({{ provider_name }}.notifier).fetch{{ model_plural }}();
+      cubit.fetch{{ model_plural }}();
     });
   }
 
   /// Shows a confirmation dialog and deletes the {{ display_name_lower }} if confirmed.
   Future<void> _confirmDelete(
     BuildContext context,
-    WidgetRef ref,
     {{ model_type }} item,
   ) async {
+    // Capture BEFORE the await — context.read after an await can hit a
+    // deactivated element; the cubit reference stays valid.
+    final {{ notifier_class }} cubit = context.read<{{ notifier_class }}>();
     final bool confirmed = await GeniusDialog.confirm(
       context,
       title: 'Delete {{ display_name }}',
@@ -188,8 +224,7 @@ class {{ list_screen_class }} extends ConsumerWidget {
     );
 
     if (confirmed) {
-      final bool success =
-          await ref.read({{ provider_name }}.notifier).delete{{ model_name }}(item.id);
+      final bool success = await cubit.delete{{ model_name }}(item.id);
 
       if (context.mounted && success) {
         ScaffoldMessenger.of(context).showSnackBar(

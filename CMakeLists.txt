@@ -9,6 +9,10 @@
 #   frontend_build_javascript - Bundle JavaScript client (esbuild)
 #   frontend_all              - Run all frontend targets
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    project(frontend_scaffold_codegen NONE)
+endif()
+
 # --------------------------------------------------------
 # Find required tools
 find_program(PYTHON3_EXECUTABLE python3)
@@ -17,11 +21,30 @@ if(NOT PYTHON3_EXECUTABLE)
 endif()
 
 # --------------------------------------------------------
+# Python build tooling lives in tools/ as the `scaffold_codegen` package
+# (see pyproject.toml). PYTHONPATH is set per-invocation rather than relying on
+# an installed package, so CMake builds need no pip install.
+set(_scaffold_pythonpath "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+set(_scaffold_python_env ${CMAKE_COMMAND} -E env "PYTHONPATH=${_scaffold_pythonpath}")
+
+# --------------------------------------------------------
 # 1. Generate typed API clients from OpenAPI specs
-#    Reads ../api-specs/*_openapi.json (parent project)
+#    The generator requires --api-specs-dir (required=True since DEC-01) —
+#    api_clients has no parent-relative default. API_SPECS_DIR forwards the
+#    caller's specs directory; an empty cache value yields an empty flag, so
+#    invoking frontend_generate_api then fails with an argparse usage error
+#    by design (scaffold-standalone configure stays green). List form so
+#    the flag expands to TWO argv tokens — a single space-embedded string
+#    reaches argparse as one token and fails (same bug class as 1762a45).
+if(API_SPECS_DIR)
+    set(_api_specs_dir_flag --api-specs-dir "${API_SPECS_DIR}")
+else()
+    set(_api_specs_dir_flag "")
+endif()
+
 if(PYTHON3_EXECUTABLE)
     add_custom_target(frontend_generate_api
-        COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_api_clients.py
+        COMMAND ${_scaffold_python_env} ${PYTHON3_EXECUTABLE} -m scaffold_codegen.api_clients ${_api_specs_dir_flag}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating typed API clients from OpenAPI specs"
     )
@@ -60,7 +83,7 @@ add_custom_target(frontend_all
 #    All template-render configuration defaults to scaffold-local files and
 #    can be overridden via CACHE or -D before add_subdirectory.
 # --------------------------------------------------------
-set(ENGINE_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/engine.py" CACHE STRING
+set(ENGINE_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/tools/scaffold_codegen/engine.py" CACHE STRING
     "Path to shared Jinja2 template engine")
 set(DESIGN_TOKENS "${CMAKE_CURRENT_SOURCE_DIR}/design_tokens.json" CACHE STRING
     "Path to M3 design tokens JSON single source of truth")
@@ -68,6 +91,31 @@ set(GENERATED_DIR "${CMAKE_BINARY_DIR}/generated" CACHE STRING
     "Output directory for generated template output")
 set(FRONTEND_TARGET "flutter" CACHE STRING
     "Frontend codegen target (flutter, html)")
+set(API_SPECS_DIR "" CACHE STRING
+    "Path to api-specs/ containing *_openapi.json (required by api_clients; empty = "
+    "frontend_generate_api invocation fails with a usage error)")
+set(FLUTTER_TEMPLATE_STYLE "" CACHE STRING
+    "Flutter template output style: Cubit or HtmlCss (empty = legacy FRONTEND_TARGET resolution)")
+set_property(CACHE FLUTTER_TEMPLATE_STYLE PROPERTY STRINGS Cubit HtmlCss)
+
+# Effective style: FLUTTER_TEMPLATE_STYLE wins (case-insensitive); empty falls
+# back to the deprecated FRONTEND_TARGET alias (html -> HtmlCss,
+# flutter/default -> Cubit).  Validated against an allowlist BEFORE any gate
+# reads it, so a malformed value can never reach a COMMAND line (cache values
+# with ';' expand as CMake lists; the style is only read inside if() conditions).
+if(FLUTTER_TEMPLATE_STYLE)
+    string(TOUPPER "${FLUTTER_TEMPLATE_STYLE}" _effective_style)
+elseif(FRONTEND_TARGET STREQUAL "html")
+    set(_effective_style "HTMLCSS")
+    message(DEPRECATION
+        "DEPRECATION: FRONTEND_TARGET='html' is deprecated; "
+        "pass -DFLUTTER_TEMPLATE_STYLE=HtmlCss instead")
+else()
+    set(_effective_style "CUBIT")
+endif()
+if(NOT _effective_style MATCHES "^(CUBIT|HTMLCSS)$")
+    message(FATAL_ERROR "FLUTTER_TEMPLATE_STYLE must be 'Cubit' or 'HtmlCss' (got '${FLUTTER_TEMPLATE_STYLE}')")
+endif()
 
 if(PYTHON3_EXECUTABLE)
     set(_scaffold_templates_dir "${CMAKE_CURRENT_SOURCE_DIR}/templates")
@@ -75,8 +123,12 @@ if(PYTHON3_EXECUTABLE)
 
     # Optional consumer templates dir — only pass the flag when set, otherwise
     # a bare `--template-dir` (no value) breaks engine.py argument parsing.
-    if(TEMPLATES_DIR)
-        set(_parent_template_dir_flag "--template-dir ${TEMPLATES_DIR}")
+    # List form so the flag expands to TWO argv tokens (a single space-embedded
+    # string reaches argparse as one token and fails). Skip when TEMPLATES_DIR
+    # points back at our own templates/ — that duplicates the Source A
+    # `--template-dir ${_scaffold_templates_dir}` (same guard as Source B).
+    if(TEMPLATES_DIR AND NOT TEMPLATES_DIR STREQUAL _scaffold_templates_dir)
+        set(_parent_template_dir_flag --template-dir "${TEMPLATES_DIR}")
     else()
         set(_parent_template_dir_flag "")
     endif()
@@ -97,6 +149,8 @@ if(PYTHON3_EXECUTABLE)
         set(_output "${GENERATED_DIR}/scaffold/${_out}")
         add_custom_command(
             OUTPUT ${_stamp}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen/scaffold/base"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template ${_rel}
                 --tokens ${DESIGN_TOKENS}
@@ -132,6 +186,8 @@ if(PYTHON3_EXECUTABLE)
         set(_output "${GENERATED_DIR}/shared/${_out}")
         add_custom_command(
             OUTPUT ${_stamp}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen/shared/base"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template ${_rel}
                 --tokens ${DESIGN_TOKENS}
@@ -163,17 +219,25 @@ endif()
 #    loop below: the Flutter widget plus its HydratedMixin Cubit and plain
 #    Dart state class (06-03, BLOC-01/BLOC-02).  The state component's state
 #    template is the Q2 special case: state_view_state.dart (NOT
-#    state_state.dart).  The FRONTEND_TARGET option gates Flutter output
-#    (Phase 4 will add "html" alternative).
+#    state_state.dart).  The effective style gates Flutter output (default
+#    Cubit; HtmlCss renders the §7 leg instead).
 #    Per-component named targets enable selective rebuild:
 #      cmake --build . --target generate_component_data_table
 #    Aggregate target builds all 6 (18 files):
 #      cmake --build . --target generate_all_components
 # --------------------------------------------------------
 set(_comp_templates_dir "${_scaffold_templates_dir}/components")
-set(_widgets_output_dir "${GENERATED_DIR}/widgets")
+# WIDGETS_OUTPUT_DIR lets consumers redirect composable-widget output into an
+# app's source tree (e.g. apps/admin/lib/widgets) while keeping GENERATED_DIR
+# for the OpenAPI client and template-render output.  Empty = legacy default.
+set(WIDGETS_OUTPUT_DIR "" CACHE STRING
+    "Output directory for generated composable widgets (default: ${GENERATED_DIR}/widgets)")
+if(WIDGETS_OUTPUT_DIR STREQUAL "")
+    set(WIDGETS_OUTPUT_DIR "${GENERATED_DIR}/widgets")
+endif()
+set(_widgets_output_dir "${WIDGETS_OUTPUT_DIR}")
 
-if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "flutter")
+if(PYTHON3_EXECUTABLE AND _effective_style STREQUAL "CUBIT")
     set(_component_names
         data_table
         form_dialog
@@ -290,14 +354,14 @@ endif()
 # --------------------------------------------------------
 # 7. HTML target -- per-component stamp targets for HTML + CSS output.
 #    Each M3 component .jinja2 template renders to a semantic HTML5
-#    fragment and companion CSS file when FRONTEND_TARGET=html.
+#    fragment and companion CSS file when the effective style is HtmlCss.
 #    Per-component named targets enable selective rebuild:
 #      cmake --build . --target generate_component_data_table_html
 #      cmake --build . --target generate_component_state_html
 #    Aggregate target builds all 6 + m3_tokens.css:
 #      cmake --build . --target generate_all_components_html
 # --------------------------------------------------------
-if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
+if(PYTHON3_EXECUTABLE AND _effective_style STREQUAL "HTMLCSS")
     set(_styles_output_dir "${GENERATED_DIR}/styles")
     set(_html_output_dir "${GENERATED_DIR}/html")
 
@@ -307,13 +371,15 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
 
     add_custom_command(
         OUTPUT ${_tokens_stamp}
-        COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_m3_tokens_css.py
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
+        COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/scaffold_codegen/m3_tokens_css.py
             --tokens ${DESIGN_TOKENS}
             --output ${_tokens_output}
         COMMAND ${CMAKE_COMMAND} -E touch ${_tokens_stamp}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating M3 design tokens CSS (custom properties)"
-        DEPENDS ${DESIGN_TOKENS} ${CMAKE_CURRENT_SOURCE_DIR}/generate_m3_tokens_css.py
+        DEPENDS ${DESIGN_TOKENS} ${CMAKE_CURRENT_SOURCE_DIR}/tools/scaffold_codegen/m3_tokens_css.py
     )
 
     # -- 7b. Per-component HTML + CSS rendering loop
@@ -340,6 +406,8 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
         # HTML fragment
         add_custom_command(
             OUTPUT ${_stamp_html} ${_output_html}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template "components/${_comp}.html.jinja2"
                 --tokens ${DESIGN_TOKENS}
@@ -355,6 +423,8 @@ if(PYTHON3_EXECUTABLE AND FRONTEND_TARGET STREQUAL "html")
         # CSS stylesheet
         add_custom_command(
             OUTPUT ${_stamp_css} ${_output_css}
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_BINARY_DIR}/template_gen"
             COMMAND ${PYTHON3_EXECUTABLE} ${ENGINE_SCRIPT}
                 --template "components/${_comp}.css.jinja2"
                 --tokens ${DESIGN_TOKENS}

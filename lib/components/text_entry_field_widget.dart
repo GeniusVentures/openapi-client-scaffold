@@ -6,9 +6,9 @@ class TextEntryFieldWidget extends StatelessWidget {
   final TextFormFieldLogic logic;
 
   const TextEntryFieldWidget({
-    Key? key,
+    super.key,
     required this.logic,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
