@@ -69,7 +69,7 @@ class _{{ form_screen_class }}State extends State<{{ form_screen_class }}> {
 
   @override
   void dispose() {
-{% for field in form_fields %}{% if field.is_text_controller %}
+{% for field in form_fields %}{% if field.is_bool %}{# bool state — no controller to dispose #}{% elif field.is_text_controller %}
     _{{ field.accessor }}Controller.dispose();
 {% endif %}{% endfor %}    super.dispose();
   }
@@ -129,8 +129,11 @@ class _{{ form_screen_class }}State extends State<{{ form_screen_class }}> {
                   hintText: 'Enter {{ field.label | lower }}',
                 ),
                 keyboardType: TextInputType.number,
-{% if field.required %}                validator: GeniusValidators.required(),
-{% endif %}                enabled: !_isSubmitting,
+                validator: GeniusValidators.compose([
+{% if field.required %}                  GeniusValidators.required(),
+{% endif %}                  GeniusValidators.numeric(),
+                ]),
+                enabled: !_isSubmitting,
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 16.0),
@@ -184,7 +187,7 @@ class _{{ form_screen_class }}State extends State<{{ form_screen_class }}> {
 {% for field in form_fields %}{% if field.is_bool %}
       '{{ field.name }}': _{{ field.accessor }},
 {% elif field.is_numeric %}
-      '{{ field.name }}': int.tryParse(_{{ field.accessor }}Controller.text.trim()),
+      '{{ field.name }}': {% if field.type == 'number' %}num.tryParse{% else %}int.tryParse{% endif %}(_{{ field.accessor }}Controller.text.trim()),
 {% elif field.is_text_controller %}
       '{{ field.name }}': _{{ field.accessor }}Controller.text.trim(),
 {% endif %}{% if field.is_dropdown %}
